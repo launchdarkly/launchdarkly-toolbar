@@ -1,0 +1,85 @@
+---
+description: Testing patterns and standards for Vitest unit tests and Playwright e2e tests
+globs: ["**/*.test.tsx", "**/*.test.ts", "**/e2e/**", "**/tests/**", "**/*.spec.ts"]
+alwaysApply: false
+---
+---
+description:
+globs: *.test.tsx,*.test.ts
+alwaysApply: false
+---
+# Testing Patterns for LaunchDarkly Toolbar
+
+## Unit Testing with Vitest
+
+### Test Structure
+```typescript
+import { render, screen, fireEvent } from '@testing-library/react';
+import { describe, it, expect, vi } from 'vitest';
+import { Component } from './Component';
+
+describe('Component', () => {
+  it('should render correctly', () => {
+    render(<Component />);
+    expect(screen.getByRole('button')).toBeInTheDocument();
+  });
+});
+```
+
+### Testing Animated Components
+- Mock Framer Motion for unit tests
+- Focus on state changes, not animation implementation
+- Test component behavior at different animation states
+
+### Context Testing
+- Wrap components with required providers (SearchProvider)
+- Test context interactions and state changes
+- Mock context values when needed
+
+### Event Testing
+- Use `fireEvent` for user interactions
+- Test keyboard navigation and accessibility
+- Verify proper event handlers are called
+
+## E2E Testing with Playwright
+
+### Test Organization
+- Place e2e tests in `e2e/tests/`
+- Use descriptive test names that explain user scenarios
+- Group related tests in the same file
+
+### Page Object Pattern
+```typescript
+class ToolbarPage {
+  constructor(private page: Page) {}
+
+  async expandToolbar() {
+    await this.page.click('[data-testid="toolbar-logo"]');
+  }
+
+  async selectTab(tabName: string) {
+    await this.page.click(`[data-testid="tab-${tabName}"]`);
+  }
+}
+```
+
+### Animation Testing
+- Wait for animations to complete before assertions
+- Use `waitFor` utilities for dynamic content
+- Test both expanded and collapsed states
+
+### Accessibility Testing
+- Include keyboard navigation tests
+- Verify ARIA labels and roles
+- Test screen reader compatibility
+
+## Test Data
+- Use mock data from `TabContent/data/mockFlags.ts`
+- Keep test data realistic but simple
+- Avoid external dependencies in tests
+
+## Best Practices
+- Test behavior, not implementation details
+- Use data-testid attributes for reliable element selection
+- Keep tests focused and independent
+- Mock external dependencies appropriately

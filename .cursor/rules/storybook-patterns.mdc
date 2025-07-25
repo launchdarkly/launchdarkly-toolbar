@@ -1,0 +1,332 @@
+---
+description:
+globs: *.stories.tsx
+alwaysApply: false
+---
+# Storybook Patterns for LaunchDarkly Toolbar
+
+## Story File Organization
+
+### File Naming
+- Story files: `ComponentName.stories.tsx`
+- Place in `stories/` directory at project root
+- Match component names exactly: `LaunchDarklyToolbar.stories.tsx`
+
+### Story Structure
+Use CSF3 (Component Story Format 3) with proper typing:
+
+```typescript
+import type { Meta, StoryObj } from '@storybook/react';
+import { LaunchDarklyToolbar } from '../src/ui/Toolbar/LaunchDarklyToolbar';
+
+const meta: Meta<typeof LaunchDarklyToolbar> = {
+  title: 'UI/LaunchDarklyToolbar',
+  component: LaunchDarklyToolbar,
+  parameters: {
+    layout: 'fullscreen',
+  },
+};
+
+export default meta;
+type Story = StoryObj<typeof meta>;
+
+export const Default: Story = {
+  args: {
+    position: 'right',
+  },
+};
+
+export const LeftPositioned: Story = {
+  args: {
+    position: 'left',
+  },
+};
+```
+
+## Story Categories
+
+### UI Component Stories
+- Main toolbar components go under `UI/` category
+- Sub-components under `UI/ComponentName/` subcategories
+- Use hierarchical naming: `UI/Toolbar/Header`
+
+### State Variations
+Create stories for different component states:
+
+```typescript
+export const Expanded: Story = {
+  args: {
+    // Props that show expanded state
+  },
+  play: async ({ canvasElement }) => {
+    // Interaction to expand toolbar
+  },
+};
+
+export const WithSearch: Story = {
+  args: {
+    // Props for search state
+  },
+};
+
+export const DifferentTabs: Story = {
+  args: {
+    // Props showing different active tabs
+  },
+};
+```
+
+## Animation Stories
+
+### Animation States
+For animated components, show key animation states:
+
+```typescript
+export const CollapsedState: Story = {
+  name: 'Collapsed (Initial)',
+  args: {},
+};
+
+export const ExpandedState: Story = {
+  name: 'Expanded',
+  args: {},
+  play: async ({ canvasElement }) => {
+    // Trigger expansion animation
+  },
+};
+
+export const HoverState: Story = {
+  name: 'Hover Effect',
+  args: {},
+  parameters: {
+    pseudo: { hover: true },
+  },
+};
+```
+
+## Provider Wrapping
+
+### Context Providers
+Wrap stories with necessary providers:
+
+```typescript
+export const WithContext: Story = {
+  decorators: [
+    (Story) => (
+      <SearchProvider>
+        <Story />
+      </SearchProvider>
+    ),
+  ],
+};
+```
+
+### Multiple Providers
+For components requiring multiple contexts:
+
+```typescript
+const AllProviders = ({ children }: { children: React.ReactNode }) => (
+  <SearchProvider>
+    <ThemeProvider>
+      {children}
+    </ThemeProvider>
+  </SearchProvider>
+);
+
+export const FullContext: Story = {
+  decorators: [(Story) => <AllProviders><Story /></AllProviders>],
+};
+```
+
+## Documentation Standards
+
+### Story Descriptions
+Add clear descriptions for complex stories:
+
+```typescript
+export const ComplexInteraction: Story = {
+  args: {},
+  parameters: {
+    docs: {
+      description: {
+        story: 'This story demonstrates the toolbar behavior when user searches and navigates between tabs.',
+      },
+    },
+  },
+};
+```
+
+### Component Documentation
+Include component-level documentation:
+
+```typescript
+const meta: Meta<typeof Component> = {
+  title: 'UI/Component',
+  component: Component,
+  parameters: {
+    docs: {
+      description: {
+        component: 'The main toolbar component that provides LaunchDarkly feature flag management UI.',
+      },
+    },
+  },
+};
+```
+
+## Controls and Args
+
+### Prop Controls
+Configure appropriate controls for component props:
+
+```typescript
+const meta: Meta<typeof Component> = {
+  component: Component,
+  argTypes: {
+    position: {
+      control: { type: 'radio' },
+      options: ['left', 'right'],
+      description: 'Position of the toolbar on screen',
+    },
+    isExpanded: {
+      control: { type: 'boolean' },
+      description: 'Whether toolbar starts in expanded state',
+    },
+  },
+};
+```
+
+### Disabled Controls
+Disable controls for computed or internal props:
+
+```typescript
+argTypes: {
+  internalState: {
+    table: { disable: true },
+  },
+  computedValue: {
+    control: false,
+  },
+},
+```
+
+## Interaction Testing
+
+### Play Functions
+Use play functions for interactive stories:
+
+```typescript
+import { userEvent, within } from '@storybook/testing-library';
+import { expect } from '@storybook/jest';
+
+export const UserFlow: Story = {
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+
+    // Click to expand toolbar
+    await userEvent.click(canvas.getByTestId('toolbar-logo'));
+
+    // Verify expansion
+    await expect(canvas.getByTestId('expanded-content')).toBeVisible();
+
+    // Click on tabs
+    await userEvent.click(canvas.getByTestId('tab-flags'));
+
+    // Verify tab content
+    await expect(canvas.getByTestId('flags-content')).toBeVisible();
+  },
+};
+```
+
+## Layout and Styling
+
+### Layout Parameters
+Set appropriate layout for different component types:
+
+```typescript
+// For full-screen components
+parameters: {
+  layout: 'fullscreen',
+},
+
+// For centered components
+parameters: {
+  layout: 'centered',
+},
+
+// For padded components
+parameters: {
+  layout: 'padded',
+},
+```
+
+### Background Variations
+Test components on different backgrounds:
+
+```typescript
+export const OnDarkBackground: Story = {
+  parameters: {
+    backgrounds: {
+      default: 'dark',
+    },
+  },
+};
+```
+
+## Responsive Stories
+
+### Viewport Testing
+Create stories for different screen sizes:
+
+```typescript
+export const Mobile: Story = {
+  parameters: {
+    viewport: {
+      defaultViewport: 'mobile1',
+    },
+  },
+};
+
+export const Desktop: Story = {
+  parameters: {
+    viewport: {
+      defaultViewport: 'desktop',
+    },
+  },
+};
+```
+
+## Best Practices
+
+### Story Naming
+- Use descriptive names that explain the scenario
+- Group related stories with consistent prefixes
+- Use present tense: "Shows expanded state" not "Will show expanded state"
+
+### Accessibility Testing
+Include accessibility-focused stories:
+
+```typescript
+export const KeyboardNavigation: Story = {
+  parameters: {
+    docs: {
+      description: {
+        story: 'Tests keyboard navigation through toolbar elements.',
+      },
+    },
+  },
+  play: async ({ canvasElement }) => {
+    // Keyboard interaction tests
+  },
+};
+```
+
+### Performance Stories
+For animation-heavy components, include performance considerations:
+
+```typescript
+export const ReducedMotion: Story = {
+  parameters: {
+    // Test with reduced motion preferences
+  },
+};
+```
