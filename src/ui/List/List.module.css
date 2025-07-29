@@ -1,10 +1,8 @@
-/* Generic List and ListItem Components */
 .list {
   padding: 0;
   margin: 0;
 }
 
-/* Generic List Item Component */
 .listItem {
   display: flex;
   align-items: center;

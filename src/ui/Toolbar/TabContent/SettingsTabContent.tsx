@@ -1,12 +1,13 @@
 import { Button, ListBox, Popover, Select, SelectValue, ListBoxItem } from '@launchpad-ui/components';
 import { List } from '../../List/List';
 import { ListItem } from '../../List/ListItem';
-import styles from './TabContent.module.css';
-import { useSearchContext } from '../context/SearchContext';
+import { useSearchContext } from '../context/SearchProvider';
 import { useToolbarContext } from '../context/LaunchDarklyToolbarProvider';
 import { StatusDot } from '../components/StatusDot';
-import { NoSearchResults } from './NoSearchResults';
+import { GenericHelpText } from '../components/GenericHelpText';
 import { ChevronDownIcon } from '../components/icons';
+
+import styles from './SettingsTab.module.css';
 
 interface SettingsItem {
   id: string;
@@ -53,7 +54,7 @@ function ProjectSelector(props: ProjectSelectorProps) {
       isDisabled={isLoading}
     >
       <Button className={styles.selectorButton}>
-        <SelectValue className={styles.selectedValue} />
+        <SelectValue />
         <ChevronDownIcon className={styles.icon} />
       </Button>
       <Popover data-theme="dark">
@@ -144,7 +145,7 @@ export function SettingsTabContent() {
   );
 
   if (!hasResults && searchTerm.trim()) {
-    return <NoSearchResults />;
+    return <GenericHelpText title="No settings found" subtitle="Try adjusting your search" />;
   }
 
   return (

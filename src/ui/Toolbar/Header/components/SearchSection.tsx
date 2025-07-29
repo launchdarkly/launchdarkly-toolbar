@@ -31,17 +31,12 @@ export function SearchSection(props: SearchSectionProps) {
       animate={{ scale: 1 }}
       transition={{ duration: 0.2, ease: 'easeOut' }}
     >
-      <SearchField
-        aria-label={TOOLBAR_CONFIG.labels.searchPlaceholder}
-        data-theme="dark"
-        onBlur={handleBlur}
-        className={styles.searchField}
-      >
+      <SearchField aria-label="Search" data-theme="dark" onBlur={handleBlur} className={styles.searchField}>
         <Group>
           <SearchIcon className={styles.icon} />
           <Input
             autoFocus
-            placeholder={TOOLBAR_CONFIG.labels.searchPlaceholder}
+            placeholder="Search"
             value={searchTerm}
             onChange={(e) => {
               onSearch(e.target.value);

@@ -1,4 +1,4 @@
-import styles from '../TabContent/TabContent.module.css';
+import styles from './ErrorMessage.module.css';
 
 interface ErrorMessageProps {
   error: string;

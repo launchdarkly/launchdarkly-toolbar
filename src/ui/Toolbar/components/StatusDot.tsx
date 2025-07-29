@@ -1,4 +1,4 @@
-import styles from '../TabContent/TabContent.module.css';
+import styles from './StatusDot.module.css';
 
 interface StatusDotProps {
   status: 'connected' | 'disconnected' | 'error';

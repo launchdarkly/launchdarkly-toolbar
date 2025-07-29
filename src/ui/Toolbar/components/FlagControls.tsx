@@ -15,7 +15,7 @@ import { ChevronDownIcon, EditIcon, CheckIcon, XIcon } from './icons';
 import { IconButton } from './IconButton';
 import { EnhancedFlag } from '../../../types/devServer';
 
-import styles from '../TabContent/TabContent.module.css';
+import styles from './FlagControls.module.css';
 
 interface BooleanFlagControlProps {
   flag: EnhancedFlag;
@@ -64,7 +64,7 @@ export function MultivariateFlagControl(props: MultivariateFlagControlProps) {
       className={styles.select}
       isDisabled={disabled}
     >
-      <Button className={styles.usageButton}>
+      <Button>
         <SelectValue className={styles.selectedValue} />
         <ChevronDownIcon className={styles.icon} />
       </Button>

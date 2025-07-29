@@ -48,7 +48,7 @@ This is a React/TypeScript project for a LaunchDarkly toolbar component with ani
 
 ### State Management
 - Use `useState` for local component state
-- Use Context API for shared state (see `SearchContext`)
+- Use Context API for shared state (see `SearchProvider`)
 - Use `useRef` for DOM references and persistent values
 - Prefer controlled components
 

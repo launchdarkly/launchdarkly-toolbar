@@ -1,4 +1,4 @@
-import { FeatureFlag } from '../../types';
+import {FeatureFlag} from "../../ui/Toolbar/types";
 
 export const mockFeatureFlags: FeatureFlag[] = [
   {
