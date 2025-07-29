@@ -1,5 +1,7 @@
 import { test, expect, type Page } from '@playwright/test';
 
+const TEST_PROJECT_KEY = 'test-project';
+
 test.describe('LaunchDarkly Toolbar', () => {
   test.beforeEach(async ({ page }: { page: Page }) => {
     // Navigate to the Storybook story for the LaunchDarkly Toolbar
@@ -7,6 +9,68 @@ test.describe('LaunchDarkly Toolbar', () => {
 
     // Wait for Storybook to load
     await page.waitForSelector('iframe[title="storybook-preview-iframe"]');
+
+    await page.route(`**/dev/projects`, async (route) => {
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify([TEST_PROJECT_KEY]),
+      });
+    });
+
+    await page.route(`**/dev/projects/test-project*`, async (route) => {
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({
+          _lastSyncedFromSource: Date.now(),
+          availableVariations: {
+            'test-flag-1': [
+              {
+                _id: 'option-1',
+                value: true,
+              },
+              {
+                _id: 'option-2',
+                value: false,
+              },
+            ],
+            'test-flag-2': [
+              {
+                _id: 'option-1',
+                name: 'option-1',
+                value: 'value-1',
+              },
+              {
+                _id: 'option-2',
+                name: 'option-2',
+                value: 'value-2',
+              },
+            ],
+          },
+          context: {
+            kind: 'user',
+            key: 'dev-environment',
+          },
+          flagsState: {
+            'test-flag-1': {
+              value: false,
+              version: 2,
+            },
+            'test-flag-2': {
+              value: {
+                _ldMeta: {
+                  enabled: false,
+                },
+              },
+              version: 6,
+            },
+          },
+          overrides: {},
+          sourceEnvironmentKey: 'test',
+        }),
+      });
+    });
   });
 
   test('should allow users to discover and expand the toolbar naturally', async ({ page }: { page: Page }) => {
@@ -44,6 +108,7 @@ test.describe('LaunchDarkly Toolbar', () => {
     // Verify Flags tab is active and content is visible
     await expect(iframe.getByRole('tab', { name: 'Flags' })).toHaveAttribute('aria-selected', 'true');
     await expect(iframe.getByTestId('flag-tab-content')).toBeVisible();
+    await expect(iframe.getByText('test-flag-1')).toBeVisible();
 
     // User can see and interact with flag toggles
     const flagToggle = iframe.getByRole('switch').first();
@@ -51,6 +116,7 @@ test.describe('LaunchDarkly Toolbar', () => {
 
     // Verify other flags are listed for management
     await expect(iframe.getByTestId('flag-tab-content')).toBeVisible();
+    await expect(iframe.getByText('test-flag-1')).toBeVisible();
   });
 
   test('should allow users to navigate between different sections', async ({ page }: { page: Page }) => {
@@ -85,6 +151,7 @@ test.describe('LaunchDarkly Toolbar', () => {
 
     // Verify flag content is displayed
     await expect(iframe.getByTestId('flag-tab-content')).toBeVisible();
+    await expect(iframe.getByText('test-flag-1')).toBeVisible();
 
     // Verify flag toggles are functional
     const flagToggles = iframe.getByRole('switch');
@@ -127,6 +194,7 @@ test.describe('LaunchDarkly Toolbar', () => {
     await expect(iframe.getByRole('tab', { name: 'Flags' })).toHaveAttribute('aria-selected', 'true');
     await expect(iframe.getByRole('tab', { name: 'Settings' })).toHaveAttribute('aria-selected', 'false');
     await expect(iframe.getByTestId('flag-tab-content')).toBeVisible();
+    await expect(iframe.getByText('test-flag-1')).toBeVisible();
   });
 
   test('should be responsive to mouse movement patterns', async ({ page }: { page: Page }) => {
