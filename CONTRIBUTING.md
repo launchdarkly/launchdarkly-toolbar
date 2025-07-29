@@ -180,7 +180,7 @@ This command:
 - **Functional components** with hooks
 - **Named exports** preferred over default exports
 - **Custom hooks** for reusable logic
-- **Context** for shared state (see `SearchContext`, `LaunchDarklyToolbarProvider`)
+- **Context** for shared state (see `SearchProvider`, `LaunchDarklyToolbarProvider`)
 
 ### Styling
 

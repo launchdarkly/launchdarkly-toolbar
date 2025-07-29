@@ -1,6 +1,6 @@
 import { useState, useRef, useCallback, useMemo, useEffect, Dispatch, SetStateAction } from 'react';
 
-import { useSearchContext } from '../context/SearchContext';
+import { useSearchContext } from '../context/SearchProvider';
 import { TabId, ActiveTabId, TAB_ORDER } from '../types';
 
 export interface UseToolbarStateReturn {

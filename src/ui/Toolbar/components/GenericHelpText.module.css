@@ -1,4 +1,4 @@
-.noResults {
+.genericHelpText {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -10,13 +10,13 @@
   text-align: center;
 }
 
-.noResults p {
+.genericHelpText p {
   margin: 0;
   font-size: 16px;
   font-weight: 500;
 }
 
-.noResults span {
+.genericHelpText span {
   font-size: 14px;
   opacity: 0.8;
 }

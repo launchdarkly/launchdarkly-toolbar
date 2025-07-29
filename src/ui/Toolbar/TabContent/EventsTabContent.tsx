@@ -1,8 +1,9 @@
 import { List } from '../../List/List';
 import { ListItem } from '../../List/ListItem';
-import styles from './TabContent.module.css';
-import { useSearchContext } from '../context/SearchContext';
-import { NoSearchResults } from './NoSearchResults';
+import { useSearchContext } from '../context/SearchProvider';
+import { GenericHelpText } from '../components/GenericHelpText';
+
+import styles from './EventsTabContent.module.css';
 
 export function EventsTabContent() {
   // Mock events data - replace with real data later
@@ -23,7 +24,7 @@ export function EventsTabContent() {
   });
 
   if (filteredEvents.length === 0 && searchTerm.trim()) {
-    return <NoSearchResults />;
+    return <GenericHelpText title="No events found" subtitle="Try adjusting your search" />;
   }
 
   return (

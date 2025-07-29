@@ -2,15 +2,15 @@ import { useRef, useState } from 'react';
 import { useVirtualizer } from '@tanstack/react-virtual';
 import { List } from '../../List/List';
 import { ListItem } from '../../List/ListItem';
-import { useSearchContext } from '../context/SearchContext';
+import { useSearchContext } from '../context/SearchProvider';
 import { useToolbarContext } from '../context/LaunchDarklyToolbarProvider';
 import { EnhancedFlag } from '../../../types/devServer';
-import { NoSearchResults } from './NoSearchResults';
+import { GenericHelpText } from '../components/GenericHelpText';
 import { BooleanFlagControl, MultivariateFlagControl, StringNumberFlagControl } from '../components/FlagControls';
 import { OverrideIndicator } from '../components/OverrideIndicator';
 import { ActionButtonsContainer } from '../components';
 
-import styles from './TabContent.module.css';
+import styles from './FlagTabContent.module.css';
 import actionStyles from '../components/ActionButtonsContainer.module.css';
 
 export function FlagTabContent() {
@@ -74,6 +74,9 @@ export function FlagTabContent() {
     clearOverride(flagKey);
   };
 
+  const genericHelpTitle = showOverriddenOnly ? 'No overrides found' : 'No flags found';
+  const genericHelpSubtitle = showOverriddenOnly ? 'You have not set any overrides yet' : 'Try adjusting your search';
+
   return (
     <div data-testid="flag-tab-content">
       <>
@@ -95,7 +98,7 @@ export function FlagTabContent() {
         </ActionButtonsContainer>
 
         {filteredFlags.length === 0 && (searchTerm.trim() || showOverriddenOnly) ? (
-          <NoSearchResults />
+          <GenericHelpText title={genericHelpTitle} subtitle={genericHelpSubtitle} />
         ) : (
           <div ref={parentRef} className={styles.virtualContainer}>
             <List>

@@ -14,7 +14,6 @@
   position: relative;
 }
 
-/* Active indicator positioned via JS */
 .activeIndicator {
   position: absolute;
   top: 0;

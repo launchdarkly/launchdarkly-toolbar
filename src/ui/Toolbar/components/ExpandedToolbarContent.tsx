@@ -10,7 +10,7 @@ import { ActiveTabId } from '../types';
 import { useToolbarContext } from '../context/LaunchDarklyToolbarProvider';
 
 import styles from '../LaunchDarklyToolbar.module.css';
-import { ErrorMessage } from './ErrorContainer';
+import { ErrorMessage } from './ErrorMessage';
 import { GearIcon, ToggleOffIcon } from './icons';
 
 interface ExpandedToolbarContentProps {

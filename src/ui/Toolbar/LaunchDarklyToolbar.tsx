@@ -1,6 +1,6 @@
 import { AnimatePresence, motion } from 'motion/react';
 
-import { SearchProvider, useSearchContext } from './context/SearchContext';
+import { SearchProvider, useSearchContext } from './context/SearchProvider';
 import { CircleLogo, ExpandedToolbarContent } from './components';
 import { useToolbarState, useToolbarAnimations } from './hooks';
 
