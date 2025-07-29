@@ -32,9 +32,55 @@ describe('Component', () => {
 - Test component behavior at different animation states
 
 ### Context Testing
-- Wrap components with required providers (SearchProvider)
+- Wrap components with required providers (`SearchProvider`, `LaunchDarklyToolbarProvider`)
 - Test context interactions and state changes
 - Mock context values when needed
+
+```typescript
+// Example context wrapping
+const AllProviders = ({ children }: { children: React.ReactNode }) => (
+  <SearchProvider>
+    <LaunchDarklyToolbarProvider config={{ projectKey: 'test' }}>
+      {children}
+    </LaunchDarklyToolbarProvider>
+  </SearchProvider>
+);
+
+render(<Component />, { wrapper: AllProviders });
+```
+
+### Service Mocking
+Mock external services for consistent testing:
+
+```typescript
+// Mock DevServerClient
+vi.mock('../services/DevServerClient', () => ({
+  DevServerClient: vi.fn().mockImplementation(() => ({
+    getAvailableProjects: vi.fn().mockResolvedValue(['test-project']),
+    setProjectKey: vi.fn(),
+    getProjectData: vi.fn().mockResolvedValue({
+      sourceEnvironmentKey: 'test-environment',
+      flagsState: {},
+      overrides: {},
+      availableVariations: {},
+      _lastSyncedFromSource: Date.now(),
+    }),
+    setOverride: vi.fn(),
+    clearOverride: vi.fn(),
+    healthCheck: vi.fn().mockResolvedValue(true),
+  })),
+}));
+
+// Mock FlagStateManager
+vi.mock('../services/FlagStateManager', () => ({
+  FlagStateManager: vi.fn().mockImplementation(() => ({
+    getEnhancedFlags: vi.fn().mockResolvedValue({}),
+    setOverride: vi.fn(),
+    clearOverride: vi.fn(),
+    subscribe: vi.fn().mockReturnValue(() => {}),
+  })),
+}));
+```
 
 ### Event Testing
 - Use `fireEvent` for user interactions
@@ -73,13 +119,139 @@ class ToolbarPage {
 - Verify ARIA labels and roles
 - Test screen reader compatibility
 
-## Test Data
-- Use mock data from `TabContent/data/mockFlags.ts`
-- Keep test data realistic but simple
-- Avoid external dependencies in tests
+## Test Data Organization
+
+### Centralized Mock Data
+- Store mock data in `src/tests/mocks/`
+- Use typed exports for consistency
+- Keep mock data realistic but simple
+
+```typescript
+// src/tests/mocks/flags.ts
+import { FeatureFlag } from '../../ui/Toolbar/types';
+
+export const mockFeatureFlags: FeatureFlag[] = [
+  {
+    id: 'edge-caching',
+    name: 'Edge caching rules v2',
+    custom: false,
+    enabled: true,
+    description: 'Improved caching rules for edge servers',
+    lastModified: new Date('2024-01-15'),
+    environment: 'production',
+  },
+  // ... more flags
+];
+```
+
+### Mock Data Usage
+Import and use centralized mock data:
+
+```typescript
+import { mockFeatureFlags } from '../../../tests/mocks/flags';
+
+// Use in tests
+expect(component).toRenderFlags(mockFeatureFlags);
+```
+
+### Mock Data Best Practices
+- Use realistic data that mirrors production
+- Include edge cases (long names, special characters)
+- Keep data sets small but comprehensive
+- Update mock data when real data structures change
+
+## Component-Specific Testing
+
+### Tab Content Testing
+Test tab content components with proper context:
+
+```typescript
+describe('FlagTabContent', () => {
+  it('filters flags based on search term', () => {
+    render(
+      <SearchProvider>
+        <LaunchDarklyToolbarProvider config={{ projectKey: 'test' }}>
+          <FlagTabContent />
+        </LaunchDarklyToolbarProvider>
+      </SearchProvider>
+    );
+
+    // Test search functionality
+  });
+});
+```
+
+### Error State Testing
+Test error handling components:
+
+```typescript
+describe('ErrorMessage', () => {
+  it('displays error message correctly', () => {
+    render(<ErrorMessage error="Test error message" />);
+    expect(screen.getByText('Test error message')).toBeInTheDocument();
+  });
+});
+
+describe('GenericHelpText', () => {
+  it('displays title and subtitle', () => {
+    render(<GenericHelpText title="No results" subtitle="Try adjusting search" />);
+    expect(screen.getByText('No results')).toBeInTheDocument();
+    expect(screen.getByText('Try adjusting search')).toBeInTheDocument();
+  });
+});
+```
+
+### Search Functionality Testing
+Test search context integration:
+
+```typescript
+describe('Search functionality', () => {
+  it('filters content based on search term', () => {
+    const TestComponent = () => {
+      const { searchTerm, setSearchTerm } = useSearchContext();
+      return (
+        <div>
+          <input
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
+          <div>{searchTerm}</div>
+        </div>
+      );
+    };
+
+    render(
+      <SearchProvider>
+        <TestComponent />
+      </SearchProvider>
+    );
+
+    fireEvent.change(screen.getByRole('textbox'), { target: { value: 'test' } });
+    expect(screen.getByText('test')).toBeInTheDocument();
+  });
+});
+```
 
 ## Best Practices
+
+### Test Organization
+- Group related tests in describe blocks
+- Use descriptive test names that explain behavior
 - Test behavior, not implementation details
 - Use data-testid attributes for reliable element selection
-- Keep tests focused and independent
-- Mock external dependencies appropriately
+
+### Mock Management
+- Keep mocks focused and minimal
+- Reset mocks between tests when needed
+- Mock at the right level (services vs components)
+- Avoid external dependencies in tests
+
+### Performance Testing
+- Test virtualized components with large datasets
+- Verify animation performance doesn't block UI
+- Test search performance with large flag sets
+
+### Integration Testing
+- Test component interactions across contexts
+- Verify data flow between providers and consumers
+- Test error boundaries and fallback states
