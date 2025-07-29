@@ -3,7 +3,7 @@
   grid-template-columns: auto 1fr auto;
   grid-template-areas: 'logo center actions';
   align-items: center;
-  padding: 0 16px;
+  padding: 0 8px 0 16px;
   background-color: var(--lp-color-gray-900);
   border-bottom: 1px solid var(--lp-color-gray-700);
   border-radius: 12px 12px 0 0;
@@ -101,6 +101,10 @@
 
 .searchField {
   height: 36px;
+}
+
+.searchGroup {
+  padding-right: 0;
 }
 
 .searchFieldWrapper {

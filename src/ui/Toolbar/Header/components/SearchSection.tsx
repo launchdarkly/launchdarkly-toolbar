@@ -32,7 +32,7 @@ export function SearchSection(props: SearchSectionProps) {
       transition={{ duration: 0.2, ease: 'easeOut' }}
     >
       <SearchField aria-label="Search" data-theme="dark" onBlur={handleBlur} className={styles.searchField}>
-        <Group>
+        <Group className={styles.searchGroup}>
           <SearchIcon className={styles.icon} />
           <Input
             autoFocus
