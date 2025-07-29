@@ -4,8 +4,6 @@ import { Group, Input, SearchField } from '@launchpad-ui/components';
 import { IconButton } from '../../components/IconButton';
 import { CancelCircleIcon, SearchIcon } from '../../components/icons';
 
-import { TOOLBAR_CONFIG } from '../../constants';
-
 import styles from '../Header.module.css';
 
 interface SearchSectionProps {
@@ -35,6 +33,7 @@ export function SearchSection(props: SearchSectionProps) {
         <Group className={styles.searchGroup}>
           <SearchIcon className={styles.icon} />
           <Input
+            // oxlint-disable-next-line no-autofocus
             autoFocus
             placeholder="Search"
             value={searchTerm}

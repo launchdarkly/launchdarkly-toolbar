@@ -5,4 +5,4 @@ export { ExpandedToolbarContent } from './ExpandedToolbarContent';
 export { LaunchDarklyIcon } from './icons/LaunchDarklyIcon';
 export { StatusDot } from './StatusDot';
 export { TabContentRenderer } from './TabContentRenderer';
-export { ErrorMessage } from "./ErrorMessage"
+export { ErrorMessage } from './ErrorMessage';
