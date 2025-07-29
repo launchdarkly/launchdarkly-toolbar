@@ -18,7 +18,8 @@
   align-items: center;
   flex-direction: row;
   gap: 4px;
-  width: 160px;
+  min-width: 120px;
+  max-width: 160px;
 }
 
 .currentValueGroup {
@@ -32,6 +33,8 @@
   flex: 1;
   gap: 2px;
   padding-right: 2px;
+  min-width: 120px;
+  max-width: 160px;
 }
 
 .customVariantFieldGroup {
@@ -79,7 +82,8 @@
 
 .select {
   background: transparent;
-  width: 160px;
+  min-width: 120px;
+  max-width: 160px;
 }
 
 .selectedValue {

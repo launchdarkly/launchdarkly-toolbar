@@ -30,9 +30,9 @@ export default defineConfig({
     copy: [
       {
         from: './src/css.d.ts',
-        to: './css.d.ts'
-      }
-    ]
+        to: './css.d.ts',
+      },
+    ],
   },
   plugins: [pluginReact()],
 });
