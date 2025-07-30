@@ -3,7 +3,7 @@ import { ListItem } from '../../List/ListItem';
 import { useSearchContext } from '../context/SearchProvider';
 import { GenericHelpText } from '../components/GenericHelpText';
 
-import styles from './EventsTabContent.module.css';
+import * as styles from './EventsTabContent.css';
 
 export function EventsTabContent() {
   // Mock events data - replace with real data later
