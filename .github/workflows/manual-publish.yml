@@ -28,7 +28,6 @@ jobs:
       - uses: launchdarkly/gh-actions/actions/release-secrets@release-secrets-v1.0.0
         name: 'Get npm token'
         with:
-          # TODO: AWS_ROLE_ARN needs added as a var to the repo.
           aws_assume_role: ${{ vars.AWS_ROLE_ARN }}
           # This gets the npm release token and sets it into the NODE_AUTH_TOKEN environment variable
           ssm_parameter_pairs: '/production/common/releasing/npm/token = NODE_AUTH_TOKEN'
