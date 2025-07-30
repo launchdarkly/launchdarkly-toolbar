@@ -1,5 +1,5 @@
 import React from 'react';
-import styles from './ActionButtonsContainer.module.css';
+import * as styles from './ActionButtonsContainer.css';
 
 interface ActionButtonsContainerProps {
   children: React.ReactNode;

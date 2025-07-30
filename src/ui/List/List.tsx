@@ -1,4 +1,4 @@
-import styles from './List.module.css';
+import * as styles from './List.css';
 
 export interface ListProps {
   children: React.ReactNode;

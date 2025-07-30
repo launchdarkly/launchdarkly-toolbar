@@ -4,7 +4,7 @@ import { Group, Input, SearchField } from '@launchpad-ui/components';
 import { IconButton } from '../../components/IconButton';
 import { CancelCircleIcon, SearchIcon } from '../../components/icons';
 
-import styles from '../Header.module.css';
+import * as styles from '../Header.css';
 
 interface SearchSectionProps {
   searchTerm: string;
@@ -31,7 +31,6 @@ export function SearchSection(props: SearchSectionProps) {
     >
       <SearchField aria-label="Search" data-theme="dark" onBlur={handleBlur} className={styles.searchField}>
         <Group className={styles.searchGroup}>
-          <SearchIcon className={styles.icon} />
           <Input
             // oxlint-disable-next-line no-autofocus
             autoFocus
@@ -41,7 +40,7 @@ export function SearchSection(props: SearchSectionProps) {
               onSearch(e.target.value);
             }}
           />
-          <IconButton icon={<CancelCircleIcon />} label="Clear" onClick={() => onSearch('')} />
+          <IconButton icon={<CancelCircleIcon />} label="Clear" onClick={() => onSearch('')} size="medium" />
         </Group>
       </SearchField>
     </motion.div>

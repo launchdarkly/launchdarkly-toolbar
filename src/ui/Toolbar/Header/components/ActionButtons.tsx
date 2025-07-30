@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'motion/react';
 import { IconButton } from '../../components/IconButton';
 import { SearchIcon, SyncIcon, ChevronDownIcon } from '../../components/icons';
 
-import styles from '../Header.module.css';
+import * as styles from '../Header.css';
 
 interface ActionButtonsProps {
   searchIsExpanded: boolean;
