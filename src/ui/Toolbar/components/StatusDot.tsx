@@ -1,4 +1,4 @@
-import styles from './StatusDot.module.css';
+import * as styles from './StatusDot.css';
 
 interface StatusDotProps {
   status: 'connected' | 'disconnected' | 'error';

@@ -1,4 +1,4 @@
-import styles from './GenericHelpText.module.css';
+import * as styles from './GenericHelpText.css';
 
 interface GenericHelpTextProps {
   title: string;
@@ -10,8 +10,8 @@ export function GenericHelpText(props: GenericHelpTextProps) {
 
   return (
     <div className={styles.genericHelpText}>
-      <p>{title}</p>
-      {subtitle && <span>{subtitle}</span>}
+      <p className={styles.genericHelpTextP}>{title}</p>
+      {subtitle && <span className={styles.genericHelpTextSpan}>{subtitle}</span>}
     </div>
   );
 }

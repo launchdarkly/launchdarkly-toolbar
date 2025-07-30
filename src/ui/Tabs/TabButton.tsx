@@ -2,7 +2,7 @@ import React, { ElementType } from 'react';
 
 import { useTabsContext } from './useTabsContext';
 
-import styles from './Tabs.module.css';
+import * as styles from './Tabs.css';
 
 export interface TabButtonProps {
   id: string;
@@ -24,7 +24,7 @@ export const TabButton = React.forwardRef<HTMLButtonElement, TabButtonProps>(fun
       aria-selected={isActive}
       onClick={() => context.onTabChange(id)}
       disabled={disabled}
-      className={`${styles.tab} ${isActive ? styles['tab--active'] : ''}`}
+      className={`${styles.tab} ${isActive ? styles.tabActive : ''}`}
     >
       {IconComponent && <IconComponent className={styles.iconSvg} />}
       {label}

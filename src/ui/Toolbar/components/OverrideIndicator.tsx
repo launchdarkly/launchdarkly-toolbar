@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import styles from './OverrideIndicator.module.css';
+import * as styles from './OverrideIndicator.css';
 
 interface OverrideIndicatorProps {
   onClear?: () => void;

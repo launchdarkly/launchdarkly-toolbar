@@ -3,7 +3,7 @@ import { motion } from 'motion/react';
 import { ANIMATION_CONFIG } from '../constants';
 import { LaunchDarklyIcon } from './icons/LaunchDarklyIcon';
 
-import styles from '../LaunchDarklyToolbar.module.css';
+import * as styles from '../LaunchDarklyToolbar.css';
 
 interface CircleLogoProps {
   hasBeenExpanded: boolean;

@@ -1,5 +1,5 @@
 import { StatusDot } from './StatusDot';
-import styles from './ConnectionStatus.module.css';
+import * as styles from './ConnectionStatus.css';
 
 interface ConnectionStatusProps {
   status: 'connected' | 'disconnected' | 'error';
