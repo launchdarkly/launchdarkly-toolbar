@@ -9,7 +9,7 @@ import { ANIMATION_CONFIG, EASING } from '../constants';
 import { ActiveTabId } from '../types';
 import { useToolbarContext } from '../context/LaunchDarklyToolbarProvider';
 
-import styles from '../LaunchDarklyToolbar.module.css';
+import * as styles from '../LaunchDarklyToolbar.css';
 import { ErrorMessage } from './ErrorMessage';
 import { GearIcon, ToggleOffIcon } from './icons';
 

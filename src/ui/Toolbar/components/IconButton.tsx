@@ -1,5 +1,5 @@
 import React from 'react';
-import styles from './IconButton.module.css';
+import * as styles from './IconButton.css';
 
 interface IconButtonProps {
   icon: React.ReactNode;
@@ -13,13 +13,21 @@ interface IconButtonProps {
 export function IconButton(props: IconButtonProps) {
   const { icon, label, onClick, disabled = false, className, size = 'large' } = props;
 
+  const getSizeClass = () => {
+    switch (size) {
+      case 'small':
+        return styles.small;
+      case 'medium':
+        return styles.medium;
+      case 'large':
+        return styles.large;
+      default:
+        return styles.large;
+    }
+  };
+
   return (
-    <button
-      className={`${styles.iconButton} ${styles[size]} ${className}`}
-      onClick={onClick}
-      disabled={disabled}
-      aria-label={label}
-    >
+    <button className={`${getSizeClass()} ${className || ''}`} onClick={onClick} disabled={disabled} aria-label={label}>
       {icon}
     </button>
   );

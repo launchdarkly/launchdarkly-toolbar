@@ -4,7 +4,7 @@ import { SearchProvider, useSearchContext } from './context/SearchProvider';
 import { CircleLogo, ExpandedToolbarContent } from './components';
 import { useToolbarState, useToolbarAnimations } from './hooks';
 
-import styles from './LaunchDarklyToolbar.module.css';
+import * as styles from './LaunchDarklyToolbar.css';
 import { LaunchDarklyToolbarProvider } from './context/LaunchDarklyToolbarProvider';
 
 export interface LdToolbarProps {

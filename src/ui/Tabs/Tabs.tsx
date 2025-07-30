@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 
 import { TabsContext } from './useTabsContext';
 
-import styles from './Tabs.module.css';
+import * as styles from './Tabs.css';
 
 export interface TabsProps {
   defaultActiveTab?: string;

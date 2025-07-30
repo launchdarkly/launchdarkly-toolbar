@@ -1,6 +1,6 @@
 import { LaunchDarklyIcon } from '../../components/icons/LaunchDarklyIcon';
 
-import styles from '../Header.module.css';
+import * as styles from '../Header.css';
 
 export function LogoSection() {
   return (

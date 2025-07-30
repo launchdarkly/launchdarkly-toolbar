@@ -15,7 +15,7 @@ import { ChevronDownIcon, EditIcon, CheckIcon, XIcon } from './icons';
 import { IconButton } from './IconButton';
 import { EnhancedFlag } from '../../../types/devServer';
 
-import styles from './FlagControls.module.css';
+import * as styles from './FlagControls.css';
 
 interface BooleanFlagControlProps {
   flag: EnhancedFlag;
@@ -33,7 +33,7 @@ export function BooleanFlagControl(props: BooleanFlagControlProps) {
         isSelected={flag.currentValue}
         onChange={onOverride}
         isDisabled={disabled}
-        className={styles.switch}
+        className={styles.switch_}
       />
     </div>
   );

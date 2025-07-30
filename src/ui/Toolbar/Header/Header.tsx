@@ -1,6 +1,6 @@
 import { Dispatch, SetStateAction } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import styles from './Header.module.css';
+import * as styles from './Header.css';
 import { LogoSection, EnvironmentLabel, SearchSection, ActionButtons } from './components';
 import { useToolbarContext } from '../context/LaunchDarklyToolbarProvider';
 import { ConnectionStatus } from '../components/ConnectionStatus';
