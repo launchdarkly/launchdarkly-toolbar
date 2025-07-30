@@ -10,8 +10,8 @@ import { BooleanFlagControl, MultivariateFlagControl, StringNumberFlagControl } 
 import { OverrideIndicator } from '../components/OverrideIndicator';
 import { ActionButtonsContainer } from '../components';
 
-import * as styles from './FlagTabContent.css';
-import * as actionStyles from '../components/ActionButtonsContainer.css';
+import styles from './FlagTabContent.module.css';
+import actionStyles from '../components/ActionButtonsContainer.module.css';
 
 export function FlagTabContent() {
   const { searchTerm } = useSearchContext();

@@ -7,7 +7,7 @@ import { StatusDot } from '../components/StatusDot';
 import { GenericHelpText } from '../components/GenericHelpText';
 import { ChevronDownIcon } from '../components/icons';
 
-import * as styles from './SettingsTab.css';
+import styles from './SettingsTab.module.css';
 
 interface SettingsItem {
   id: string;
@@ -52,8 +52,8 @@ function ProjectSelector(props: ProjectSelectorProps) {
       className={styles.select}
       isDisabled={isLoading}
     >
-      <Button>
-        <SelectValue className={styles.selectedValue} />
+      <Button className={styles.selectorButton}>
+        <SelectValue />
         <ChevronDownIcon className={styles.icon} />
       </Button>
       <Popover data-theme="dark">
