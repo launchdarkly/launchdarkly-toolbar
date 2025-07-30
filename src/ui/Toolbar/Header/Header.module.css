@@ -1,0 +1,130 @@
+.header {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  grid-template-areas: 'logo center actions';
+  align-items: center;
+  padding: 0 8px 0 16px;
+  background-color: var(--lp-color-gray-900);
+  border-bottom: 1px solid var(--lp-color-gray-700);
+  border-radius: 12px 12px 0 0;
+  min-height: 56px;
+  gap: 12px;
+}
+
+.leftSection {
+  grid-area: logo;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.logo {
+  width: 25px;
+  height: auto;
+  object-fit: contain;
+  filter: brightness(0) invert(1);
+}
+
+.headerTitle {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--lp-color-gray-400);
+  font-family: var(--lp-font-family-base);
+  white-space: nowrap;
+}
+
+.centerSection {
+  grid-area: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-width: 0;
+  max-width: 100%;
+}
+
+.environmentLabel {
+  background-color: var(--lp-color-gray-800);
+  border-radius: 5px;
+  color: var(--lp-color-brand-cyan-base);
+  display: block;
+  font-family: var(--lp-font-family-monospace);
+  font-size: 10px;
+  overflow: hidden;
+  padding: 4px 8px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 100%;
+  text-align: center;
+}
+
+.rightSection {
+  grid-area: actions;
+  display: flex;
+  align-items: center;
+  gap: 0px;
+}
+
+.searchButtonArea {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.closeButtonArea {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.actionButton {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 6px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition:
+    color 0.2s ease,
+    background-color 0.2s ease;
+
+  svg {
+    fill: var(--lp-color-gray-400);
+  }
+}
+
+.actionButton:hover {
+  color: var(--lp-color-gray-200);
+  background-color: var(--lp-color-gray-800);
+}
+
+.searchField {
+  height: 36px;
+}
+
+.searchGroup {
+  padding-right: 0;
+}
+
+.searchFieldWrapper {
+  width: 100%;
+
+  svg {
+    fill: var(--lp-color-gray-400);
+    width: 16px;
+    height: 16px;
+  }
+}
+
+.searchWrapper {
+  width: 100%;
+}
+
+.environmentWrapper {
+  width: 100%;
+  max-width: 100%;
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+}

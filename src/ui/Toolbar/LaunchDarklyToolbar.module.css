@@ -1,0 +1,95 @@
+@import '../../globals.css';
+
+/* Main container that morphs between circle and toolbar */
+.toolbarContainer {
+  position: fixed;
+  bottom: 20px;
+  z-index: 1000;
+  background-color: var(--lp-color-gray-900);
+  border: 1px solid var(--lp-color-gray-700);
+  overflow: hidden;
+  cursor: pointer;
+
+  /* Flexbox for centering content */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Position variants */
+.positionRight {
+  right: 20px;
+  transform-origin: bottom right;
+}
+
+.positionLeft {
+  left: 20px;
+  transform-origin: bottom left;
+}
+
+/* Circle state */
+.toolbarCircle {
+  cursor: pointer;
+}
+
+/* Expanded toolbar state */
+.toolbarExpanded {
+  cursor: default;
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: flex-start;
+}
+
+/* Circle content container */
+.circleContent {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 60px;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.circleLogo {
+  width: 34px;
+  height: 34px;
+  object-fit: contain;
+  filter: brightness(0) invert(1);
+  flex-shrink: 0;
+  display: block;
+}
+
+/* Toolbar content container */
+.toolbarContent {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Content area */
+.contentArea {
+  background-color: var(--lp-color-gray-900);
+  overflow: hidden;
+  border-radius: 12px 12px 0 0;
+}
+
+/* Scrollable content */
+.scrollableContent {
+  min-height: 450px;
+}
+
+/* Tabs container */
+.tabsContainer {
+  display: flex;
+  align-items: center;
+  padding: 8px 8px;
+  background-color: var(--lp-color-gray-900);
+  border-radius: 0 0 12px 12px;
+}
+
+/* Make tabs take up full width */
+.tabsContainer > div {
+  flex: 1;
+}

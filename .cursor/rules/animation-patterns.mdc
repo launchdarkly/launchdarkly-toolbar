@@ -1,0 +1,56 @@
+---
+description:
+globs:
+alwaysApply: false
+---
+# Animation Patterns for LaunchDarkly Toolbar
+
+## Motion Library Standards
+
+### Component Structure
+```typescript
+import { motion, AnimatePresence } from 'motion/react';
+
+// Always use motion.div for animated containers
+<motion.div
+  initial={false} // Prevent initial animations on mount
+  animate={containerAnimations}
+  transition={ANIMATION_CONFIG.container}
+>
+  <AnimatePresence>
+    {/* Conditional content with enter/exit animations */}
+  </AnimatePresence>
+</motion.div>
+```
+
+### Animation Configuration
+- Define all animation configs in `constants/animations.ts`
+- Use object-based configurations for reusability
+- Include proper easing and duration values
+
+### Performance Best Practices
+- Use `transform` properties (scale, translate, rotate) for animations
+- Avoid animating `width`, `height`, `top`, `left` directly
+- Use `will-change: transform` in CSS for optimized animations
+- Use `layout` prop sparingly as it's performance-intensive
+
+### Toolbar-Specific Patterns
+- Container animations: Scale and shadow transitions for expand/collapse
+- Tab transitions: Slide animations with proper direction calculation
+- Search animations: Width and opacity transitions
+- Logo animations: Scale and rotation for state changes
+
+### Animation Variants
+```typescript
+const variants = {
+  initial: { scale: 0.8, opacity: 0 },
+  animate: { scale: 1, opacity: 1 },
+  exit: { scale: 0.8, opacity: 0 }
+};
+```
+
+### Timing Standards
+- Fast interactions: 150-200ms
+- Medium transitions: 250-350ms
+- Slow entrances: 400-500ms
+- Use `ease-out` for most UI transitions

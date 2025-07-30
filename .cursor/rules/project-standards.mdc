@@ -1,0 +1,185 @@
+---
+description:
+globs:
+alwaysApply: true
+---
+# LaunchDarkly Toolbar - Project Standards
+
+## Project Overview
+This is a React/TypeScript project for a LaunchDarkly toolbar component with animations, multiple tabs, and search functionality.
+
+## Technology Stack
+- **Framework**: React 18+ with TypeScript
+- **Animation**: Motion (Framer Motion)
+- **Styling**: CSS Modules
+- **Build Tool**: rslib
+- **Package Manager**: pnpm
+- **Testing**: Vitest (unit), Playwright (e2e)
+- **Documentation**: Storybook
+
+## File Organization & Naming Conventions
+
+### File Structure
+- Components go in `src/ui/` with PascalCase directory names
+- Each component should have its own directory with:
+  - `ComponentName.tsx` (main component)
+  - `ComponentName.module.css` (styles)
+  - `index.ts` (exports)
+- Hooks go in `hooks/` directories within their relevant context
+- Types go in `types/` directories, prefer `index.ts` for exports
+- Constants go in `constants/` directories
+- Tests go in `src/tests/` or adjacent to components
+
+### Naming Conventions
+- **Components**: PascalCase (`LaunchDarklyToolbar.tsx`)
+- **Files**: PascalCase for components, camelCase for utilities
+- **CSS Modules**: camelCase class names
+- **Types/Interfaces**: PascalCase with descriptive names
+- **Constants**: SCREAMING_SNAKE_CASE
+
+## React/TypeScript Best Practices
+
+### Component Patterns
+- Use functional components with hooks
+- Export interfaces for all component props
+- Use `React.FC<PropsType>` for component typing
+- Prefer named exports over default exports for components
+- Use `useMemo` and `useCallback` for performance optimization
+
+### State Management
+- Use `useState` for local component state
+- Use Context API for shared state (see `SearchProvider`)
+- Use `useRef` for DOM references and persistent values
+- Prefer controlled components
+
+### Custom Hooks
+- Extract reusable logic into custom hooks
+- Prefix with `use` (e.g., `useToolbarState`, `useTabsContext`)
+- Keep hooks focused and single-responsibility
+
+## Styling Guidelines
+
+### CSS Modules
+- Use CSS Modules for component-specific styles
+- Import as `styles` object: `import styles from './Component.module.css'`
+- Use descriptive class names: `.toolbarContainer`, `.expandedContent`
+- Organize styles logically (layout, appearance, states, responsive)
+
+### Animation Standards
+- Use Motion (Framer Motion) for animations
+- Define animation configs in `constants/animations.ts`
+- Use `AnimatePresence` for enter/exit animations
+- Prefer declarative animations over imperative
+
+## Code Organization
+
+### Constants
+- Group related constants in dedicated files
+- Export from `constants/index.ts` for easy imports
+- Use TypeScript enums for related constant groups
+
+### Types
+- Define comprehensive TypeScript interfaces
+- Use union types for constrained values
+- Export types from `types/index.ts`
+- Prefer type imports: `import type { TypeName } from './types'`
+
+### Context Pattern
+- Use Context + Provider pattern for shared state
+- Create custom hooks for context consumption
+- Keep context focused and single-purpose
+
+## Import Standards
+
+### Import Order
+1. React and React-related imports
+2. Third-party libraries
+3. Internal utilities and types
+4. Relative imports (components, styles)
+
+### Import Style
+```typescript
+import { useState, useCallback } from 'react';
+import { motion, AnimatePresence } from 'motion/react';
+
+import styles from './Component.module.css';
+import { ComponentType } from './types';
+```
+
+## Animation Best Practices
+
+### Motion Library Usage
+- Use `motion.div` for animated containers
+- Implement proper `initial`, `animate`, and `exit` props
+- Use `AnimatePresence` for conditional rendering with animations
+- Define reusable animation variants in constants
+
+### Performance
+- Prefer transform-based animations (scale, translate)
+- Use `layout` prop sparingly (performance cost)
+- Implement proper `will-change` CSS when needed
+
+## Performance Guidelines
+
+### Optimization Patterns
+- Use `useMemo` for expensive calculations
+- Use `useCallback` for function props to prevent re-renders
+- Implement proper dependency arrays for hooks
+- Use `React.lazy` for code splitting if needed
+
+### Bundle Size
+- Import only what you need from libraries
+- Use tree-shaking friendly imports
+- Monitor bundle size with build tools
+
+## Testing Standards
+
+### Unit Tests (Vitest)
+- Test files should end with `.test.tsx`
+- Test component behavior, not implementation details
+- Use React Testing Library for component testing
+- Mock external dependencies appropriately
+
+### E2E Tests (Playwright)
+- E2E tests go in `e2e/tests/`
+- Test complete user workflows
+- Use page object pattern for complex interactions
+
+### Storybook
+- Create stories for all UI components
+- Include different states and variations
+- Use CSF3 (Component Story Format 3)
+
+## Accessibility (a11y)
+
+### Requirements
+- Use semantic HTML elements
+- Implement proper ARIA labels and roles
+- Ensure keyboard navigation works
+- Test with screen readers
+- Maintain proper focus management
+
+## Error Handling
+
+### TypeScript
+- Enable strict mode in tsconfig.json
+- Handle all possible undefined/null states
+- Use proper error boundaries for React components
+- Provide meaningful error messages
+
+## Development Workflow
+
+### Before Committing
+- Run `pnpm test` to ensure tests pass
+- Run `pnpm build` to verify build works
+- Check TypeScript compilation
+- Verify Storybook stories work
+- Test accessibility features
+
+### Code Review Focus
+- Component API design
+- Animation performance
+- Accessibility compliance
+- TypeScript type safety
+- Test coverage
+- Bundle size impact

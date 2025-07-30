@@ -1,0 +1,9 @@
+@import '@launchpad-ui/tokens/dist/index.css';
+@import '@launchpad-ui/tokens/dist/themes.css';
+@import '@launchpad-ui/tokens/dist/fonts.css';
+
+body {
+  margin: 0;
+  font-family: var(--lp-font-family-base);
+  color: var(--lp-color-text-ui-primary-base);
+}
