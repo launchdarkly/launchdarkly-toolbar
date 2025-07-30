@@ -43,7 +43,7 @@
     "not IE 11"
   ],
   "scripts": {
-    "build": "rslib build",
+    "build": "rslib build && node scripts/inject-css.js",
     "build:storybook": "storybook build",
     "dev": "rslib build --watch",
     "publish": "pnpm build && npm publish",

@@ -1,8 +1,10 @@
 import { AnimatePresence, motion } from 'motion/react';
+import { useEffect } from 'react';
 
 import { SearchProvider, useSearchContext } from './context/SearchProvider';
 import { CircleLogo, ExpandedToolbarContent } from './components';
 import { useToolbarState, useToolbarAnimations } from './hooks';
+import { injectCSS } from '../../utils/cssInjection';
 
 import * as styles from './LaunchDarklyToolbar.css';
 import { LaunchDarklyToolbarProvider } from './context/LaunchDarklyToolbarProvider';
@@ -81,6 +83,11 @@ export interface LaunchDarklyToolbarProps extends LdToolbarProps {
 
 export function LaunchDarklyToolbar(props: LaunchDarklyToolbarProps) {
   const { projectKey, position, devServerUrl = 'http://localhost:8765' } = props;
+
+  // Inject CSS styles on component mount
+  useEffect(() => {
+    injectCSS();
+  }, []);
 
   return (
     <LaunchDarklyToolbarProvider

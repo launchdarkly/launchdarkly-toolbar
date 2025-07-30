@@ -60,4 +60,37 @@ describe('LaunchDarklyToolbar', () => {
     // But logo should be visible
     expect(screen.getByLabelText('LaunchDarkly')).toBeInTheDocument();
   });
+
+  describe('CSS injection', () => {
+    test('should inject CSS styles on component mount', () => {
+      render(<LaunchDarklyToolbar />);
+
+      // Check that a style element with the expected ID is created
+      const styleElement = document.getElementById('launchdarkly-toolbar-styles');
+      expect(styleElement).toBeInTheDocument();
+      expect(styleElement?.tagName).toBe('STYLE');
+    });
+
+    test('should not create duplicate style elements on multiple renders', () => {
+      const { rerender } = render(<LaunchDarklyToolbar />);
+
+      // Rerender the component
+      rerender(<LaunchDarklyToolbar projectKey="test-project" />);
+
+      // Should still only have one style element
+      const styleElements = document.querySelectorAll('#launchdarkly-toolbar-styles');
+      expect(styleElements).toHaveLength(1);
+    });
+
+    test('should inject actual CSS content', () => {
+      render(<LaunchDarklyToolbar />);
+
+      const styleElement = document.getElementById('launchdarkly-toolbar-styles');
+      expect(styleElement?.textContent).toBeTruthy();
+      expect(styleElement?.textContent?.length).toBeGreaterThan(0);
+
+      // Should contain some expected CSS patterns
+      expect(styleElement?.textContent).toMatch(/\.[a-zA-Z0-9_-]+/); // CSS class selectors
+    });
+  });
 });
