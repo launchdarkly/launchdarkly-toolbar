@@ -1,6 +1,8 @@
 import { defineConfig } from 'vitest/config';
+import { vanillaExtractPlugin } from '@vanilla-extract/vite-plugin';
 
 export default defineConfig({
+  plugins: [vanillaExtractPlugin()],
   // Configure Vitest (https://vitest.dev/config/)
   test: {
     environment: 'jsdom',
