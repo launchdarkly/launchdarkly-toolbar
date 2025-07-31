@@ -1,6 +1,6 @@
 {
   "name": "@launchdarkly/toolbar",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "A React component that provides a developer-friendly toolbar for interacting with LaunchDarkly during development",
   "keywords": [
     "launchdarkly",
