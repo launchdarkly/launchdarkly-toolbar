@@ -5,7 +5,7 @@ import '@launchdarkly/toolbar/css';
 import './App.css';
 
 function App() {
-  const [position, setPosition] = useState<'left' | 'right'>('right');
+  const [position, setPosition] = useState<'left' | 'right'>('left');
   const [devServerUrl, setDevServerUrl] = useState('http://localhost:8765');
   const [projectKey, setProjectKey] = useState('');
 
