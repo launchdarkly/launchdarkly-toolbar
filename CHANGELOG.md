@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.0](https://github.com/launchdarkly/launchdarkly-toolbar/compare/toolbar-v0.1.1...toolbar-v0.2.0) (2025-07-31)
+
+
+### Features
+
+* Update initial position state to 'left' in App component ([#12](https://github.com/launchdarkly/launchdarkly-toolbar/issues/12)) ([b058e7d](https://github.com/launchdarkly/launchdarkly-toolbar/commit/b058e7dc1a0ef85e4ced04f790eb98e436f66f34))
+
 ## [0.1.1](https://github.com/launchdarkly/launchdarkly-toolbar/compare/toolbar-v0.1.0...toolbar-v0.1.1) (2025-07-31)
 
 
