@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.0](https://github.com/launchdarkly/launchdarkly-toolbar/compare/toolbar-v0.2.0...toolbar-v0.3.0) (2025-07-31)
+
+
+### Features
+
+* update publish commands to use "pnpm release" instead ([#14](https://github.com/launchdarkly/launchdarkly-toolbar/issues/14)) ([478d108](https://github.com/launchdarkly/launchdarkly-toolbar/commit/478d108261788a12c2e392d4a0072a7b318f63ae))
+
 ## [0.2.0](https://github.com/launchdarkly/launchdarkly-toolbar/compare/toolbar-v0.1.1...toolbar-v0.2.0) (2025-07-31)
 
 
