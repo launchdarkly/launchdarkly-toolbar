@@ -42,7 +42,7 @@ runs:
       run: echo "version=$(pnpm list @playwright/test --depth=0 --json | jq -r '.[] | .dependencies["@playwright/test"].version')" >> $GITHUB_OUTPUT
 
     - name: Cache Playwright Browsers
-      uses: actions/cache@0c45773b623bea8c8e75f6c82b208c3cf94ea4f9 # v4.0.2
+      uses: actions/cache@1bd1e32a3bdc45362d1e726936510720a7c30a57 # v4.2.0
       id: playwright-cache
       with:
         path: ~/.cache/ms-playwright
@@ -56,7 +56,7 @@ runs:
       run: pnpm exec playwright install --with-deps chromium
 
     - name: Cache Storybook Build
-      uses: actions/cache@0c45773b623bea8c8e75f6c82b208c3cf94ea4f9 # v4.0.2
+      uses: actions/cache@1bd1e32a3bdc45362d1e726936510720a7c30a57 # v4.2.0
       id: storybook-cache
       with:
         path: storybook-static
