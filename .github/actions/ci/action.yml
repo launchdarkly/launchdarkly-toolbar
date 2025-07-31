@@ -77,4 +77,21 @@ runs:
 
     - name: Run Playwright Tests
       shell: bash
+      id: playwright
+      continue-on-error: true
       run: pnpm test:e2e
+
+    - name: Upload Playwright Artifacts
+      uses: actions/upload-artifact@b4b15b8c7c6ac21ea08fcf65892d2ee8f75cf882 # v4.4.3
+      if: always()
+      with:
+        name: playwright-artifacts-${{ runner.os }}
+        path: |
+          e2e/test-results/
+          e2e/playwright-report/
+        retention-days: 7
+
+    - name: Fail CI if Playwright Tests Failed
+      shell: bash
+      if: steps.playwright.conclusion == 'failure'
+      run: exit 1
