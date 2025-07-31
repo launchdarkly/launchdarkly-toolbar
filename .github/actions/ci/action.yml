@@ -36,13 +36,38 @@ runs:
       shell: bash
       run: pnpm test
 
-    - name: Build Storybook
+    - name: Get Playwright Version
       shell: bash
-      run: pnpm build:storybook
+      id: playwright-version
+      run: echo "version=$(pnpm list @playwright/test --depth=0 --json | jq -r '.[] | .dependencies["@playwright/test"].version')" >> $GITHUB_OUTPUT
+
+    - name: Cache Playwright Browsers
+      uses: actions/cache@0c45773b623bea8c8e75f6c82b208c3cf94ea4f9 # v4.0.2
+      id: playwright-cache
+      with:
+        path: ~/.cache/ms-playwright
+        key: playwright-${{ runner.os }}-${{ steps.playwright-version.outputs.version }}
+        restore-keys: |
+          playwright-${{ runner.os }}-
 
     - name: Install Playwright Browsers
       shell: bash
+      if: steps.playwright-cache.outputs.cache-hit != 'true'
       run: pnpm exec playwright install --with-deps chromium
+
+    - name: Cache Storybook Build
+      uses: actions/cache@0c45773b623bea8c8e75f6c82b208c3cf94ea4f9 # v4.0.2
+      id: storybook-cache
+      with:
+        path: storybook-static
+        key: storybook-${{ runner.os }}-${{ hashFiles('src/**/*', 'stories/**/*', '.storybook/**/*', 'package.json', 'pnpm-lock.yaml') }}
+        restore-keys: |
+          storybook-${{ runner.os }}-
+
+    - name: Build Storybook
+      shell: bash
+      if: steps.storybook-cache.outputs.cache-hit != 'true'
+      run: pnpm build:storybook
 
     - name: Run Playwright Tests
       shell: bash
