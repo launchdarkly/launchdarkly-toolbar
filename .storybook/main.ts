@@ -6,7 +6,19 @@ import type { StorybookConfig } from 'storybook-react-rsbuild';
  * It is needed in projects that use Yarn PnP or are set up within a monorepo.
  */
 function getAbsolutePath(value: string): any {
-  return dirname(require.resolve(join(value, 'package.json')));
+  // Check if we're in a CommonJS environment
+  if (typeof require !== 'undefined') {
+    try {
+      return dirname(require.resolve(join(value, 'package.json')));
+    } catch {
+      // If require.resolve fails, fall back to returning the package name
+      return value;
+    }
+  }
+
+  // For ES modules or when require is not available, return the package name
+  // Storybook will handle resolution in most cases
+  return value;
 }
 
 const config: StorybookConfig = {

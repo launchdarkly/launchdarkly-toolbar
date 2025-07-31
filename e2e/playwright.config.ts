@@ -14,14 +14,16 @@ export default defineConfig({
   /* Opt out of parallel tests on CI. */
   workers: process.env.CI ? 1 : undefined,
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
-  reporter: 'list',
+  reporter: process.env.CI
+    ? [['list'], ['html', { outputFolder: 'playwright-report', open: 'never' }], ['github']]
+    : [['list'], ['html', { outputFolder: 'playwright-report', open: 'never' }]],
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
   use: {
     /* Base URL to use in actions like `await page.goto('/')`. */
     baseURL: 'http://localhost:6006',
 
-    /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
-    trace: 'on-first-retry',
+    /* Collect trace when retrying the failed test or on CI for all tests. */
+    trace: process.env.CI ? 'retain-on-failure' : 'on-first-retry',
 
     /* Record video for all tests */
     video: 'retain-on-failure',
@@ -43,7 +45,7 @@ export default defineConfig({
 
   /* Run your local dev server before starting the tests */
   webServer: {
-    command: 'pnpm storybook',
+    command: process.env.CI ? 'pnpm exec http-server storybook-static -p 6006 -s' : 'pnpm storybook',
     url: 'http://localhost:6006',
     reuseExistingServer: !process.env.CI,
     timeout: 120 * 1000,

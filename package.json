@@ -75,6 +75,7 @@
     "@types/node": "^24.0.4",
     "@types/react": "^19.1.6",
     "@vanilla-extract/vite-plugin": "^5.1.1",
+    "http-server": "^14.1.1",
     "jsdom": "^26.1.0",
     "oxlint": "^1.0.0",
     "prettier": "^3.5.3",

@@ -35,3 +35,63 @@ runs:
     - name: Run Unit Tests
       shell: bash
       run: pnpm test
+
+    - name: Get Playwright Version
+      shell: bash
+      id: playwright-version
+      run: |
+        VERSION=$(pnpm list @playwright/test --depth=0 | grep '@playwright/test' | awk '{print $2}')
+        if [ -z "$VERSION" ]; then
+          VERSION=$(node -e "console.log(require('./node_modules/@playwright/test/package.json').version)")
+        fi
+        echo "version=$VERSION" >> $GITHUB_OUTPUT
+        echo "Detected Playwright version: $VERSION"
+
+    - name: Cache Playwright Browsers
+      uses: actions/cache@1bd1e32a3bdc45362d1e726936510720a7c30a57 # v4.2.0
+      id: playwright-cache
+      with:
+        path: ~/.cache/ms-playwright
+        key: playwright-${{ runner.os }}-${{ steps.playwright-version.outputs.version }}
+        restore-keys: |
+          playwright-${{ runner.os }}-
+
+    - name: Install Playwright Browsers
+      shell: bash
+      if: steps.playwright-cache.outputs.cache-hit != 'true'
+      run: pnpm exec playwright install --with-deps chromium
+
+    - name: Cache Storybook Build
+      uses: actions/cache@1bd1e32a3bdc45362d1e726936510720a7c30a57 # v4.2.0
+      id: storybook-cache
+      with:
+        path: storybook-static
+        key: storybook-${{ runner.os }}-${{ hashFiles('src/**/*', 'stories/**/*', '.storybook/**/*', 'package.json', 'pnpm-lock.yaml') }}
+        restore-keys: |
+          storybook-${{ runner.os }}-
+
+    - name: Build Storybook
+      shell: bash
+      if: steps.storybook-cache.outputs.cache-hit != 'true'
+      run: pnpm build:storybook
+
+    - name: Run Playwright Tests
+      shell: bash
+      id: playwright
+      continue-on-error: true
+      run: pnpm test:e2e
+
+    - name: Upload Playwright Artifacts
+      uses: actions/upload-artifact@b4b15b8c7c6ac21ea08fcf65892d2ee8f75cf882 # v4.4.3
+      if: always()
+      with:
+        name: playwright-artifacts-${{ runner.os }}
+        path: |
+          e2e/test-results/
+          e2e/playwright-report/
+        retention-days: 7
+
+    - name: Fail CI if Playwright Tests Failed
+      shell: bash
+      if: steps.playwright.conclusion == 'failure'
+      run: exit 1
