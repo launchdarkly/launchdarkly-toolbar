@@ -2,7 +2,7 @@ import { Dispatch, SetStateAction } from 'react';
 import { motion } from 'motion/react';
 import { Group, Input, SearchField } from '@launchpad-ui/components';
 import { IconButton } from '../../components/IconButton';
-import { CancelCircleIcon, SearchIcon } from '../../components/icons';
+import { CancelCircleIcon } from '../../components/icons';
 
 import * as styles from '../Header.css';
 
