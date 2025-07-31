@@ -35,3 +35,15 @@ runs:
     - name: Run Unit Tests
       shell: bash
       run: pnpm test
+
+    - name: Build Storybook
+      shell: bash
+      run: pnpm build:storybook
+
+    - name: Install Playwright Browsers
+      shell: bash
+      run: pnpm exec playwright install --with-deps chromium
+
+    - name: Run Playwright Tests
+      shell: bash
+      run: pnpm test:e2e

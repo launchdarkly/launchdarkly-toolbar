@@ -5,7 +5,7 @@ const TEST_PROJECT_KEY = 'test-project';
 test.describe('LaunchDarkly Toolbar', () => {
   test.beforeEach(async ({ page }: { page: Page }) => {
     // Navigate to the Storybook story for the LaunchDarkly Toolbar
-    await page.goto('http://localhost:6006/?path=/story/ui-launchdarklytoolbar--default');
+    await page.goto('/?path=/story/testing-toolbar--default');
 
     // Wait for Storybook to load
     await page.waitForSelector('iframe[title="storybook-preview-iframe"]');
@@ -83,7 +83,7 @@ test.describe('LaunchDarkly Toolbar', () => {
     await expect(iframe.getByRole('tab')).not.toBeVisible();
 
     // User hovers over the toolbar to discover functionality
-    const toolbarContainer = iframe.locator('[class*="toolbarContainer"]').first();
+    const toolbarContainer = iframe.getByTestId('launchdarkly-toolbar');
     await toolbarContainer.hover();
 
     // Toolbar expands showing available tabs
@@ -99,7 +99,7 @@ test.describe('LaunchDarkly Toolbar', () => {
     const iframe = page.frameLocator('iframe[title="storybook-preview-iframe"]');
 
     // Expand toolbar
-    const toolbarContainer = iframe.locator('[class*="toolbarContainer"]').first();
+    const toolbarContainer = iframe.getByTestId('launchdarkly-toolbar').first();
     await toolbarContainer.hover();
 
     // Navigate to Flags tab
@@ -123,7 +123,7 @@ test.describe('LaunchDarkly Toolbar', () => {
     const iframe = page.frameLocator('iframe[title="storybook-preview-iframe"]');
 
     // Expand toolbar and start with Flags
-    const toolbarContainer = iframe.locator('[class*="toolbarContainer"]').first();
+    const toolbarContainer = iframe.getByTestId('launchdarkly-toolbar').first();
     await toolbarContainer.hover();
     await iframe.getByRole('tab', { name: 'Flags' }).click();
 
@@ -142,7 +142,7 @@ test.describe('LaunchDarkly Toolbar', () => {
     const iframe = page.frameLocator('iframe[title="storybook-preview-iframe"]');
 
     // Expand toolbar and go to Flags tab
-    const toolbarContainer = iframe.locator('[class*="toolbarContainer"]').first();
+    const toolbarContainer = iframe.getByTestId('launchdarkly-toolbar').first();
     await toolbarContainer.hover();
     await iframe.getByRole('tab', { name: 'Flags' }).click();
 
@@ -162,7 +162,7 @@ test.describe('LaunchDarkly Toolbar', () => {
     const iframe = page.frameLocator('iframe[title="storybook-preview-iframe"]');
 
     // Expand toolbar
-    const toolbarContainer = iframe.locator('[class*="toolbarContainer"]').first();
+    const toolbarContainer = iframe.getByTestId('launchdarkly-toolbar').first();
     await toolbarContainer.hover();
     await iframe.getByRole('tab', { name: 'Flags' }).click();
 
@@ -182,7 +182,7 @@ test.describe('LaunchDarkly Toolbar', () => {
 
   test('should maintain proper tab states when switching', async ({ page }: { page: Page }) => {
     const iframe = page.frameLocator('iframe[title="storybook-preview-iframe"]');
-    const toolbarContainer = iframe.locator('[class*="toolbarContainer"]').first();
+    const toolbarContainer = iframe.getByTestId('launchdarkly-toolbar').first();
 
     // Expand and select Settings tab (Events tab temporarily disabled)
     await toolbarContainer.hover();
@@ -199,7 +199,7 @@ test.describe('LaunchDarkly Toolbar', () => {
 
   test('should be responsive to mouse movement patterns', async ({ page }: { page: Page }) => {
     const iframe = page.frameLocator('iframe[title="storybook-preview-iframe"]');
-    const toolbarContainer = iframe.locator('[class*="toolbarContainer"]').first();
+    const toolbarContainer = iframe.getByTestId('launchdarkly-toolbar').first();
 
     // Hover to expand
     await toolbarContainer.hover();
