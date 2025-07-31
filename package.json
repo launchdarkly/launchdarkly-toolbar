@@ -46,7 +46,7 @@
     "build": "rslib build",
     "build:storybook": "storybook build",
     "dev": "rslib build --watch",
-    "publish": "pnpm build && npm publish",
+    "release": "pnpm build && npm publish",
     "demo": "pnpm build && pnpm --filter launchdarkly-toolbar-demo dev",
     "demo:dev": "pnpm --filter launchdarkly-toolbar-demo dev",
     "demo:build": "pnpm build && pnpm --filter launchdarkly-toolbar-demo build",
