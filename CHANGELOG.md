@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.1](https://github.com/launchdarkly/launchdarkly-toolbar/compare/toolbar-v0.1.0...toolbar-v0.1.1) (2025-07-31)
+
+
+### Bug Fixes
+
+* Remove unnecessary SearchIcon import in SearchSection.tsx ([#8](https://github.com/launchdarkly/launchdarkly-toolbar/issues/8)) ([923f2b4](https://github.com/launchdarkly/launchdarkly-toolbar/commit/923f2b4e23eb1abf018b3c7d1ba421fe1ffea02a))
+
 ## [0.1.0](https://github.com/launchdarkly/launchdarkly-toolbar/compare/toolbar-v1.0.1...toolbar-v0.1.0) (2025-07-31)
 
 
