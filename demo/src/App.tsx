@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { LaunchDarklyToolbar } from '@launchdarkly/toolbar';
-import '@launchdarkly/toolbar/css';
 
 import './App.css';
 

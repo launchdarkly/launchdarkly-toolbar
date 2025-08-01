@@ -18,22 +18,15 @@ export default defineConfig({
     },
   ],
   output: {
+    injectStyles: true,
     target: 'web',
     distPath: {
       root: 'dist',
       js: 'js',
-      css: 'css',
     },
     filename: {
       js: '[name].js',
-      css: '[name].css',
     },
-    copy: [
-      {
-        from: './src/css.d.ts',
-        to: './css.d.ts',
-      },
-    ],
   },
   plugins: [pluginReact()],
   tools: {
