@@ -39,7 +39,6 @@
   ],
   "scripts": {
     "build": "rslib build && node scripts/fix-base-url.cjs",
-    "build:clean": "rslib build",
     "build:storybook": "storybook build",
     "dev": "rslib build --watch",
     "release": "pnpm build && npm publish",
