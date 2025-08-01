@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.4.0](https://github.com/launchdarkly/launchdarkly-toolbar/compare/toolbar-v0.2.0...toolbar-v0.4.0) (2025-08-01)
+
+
+### Features
+
+* Update release version to 0.4.0 in config file ([39c537c](https://github.com/launchdarkly/launchdarkly-toolbar/commit/39c537c8bdd8ead5bb0b75c5243306965cd46257))
+* Update release version to 0.4.0 in config file ([#24](https://github.com/launchdarkly/launchdarkly-toolbar/issues/24)) ([39c537c](https://github.com/launchdarkly/launchdarkly-toolbar/commit/39c537c8bdd8ead5bb0b75c5243306965cd46257))
+
 ## [0.2.0](https://github.com/launchdarkly/launchdarkly-toolbar/compare/toolbar-v0.1.0...toolbar-v0.2.0) (2025-08-01)
 
 
