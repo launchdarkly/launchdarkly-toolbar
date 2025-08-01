@@ -1,5 +1,24 @@
 #!/usr/bin/env node
 
+/**
+ * Post-build script to fix import.meta.url base URL issue in rslib output
+ *
+ * PROBLEM:
+ * rslib/webpack generates this line in the built bundle:
+ *   __webpack_require__.b = new URL("../", import.meta.url);
+ *
+ * This causes module resolution errors in Storybook because webpack tries to
+ * statically resolve "../" as a module dependency during build time, not runtime.
+ *
+ * SOLUTION:
+ * Comment out the problematic line since our library:
+ * - Uses injectStyles: true (no separate CSS files to load)
+ * - Is fully bundled (no code splitting/dynamic chunks)
+ * - Doesn't need webpack's automatic base URL detection
+ *
+ * This script runs automatically after `rslib build` via package.json scripts.
+ */
+
 const fs = require('fs');
 const path = require('path');
 
