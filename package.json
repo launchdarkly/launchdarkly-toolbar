@@ -50,8 +50,7 @@
     "test": "vitest run",
     "test:e2e": "playwright test --config=./e2e/playwright.config.ts",
     "test:e2e:ui": "playwright test --ui --config=./e2e/playwright.config.ts",
-    "lint": "oxlint",
-    "_comment": "The 'build' script includes a post-build fix (scripts/fix-base-url.cjs) that comments out '__webpack_require__.b = new URL(\"../\", import.meta.url);' in the generated bundle. This line causes module resolution errors in Storybook because webpack tries to statically resolve '../' as a module dependency. Since our library uses injectStyles:true and doesn't need dynamic chunk loading, this base URL detection is unnecessary and safe to disable."
+    "lint": "oxlint"
   },
   "devDependencies": {
     "@playwright/test": "^1.53.1",
