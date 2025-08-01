@@ -103,10 +103,10 @@ importers:
         specifier: ^9.0.5
         version: 9.0.12(@testing-library/dom@10.4.0)(prettier@3.6.0)
       storybook-addon-rslib:
-        specifier: ^2.0.2
+        specifier: ^2.0.0
         version: 2.0.2(@rsbuild/core@1.4.12)(@rslib/core@0.11.1(typescript@5.8.3))(storybook-builder-rsbuild@2.0.2(@rsbuild/core@1.4.12)(@rspack/core@1.4.11(@swc/helpers@0.5.17))(@types/react@19.1.8)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)(storybook@9.0.12(@testing-library/dom@10.4.0)(prettier@3.6.0))(typescript@5.8.3))(typescript@5.8.3)
       storybook-react-rsbuild:
-        specifier: ^2.0.2
+        specifier: ^2.0.0
         version: 2.0.2(@rsbuild/core@1.4.12)(@rspack/core@1.4.11(@swc/helpers@0.5.17))(@types/react@19.1.8)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)(rollup@4.44.0)(storybook@9.0.12(@testing-library/dom@10.4.0)(prettier@3.6.0))(typescript@5.8.3)(webpack@5.99.9(esbuild@0.25.5))
       typescript:
         specifier: ^5.8.3
