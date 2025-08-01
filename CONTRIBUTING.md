@@ -157,8 +157,9 @@ pnpm build
 This creates the `dist/` folder with:
 
 - **JavaScript bundle** (`dist/js/index.js`)
-- **CSS bundle** (`dist/css/index.css`)
-- **TypeScript declarations** (`dist/index.d.ts`, `dist/css.d.ts`)
+- **CSS bundle** (`dist/css/index.css`) - Generated from Vanilla Extract
+- **TypeScript declarations** (`dist/index.d.ts`)
+- **Static assets** (`dist/static/`) - Fonts and other assets
 
 ## Publishing
 
@@ -184,8 +185,8 @@ This command:
 
 ### Styling
 
-- **CSS Modules** for component-specific styles
-- **BEM-like naming** for CSS classes
+- **Vanilla Extract** for component-specific styles (zero-runtime CSS-in-JS)
+- **Type-safe styling** with TypeScript integration
 - **CSS custom properties** for theming
 - **Responsive design** considerations
 
