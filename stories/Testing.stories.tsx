@@ -1,7 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react';
 
 import { LaunchDarklyToolbar } from '@launchdarkly/toolbar';
-import '@launchdarkly/toolbar/css';
 
 const meta: Meta<typeof LaunchDarklyToolbar> = {
   title: 'Testing/Toolbar',
