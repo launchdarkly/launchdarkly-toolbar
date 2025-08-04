@@ -1,0 +1,12 @@
+export declare const toolbarContainer: string;
+export declare const positionRight: string;
+export declare const positionLeft: string;
+export declare const toolbarCircle: string;
+export declare const toolbarExpanded: string;
+export declare const circleContent: string;
+export declare const circleLogo: string;
+export declare const toolbarContent: string;
+export declare const contentArea: string;
+export declare const scrollableContent: string;
+export declare const tabsContainer: string;
+export declare const tabsContainerChild: string;

@@ -1,0 +1,11 @@
+export declare const settingsGroup: string;
+export declare const settingsGroupTitle: string;
+export declare const settingInfo: string;
+export declare const settingDetails: string;
+export declare const settingName: string;
+export declare const settingValue: string;
+export declare const statusIndicator: string;
+export declare const statusText: string;
+export declare const icon: string;
+export declare const select: string;
+export declare const selectedValue: string;

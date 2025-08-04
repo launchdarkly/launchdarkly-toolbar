@@ -1,0 +1,11 @@
+export declare const switch_: string;
+export declare const switchContainer: string;
+export declare const customVariantContainer: string;
+export declare const currentValueGroup: string;
+export declare const customVariantFieldGroup: string;
+export declare const currentValue: string;
+export declare const customVariantField: string;
+export declare const currentValueText: string;
+export declare const select: string;
+export declare const selectedValue: string;
+export declare const icon: string;
