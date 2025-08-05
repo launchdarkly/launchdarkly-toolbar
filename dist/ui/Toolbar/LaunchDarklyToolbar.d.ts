@@ -6,4 +6,4 @@ export interface LaunchDarklyToolbarProps extends LdToolbarProps {
     devServerUrl?: string;
     projectKey?: string;
 }
-export declare function LaunchDarklyToolbar(props: LaunchDarklyToolbarProps): import("react/jsx-runtime").JSX.Element;
+export declare function LaunchDarklyToolbar(props: LaunchDarklyToolbarProps): import("react/jsx-runtime").JSX.Element | null;

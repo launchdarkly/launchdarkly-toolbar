@@ -4027,6 +4027,52 @@ function useToolbarAnimations(props) {
         handleAnimationComplete
     };
 }
+const useToolbarVisibility_STORAGE_KEY = 'ld-toolbar-disabled';
+function useToolbarVisibility() {
+    const [isDisabled, setIsDisabled] = useState(()=>{
+        if ('undefined' == typeof window) return true;
+        return 'true' === localStorage.getItem(useToolbarVisibility_STORAGE_KEY);
+    });
+    useEffect(()=>{
+        if ('undefined' == typeof window) return;
+        const api = {
+            disable: ()=>{
+                localStorage.setItem(useToolbarVisibility_STORAGE_KEY, 'true');
+                setIsDisabled(true);
+                console.log("\u2705 LaunchDarkly toolbar disabled.");
+            },
+            enable: ()=>{
+                localStorage.removeItem(useToolbarVisibility_STORAGE_KEY);
+                setIsDisabled(false);
+                console.log("\u2705 LaunchDarkly toolbar enabled.");
+            },
+            status: ()=>{
+                const disabled = 'true' === localStorage.getItem(useToolbarVisibility_STORAGE_KEY);
+                console.log(`LaunchDarkly toolbar is currently: ${disabled ? "\u274C DISABLED" : "\u2705 ENABLED"}`);
+                return !disabled;
+            },
+            toggle: ()=>{
+                const currentlyDisabled = 'true' === localStorage.getItem(useToolbarVisibility_STORAGE_KEY);
+                if (currentlyDisabled) api.enable();
+                else api.disable();
+            }
+        };
+        window.ldToolbar = api;
+        console.log("\uD83D\uDD27 LaunchDarkly toolbar controls available:\n   window.ldToolbar.enable() - Enable toolbar\n   window.ldToolbar.disable() - Disable toolbar\n   window.ldToolbar.toggle() - Toggle toolbar\n   window.ldToolbar.status() - Check current status");
+        return ()=>{
+            delete window.ldToolbar;
+        };
+    }, []);
+    useEffect(()=>{
+        if ('undefined' == typeof window) return;
+        const handleStorageChange = (event)=>{
+            if (event.key === useToolbarVisibility_STORAGE_KEY) setIsDisabled('true' === event.newValue);
+        };
+        window.addEventListener('storage', handleStorageChange);
+        return ()=>window.removeEventListener('storage', handleStorageChange);
+    }, []);
+    return !isDisabled;
+}
 function LdToolbar(props) {
     const { position = 'right' } = props;
     const { searchTerm } = useSearchContext();
@@ -4073,6 +4119,8 @@ function LdToolbar(props) {
 }
 function LaunchDarklyToolbar(props) {
     const { projectKey, position, devServerUrl = 'http://localhost:8765' } = props;
+    const isVisible = useToolbarVisibility();
+    if (!isVisible) return null;
     return /*#__PURE__*/ jsx(LaunchDarklyToolbarProvider, {
         config: {
             projectKey,
