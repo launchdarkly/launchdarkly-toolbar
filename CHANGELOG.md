@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.5.0](https://github.com/launchdarkly/launchdarkly-toolbar/compare/toolbar-v0.4.0...toolbar-v0.5.0) (2025-08-05)
+
+
+### Features
+
+* Add useToolbarVisibility hook for toolbar visibility control ([#27](https://github.com/launchdarkly/launchdarkly-toolbar/issues/27)) ([52a7d8a](https://github.com/launchdarkly/launchdarkly-toolbar/commit/52a7d8a18a56666cdf883cee4706eaea95e1e245))
+
 ## [0.4.0](https://github.com/launchdarkly/launchdarkly-toolbar/compare/toolbar-v0.2.0...toolbar-v0.4.0) (2025-08-01)
 
 
