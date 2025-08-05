@@ -2,7 +2,7 @@ import { AnimatePresence, motion } from 'motion/react';
 
 import { SearchProvider, useSearchContext } from './context/SearchProvider';
 import { CircleLogo, ExpandedToolbarContent } from './components';
-import { useToolbarState, useToolbarAnimations } from './hooks';
+import { useToolbarState, useToolbarAnimations, useToolbarVisibility } from './hooks';
 
 import * as styles from './LaunchDarklyToolbar.css';
 import { LaunchDarklyToolbarProvider } from './context/LaunchDarklyToolbarProvider';
@@ -82,6 +82,12 @@ export interface LaunchDarklyToolbarProps extends LdToolbarProps {
 
 export function LaunchDarklyToolbar(props: LaunchDarklyToolbarProps) {
   const { projectKey, position, devServerUrl = 'http://localhost:8765' } = props;
+  const isVisible = useToolbarVisibility();
+
+  // Don't render anything if visibility check fails
+  if (!isVisible) {
+    return null;
+  }
 
   return (
     <LaunchDarklyToolbarProvider
