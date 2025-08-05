@@ -50,50 +50,8 @@ pnpm demo
 
 ## LaunchDarkly Dev Server Setup
 
-The LaunchDarkly Toolbar requires a LaunchDarkly CLI dev server to be running. Follow these steps to set it up:
+The LaunchDarkly Toolbar requires a LaunchDarkly CLI dev server to be running. For detailed setup instructions, see [DEV_SERVER_SETUP.md](docs/DEV_SERVER_SETUP.md).
 
-### 1. Install the LaunchDarkly CLI
-
-Follow the official installation instructions at: [LaunchDarkly CLI installation guide](https://launchdarkly.com/docs/home/getting-started/ldcli#installation)
-
-### 2. Authenticate with LaunchDarkly
-
-Follow the official authentication instructions at: [LaunchDarkly CLI authentication guide](https://launchdarkly.com/docs/home/getting-started/ldcli#authentication)
-
-### 3. Configure the CLI
-
-Set the required configuration for your LaunchDarkly instance:
-
-```bash
-ldcli config --set dev-stream-uri https://stream.ld.catamorphic.com
-ldcli config --set base-uri https://app.ld.catamorphic.com
-```
-
-### 4. Add Projects to Dev Server
-
-Add the projects you want to work with:
-
-```bash
-# Add default project
-ldcli dev-server add-project --project default --source catamorphic
-
-# Add your specific project
-ldcli dev-server add-project --project {{project-name}} --source production
-```
-
-**Note:** Replace `{{project-name}}` with your actual LaunchDarkly project key.
-
-### 5. Start the Dev Server
-
-Start the dev server with CORS enabled:
-
-```bash
-ldcli dev-server start --project {{project-name}} --cors-enabled true
-```
-
-**Note:** Replace `{{project-name}}` with your actual LaunchDarkly project key.
-
-The dev server will start on `http://localhost:8765` by default. The toolbar will automatically connect to this URL.
 
 ## Development Workflow
 
