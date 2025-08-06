@@ -79,7 +79,7 @@ runs:
       shell: bash
       id: playwright
       continue-on-error: true
-      run: pnpm test:e2e
+      run: pnpm test:e2e:ci
 
     - name: Upload Playwright Artifacts
       uses: actions/upload-artifact@b4b15b8c7c6ac21ea08fcf65892d2ee8f75cf882 # v4.4.3

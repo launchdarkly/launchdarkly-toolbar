@@ -48,8 +48,10 @@
     "format": "prettier --write .",
     "storybook": "storybook dev -p 6006",
     "test": "vitest run",
-    "test:e2e": "playwright test --config=./e2e/playwright.config.ts",
-    "test:e2e:ui": "playwright test --ui --config=./e2e/playwright.config.ts",
+    "test:e2e:ci": "TEST_ENV=ci playwright test --config=./e2e/playwright.config.ts",
+    "test:e2e:local": "TEST_ENV=local playwright test --config=./e2e/playwright.config.ts",
+    "test:e2e:local:ui": "TEST_ENV=local playwright test --ui --config=./e2e/playwright.config.ts",
+    "test:e2e:ci:ui": "TEST_ENV=ci playwright test --ui --config=./e2e/playwright.config.ts",
     "lint": "oxlint"
   },
   "devDependencies": {
