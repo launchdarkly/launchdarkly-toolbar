@@ -176,22 +176,6 @@ const isEnabled = window.ldToolbar.status();
 window.ldToolbar.toggle();
 ```
 
-### Integration with Build Tools
-
-You can also integrate these controls into your development workflow:
-
-```javascript
-// Hide toolbar during E2E tests
-if (window.Cypress || window.playwright) {
-  window.ldToolbar?.disable();
-}
-
-// Show toolbar only for specific team members
-if (process.env.REACT_APP_SHOW_LD_TOOLBAR === 'true') {
-  window.ldToolbar?.enable();
-}
-```
-
 ## Development Server Setup
 
 The toolbar requires a LaunchDarkly CLI dev-server to be running with CORS enabled.
