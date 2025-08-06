@@ -50,7 +50,7 @@ export const LaunchDarklyToolbarProvider: React.FC<LaunchDarklyToolbarProviderPr
   });
 
   const devServerClient = useMemo(
-    () => new DevServerClient(config.devServerUrl || 'http://localhost:8765', config.projectKey),
+    () => new DevServerClient(config.devServerUrl, config.projectKey),
     [config.devServerUrl, config.projectKey],
   );
 
@@ -72,8 +72,8 @@ export const LaunchDarklyToolbarProvider: React.FC<LaunchDarklyToolbarProviderPr
     if (savedProjectKey && availableProjects.includes(savedProjectKey)) {
       projectKeyToUse = savedProjectKey;
     } else if (config.projectKey) {
-          // Use provided project key
-          if (!availableProjects.includes(config.projectKey)) {
+      // Use provided project key
+      if (!availableProjects.includes(config.projectKey)) {
         throw new Error(
           `Project "${config.projectKey}" not found. Available projects: ${availableProjects.join(', ')}`,
         );
@@ -170,14 +170,23 @@ export const LaunchDarklyToolbarProvider: React.FC<LaunchDarklyToolbarProviderPr
     return unsubscribe;
   }, [flagStateManager, toolbarState.connectionStatus]);
 
-  // Setup polling if configured
+  // Setup polling - includes automatic recovery from connection failures
   useEffect(() => {
-    if (!config.pollIntervalInMs || toolbarState.connectionStatus !== 'connected') {
-      return;
-    }
+    const pollInterval = config.pollIntervalInMs;
 
-    const checkConnection = async () => {
+    const checkConnectionAndRecover = async () => {
       try {
+        // If no project key is set (initial connection failed), attempt recovery
+        if (!devServerClient.getProjectKey()) {
+          const { availableProjects, projectKeyToUse } = await initializeProjectSelection();
+
+          setToolbarState((prev) => ({
+            ...prev,
+            availableProjects,
+            currentProjectKey: projectKeyToUse,
+          }));
+        }
+
         const projectData = await devServerClient.getProjectData();
         const flags = await flagStateManager.getEnhancedFlags();
         setToolbarState((prev) => ({
@@ -198,9 +207,9 @@ export const LaunchDarklyToolbarProvider: React.FC<LaunchDarklyToolbarProviderPr
       }
     };
 
-    const interval = setInterval(checkConnection, config.pollIntervalInMs);
+    const interval = setInterval(checkConnectionAndRecover, pollInterval);
     return () => clearInterval(interval);
-  }, [devServerClient, flagStateManager, config.pollIntervalInMs, toolbarState.connectionStatus]);
+  }, [devServerClient, flagStateManager, config.pollIntervalInMs, initializeProjectSelection]);
 
   const setOverride = useCallback(
     async (flagKey: string, value: any) => {
@@ -258,19 +267,12 @@ export const LaunchDarklyToolbarProvider: React.FC<LaunchDarklyToolbarProviderPr
 
   const refresh = useCallback(async () => {
     try {
-      setToolbarState((prev) => ({ ...prev, isLoading: true }));
-      
-      // If no project key is set (e.g., initial connection failed), re-run project initialization
-      if (!devServerClient.getProjectKey()) {
-        const { availableProjects, projectKeyToUse } = await initializeProjectSelection();
-
-        setToolbarState((prev) => ({
-          ...prev,
-          availableProjects,
-          currentProjectKey: projectKeyToUse,
-        }));
+      // If no project is selected, or the connection is not established, do not refresh
+      // This helps prevent unhelpful errors from being shown to the user
+      if (!toolbarState.currentProjectKey || toolbarState.connectionStatus !== 'connected') {
+        return;
       }
-
+      setToolbarState((prev) => ({ ...prev, isLoading: true }));
       const projectData = await devServerClient.getProjectData();
       const flags = await flagStateManager.getEnhancedFlags();
       setToolbarState((prev) => ({
@@ -291,7 +293,7 @@ export const LaunchDarklyToolbarProvider: React.FC<LaunchDarklyToolbarProviderPr
         isLoading: false,
       }));
     }
-  }, [flagStateManager, devServerClient, initializeProjectSelection]);
+  }, [flagStateManager, devServerClient, toolbarState.currentProjectKey, toolbarState.connectionStatus]);
 
   const switchProject = useCallback(
     async (projectKey: string) => {

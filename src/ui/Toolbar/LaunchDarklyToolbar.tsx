@@ -78,10 +78,11 @@ export function LdToolbar(props: LdToolbarProps) {
 export interface LaunchDarklyToolbarProps extends LdToolbarProps {
   devServerUrl?: string; // Optional - will default to http://localhost:8765
   projectKey?: string; // Optional - will auto-detect first available project if not provided
+  pollIntervalInMs?: number; // Optional - will default to 5000ms
 }
 
 export function LaunchDarklyToolbar(props: LaunchDarklyToolbarProps) {
-  const { projectKey, position, devServerUrl = 'http://localhost:8765' } = props;
+  const { projectKey, position, devServerUrl = 'http://localhost:8765', pollIntervalInMs = 5000 } = props;
   const isVisible = useToolbarVisibility();
 
   // Don't render anything if visibility check fails
@@ -94,7 +95,7 @@ export function LaunchDarklyToolbar(props: LaunchDarklyToolbarProps) {
       config={{
         projectKey,
         devServerUrl,
-        pollIntervalInMs: 5000,
+        pollIntervalInMs,
       }}
     >
       <SearchProvider>
