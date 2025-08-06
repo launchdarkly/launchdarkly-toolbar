@@ -5,6 +5,7 @@ Thank you for your interest in contributing to the LaunchDarkly Toolbar! This gu
 ## Table of Contents
 
 - [Development Setup](#development-setup)
+- [LaunchDarkly Dev Server Setup](#launchdarkly-dev-server-setup)
 - [Development Workflow](#development-workflow)
 - [Running the Project](#running-the-project)
 - [Testing](#testing)
@@ -46,6 +47,11 @@ pnpm build
 pnpm test
 pnpm demo
 ```
+
+## LaunchDarkly Dev Server Setup
+
+The LaunchDarkly Toolbar requires a LaunchDarkly CLI dev server to be running. For detailed setup instructions, see [DEV_SERVER_SETUP.md](docs/DEV_SERVER_SETUP.md).
+
 
 ## Development Workflow
 
