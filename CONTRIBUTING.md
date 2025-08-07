@@ -52,7 +52,6 @@ pnpm demo
 
 The LaunchDarkly Toolbar requires a LaunchDarkly CLI dev server to be running. For detailed setup instructions, see [DEV_SERVER_SETUP.md](docs/DEV_SERVER_SETUP.md).
 
-
 ## Development Workflow
 
 ### Workspace Setup
@@ -156,7 +155,7 @@ pnpm test:e2e:local:ui
 ```
 
 **E2E test files location:** `e2e/tests/`
-**E2E config location:** `e2e/config/test-config.ts`
+**E2E config location:** `e2e/config/environment.ts`
 
 ### Writing Tests
 

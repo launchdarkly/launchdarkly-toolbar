@@ -1,4 +1,12 @@
-const envConfig = {
+type Environment = 'ci' | 'local';
+
+type EnvironmentConfig = {
+  [key in Environment]: {
+    storyPath: string;
+  };
+};
+
+const envConfig: EnvironmentConfig = {
   ci: {
     storyPath: '/?path=/story/testing-toolbar--default',
   },

@@ -1,5 +1,5 @@
 import { test, expect, type Page } from '@playwright/test';
-import { config } from '../config/test-config';
+import { config } from '../config/environment';
 
 const TEST_PROJECT_KEY = 'test-project';
 
