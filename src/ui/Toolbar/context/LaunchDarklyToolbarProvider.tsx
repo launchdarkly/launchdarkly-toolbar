@@ -50,50 +50,55 @@ export const LaunchDarklyToolbarProvider: React.FC<LaunchDarklyToolbarProviderPr
   });
 
   const devServerClient = useMemo(
-    () => new DevServerClient(config.devServerUrl || 'http://localhost:8765', config.projectKey),
+    () => new DevServerClient(config.devServerUrl, config.projectKey),
     [config.devServerUrl, config.projectKey],
   );
 
   const flagStateManager = useMemo(() => new FlagStateManager(devServerClient), [devServerClient]);
 
-  // Project auto-detection and initialization
+  const initializeProjectSelection = useCallback(async () => {
+    // Get available projects
+    const availableProjects = await devServerClient.getAvailableProjects();
+
+    if (availableProjects.length === 0) {
+      throw new Error('No projects found on dev server');
+    }
+
+    // Determine which project to use
+    let projectKeyToUse: string;
+
+    // First, check for saved project in localStorage
+    const savedProjectKey = localStorage.getItem(STORAGE_KEY);
+    if (savedProjectKey && availableProjects.includes(savedProjectKey)) {
+      projectKeyToUse = savedProjectKey;
+    } else if (config.projectKey) {
+      // Use provided project key
+      if (!availableProjects.includes(config.projectKey)) {
+        throw new Error(
+          `Project "${config.projectKey}" not found. Available projects: ${availableProjects.join(', ')}`,
+        );
+      }
+      projectKeyToUse = config.projectKey;
+    } else {
+      // Auto-detect: use first available project
+      projectKeyToUse = availableProjects[0];
+    }
+
+    // Save the selected project to localStorage
+    localStorage.setItem(STORAGE_KEY, projectKeyToUse);
+
+    // Set the project key in the dev server client
+    devServerClient.setProjectKey(projectKeyToUse);
+
+    return { availableProjects, projectKeyToUse };
+  }, [devServerClient, config.projectKey]);
+
   useEffect(() => {
-    const initializeProject = async () => {
+    const setupProjectConnection = async () => {
       try {
         setToolbarState((prev) => ({ ...prev, isLoading: true, error: null }));
 
-        // Get available projects
-        const availableProjects = await devServerClient.getAvailableProjects();
-
-        if (availableProjects.length === 0) {
-          throw new Error('No projects found on dev server');
-        }
-
-        // Determine which project to use
-        let projectKeyToUse: string;
-
-        // First, check for saved project in localStorage
-        const savedProjectKey = localStorage.getItem(STORAGE_KEY);
-        if (savedProjectKey && availableProjects.includes(savedProjectKey)) {
-          projectKeyToUse = savedProjectKey;
-        } else if (config.projectKey) {
-          // Use provided project key
-          if (!availableProjects.includes(config.projectKey)) {
-            throw new Error(
-              `Project "${config.projectKey}" not found. Available projects: ${availableProjects.join(', ')}`,
-            );
-          }
-          projectKeyToUse = config.projectKey;
-        } else {
-          // Auto-detect: use first available project
-          projectKeyToUse = availableProjects[0];
-        }
-
-        // Save the selected project to localStorage
-        localStorage.setItem(STORAGE_KEY, projectKeyToUse);
-
-        // Set the project key in the dev server client
-        devServerClient.setProjectKey(projectKeyToUse);
+        const { availableProjects, projectKeyToUse } = await initializeProjectSelection();
 
         setToolbarState((prev) => ({
           ...prev,
@@ -112,8 +117,8 @@ export const LaunchDarklyToolbarProvider: React.FC<LaunchDarklyToolbarProviderPr
       }
     };
 
-    initializeProject();
-  }, [devServerClient, config.projectKey]);
+    setupProjectConnection();
+  }, [initializeProjectSelection]);
 
   // Load project data after project is set
   useEffect(() => {
@@ -165,14 +170,23 @@ export const LaunchDarklyToolbarProvider: React.FC<LaunchDarklyToolbarProviderPr
     return unsubscribe;
   }, [flagStateManager, toolbarState.connectionStatus]);
 
-  // Setup polling if configured
+  // Setup polling - includes automatic recovery from connection failures
   useEffect(() => {
-    if (!config.pollIntervalInMs || toolbarState.connectionStatus !== 'connected') {
-      return;
-    }
+    const pollInterval = config.pollIntervalInMs;
 
-    const checkConnection = async () => {
+    const checkConnectionAndRecover = async () => {
       try {
+        // If no project key is set (initial connection failed), attempt recovery
+        if (!devServerClient.getProjectKey()) {
+          const { availableProjects, projectKeyToUse } = await initializeProjectSelection();
+
+          setToolbarState((prev) => ({
+            ...prev,
+            availableProjects,
+            currentProjectKey: projectKeyToUse,
+          }));
+        }
+
         const projectData = await devServerClient.getProjectData();
         const flags = await flagStateManager.getEnhancedFlags();
         setToolbarState((prev) => ({
@@ -193,9 +207,9 @@ export const LaunchDarklyToolbarProvider: React.FC<LaunchDarklyToolbarProviderPr
       }
     };
 
-    const interval = setInterval(checkConnection, config.pollIntervalInMs);
+    const interval = setInterval(checkConnectionAndRecover, pollInterval);
     return () => clearInterval(interval);
-  }, [devServerClient, flagStateManager, config.pollIntervalInMs, toolbarState.connectionStatus]);
+  }, [devServerClient, flagStateManager, config.pollIntervalInMs, initializeProjectSelection]);
 
   const setOverride = useCallback(
     async (flagKey: string, value: any) => {
@@ -253,6 +267,11 @@ export const LaunchDarklyToolbarProvider: React.FC<LaunchDarklyToolbarProviderPr
 
   const refresh = useCallback(async () => {
     try {
+      // If no project is selected, or the connection is not established, do not refresh
+      // This helps prevent unhelpful errors from being shown to the user
+      if (!toolbarState.currentProjectKey || toolbarState.connectionStatus !== 'connected') {
+        return;
+      }
       setToolbarState((prev) => ({ ...prev, isLoading: true }));
       const projectData = await devServerClient.getProjectData();
       const flags = await flagStateManager.getEnhancedFlags();
@@ -274,7 +293,7 @@ export const LaunchDarklyToolbarProvider: React.FC<LaunchDarklyToolbarProviderPr
         isLoading: false,
       }));
     }
-  }, [flagStateManager, devServerClient]);
+  }, [flagStateManager, devServerClient, toolbarState.currentProjectKey, toolbarState.connectionStatus]);
 
   const switchProject = useCallback(
     async (projectKey: string) => {
@@ -285,7 +304,6 @@ export const LaunchDarklyToolbarProvider: React.FC<LaunchDarklyToolbarProviderPr
           throw new Error(`Project "${projectKey}" not found in available projects`);
         }
 
-        // Save the new project to localStorage
         localStorage.setItem(STORAGE_KEY, projectKey);
 
         devServerClient.setProjectKey(projectKey);
