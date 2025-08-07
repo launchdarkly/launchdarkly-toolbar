@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.5.1](https://github.com/launchdarkly/launchdarkly-toolbar/compare/toolbar-v0.5.0...toolbar-v0.5.1) (2025-08-07)
+
+
+### Bug Fixes
+
+* update polling to help toolbar recover from connection failures ([#34](https://github.com/launchdarkly/launchdarkly-toolbar/issues/34)) ([4a81b27](https://github.com/launchdarkly/launchdarkly-toolbar/commit/4a81b27bee826532e3df03d4c409df22bdda600d))
+
 ## [0.5.0](https://github.com/launchdarkly/launchdarkly-toolbar/compare/toolbar-v0.4.0...toolbar-v0.5.0) (2025-08-05)
 
 
