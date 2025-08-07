@@ -215,4 +215,40 @@ test.describe('LaunchDarkly Toolbar', () => {
     await toolbarContainer.hover();
     await expect(iframe.getByRole('tab', { name: 'Flags' })).toBeVisible();
   });
+
+  test('should automatically recover from connection failures', async ({ page }: { page: Page }) => {
+    // Block all network requests except Storybook (localhost:6006) to simulate offline state
+    await page.route('**/*', async (route) => {
+      const url = route.request().url();
+      if (url.includes('localhost:6006')) {
+        // Allow Storybook requests to pass through
+        await route.continue();
+      } else {
+        // Block everything else
+        await route.abort();
+      }
+    });
+
+    const iframe = page.frameLocator('iframe[title="storybook-preview-iframe"]');
+    await page.waitForSelector('iframe[title="storybook-preview-iframe"]');
+
+    // Expand the toolbar to see the error state
+    const toolbarContainer = iframe.getByTestId('launchdarkly-toolbar');
+    await toolbarContainer.hover();
+    await iframe.getByRole('tab', { name: 'Flags' }).click();
+
+    // Verify we're in an error state initially
+    await expect(iframe.getByText(/Error connecting to dev server/i)).toBeVisible();
+
+    // Now simulate the dev server coming back online by removing the block
+    await page.unroute('**/*');
+
+    // Wait for automatic recovery to occur (polling should detect the dev server is back online)
+    // Wait longer than the poll interval (5000ms) to prevent flakiness
+    await expect(iframe.getByText(/Error connecting to dev server/i)).not.toBeVisible({ timeout: 6000 });
+
+    // Verify flag content is displayed after recovery
+    await expect(iframe.getByTestId('flag-tab-content')).toBeVisible();
+    await expect(iframe.getByText('test-flag-1')).toBeVisible();
+  });
 });

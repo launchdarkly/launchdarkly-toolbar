@@ -19,11 +19,9 @@ export interface EnhancedFlag {
 // Configuration Interface
 export interface LdToolbarConfig {
   // Dev server configuration
-  devServerUrl?: string; // defaults to http://localhost:8765
+  devServerUrl: string; // defaults to http://localhost:8765
+  pollIntervalInMs: number; // Auto-refresh interval in ms. Defaults to 5000ms
   projectKey?: string; // Optional - will auto-detect first available project if not provided
-
-  // Optional
-  pollIntervalInMs?: number; // Auto-refresh interval in ms
   showEnvironmentInfo?: boolean;
 
   // Events
