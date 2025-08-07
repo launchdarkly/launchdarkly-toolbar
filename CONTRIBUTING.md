@@ -52,7 +52,6 @@ pnpm demo
 
 The LaunchDarkly Toolbar requires a LaunchDarkly CLI dev server to be running. For detailed setup instructions, see [DEV_SERVER_SETUP.md](docs/DEV_SERVER_SETUP.md).
 
-
 ## Development Workflow
 
 ### Workspace Setup
@@ -64,18 +63,20 @@ This project uses **pnpm workspaces** to manage the main package and demo applic
 
 ### Available Scripts
 
-| Command            | Description                                            |
-| ------------------ | ------------------------------------------------------ |
-| `pnpm build`       | Build the library for production                       |
-| `pnpm dev`         | Build in watch mode for development                    |
-| `pnpm demo`        | Build and run the demo application                     |
-| `pnpm demo:dev`    | Run demo in development mode (requires separate build) |
-| `pnpm test`        | Run unit tests                                         |
-| `pnpm test:e2e`    | Run end-to-end tests                                   |
-| `pnpm test:e2e:ui` | Run E2E tests with Playwright UI                       |
-| `pnpm storybook`   | Run Storybook for component development                |
-| `pnpm lint`        | Run linter                                             |
-| `pnpm format`      | Format code with Prettier                              |
+| Command                  | Description                                                   |
+| ------------------------ | ------------------------------------------------------------- |
+| `pnpm build`             | Build the library for production                              |
+| `pnpm dev`               | Build in watch mode for development                           |
+| `pnpm demo`              | Build and run the demo application                            |
+| `pnpm demo:dev`          | Run demo in development mode (requires separate build)        |
+| `pnpm test`              | Run unit tests                                                |
+| `pnpm test:e2e:ci`       | Run E2E tests against the packaged version                    |
+| `pnpm test:e2e:ci:ui`    | Run E2E tests with Playwright UI against the packaged version |
+| `pnpm test:e2e:local`    | Run E2E tests against the local version                       |
+| `pnpm test:e2e:local:ui` | Run E2E tests with Playwright UI against the local version    |
+| `pnpm storybook`         | Run Storybook for component development                       |
+| `pnpm lint`              | Run linter                                                    |
+| `pnpm format`            | Format code with Prettier                                     |
 
 ## Running the Project
 
@@ -133,17 +134,28 @@ pnpm test --coverage
 
 ### End-to-End Tests
 
-We use **Playwright** for E2E testing:
+We use **Playwright** for E2E testing with different environments:
+
+- **CI environment** (`test:e2e:ci`): Uses the packaged version. Run `pnpm build` first to ensure you have the latest changes
+- **Local environment** (`test:e2e:local`): Uses the local version, no build step needed
 
 ```bash
-# Run E2E tests
-pnpm test:e2e
+# Run E2E tests against the packaged version
+pnpm test:e2e:ci
 
-# Run with UI mode for debugging
-pnpm test:e2e:ui
+# Run with UI mode for debugging against the packaged version
+pnpm test:e2e:ci:ui
+
+# Run E2E tests against the local version
+pnpm test:e2e:local
+
+# Run with UI mode for debugging against the local version
+pnpm test:e2e:local:ui
+
 ```
 
 **E2E test files location:** `e2e/tests/`
+**E2E config location:** `e2e/config/environment.ts`
 
 ### Writing Tests
 
@@ -226,10 +238,10 @@ We use:
 1. **Run all checks locally:**
 
 ```bash
-pnpm build      # Ensure builds successfully
-pnpm test       # Run unit tests
-pnpm test:e2e   # Run E2E tests
-pnpm lint       # Check for linting issues
+pnpm build           # Ensure builds successfully
+pnpm test            # Run unit tests
+pnpm test:e2e:local  # Run E2E tests
+pnpm lint            # Check for linting issues
 ```
 
 2. **Test your changes:**

@@ -1,11 +1,12 @@
 import { test, expect, type Page } from '@playwright/test';
+import { config } from '../config/environment';
 
 const TEST_PROJECT_KEY = 'test-project';
 
-test.describe('LaunchDarkly Toolbar', () => {
+test.describe(`LaunchDarkly Toolbar - ${config.testEnv} environment`, () => {
   test.beforeEach(async ({ page }: { page: Page }) => {
     // Navigate to the Storybook story for the LaunchDarkly Toolbar
-    await page.goto('/?path=/story/testing-toolbar--default');
+    await page.goto(config.storyPath);
 
     // Wait for Storybook to load
     await page.waitForSelector('iframe[title="storybook-preview-iframe"]');
