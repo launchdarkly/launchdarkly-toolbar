@@ -6,6 +6,7 @@ import { useToolbarState, useToolbarAnimations, useToolbarVisibility } from './h
 
 import * as styles from './LaunchDarklyToolbar.css';
 import { LaunchDarklyToolbarProvider } from './context/LaunchDarklyToolbarProvider';
+import { useFlags, useLDClient } from 'launchdarkly-react-client-sdk';
 
 export interface LdToolbarProps {
   position?: 'left' | 'right';
@@ -86,6 +87,20 @@ export interface LaunchDarklyToolbarProps extends LdToolbarProps {
 export function LaunchDarklyToolbar(props: LaunchDarklyToolbarProps) {
   const { projectKey, position, devServerUrl = 'http://localhost:8765', pollIntervalInMs = 5000 } = props;
   const isVisible = useToolbarVisibility();
+
+  const flags = useFlags();
+  console.log('🚀 ~ LaunchDarklyToolbar ~ flags:', flags);
+  const ldClient = useLDClient();
+  const allFlags = ldClient?.allFlags();
+  console.log('🚀 ~ LaunchDarklyToolbar ~ allFlags:', allFlags);
+
+  // Check if we're within an LDProvider context
+  // if (!ldClient) {
+  //   throw new Error(
+  //     'LaunchDarkly SDK not found. Please ensure your application is wrapped with an LDProvider from launchdarkly-react-client-sdk. ' +
+  //       'Visit https://docs.launchdarkly.com/sdk/client-side/react/react-web for setup instructions.',
+  //   );
+  // }
 
   // Don't render anything if visibility check fails
   if (!isVisible) {

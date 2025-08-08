@@ -1,6 +1,11 @@
+import React from 'react';
 import type { Meta, StoryObj } from '@storybook/react';
-
+import { LDProvider, withLDProvider } from 'launchdarkly-react-client-sdk';
 import { LaunchDarklyToolbar } from '../src/ui/Toolbar/LaunchDarklyToolbar';
+
+// const LaunchDarklyToolbarWithProvider = withLDProvider({
+//   clientSideID: '67b94f6d17a8b408fa943d3c',
+// })(LaunchDarklyToolbar);
 
 const meta: Meta<typeof LaunchDarklyToolbar> = {
   title: 'UI/LaunchDarklyToolbar',
@@ -32,6 +37,20 @@ const meta: Meta<typeof LaunchDarklyToolbar> = {
       description: 'URL of the LaunchDarkly dev server',
     },
   },
+  decorators: [
+    (Story) => {
+      return (
+        <LDProvider
+          clientSideID="67b94f6d17a8b408fa943d3c"
+          options={{
+            baseUrl: 'https://app.ld.catamorphic.com',
+          }}
+        >
+          <Story />
+        </LDProvider>
+      );
+    },
+  ],
 };
 
 export default meta;

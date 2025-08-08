@@ -1,12 +1,19 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { asyncWithLDProvider, useFlags, useLDClient, withLDProvider } from 'launchdarkly-react-client-sdk';
 import { LaunchDarklyToolbar } from '@launchdarkly/toolbar';
 
 import './App.css';
 
-function App() {
+function AppContent() {
   const [position, setPosition] = useState<'left' | 'right'>('left');
   const [devServerUrl, setDevServerUrl] = useState('http://localhost:8765');
   const [projectKey, setProjectKey] = useState('');
+
+  const flags = useFlags();
+  console.log('🚀 ~ AppContent ~ flags:', flags);
+  const ldClient = useLDClient();
+  const allFlags = ldClient?.allFlags();
+  console.log('🚀 ~ AppContent ~ allFlags:', allFlags);
 
   return (
     <div className="app">
@@ -97,5 +104,34 @@ function App() {
     </div>
   );
 }
+
+// function App() {
+//   const [LDProvider, setLDProvider] = useState<any>(null);
+
+//   useEffect(() => {
+//     const initializeLD = async () => {
+//       const Provider = await asyncWithLDProvider({
+//         clientSideID: '67b94f6d17a8b408fa943d3c',
+//       });
+//       setLDProvider(() => Provider);
+//     };
+
+//     initializeLD();
+//   }, []);
+
+//   if (!LDProvider) {
+//     return <div>Loading LaunchDarkly...</div>;
+//   }
+
+//   return (
+//     <LDProvider>
+//       <AppContent />
+//     </LDProvider>
+//   );
+// }
+
+const App = withLDProvider({
+  clientSideID: '67b94f6d17a8b408fa943d3c',
+})(AppContent);
 
 export default App;
