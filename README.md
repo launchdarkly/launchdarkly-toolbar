@@ -57,7 +57,6 @@ function App() {
 
 ```tsx
 import { LaunchDarklyToolbar } from '@launchdarkly/toolbar';
-import '@launchdarkly/toolbar/css';
 
 function App() {
   return (
@@ -77,7 +76,6 @@ function App() {
 
 ```tsx
 import { LaunchDarklyToolbar } from '@launchdarkly/toolbar';
-import '@launchdarkly/toolbar/css';
 
 function App() {
   return (
@@ -94,7 +92,6 @@ function App() {
 
 ```tsx
 import { LaunchDarklyToolbar } from '@launchdarkly/toolbar';
-import '@launchdarkly/toolbar/css';
 
 function App() {
   return (
