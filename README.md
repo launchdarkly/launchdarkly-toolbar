@@ -177,7 +177,7 @@ window.ldToolbar.toggle();
 The toolbar requires a LaunchDarkly CLI dev-server to be running with CORS enabled.
 
 ```bash
-ldcli dev-server start --project subs-project --cors-enabled true
+ldcli dev-server start --project demo-project --cors-enabled true
 ```
 
 ## TypeScript
