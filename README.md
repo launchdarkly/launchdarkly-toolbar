@@ -1,5 +1,7 @@
 # LaunchDarkly Toolbar
 
+> ⚠️ **Warning:** This package is currently not ready for production use and is considered unsupported. Features, APIs, and behavior may change without notice.
+
 A React component that provides a developer-friendly toolbar for interacting with LaunchDarkly during development.
 
 ## Installation
@@ -12,13 +14,10 @@ yarn add @launchdarkly/toolbar
 pnpm add @launchdarkly/toolbar
 ```
 
-## Quick Start
-
 1. **Import the component and styles:**
 
 ```tsx
 import { LaunchDarklyToolbar } from '@launchdarkly/toolbar';
-import '@launchdarkly/toolbar/css';
 ```
 
 2. **Add the toolbar to your app:**
