@@ -53,6 +53,8 @@ export function LdToolbar(props: LdToolbarProps) {
       onAnimationStart={handleAnimationStart}
       onAnimationComplete={handleAnimationComplete}
       data-testid="launchdarkly-toolbar"
+      role="toolbar"
+      aria-label="LaunchDarkly Developer Toolbar"
     >
       <AnimatePresence>{!showFullToolbar && <CircleLogo hasBeenExpanded={hasBeenExpanded} />}</AnimatePresence>
 
