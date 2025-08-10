@@ -88,6 +88,9 @@
     "react-dom": ">=16.9.0"
   },
   "private": false,
+  "publishConfig": {
+    "access": "public"
+  },
   "dependencies": {
     "@launchpad-ui/components": "^0.10.0",
     "@launchpad-ui/core": "^0.56.10",
