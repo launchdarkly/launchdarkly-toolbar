@@ -9,3 +9,4 @@ export { GearIcon } from './GearIcon';
 export { DeleteIcon } from './DeleteIcon';
 export { CancelCircleIcon } from './CancelCircleIcon';
 export { XIcon } from './XIcon';
+export { UserIcon } from './UserIcon';

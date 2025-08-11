@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>LaunchDarkly Toolbar Auth Iframe</title>
+</head>
+<body>
+    <script>
+        console.log('LaunchDarkly toolbar iframe loaded');
+
+        function sendStateMessage(state) {
+            if (window.parent) {
+                window.parent.postMessage({
+                    source: 'launchdarkly-toolbar',
+                    message: state
+                }, '*');
+            }
+        }
+
+        function requestLogin() {
+            console.log('Opening LaunchDarkly login popup...');
+            
+            // Open the actual LaunchDarkly login page
+            const loginUrl = 'https://app.launchdarkly.com/login';
+            
+            const popup = window.open(
+                loginUrl,
+                'launchdarkly-toolbar-auth-popup',
+                'popup=1,width=800,height=600,left=200,top=200,resizable=1,scrollbars=1'
+            );
+            
+            if (!popup) {
+                console.error('Popup was blocked!');
+                sendStateMessage('logged-out');
+                return;
+            }
+            
+            console.log('Popup opened successfully');
+            
+            // Monitor the popup and simulate successful auth after delay
+            const checkClosed = setInterval(() => {
+                if (popup.closed) {
+                    clearInterval(checkClosed);
+                    return;
+                }
+            }, 1000);
+            
+            // After 5 seconds, redirect to local success page
+            // setTimeout(() => {
+            //     if (popup && !popup.closed) {
+            //         console.log('Redirecting to local success page...');
+            //         popup.location.href = 'http://localhost:5173/mock-login-success.html';
+            //     }
+            //     clearInterval(checkClosed);
+                
+            //     // The success page will handle the token and closing
+            // }, 5000);
+        }
+
+        function clearAuth() {
+            localStorage.removeItem('ldAccessToken');
+            document.cookie = 'ld-session=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+            sendStateMessage('logged-out');
+        }
+
+        async function fetchProxy(url, init) {
+            const accessToken = localStorage.getItem('ldAccessToken');
+            
+            if (!accessToken) {
+                throw new Error('Not authenticated');
+            }
+
+            // Add Authorization header for authenticated requests
+            const headers = {
+                ...init?.headers,
+                'Authorization': `Bearer ${accessToken}`,
+                'Content-Type': 'application/json'
+            };
+
+            try {
+                const response = await fetch(url, {
+                    ...init,
+                    headers,
+                    credentials: 'same-origin'
+                });
+
+                return {
+                    ok: response.ok,
+                    status: response.status,
+                    statusText: response.statusText,
+                    url: response.url,
+                    headers: Object.fromEntries(response.headers.entries()),
+                    text: await response.text()
+                };
+            } catch (error) {
+                throw new Error(`Fetch failed: ${error.message}`);
+            }
+        }
+
+        function listenForLoginSuccess() {
+            window.addEventListener('message', messageEvent => {
+                if (messageEvent.data.source !== 'launchdarkly-toolbar') {
+                    return;
+                }
+                
+                if (messageEvent.data.message === 'did-login') {
+                    // Store the auth token
+                    if (messageEvent.data.token) {
+                        localStorage.setItem('ldAccessToken', messageEvent.data.token);
+                    }
+                    sendStateMessage('logged-in');
+                }
+            });
+        }
+
+        function setupMessageChannel() {
+            const { port1, port2 } = new MessageChannel();
+            const messageDispatch = {
+                'log': console.log,
+                'request-authn': requestLogin,
+                'clear-authn': clearAuth,
+                'fetch': fetchProxy
+            };
+
+            port1.addEventListener('message', messageEvent => {
+                const { $id, message } = messageEvent.data;
+                try {
+                    const result = messageDispatch[message.$function]?.apply(undefined, message.$args || []);
+                    Promise.resolve(result)
+                        .then($result => port1.postMessage({ $id, $result }))
+                        .catch(error => port1.postMessage({ $id, $error: error.toString() }));
+                } catch (error) {
+                    port1.postMessage({ $id, $error: error.toString() });
+                }
+            });
+            port1.start();
+
+            if (window.parent) {
+                window.parent.postMessage({
+                    source: 'launchdarkly-toolbar',
+                    message: 'port-connect'
+                }, '*', [port2]);
+            }
+        }
+
+        // Listen for messages from the parent window
+        window.addEventListener('message', messageEvent => {
+            console.log('Iframe received message:', messageEvent.data);
+            
+            if (messageEvent.data.source !== 'launchdarkly-toolbar') {
+                console.log('Message source not recognized:', messageEvent.data.source);
+                return;
+            }
+
+            switch (messageEvent.data.message) {
+                case 'request-login':
+                    console.log('Processing login request...');
+                    requestLogin();
+                    break;
+                case 'request-logout':
+                    console.log('Processing logout request...');
+                    clearAuth();
+                    break;
+                default:
+                    console.log('Unknown message:', messageEvent.data.message);
+            }
+        });
+
+        // Initialize
+        console.log('Mock iframe initializing...');
+        console.log('Iframe URL:', window.location.href);
+        console.log('Iframe origin:', window.location.origin);
+        
+        // Send a test message to parent immediately
+        if (window.parent) {
+            window.parent.postMessage({
+                source: 'launchdarkly-toolbar',
+                message: 'iframe-ready'
+            }, '*');
+            console.log('Sent iframe-ready message to parent');
+        }
+        
+        // Wait a bit to ensure parent is ready
+        setTimeout(() => {
+            listenForLoginSuccess();
+            setupMessageChannel();
+            
+            // Check if already logged in and send initial state
+            const token = localStorage.getItem('ldAccessToken');
+            if (token) {
+                console.log('Found existing token, setting logged-in state');
+                sendStateMessage('logged-in');
+            } else {
+                console.log('No token found, setting logged-out state');
+                sendStateMessage('logged-out');
+            }
+            
+            console.log('Mock iframe fully initialized and ready');
+        }, 100);
+    </script>
+</body>
+</html>

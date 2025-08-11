@@ -2,6 +2,7 @@ import { motion } from 'motion/react';
 import { FlagTabContent } from '../TabContent/FlagTabContent';
 // import { EventsTabContent } from '../TabContent/EventsTabContent';
 import { SettingsTabContent } from '../TabContent/SettingsTabContent';
+import { LoginTabContent } from '../TabContent/LoginTabContent';
 import { ANIMATION_CONFIG, DIMENSIONS } from '../constants';
 import { TabId } from '../types';
 
@@ -9,6 +10,7 @@ const TAB_CONTENT_MAP = {
   flags: FlagTabContent,
   // events: EventsTabContent,
   settings: SettingsTabContent,
+  login: LoginTabContent,
 } as const satisfies Record<TabId, React.ComponentType>;
 
 interface TabContentRendererProps {

@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'motion/react';
 import * as styles from './Header.css';
 import { LogoSection, EnvironmentLabel, SearchSection, ActionButtons } from './components';
 import { useToolbarContext } from '../context/LaunchDarklyToolbarProvider';
-import { ConnectionStatus } from '../components/ConnectionStatus';
+import { ConnectionStatus } from '../components';
 
 export interface HeaderProps {
   searchTerm: string;

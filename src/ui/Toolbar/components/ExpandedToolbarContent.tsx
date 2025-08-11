@@ -11,7 +11,7 @@ import { useToolbarContext } from '../context/LaunchDarklyToolbarProvider';
 
 import * as styles from '../LaunchDarklyToolbar.css';
 import { ErrorMessage } from './ErrorMessage';
-import { GearIcon, ToggleOffIcon } from './icons';
+import { GearIcon, ToggleOffIcon, UserIcon } from './icons';
 
 interface ExpandedToolbarContentProps {
   isExpanded: boolean;
@@ -136,6 +136,7 @@ export function ExpandedToolbarContent(props: ExpandedToolbarContentProps) {
           <TabButton id="flags" label="Flags" icon={ToggleOffIcon} />
           {/* <TabButton id="events" label="Events" icon="chart-line" /> */}
           <TabButton id="settings" label="Settings" icon={GearIcon} />
+          <TabButton id="login" label="Login" icon={UserIcon} />
         </Tabs>
       </motion.div>
     </motion.div>

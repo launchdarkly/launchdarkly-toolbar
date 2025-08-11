@@ -6,6 +6,7 @@ import { useToolbarState, useToolbarAnimations, useToolbarVisibility } from './h
 
 import * as styles from './LaunchDarklyToolbar.css';
 import { LaunchDarklyToolbarProvider } from './context/LaunchDarklyToolbarProvider';
+import { AuthProxyProvider } from './context/AuthProxyContext';
 
 export interface LdToolbarProps {
   position?: 'left' | 'right';
@@ -93,16 +94,18 @@ export function LaunchDarklyToolbar(props: LaunchDarklyToolbarProps) {
   }
 
   return (
-    <LaunchDarklyToolbarProvider
-      config={{
-        projectKey,
-        devServerUrl,
-        pollIntervalInMs,
-      }}
-    >
-      <SearchProvider>
-        <LdToolbar position={position} />
-      </SearchProvider>
-    </LaunchDarklyToolbarProvider>
+    <AuthProxyProvider projectKey={projectKey} origin="http://localhost:5173">
+      <LaunchDarklyToolbarProvider
+        config={{
+          projectKey,
+          devServerUrl,
+          pollIntervalInMs,
+        }}
+      >
+        <SearchProvider>
+          <LdToolbar position={position} />
+        </SearchProvider>
+      </LaunchDarklyToolbarProvider>
+    </AuthProxyProvider>
   );
 }

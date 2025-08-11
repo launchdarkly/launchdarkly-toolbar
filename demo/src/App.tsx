@@ -2,11 +2,20 @@ import { useState } from 'react';
 import { LaunchDarklyToolbar } from '@launchdarkly/toolbar';
 
 import './App.css';
+// import { useSentryToolbar } from '@sentry/toolbar';
 
 function App() {
   const [position, setPosition] = useState<'left' | 'right'>('left');
   const [devServerUrl, setDevServerUrl] = useState('http://localhost:8765');
   const [projectKey, setProjectKey] = useState('');
+
+  // useSentryToolbar({
+  //   enabled: true,
+  //   initProps: {
+  //     organizationSlug: '',
+  //     projectIdOrSlug: '',
+  //   },
+  // });
 
   return (
     <div className="app">
@@ -67,6 +76,7 @@ function App() {
                 <li>✅ Search functionality</li>
                 <li>✅ Responsive design</li>
                 <li>✅ Keyboard navigation</li>
+                <li>🆕 LaunchDarkly Authentication POC (inspired by Sentry Toolbar)</li>
               </ul>
             </div>
 
@@ -78,6 +88,9 @@ function App() {
                 <li>Explore the different tabs: Flags, Events, and Settings</li>
                 <li>Use the search functionality to find specific flags</li>
                 <li>Toggle feature flags and see real-time updates</li>
+                <li>
+                  🆕 <strong>Auth POC:</strong> Click "Sign in" in the toolbar header to test the authentication flow
+                </li>
               </ol>
             </div>
 

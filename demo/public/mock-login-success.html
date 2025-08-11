@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>LaunchDarkly Login Success</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        .container {
+            text-align: center;
+            padding: 2rem;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            backdrop-filter: blur(10px);
+        }
+        .logo {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+        }
+        h1 {
+            margin-bottom: 1rem;
+        }
+        p {
+            opacity: 0.8;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="logo">🚀</div>
+        <h1>Login Successful!</h1>
+        <p>You have been successfully authenticated with LaunchDarkly.</p>
+        <p>This window will close automatically in 3 seconds...</p>
+    </div>
+
+    <script>
+        console.log('Mock login success page loaded');
+        
+        // Simulate successful authentication
+        const mockToken = 'mock-jwt-token-' + Date.now();
+        
+        if (window.opener) {
+            // Store the mock token locally first
+            localStorage.setItem('ldAccessToken', mockToken);
+            
+            // Send success message to the iframe
+            window.opener.postMessage({
+                source: 'launchdarkly-toolbar',
+                message: 'did-login',
+                token: mockToken
+            }, '*');
+            
+            console.log('Sent login success message to iframe');
+            
+            // Close the popup after 3 seconds
+            setTimeout(() => {
+                console.log('Closing login success popup');
+                window.close();
+            }, 3000);
+        } else {
+            console.warn('No opener window found');
+        }
+    </script>
+</body>
+</html>
