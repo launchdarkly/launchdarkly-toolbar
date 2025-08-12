@@ -3,16 +3,20 @@ import { AnimatePresence, motion } from 'motion/react';
 import { SearchProvider, useSearchContext } from './context/SearchProvider';
 import { CircleLogo, ExpandedToolbarContent } from './components';
 import { useToolbarState, useToolbarAnimations, useToolbarVisibility } from './hooks';
+import { useEffect } from 'react';
 
 import * as styles from './LaunchDarklyToolbar.css';
 import { LaunchDarklyToolbarProvider } from './context/LaunchDarklyToolbarProvider';
+import { ToolbarPlugin } from '../../../demo/plugins/ToolbarPlugin';
+import { Button } from '@launchpad-ui/components';
 
 export interface LdToolbarProps {
   position?: 'left' | 'right';
+  toolbarPlugin?: ToolbarPlugin;
 }
 
 export function LdToolbar(props: LdToolbarProps) {
-  const { position = 'right' } = props;
+  const { position = 'right', toolbarPlugin } = props;
   const { searchTerm } = useSearchContext();
 
   const toolbarState = useToolbarState();
@@ -34,6 +38,19 @@ export function LdToolbar(props: LdToolbarProps) {
     setIsAnimating,
   } = toolbarState;
 
+  useEffect(() => {
+    async function logFlags() {
+      try {
+        const flags = await toolbarPlugin?.listFlags();
+        console.log(flags, 'I AM HERE IN TOOLBAR');
+      } catch (err) {
+        console.error('Failed to list flags', err);
+      }
+    }
+
+    logFlags();
+  }, [toolbarPlugin]);
+
   const toolbarAnimations = useToolbarAnimations({
     showFullToolbar,
     isHovered: toolbarState.isHovered,
@@ -42,38 +59,43 @@ export function LdToolbar(props: LdToolbarProps) {
   const { containerAnimations, animationConfig, handleAnimationStart, handleAnimationComplete } = toolbarAnimations;
 
   return (
-    <motion.div
-      ref={toolbarRef}
-      className={`${styles.toolbarContainer} ${position === 'left' ? styles.positionLeft : styles.positionRight} ${showFullToolbar ? styles.toolbarExpanded : styles.toolbarCircle}`}
-      onMouseEnter={handleMouseEnter}
-      onMouseLeave={handleMouseLeave}
-      initial={false}
-      animate={containerAnimations}
-      transition={animationConfig}
-      onAnimationStart={handleAnimationStart}
-      onAnimationComplete={handleAnimationComplete}
-      data-testid="launchdarkly-toolbar"
-      role="toolbar"
-      aria-label="LaunchDarkly Developer Toolbar"
-    >
-      <AnimatePresence>{!showFullToolbar && <CircleLogo hasBeenExpanded={hasBeenExpanded} />}</AnimatePresence>
+    <>
+      <Button onClick={() => toolbarPlugin?.setOverride('test-flag-by-sub', false)}>List Flags</Button>
 
-      <AnimatePresence>
-        {showFullToolbar && (
-          <ExpandedToolbarContent
-            isExpanded={isExpanded}
-            activeTab={activeTab}
-            slideDirection={slideDirection}
-            searchTerm={searchTerm}
-            searchIsExpanded={searchIsExpanded}
-            onSearch={handleSearch}
-            onClose={handleClose}
-            onTabChange={handleTabChange}
-            setSearchIsExpanded={setSearchIsExpanded}
-          />
-        )}
-      </AnimatePresence>
-    </motion.div>
+      <motion.div
+        ref={toolbarRef}
+        className={`${styles.toolbarContainer} ${position === 'left' ? styles.positionLeft : styles.positionRight} ${showFullToolbar ? styles.toolbarExpanded : styles.toolbarCircle}`}
+        onMouseEnter={handleMouseEnter}
+        onMouseLeave={handleMouseLeave}
+        initial={false}
+        animate={containerAnimations}
+        transition={animationConfig}
+        onAnimationStart={handleAnimationStart}
+        onAnimationComplete={handleAnimationComplete}
+        data-testid="launchdarkly-toolbar"
+        role="toolbar"
+        aria-label="LaunchDarkly Developer Toolbar"
+      >
+        <AnimatePresence>{!showFullToolbar && <CircleLogo hasBeenExpanded={hasBeenExpanded} />}</AnimatePresence>
+        <AnimatePresence>
+          {showFullToolbar && (
+            <>
+              <ExpandedToolbarContent
+                isExpanded={isExpanded}
+                activeTab={activeTab}
+                slideDirection={slideDirection}
+                searchTerm={searchTerm}
+                searchIsExpanded={searchIsExpanded}
+                onSearch={handleSearch}
+                onClose={handleClose}
+                onTabChange={handleTabChange}
+                setSearchIsExpanded={setSearchIsExpanded}
+              />
+            </>
+          )}
+        </AnimatePresence>
+      </motion.div>
+    </>
   );
 }
 
@@ -84,7 +106,13 @@ export interface LaunchDarklyToolbarProps extends LdToolbarProps {
 }
 
 export function LaunchDarklyToolbar(props: LaunchDarklyToolbarProps) {
-  const { projectKey, position, devServerUrl = 'http://localhost:8765', pollIntervalInMs = 5000 } = props;
+  const {
+    projectKey,
+    position,
+    devServerUrl = 'http://localhost:8765',
+    pollIntervalInMs = 5000,
+    toolbarPlugin,
+  } = props;
   const isVisible = useToolbarVisibility();
 
   // Don't render anything if visibility check fails
@@ -101,7 +129,7 @@ export function LaunchDarklyToolbar(props: LaunchDarklyToolbarProps) {
       }}
     >
       <SearchProvider>
-        <LdToolbar position={position} />
+        <LdToolbar position={position} toolbarPlugin={toolbarPlugin} />
       </SearchProvider>
     </LaunchDarklyToolbarProvider>
   );
