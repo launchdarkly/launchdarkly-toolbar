@@ -15,12 +15,12 @@
   "author": "Catamorphic Co.",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/launchdarkly/launchpad-ui.git"
+    "url": "git+https://github.com/launchdarkly/launchdarkly-toolbar.git"
   },
   "bugs": {
-    "url": "https://github.com/launchdarkly/launchpad-ui/issues"
+    "url": "https://github.com/launchdarkly/launchdarkly-toolbar/issues"
   },
-  "homepage": "https://github.com/launchdarkly/launchpad-ui#readme",
+  "homepage": "https://github.com/launchdarkly/launchdarkly-toolbar#readme",
   "main": "./dist/js/index.js",
   "types": "./dist/index.d.ts",
   "exports": {
@@ -52,7 +52,8 @@
     "test:e2e:local": "TEST_ENV=local playwright test --config=./e2e/playwright.config.ts",
     "test:e2e:local:ui": "TEST_ENV=local playwright test --ui --config=./e2e/playwright.config.ts",
     "test:e2e:ci:ui": "TEST_ENV=ci playwright test --ui --config=./e2e/playwright.config.ts",
-    "lint": "oxlint"
+    "lint": "oxlint",
+    "upgrade-launchpad": "pnpm up \"@launchpad-ui/*\" react-aria \"@react-aria/*\" \"@react-types/*\" \"@react-stately/*\" react-aria-components react react-dom @types/react @types/react-dom --latest -r"
   },
   "devDependencies": {
     "@playwright/test": "^1.53.1",
@@ -70,13 +71,13 @@
     "@testing-library/jest-dom": "^6.6.3",
     "@testing-library/react": "^16.3.0",
     "@types/node": "^24.0.4",
-    "@types/react": "^19.1.6",
+    "@types/react": "^19.1.10",
     "@vanilla-extract/vite-plugin": "^5.1.1",
     "http-server": "^14.1.1",
     "jsdom": "^26.1.0",
     "oxlint": "^1.0.0",
     "prettier": "^3.5.3",
-    "react": "^19.1.0",
+    "react": "^19.1.1",
     "storybook": "^9.0.5",
     "storybook-addon-rslib": "^2.0.0",
     "storybook-react-rsbuild": "^2.0.0",
@@ -84,20 +85,20 @@
     "vitest": "^3.2.2"
   },
   "peerDependencies": {
-    "react": ">=16.9.0",
-    "react-dom": ">=16.9.0"
+    "react": "19.1.1",
+    "react-dom": "19.1.1"
   },
   "private": false,
   "publishConfig": {
     "access": "public"
   },
   "dependencies": {
-    "@launchpad-ui/components": "^0.10.0",
-    "@launchpad-ui/core": "^0.56.10",
-    "@launchpad-ui/tokens": "^0.12.6",
+    "@launchpad-ui/components": "^0.15.0",
+    "@launchpad-ui/tokens": "^0.14.0",
     "@tanstack/react-virtual": "^3.13.12",
     "@vanilla-extract/css": "^1.17.4",
     "@vanilla-extract/webpack-plugin": "^2.3.22",
     "motion": "^12.19.2"
-  }
+  },
+  "packageManager": "pnpm@10.14.0"
 }
