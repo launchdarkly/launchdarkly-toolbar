@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.8.0](https://github.com/launchdarkly/launchdarkly-toolbar/compare/toolbar-v0.7.0...toolbar-v0.8.0) (2025-08-13)
+
+
+### Features
+
+* bump launchpad + react aria versions ([#44](https://github.com/launchdarkly/launchdarkly-toolbar/issues/44)) ([c4b9d37](https://github.com/launchdarkly/launchdarkly-toolbar/commit/c4b9d370f38965ab5613a914e35ffb2285721ec2))
+
 ## [0.7.0](https://github.com/launchdarkly/launchdarkly-toolbar/compare/toolbar-v0.6.0...toolbar-v0.7.0) (2025-08-10)
 
 
