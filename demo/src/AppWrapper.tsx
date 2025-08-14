@@ -17,13 +17,14 @@ export function AppWrapper() {
   const flags = useFlags();
   console.log({ flags }, 'USE FLAGS');
 
-  const testFlagBySub = ldClient?.variation('test-flag-by-sub', false);
-  console.log({ testFlagBySub }, 'TEST FLAG BY SUB');
+  const testFlagByPranjal = ldClient?.variation('test-flag-by-pranjal', false);
+  console.log({ testFlagByPranjal }, 'TEST FLAG BY PRANJAL');
+
   return (
     <div className="app">
       <div className="container">
         <header className="header">
-          <h1>LaunchDarkly Toolbar Demo {flags.testFlagBySub ? 'true' : 'false'}</h1>
+          <h1>LaunchDarkly Toolbar Demo {flags.testFlagByPranjal ? 'true' : 'false'}</h1>
           <p>This demo showcases the LaunchDarkly Toolbar component with different configurations.</p>
         </header>
 

@@ -1,3 +1,6 @@
 packages:
-  - '.'
-  - 'demo'
+  - .
+  - demo
+
+overrides:
+  launchdarkly-js-client-sdk: link:sdk-fork

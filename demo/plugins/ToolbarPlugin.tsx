@@ -103,19 +103,28 @@ export class ToolbarPlugin {
 
   setOverride(key: string, value: unknown): void {
     const k = this.keyFor(flagKey(key));
+    const previousValue = this.baseFlags[flagKey(key)];
+
     this.overrideStore.set(k, value);
     this.persistOverride(k, value);
     this.emitChange({ key, value, source: 'override' });
+
+    // Use the new emitFlagChange method for immediate React component updates
+    this.ldClient?.emitFlagChange(key, value, previousValue);
   }
 
   unsetOverride(key: string): void {
     const k = this.keyFor(flagKey(key));
+    const previousValue = this.overrideStore.get(k);
     const had = this.overrideStore.delete(k);
     this.unpersistOverride(k);
     if (had) {
       // fall back to SDK value
       const value = this.baseFlags[flagKey(key)];
       this.emitChange({ key, value, source: 'sdk' });
+
+      // Use the new emitFlagChange method for immediate React component updates
+      this.ldClient?.emitFlagChange(key, value, previousValue);
     }
   }
 

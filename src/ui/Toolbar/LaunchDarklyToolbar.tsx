@@ -60,8 +60,6 @@ export function LdToolbar(props: LdToolbarProps) {
 
   return (
     <>
-      <Button onClick={() => toolbarPlugin?.setOverride('test-flag-by-sub', false)}>List Flags</Button>
-
       <motion.div
         ref={toolbarRef}
         className={`${styles.toolbarContainer} ${position === 'left' ? styles.positionLeft : styles.positionRight} ${showFullToolbar ? styles.toolbarExpanded : styles.toolbarCircle}`}
@@ -80,6 +78,16 @@ export function LdToolbar(props: LdToolbarProps) {
         <AnimatePresence>
           {showFullToolbar && (
             <>
+              <Button
+                onClick={async () => {
+                  const flags = await toolbarPlugin?.listFlags();
+                  const currentValue =
+                    toolbarPlugin?.getOverride('test-flag-by-pranjal') ?? flags?.['test-flag-by-pranjal'];
+                  toolbarPlugin?.setOverride('test-flag-by-pranjal', !currentValue);
+                }}
+              >
+                Toggle Test Flag By Pranjal
+              </Button>
               <ExpandedToolbarContent
                 isExpanded={isExpanded}
                 activeTab={activeTab}
