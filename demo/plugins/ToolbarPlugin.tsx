@@ -49,7 +49,6 @@ export class ToolbarPlugin {
     // patch variation for local overrides
     this.originalVariation = ldClient.variation.bind(ldClient);
     ldClient.variation = (key: string, defaultValue: unknown) => {
-      console.log('LD CLIENT variation');
       const k = this.keyFor(flagKey(key));
       if (this.overrideStore.has(k)) return this.overrideStore.get(k);
       return this.originalVariation!(key, defaultValue);

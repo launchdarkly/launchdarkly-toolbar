@@ -1,3 +1,3 @@
 import './globals.css';
-export { LaunchDarklyToolbar } from './ui/Toolbar/LaunchDarklyToolbar';
+export { LaunchDarklyToolbar, ToolbarProvider } from './ui/Toolbar/LaunchDarklyToolbar';
 export type { LaunchDarklyToolbarProps } from './ui/Toolbar/LaunchDarklyToolbar';

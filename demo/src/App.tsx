@@ -1,11 +1,10 @@
 import { useEffect, useState } from 'react';
 import { asyncWithLDProvider } from 'launchdarkly-react-client-sdk';
-import { ToolbarPlugin } from '../plugins/ToolbarPlugin';
+import { ToolbarProvider } from '@launchdarkly/toolbar';
 import { AppWrapper } from './AppWrapper';
 
 import './App.css';
-
-export const toolbarPlugin = new ToolbarPlugin();
+import { toolbarPlugin } from '../plugins';
 
 function App() {
   const [LDProvider, setLDProvider] = useState<any>(null);
@@ -33,7 +32,9 @@ function App() {
 
   return (
     <LDProvider>
-      <AppWrapper />
+      <ToolbarProvider toolbarPlugin={toolbarPlugin}>
+        <AppWrapper />
+      </ToolbarProvider>
     </LDProvider>
   );
 }

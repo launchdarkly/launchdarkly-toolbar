@@ -1,10 +1,9 @@
 import { useState } from 'react';
-
 import { LaunchDarklyToolbar } from '@launchdarkly/toolbar';
 
 import './App.css';
-import { useFlags, useLDClient } from 'launchdarkly-react-client-sdk';
-import { toolbarPlugin } from './App';
+import { useLDClient } from 'launchdarkly-react-client-sdk';
+import { toolbarPlugin } from '../plugins';
 
 export function AppWrapper() {
   const [position, setPosition] = useState<'left' | 'right'>('left');
@@ -12,10 +11,6 @@ export function AppWrapper() {
   const [projectKey, setProjectKey] = useState('');
 
   const ldClient = useLDClient();
-  console.log({ ldClient: ldClient?.allFlags() }, 'LD CLIENT');
-
-  const flags = useFlags();
-  console.log({ flags }, 'USE FLAGS');
 
   const testFlagByPranjal = ldClient?.variation('test-flag-by-pranjal', false);
   console.log({ testFlagByPranjal }, 'TEST FLAG BY PRANJAL');
@@ -24,7 +19,7 @@ export function AppWrapper() {
     <div className="app">
       <div className="container">
         <header className="header">
-          <h1>LaunchDarkly Toolbar Demo {flags.testFlagByPranjal ? 'true' : 'false'}</h1>
+          <h1>LaunchDarkly Toolbar Demo {testFlagByPranjal ? 'true' : 'false'}</h1>
           <p>This demo showcases the LaunchDarkly Toolbar component with different configurations.</p>
         </header>
 

@@ -3,11 +3,10 @@ import { AnimatePresence, motion } from 'motion/react';
 import { SearchProvider, useSearchContext } from './context/SearchProvider';
 import { CircleLogo, ExpandedToolbarContent } from './components';
 import { useToolbarState, useToolbarAnimations, useToolbarVisibility } from './hooks';
-import { useEffect } from 'react';
 
 import * as styles from './LaunchDarklyToolbar.css';
 import { LaunchDarklyToolbarProvider } from './context/LaunchDarklyToolbarProvider';
-import { ToolbarPlugin } from '../../../demo/plugins/ToolbarPlugin';
+import type { ToolbarPlugin } from '../../../demo/plugins/ToolbarPlugin';
 import { Button } from '@launchpad-ui/components';
 
 export interface LdToolbarProps {
@@ -37,19 +36,6 @@ export function LdToolbar(props: LdToolbarProps) {
     setSearchIsExpanded,
     setIsAnimating,
   } = toolbarState;
-
-  useEffect(() => {
-    async function logFlags() {
-      try {
-        const flags = await toolbarPlugin?.listFlags();
-        console.log(flags, 'I AM HERE IN TOOLBAR');
-      } catch (err) {
-        console.error('Failed to list flags', err);
-      }
-    }
-
-    logFlags();
-  }, [toolbarPlugin]);
 
   const toolbarAnimations = useToolbarAnimations({
     showFullToolbar,
@@ -135,6 +121,7 @@ export function LaunchDarklyToolbar(props: LaunchDarklyToolbarProps) {
         devServerUrl,
         pollIntervalInMs,
       }}
+      toolbarPlugin={toolbarPlugin}
     >
       <SearchProvider>
         <LdToolbar position={position} toolbarPlugin={toolbarPlugin} />
@@ -142,3 +129,6 @@ export function LaunchDarklyToolbar(props: LaunchDarklyToolbarProps) {
     </LaunchDarklyToolbarProvider>
   );
 }
+
+// Export the ToolbarProvider for consumers who want automatic override detection
+export { ToolbarProvider } from './context/ToolbarProvider';

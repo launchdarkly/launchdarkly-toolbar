@@ -2,6 +2,7 @@ import React, { createContext, useContext, useState, useEffect, useMemo, useCall
 import { DevServerClient } from '../../../services/DevServerClient';
 import { FlagStateManager } from '../../../services/FlagStateManager';
 import { LdToolbarConfig, ToolbarState } from '../../../types/devServer';
+import type { ToolbarPlugin } from '../../../../demo/plugins/ToolbarPlugin';
 
 const STORAGE_KEY = 'launchdarkly-toolbar-project';
 
@@ -30,9 +31,14 @@ export const useToolbarContext = () => {
 export interface LaunchDarklyToolbarProviderProps {
   children: React.ReactNode;
   config: LdToolbarConfig;
+  toolbarPlugin?: ToolbarPlugin;
 }
 
-export const LaunchDarklyToolbarProvider: React.FC<LaunchDarklyToolbarProviderProps> = ({ children, config }) => {
+export const LaunchDarklyToolbarProvider: React.FC<LaunchDarklyToolbarProviderProps> = ({
+  children,
+  config,
+  toolbarPlugin,
+}) => {
   const [toolbarState, setToolbarState] = useState<
     ToolbarState & {
       availableProjects: string[];
@@ -152,6 +158,17 @@ export const LaunchDarklyToolbarProvider: React.FC<LaunchDarklyToolbarProviderPr
 
     loadProjectData();
   }, [toolbarState.currentProjectKey, toolbarState.connectionStatus, devServerClient, flagStateManager]);
+
+  // Update toolbar plugin context when project data changes
+  useEffect(() => {
+    if (toolbarPlugin && toolbarState.currentProjectKey && toolbarState.sourceEnvironmentKey) {
+      toolbarPlugin.setContextScope({
+        project: toolbarState.currentProjectKey,
+        env: toolbarState.sourceEnvironmentKey,
+        contextHash: 'default', // Could be made dynamic if needed
+      });
+    }
+  }, [toolbarPlugin, toolbarState.currentProjectKey, toolbarState.sourceEnvironmentKey]);
 
   // Setup real-time updates
   useEffect(() => {
