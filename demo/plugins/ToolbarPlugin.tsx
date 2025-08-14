@@ -21,6 +21,7 @@ export type ToolbarPluginConfig = {
 export class ToolbarPlugin {
   private ldClient?: LDClient;
   private originalVariation?: LDClient['variation'];
+  private originalAllFlags?: () => Record<string, unknown>;
   private config: Required<ToolbarPluginConfig>;
   private scope: Scope = { project: 'unknown', env: 'unknown', contextHash: 'default' };
 
@@ -54,6 +55,16 @@ export class ToolbarPlugin {
       return this.originalVariation!(key, defaultValue);
     };
 
+    // patch allFlags to include overrides - this is what the React SDK uses
+    this.originalAllFlags = (ldClient as any).allFlags?.bind(ldClient);
+    if (this.originalAllFlags) {
+      (ldClient as any).allFlags = () => {
+        const baseFlags = this.originalAllFlags!();
+        const overrides = this.currentOverridesForScope();
+        return { ...baseFlags, ...overrides };
+      };
+    }
+
     // hydrate persisted overrides for current scope
     this.loadPersistedOverrides();
 
@@ -80,6 +91,10 @@ export class ToolbarPlugin {
     if (this.originalVariation) {
       this.ldClient.variation = this.originalVariation;
       this.originalVariation = undefined;
+    }
+    if (this.originalAllFlags) {
+      (this.ldClient as any).allFlags = this.originalAllFlags;
+      this.originalAllFlags = undefined;
     }
     this.listeners.clear();
   }
