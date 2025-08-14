@@ -8,6 +8,7 @@ import * as styles from './LaunchDarklyToolbar.css';
 import { LaunchDarklyToolbarProvider } from './context/LaunchDarklyToolbarProvider';
 import type { ToolbarPlugin } from '../../../demo/plugins/ToolbarPlugin';
 import { Button } from '@launchpad-ui/components';
+import { useLDClient } from 'launchdarkly-react-client-sdk';
 
 export interface LdToolbarProps {
   position?: 'left' | 'right';
@@ -44,52 +45,52 @@ export function LdToolbar(props: LdToolbarProps) {
   });
   const { containerAnimations, animationConfig, handleAnimationStart, handleAnimationComplete } = toolbarAnimations;
 
+  const ldClient = useLDClient();
+  const testFlagByPranjal = ldClient?.variation('test-flag-by-pranjal', false);
+
   return (
-    <>
-      <motion.div
-        ref={toolbarRef}
-        className={`${styles.toolbarContainer} ${position === 'left' ? styles.positionLeft : styles.positionRight} ${showFullToolbar ? styles.toolbarExpanded : styles.toolbarCircle}`}
-        onMouseEnter={handleMouseEnter}
-        onMouseLeave={handleMouseLeave}
-        initial={false}
-        animate={containerAnimations}
-        transition={animationConfig}
-        onAnimationStart={handleAnimationStart}
-        onAnimationComplete={handleAnimationComplete}
-        data-testid="launchdarkly-toolbar"
-        role="toolbar"
-        aria-label="LaunchDarkly Developer Toolbar"
-      >
-        <AnimatePresence>{!showFullToolbar && <CircleLogo hasBeenExpanded={hasBeenExpanded} />}</AnimatePresence>
-        <AnimatePresence>
-          {showFullToolbar && (
-            <>
-              <Button
-                onClick={async () => {
-                  const flags = await toolbarPlugin?.listFlags();
-                  const currentValue =
-                    toolbarPlugin?.getOverride('test-flag-by-pranjal') ?? flags?.['test-flag-by-pranjal'];
-                  toolbarPlugin?.setOverride('test-flag-by-pranjal', !currentValue);
-                }}
-              >
-                Toggle Test Flag By Pranjal
-              </Button>
-              <ExpandedToolbarContent
-                isExpanded={isExpanded}
-                activeTab={activeTab}
-                slideDirection={slideDirection}
-                searchTerm={searchTerm}
-                searchIsExpanded={searchIsExpanded}
-                onSearch={handleSearch}
-                onClose={handleClose}
-                onTabChange={handleTabChange}
-                setSearchIsExpanded={setSearchIsExpanded}
-              />
-            </>
-          )}
-        </AnimatePresence>
-      </motion.div>
-    </>
+    <motion.div
+      ref={toolbarRef}
+      className={`${styles.toolbarContainer} ${position === 'left' ? styles.positionLeft : styles.positionRight} ${showFullToolbar ? styles.toolbarExpanded : styles.toolbarCircle}`}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
+      initial={false}
+      animate={containerAnimations}
+      transition={animationConfig}
+      onAnimationStart={handleAnimationStart}
+      onAnimationComplete={handleAnimationComplete}
+      data-testid="launchdarkly-toolbar"
+      role="toolbar"
+      aria-label="LaunchDarkly Developer Toolbar"
+    >
+      <AnimatePresence>{!showFullToolbar && <CircleLogo hasBeenExpanded={hasBeenExpanded} />}</AnimatePresence>
+      <AnimatePresence>
+        {showFullToolbar && (
+          <>
+            <Button
+              onClick={() => {
+                // localOverridePlugin.setOverride()
+                // ldClient.localOverridePlugin.setOverride()
+                toolbarPlugin?.setOverride('test-flag-by-pranjal', !testFlagByPranjal);
+              }}
+            >
+              Toggle Test Flag By Pranjal
+            </Button>
+            <ExpandedToolbarContent
+              isExpanded={isExpanded}
+              activeTab={activeTab}
+              slideDirection={slideDirection}
+              searchTerm={searchTerm}
+              searchIsExpanded={searchIsExpanded}
+              onSearch={handleSearch}
+              onClose={handleClose}
+              onTabChange={handleTabChange}
+              setSearchIsExpanded={setSearchIsExpanded}
+            />
+          </>
+        )}
+      </AnimatePresence>
+    </motion.div>
   );
 }
 
