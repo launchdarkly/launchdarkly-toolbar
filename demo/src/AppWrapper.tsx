@@ -13,7 +13,6 @@ export function AppWrapper() {
   const ldClient = useLDClient();
 
   const testFlagByPranjal = ldClient?.variation('test-flag-by-pranjal', false);
-  console.log({ testFlagByPranjal }, 'TEST FLAG BY PRANJAL');
 
   return (
     <div className="app">
