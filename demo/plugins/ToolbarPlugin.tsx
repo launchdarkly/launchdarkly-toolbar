@@ -38,6 +38,7 @@ export class ToolbarPlugin {
       persistAcrossTabs: config.persistAcrossTabs ?? false,
       storageNamespace: config.storageNamespace ?? 'ld-toolbar',
     };
+    this.initializeScope();
   }
 
   /** SDK calls thisg (via plugins array) */
@@ -178,6 +179,42 @@ export class ToolbarPlugin {
   }
 
   /** ====================== internal helpers ====================== */
+
+  // Initialize scope by detecting from existing storage first
+  private initializeScope(): void {
+    if (this.scope.project === 'unknown' && this.scope.env === 'unknown') {
+      const detectedScope = this.detectScopeFromStorage();
+      if (detectedScope) {
+        this.scope = detectedScope;
+      } else {
+        this.scope = { project: 'default', env: 'default', contextHash: 'default' };
+      }
+    }
+  }
+
+  private detectScopeFromStorage(): Scope | null {
+    const storage = this.storage();
+    if (!storage) return null;
+
+    // Look for any stored key with our namespace
+    for (let i = 0; i < storage.length; i++) {
+      const key = storage.key(i);
+      if (key && key.startsWith(`${this.config.storageNamespace}:`)) {
+        // Parse key format: ld-toolbar:project:env:contextHash/flagKey
+        const match = key.match(/^[^:]+:([^:]+):([^:]+):([^/]+)/);
+        if (match) {
+          const [, project, env, contextHash] = match;
+          console.log(`ToolbarPlugin: Found existing storage key: ${key}, parsed scope:`, {
+            project,
+            env,
+            contextHash,
+          });
+          return { project, env, contextHash };
+        }
+      }
+    }
+    return null;
+  }
 
   private handleSdkChange(changes: Record<string, { current: unknown; previous: unknown }>) {
     for (const [key, { current }] of Object.entries(changes)) {
