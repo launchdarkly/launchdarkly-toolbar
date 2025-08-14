@@ -5,7 +5,7 @@ settings:
   excludeLinksFromLockfile: false
 
 overrides:
-  launchdarkly-js-client-sdk: link:sdk-fork
+  launchdarkly-js-client-sdk: link:../js-client-sdk
 
 importers:
 
@@ -30,8 +30,8 @@ importers:
         specifier: ^2.3.22
         version: 2.3.22(webpack@5.99.9(esbuild@0.25.5))
       launchdarkly-js-client-sdk:
-        specifier: link:sdk-fork
-        version: link:sdk-fork
+        specifier: link:../js-client-sdk
+        version: link:../js-client-sdk
       motion:
         specifier: ^12.19.2
         version: 12.19.2(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
@@ -127,8 +127,8 @@ importers:
         specifier: workspace:*
         version: link:..
       launchdarkly-js-client-sdk:
-        specifier: link:../sdk-fork
-        version: link:../sdk-fork
+        specifier: link:../../js-client-sdk
+        version: link:../../js-client-sdk
       launchdarkly-react-client-sdk:
         specifier: ^3.8.1
         version: 3.8.1(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
@@ -7726,7 +7726,7 @@ snapshots:
   launchdarkly-react-client-sdk@3.8.1(react-dom@19.1.0(react@19.1.0))(react@19.1.0):
     dependencies:
       hoist-non-react-statics: 3.3.2
-      launchdarkly-js-client-sdk: link:sdk-fork
+      launchdarkly-js-client-sdk: link:../js-client-sdk
       lodash.camelcase: 4.3.0
       react: 19.1.0
       react-dom: 19.1.0(react@19.1.0)

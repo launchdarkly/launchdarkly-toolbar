@@ -3,4 +3,4 @@ packages:
   - demo
 
 overrides:
-  launchdarkly-js-client-sdk: link:sdk-fork
+  launchdarkly-js-client-sdk: link:../js-client-sdk
