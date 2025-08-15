@@ -6,6 +6,7 @@ settings:
 
 overrides:
   launchdarkly-js-client-sdk: link:../js-client-sdk
+  launchdarkly-react-client-sdk: link:../react-client-sdk
 
 importers:
 
@@ -33,8 +34,8 @@ importers:
         specifier: link:../js-client-sdk
         version: link:../js-client-sdk
       launchdarkly-react-client-sdk:
-        specifier: ^3.8.1
-        version: 3.8.1(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
+        specifier: link:../react-client-sdk
+        version: link:../react-client-sdk
       motion:
         specifier: ^12.19.2
         version: 12.19.2(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
@@ -133,8 +134,8 @@ importers:
         specifier: link:../../js-client-sdk
         version: link:../../js-client-sdk
       launchdarkly-react-client-sdk:
-        specifier: ^3.8.1
-        version: 3.8.1(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
+        specifier: link:../../react-client-sdk
+        version: link:../../react-client-sdk
       react:
         specifier: ^19.1.0
         version: 19.1.0
@@ -2849,9 +2850,6 @@ packages:
     resolution: {integrity: sha512-F/1DnUGPopORZi0ni+CvrCgHQ5FyEAHRLSApuYWMmrbSwoN2Mn/7k+Gl38gJnR7yyDZk6WLXwiGod1JOWNDKGw==}
     hasBin: true
 
-  hoist-non-react-statics@3.3.2:
-    resolution: {integrity: sha512-/gGivxi8JPKWNm/W0jSmzcMPpfpPLc3dY/6GxhX2hQ9iGj3aDfklV4ET7NjKpSinLpJ5vafa9iiGIEZg10SfBw==}
-
   html-encoding-sniffer@3.0.0:
     resolution: {integrity: sha512-oWv4T4yJ52iKrufjnyZPkrN0CH3QnrUqdB6In1g5Fe1mia8GmF36gnfNySxoZtxD5+NmYw1EElVXiBk93UeskA==}
     engines: {node: '>=12'}
@@ -3039,12 +3037,6 @@ packages:
   keyv@4.5.4:
     resolution: {integrity: sha512-oxVHkHR/EJf2CNXnWxRLW6mg7JyCCUcG0DtEGmL2ctUo1PNTin1PUil+r/+4r5MpVgC/fn1kjsx7mjSujKqIpw==}
 
-  launchdarkly-react-client-sdk@3.8.1:
-    resolution: {integrity: sha512-lQleTycQwAuNysNsV3VBC31N+wtCEF1FFfyffXlNV1g89jRG5dmEoChCqiuJVnlpL3l4O8+8HIbHuPALcWxCTQ==}
-    peerDependencies:
-      react: ^16.6.3 || ^17.0.0 || ^18.0.0 || ^19.0.0
-      react-dom: ^16.8.4 || ^17.0.0 || ^18.0.0 || ^19.0.0
-
   levn@0.4.1:
     resolution: {integrity: sha512-+bT2uH4E5LGE7h/n3evcS/sQlJXCpIp6ym8OWJ5eV6+67Dsql/LaaT7qJBAt2rzfoa/5QBGBhxDix1dMt2kQKQ==}
     engines: {node: '>= 0.8.0'}
@@ -3068,9 +3060,6 @@ packages:
   locate-path@7.2.0:
     resolution: {integrity: sha512-gvVijfZvn7R+2qyPX8mAuKcFGDf6Nc61GdvGafQsHL0sBIxfKzA+usWn4GFC/bk+QdwPUD4kWFJLhElipq+0VA==}
     engines: {node: ^12.20.0 || ^14.13.1 || >=16.0.0}
-
-  lodash.camelcase@4.3.0:
-    resolution: {integrity: sha512-TwuEnCnxbc3rAvhf/LbG7tJUDzhqXyFnv3dtzLOPgCG/hODL7WFnsbwktkD7yUV0RrreP/l1PALq/YSg6VvjlA==}
 
   lodash.merge@4.6.2:
     resolution: {integrity: sha512-0KpjqXRVvrYyCsX1swR/XTK0va6VQkQM6MNo7PqW77ByjAhoARA8EfrP1N4+KlKj8YS0ZUCtRT/YUuhyYDujIQ==}
@@ -3417,9 +3406,6 @@ packages:
     resolution: {integrity: sha512-Xs1hdnE+DyKgeHJeJznQmYMIBG3TKIHJJT95Q58nHLSrElKlGQqDTR2HQ9fx5CN/Gk6Vh/kupBTDLU11/nDk/g==}
     peerDependencies:
       react: ^19.1.0
-
-  react-is@16.13.1:
-    resolution: {integrity: sha512-24e6ynE2H+OKt4kqsOvNd8kBpV65zoxbA4BVsEOB3ARVWQki/DHzaUoC5KuON/BiccDaCCTZBuOcfZs70kR8bQ==}
 
   react-is@17.0.2:
     resolution: {integrity: sha512-w2GsyukL62IJnlaff/nRegPQR94C/XXamvMWmSHRJ4y7Ts/4ocGRmTHvOs8PSE6pB3dWOrD/nueuU5sduBsQ4w==}
@@ -7508,10 +7494,6 @@ snapshots:
 
   he@1.2.0: {}
 
-  hoist-non-react-statics@3.3.2:
-    dependencies:
-      react-is: 16.13.1
-
   html-encoding-sniffer@3.0.0:
     dependencies:
       whatwg-encoding: 2.0.0
@@ -7726,14 +7708,6 @@ snapshots:
     dependencies:
       json-buffer: 3.0.1
 
-  launchdarkly-react-client-sdk@3.8.1(react-dom@19.1.0(react@19.1.0))(react@19.1.0):
-    dependencies:
-      hoist-non-react-statics: 3.3.2
-      launchdarkly-js-client-sdk: link:../js-client-sdk
-      lodash.camelcase: 4.3.0
-      react: 19.1.0
-      react-dom: 19.1.0(react@19.1.0)
-
   levn@0.4.1:
     dependencies:
       prelude-ls: 1.2.1
@@ -7758,8 +7732,6 @@ snapshots:
   locate-path@7.2.0:
     dependencies:
       p-locate: 6.0.0
-
-  lodash.camelcase@4.3.0: {}
 
   lodash.merge@4.6.2: {}
 
@@ -8151,8 +8123,6 @@ snapshots:
     dependencies:
       react: 19.1.0
       scheduler: 0.26.0
-
-  react-is@16.13.1: {}
 
   react-is@17.0.2: {}
 
