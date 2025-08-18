@@ -55,7 +55,9 @@
     "test:e2e:ci:ui": "TEST_ENV=ci playwright test --ui --config=./e2e/playwright.config.ts",
     "lint": "oxlint",
     "dev:watch": "./scripts/smart-watch-simple.sh",
-    "dev:status": "./scripts/dev-status.sh"
+    "dev:status": "./scripts/dev-status.sh",
+    "dev:link": "./scripts/setup-local-links.sh",
+    "dev:unlink": "./scripts/remove-local-links.sh"
   },
   "devDependencies": {
     "@playwright/test": "^1.53.1",
