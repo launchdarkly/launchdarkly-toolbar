@@ -1,28 +1,37 @@
 import { motion } from 'motion/react';
 import { FlagTabContent } from '../TabContent/FlagTabContent';
+import { LocalOverridesTabContent } from '../TabContent/LocalOverridesTabContent';
 // import { EventsTabContent } from '../TabContent/EventsTabContent';
 import { SettingsTabContent } from '../TabContent/SettingsTabContent';
 import { ANIMATION_CONFIG, DIMENSIONS } from '../constants';
 import { TabId } from '../types';
-
-const TAB_CONTENT_MAP = {
-  flags: FlagTabContent,
-  // events: EventsTabContent,
-  settings: SettingsTabContent,
-} as const satisfies Record<TabId, React.ComponentType>;
+import type { ToolbarPlugin } from '../../../../demo/plugins/ToolbarPlugin';
 
 interface TabContentRendererProps {
   activeTab: TabId;
   slideDirection: number;
+  toolbarPlugin?: ToolbarPlugin;
 }
 
 export function TabContentRenderer(props: TabContentRendererProps) {
-  const { activeTab, slideDirection } = props;
-  const ContentComponent = TAB_CONTENT_MAP[activeTab];
+  const { activeTab, slideDirection, toolbarPlugin } = props;
 
-  if (!ContentComponent) {
-    return null;
-  }
+  const renderContent = () => {
+    switch (activeTab) {
+      case 'local-overrides':
+        if (!toolbarPlugin) return null;
+        return <LocalOverridesTabContent toolbarPlugin={toolbarPlugin} />;
+      case 'flags':
+        return <FlagTabContent />;
+      case 'settings':
+        return <SettingsTabContent />;
+      default:
+        return null;
+    }
+  };
+
+  const content = renderContent();
+  if (!content) return null;
 
   return (
     <motion.div
@@ -44,7 +53,7 @@ export function TabContentRenderer(props: TabContentRendererProps) {
       }}
       transition={ANIMATION_CONFIG.tabContent}
     >
-      <ContentComponent />
+      {content}
     </motion.div>
   );
 }

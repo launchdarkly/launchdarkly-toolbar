@@ -123,6 +123,20 @@ export class ToolbarPlugin implements LDPlugin {
     }
   }
 
+  getAllOverrides(): Record<string, unknown> {
+    if (!this.debugOverride) {
+      console.warn('ToolbarPlugin: Debug interface not available');
+      return {};
+    }
+
+    try {
+      return this.debugOverride.getAllOverrides();
+    } catch (error) {
+      console.error('ToolbarPlugin: Failed to get overrides:', error);
+      return {};
+    }
+  }
+
   private getStorage(): Storage | null {
     if (typeof window === 'undefined') return null;
     return window.localStorage;

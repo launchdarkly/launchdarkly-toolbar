@@ -1,8 +1,8 @@
 // Main toolbar types
-export type TabId = 'flags' | 'settings';
+export type TabId = 'local-overrides' | 'flags' | 'settings';
 export type ActiveTabId = TabId | undefined;
 
-export const TAB_ORDER: readonly TabId[] = ['flags', 'settings'] as const;
+export const TAB_ORDER: readonly TabId[] = ['local-overrides', 'flags', 'settings'] as const;
 
 // Feature flag types
 export interface FeatureFlag {

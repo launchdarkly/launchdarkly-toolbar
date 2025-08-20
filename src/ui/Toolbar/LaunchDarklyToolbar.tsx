@@ -7,8 +7,6 @@ import { useToolbarState, useToolbarAnimations, useToolbarVisibility } from './h
 import * as styles from './LaunchDarklyToolbar.css';
 import { LaunchDarklyToolbarProvider } from './context/LaunchDarklyToolbarProvider';
 import type { ToolbarPlugin } from '../../../demo/plugins/ToolbarPlugin';
-import { Button } from '@launchpad-ui/components';
-import { useLDClient } from 'launchdarkly-react-client-sdk';
 
 export interface LdToolbarProps {
   position?: 'left' | 'right';
@@ -45,9 +43,6 @@ export function LdToolbar(props: LdToolbarProps) {
   });
   const { containerAnimations, animationConfig, handleAnimationStart, handleAnimationComplete } = toolbarAnimations;
 
-  const ldClient = useLDClient();
-  const testFlagByPranjal = ldClient?.variation('test-flag-by-pranjal', false);
-
   return (
     <motion.div
       ref={toolbarRef}
@@ -66,28 +61,18 @@ export function LdToolbar(props: LdToolbarProps) {
       <AnimatePresence>{!showFullToolbar && <CircleLogo hasBeenExpanded={hasBeenExpanded} />}</AnimatePresence>
       <AnimatePresence>
         {showFullToolbar && (
-          <>
-            <Button
-              onClick={() => {
-                // localOverridePlugin.setOverride()
-                // ldClient.localOverridePlugin.setOverride()
-                toolbarPlugin?.setOverride('test-flag-by-pranjal', !testFlagByPranjal);
-              }}
-            >
-              Toggle Test Flag By Pranjal
-            </Button>
-            <ExpandedToolbarContent
-              isExpanded={isExpanded}
-              activeTab={activeTab}
-              slideDirection={slideDirection}
-              searchTerm={searchTerm}
-              searchIsExpanded={searchIsExpanded}
-              onSearch={handleSearch}
-              onClose={handleClose}
-              onTabChange={handleTabChange}
-              setSearchIsExpanded={setSearchIsExpanded}
-            />
-          </>
+          <ExpandedToolbarContent
+            isExpanded={isExpanded}
+            activeTab={activeTab}
+            slideDirection={slideDirection}
+            searchTerm={searchTerm}
+            searchIsExpanded={searchIsExpanded}
+            onSearch={handleSearch}
+            onClose={handleClose}
+            onTabChange={handleTabChange}
+            setSearchIsExpanded={setSearchIsExpanded}
+            toolbarPlugin={toolbarPlugin}
+          />
         )}
       </AnimatePresence>
     </motion.div>

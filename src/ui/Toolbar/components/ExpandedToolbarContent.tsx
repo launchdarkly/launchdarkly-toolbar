@@ -8,10 +8,11 @@ import { TabContentRenderer } from './TabContentRenderer';
 import { ANIMATION_CONFIG, EASING } from '../constants';
 import { ActiveTabId } from '../types';
 import { useToolbarContext } from '../context/LaunchDarklyToolbarProvider';
+import type { ToolbarPlugin } from '../../../../demo/plugins/ToolbarPlugin';
 
 import * as styles from '../LaunchDarklyToolbar.css';
-import { ErrorMessage } from './ErrorMessage';
-import { GearIcon, ToggleOffIcon } from './icons';
+// import { ErrorMessage } from './ErrorMessage';
+import { GearIcon, ToggleOffIcon, ArrowUndoIcon } from './icons';
 
 interface ExpandedToolbarContentProps {
   isExpanded: boolean;
@@ -23,6 +24,7 @@ interface ExpandedToolbarContentProps {
   onClose: () => void;
   onTabChange: (tabId: string) => void;
   setSearchIsExpanded: Dispatch<SetStateAction<boolean>>;
+  toolbarPlugin?: ToolbarPlugin;
 }
 
 function getHeaderLabel(currentProjectKey: string | null, sourceEnvironmentKey: string | null) {
@@ -44,12 +46,13 @@ export function ExpandedToolbarContent(props: ExpandedToolbarContentProps) {
     onClose,
     onTabChange,
     setSearchIsExpanded,
+    toolbarPlugin,
   } = props;
 
   const { state } = useToolbarContext();
 
   const headerLabel = getHeaderLabel(state.currentProjectKey, state.sourceEnvironmentKey);
-  const { error } = state;
+  // const { error } = state;
 
   return (
     <motion.div
@@ -99,23 +102,29 @@ export function ExpandedToolbarContent(props: ExpandedToolbarContentProps) {
               setSearchIsExpanded={setSearchIsExpanded}
               label={headerLabel}
             />
-            {error && <ErrorMessage error={error} />}
-            {!error && (
-              <motion.div
-                className={styles.scrollableContent}
-                initial={{ opacity: 0, y: -10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{
-                  duration: 0.3,
-                  ease: EASING.elastic,
-                  delay: 0.1,
-                }}
-              >
-                <AnimatePresence mode="wait">
-                  {activeTab && <TabContentRenderer activeTab={activeTab} slideDirection={slideDirection} />}
-                </AnimatePresence>
-              </motion.div>
-            )}
+            {/* {error && <ErrorMessage error={error} />} */}
+            {/* {true && ( */}
+            <motion.div
+              className={styles.scrollableContent}
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{
+                duration: 0.3,
+                ease: EASING.elastic,
+                delay: 0.1,
+              }}
+            >
+              <AnimatePresence mode="wait">
+                {activeTab && (
+                  <TabContentRenderer
+                    activeTab={activeTab}
+                    slideDirection={slideDirection}
+                    toolbarPlugin={toolbarPlugin}
+                  />
+                )}
+              </AnimatePresence>
+            </motion.div>
+            {/* )} */}
           </motion.div>
         )}
       </AnimatePresence>
@@ -133,6 +142,7 @@ export function ExpandedToolbarContent(props: ExpandedToolbarContentProps) {
         transition={ANIMATION_CONFIG.tabsContainer}
       >
         <Tabs activeTab={activeTab || undefined} onTabChange={onTabChange}>
+          {toolbarPlugin && <TabButton id="local-overrides" label="Local Overrides" icon={ArrowUndoIcon} />}
           <TabButton id="flags" label="Flags" icon={ToggleOffIcon} />
           {/* <TabButton id="events" label="Events" icon="chart-line" /> */}
           <TabButton id="settings" label="Settings" icon={GearIcon} />
