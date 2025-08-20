@@ -8,7 +8,6 @@ const DEFAULT_STORAGE_NAMESPACE = 'ld-toolbar';
 export class ToolbarPlugin implements LDPlugin {
   private debugOverride?: LDDebugOverride;
   private config: Required<ToolbarPluginConfig>;
-  private overrides = new Map<string, unknown>();
 
   constructor(config: ToolbarPluginConfig = {}) {
     this.config = {
@@ -56,7 +55,6 @@ export class ToolbarPlugin implements LDPlugin {
             const value = JSON.parse(storedValue);
             const flagKey = key.replace(this.config.storageNamespace + ':', '');
 
-            this.overrides.set(flagKey, value);
             this.debugOverride.setOverride(flagKey, value);
             loadedCount++;
           } catch (error) {
@@ -88,10 +86,9 @@ export class ToolbarPlugin implements LDPlugin {
 
     try {
       // Store in memory
-      // this.overrides.set(flagKey, value);
 
       // // Persist to storage
-      // this.persistOverride(flagKey, value);
+      this.persistOverride(flagKey, value);
 
       // Apply via debug interface (triggers React updates)
       console.log('🚀 ~ ToolbarPlugin ~ setOverride ~');
@@ -117,9 +114,6 @@ export class ToolbarPlugin implements LDPlugin {
     }
 
     try {
-      // Remove from memory
-      this.overrides.delete(flagKey);
-
       // Remove from storage
       this.removePersistedOverride(flagKey);
 
@@ -140,26 +134,11 @@ export class ToolbarPlugin implements LDPlugin {
     }
 
     try {
-      const overrideCount = this.overrides.size;
-
-      // Clear from memory
-      this.overrides.clear();
-
-      // Clear from storage
       this.clearPersistedOverrides();
-
-      // Clear via debug interface (triggers React updates)
       this.debugOverride.clearAllOverrides();
-
-      console.log(`ToolbarPlugin: Cleared ${overrideCount} overrides`);
     } catch (error) {
       console.error('ToolbarPlugin: Failed to clear overrides:', error);
     }
-  }
-
-  // Utility: Get current overrides
-  getOverrides(): Record<string, unknown> {
-    return Object.fromEntries(this.overrides);
   }
 
   // Helper: Get storage
@@ -194,7 +173,6 @@ export class ToolbarPlugin implements LDPlugin {
     }
   }
 
-  // Helper: Clear all persisted overrides
   private clearPersistedOverrides(): void {
     const storage = this.getStorage();
     if (!storage) return;
