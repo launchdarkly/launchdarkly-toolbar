@@ -1,6 +1,6 @@
 import type { LDClient, LDPlugin, LDDebugOverride } from 'launchdarkly-react-client-sdk';
 export type ToolbarPluginConfig = {
-  storageNamespace?: string; // default: 'ld-toolbar'
+  storageNamespace?: string;
 };
 
 const DEFAULT_STORAGE_NAMESPACE = 'ld-toolbar';
@@ -22,20 +22,17 @@ export class ToolbarPlugin implements LDPlugin {
     };
   }
 
-  register(ldClient: LDClient): void {
-    console.log('🚀 ~ ToolbarPlugin ~ register ~ ldClient:', ldClient);
-    // Plugin is registered, ready to work with debug interface
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  register(_ldClient: LDClient): void {
+    console.log('ToolbarPlugin: Registered with LaunchDarkly client');
   }
 
   registerDebug(debugOverride: LDDebugOverride): void {
-    console.log('🚀 ~ ToolbarPlugin ~ registerDebug ~ debugOverride:', debugOverride);
+    console.log('ToolbarPlugin: Debug interface registered');
     this.debugOverride = debugOverride;
-
-    // Load any existing overrides from storage
     this.loadExistingOverrides();
   }
 
-  // Core function 1: Load existing overrides if there are any
   private loadExistingOverrides(): void {
     if (!this.debugOverride) return;
 
@@ -57,9 +54,9 @@ export class ToolbarPlugin implements LDPlugin {
 
             this.debugOverride.setOverride(flagKey, value);
             loadedCount++;
-          } catch (error) {
+          } catch {
             console.warn('ToolbarPlugin: Invalid stored value for', key);
-            storage.removeItem(key); // Clean up invalid entries
+            storage.removeItem(key);
           }
         }
       }
@@ -72,7 +69,6 @@ export class ToolbarPlugin implements LDPlugin {
     }
   }
 
-  // Core function 2: Set an override
   setOverride(flagKey: string, value: unknown): void {
     if (!this.debugOverride) {
       console.warn('ToolbarPlugin: Debug interface not available');
@@ -85,23 +81,14 @@ export class ToolbarPlugin implements LDPlugin {
     }
 
     try {
-      // Store in memory
-
-      // // Persist to storage
       this.persistOverride(flagKey, value);
-
-      // Apply via debug interface (triggers React updates)
-      console.log('🚀 ~ ToolbarPlugin ~ setOverride ~');
-
       this.debugOverride.setOverride(flagKey, value);
-
       console.log(`ToolbarPlugin: Set override ${flagKey} =`, value);
     } catch (error) {
       console.error('ToolbarPlugin: Failed to set override:', error);
     }
   }
 
-  // Core function 3: Remove a specific override
   removeOverride(flagKey: string): void {
     if (!this.debugOverride) {
       console.warn('ToolbarPlugin: Debug interface not available');
@@ -114,19 +101,14 @@ export class ToolbarPlugin implements LDPlugin {
     }
 
     try {
-      // Remove from storage
       this.removePersistedOverride(flagKey);
-
-      // Remove via debug interface (triggers React updates)
       this.debugOverride.removeOverride(flagKey);
-
       console.log(`ToolbarPlugin: Removed override for ${flagKey}`);
     } catch (error) {
       console.error('ToolbarPlugin: Failed to remove override:', error);
     }
   }
 
-  // Core function 4: Clear all overrides
   clearAllOverrides(): void {
     if (!this.debugOverride) {
       console.warn('ToolbarPlugin: Debug interface not available');
@@ -141,13 +123,11 @@ export class ToolbarPlugin implements LDPlugin {
     }
   }
 
-  // Helper: Get storage
   private getStorage(): Storage | null {
     if (typeof window === 'undefined') return null;
-    return window.localStorage; // Use localStorage for persistence
+    return window.localStorage;
   }
 
-  // Helper: Persist single override
   private persistOverride(flagKey: string, value: unknown): void {
     const storage = this.getStorage();
     if (!storage) return;
@@ -160,7 +140,6 @@ export class ToolbarPlugin implements LDPlugin {
     }
   }
 
-  // Helper: Remove persisted override
   private removePersistedOverride(flagKey: string): void {
     const storage = this.getStorage();
     if (!storage) return;
