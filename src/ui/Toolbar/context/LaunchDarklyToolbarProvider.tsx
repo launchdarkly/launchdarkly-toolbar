@@ -159,17 +159,6 @@ export const LaunchDarklyToolbarProvider: React.FC<LaunchDarklyToolbarProviderPr
     loadProjectData();
   }, [toolbarState.currentProjectKey, toolbarState.connectionStatus, devServerClient, flagStateManager]);
 
-  // Update toolbar plugin context when project data changes
-  useEffect(() => {
-    if (toolbarPlugin && toolbarState.currentProjectKey && toolbarState.sourceEnvironmentKey) {
-      toolbarPlugin.setContextScope({
-        project: toolbarState.currentProjectKey,
-        env: toolbarState.sourceEnvironmentKey,
-        contextHash: 'default', // Could be made dynamic if needed
-      });
-    }
-  }, [toolbarPlugin, toolbarState.currentProjectKey, toolbarState.sourceEnvironmentKey]);
-
   // Setup real-time updates
   useEffect(() => {
     if (toolbarState.connectionStatus !== 'connected') {
