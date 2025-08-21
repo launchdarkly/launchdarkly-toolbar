@@ -1,4 +1,4 @@
-import { useRef, useState, useMemo } from 'react';
+import { useRef, useState } from 'react';
 import { useVirtualizer } from '@tanstack/react-virtual';
 import { useLDClient } from 'launchdarkly-react-client-sdk';
 import { List } from '../../List/List';
@@ -73,6 +73,7 @@ export function LocalOverridesTabContent({ toolbarPlugin }: LocalOverridesTabCon
     return result;
   };
 
+  console.log('ToolbarPlugin: getAllOverrides', toolbarPlugin.getAllOverrides());
   const flags = getFlags();
 
   // Override operations - simple direct calls

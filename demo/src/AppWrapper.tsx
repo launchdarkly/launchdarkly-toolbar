@@ -12,8 +12,6 @@ export function AppWrapper() {
 
   const ldClient = useLDClient();
 
-  const testFlagByPranjal = ldClient?.variation('test-flag-by-pranjal', false);
-
   const allFlags = ldClient?.allFlags() || {};
 
   const formatValue = (value: unknown): string => {
@@ -36,7 +34,7 @@ export function AppWrapper() {
     <div className="app">
       <div className="container">
         <header className="header">
-          <h1>LaunchDarkly Toolbar Demo {testFlagByPranjal ? 'true' : 'false'}</h1>
+          <h1>LaunchDarkly Toolbar Demo</h1>
           <p>This demo showcases the LaunchDarkly Toolbar component with different configurations.</p>
         </header>
 
