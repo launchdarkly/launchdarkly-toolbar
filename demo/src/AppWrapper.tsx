@@ -14,6 +14,24 @@ export function AppWrapper() {
 
   const testFlagByPranjal = ldClient?.variation('test-flag-by-pranjal', false);
 
+  const allFlags = ldClient?.allFlags() || {};
+
+  const formatValue = (value: unknown): string => {
+    if (typeof value === 'boolean') return value ? 'true' : 'false';
+    if (typeof value === 'string') return `"${value}"`;
+    if (typeof value === 'number') return value.toString();
+    if (value === null) return 'null';
+    if (value === undefined) return 'undefined';
+    return JSON.stringify(value);
+  };
+
+  const getValueType = (value: unknown): string => {
+    if (typeof value === 'boolean') return 'boolean';
+    if (typeof value === 'string') return 'string';
+    if (typeof value === 'number') return 'number';
+    return 'object';
+  };
+
   return (
     <div className="app">
       <div className="container">
@@ -57,42 +75,31 @@ export function AppWrapper() {
           </div>
 
           <div className="demo-content">
-            <h2>Demo Content</h2>
-            <p>
-              The LaunchDarkly Toolbar should appear in the bottom-{position} corner of the screen. It provides a
-              developer-friendly interface to interact with feature flags.
-            </p>
-
-            <div className="feature-demo">
-              <h3>Features</h3>
-              <ul>
-                <li>✅ Animated toolbar that expands from a circle</li>
-                <li>✅ Flag management and toggling</li>
-                <li>✅ Event monitoring</li>
-                <li>✅ Settings configuration</li>
-                <li>✅ Search functionality</li>
-                <li>✅ Responsive design</li>
-                <li>✅ Keyboard navigation</li>
-              </ul>
-            </div>
-
-            <div className="instructions">
-              <h3>Instructions</h3>
-              <ol>
-                <li>Make sure you have a LaunchDarkly dev server running on the configured URL</li>
-                <li>Hover over the circular toolbar in the bottom corner to expand it</li>
-                <li>Explore the different tabs: Flags, Events, and Settings</li>
-                <li>Use the search functionality to find specific flags</li>
-                <li>Toggle feature flags and see real-time updates</li>
-              </ol>
-            </div>
-
-            <div className="status">
-              <h3>Connection Status</h3>
+            <div className="flags-display">
+              <h3>Current Flags ({Object.keys(allFlags).length})</h3>
               <p>
-                The toolbar will automatically connect to your LaunchDarkly dev server. Check the connection status
-                indicator in the toolbar header.
+                These are all the flags currently available to this client. Use the toolbar to override values and see
+                real-time updates!
               </p>
+              {Object.keys(allFlags).length === 0 ? (
+                <div className="no-flags">
+                  <p>No flags available. Make sure your LaunchDarkly client is properly initialized.</p>
+                </div>
+              ) : (
+                <div className="flags-grid">
+                  {Object.entries(allFlags)
+                    .sort(([a], [b]) => a.localeCompare(b))
+                    .map(([flagKey, flagValue]) => (
+                      <div key={flagKey} className="flag-item">
+                        <div className="flag-header">
+                          <span className="flag-key">{flagKey}</span>
+                          <span className={`flag-type ${getValueType(flagValue)}`}>{getValueType(flagValue)}</span>
+                        </div>
+                        <div className={`flag-value ${getValueType(flagValue)}`}>{formatValue(flagValue)}</div>
+                      </div>
+                    ))}
+                </div>
+              )}
             </div>
           </div>
         </main>
