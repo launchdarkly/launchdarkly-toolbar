@@ -12,7 +12,7 @@ import {
 } from '../components/LocalFlagControls';
 import { OverrideIndicator } from '../components/OverrideIndicator';
 import { ActionButtonsContainer } from '../components';
-import type { DebugOverridePlugin } from '../../../../demo/plugins/DebugOverridePlugin';
+import type { IDebugOverridePlugin } from '../../../types/plugin';
 
 import * as styles from './FlagTabContent.css';
 import * as actionStyles from '../components/ActionButtonsContainer.css';
@@ -26,7 +26,7 @@ interface LocalFlag {
 }
 
 interface LocalOverridesTabContentProps {
-  debugOverridePlugin: DebugOverridePlugin;
+  debugOverridePlugin: IDebugOverridePlugin;
 }
 
 export function LocalOverridesTabContent({ debugOverridePlugin }: LocalOverridesTabContentProps) {

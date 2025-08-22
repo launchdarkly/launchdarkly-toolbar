@@ -6,11 +6,11 @@ import { useToolbarState, useToolbarAnimations, useToolbarVisibility } from './h
 
 import * as styles from './LaunchDarklyToolbar.css';
 import { LaunchDarklyToolbarProvider } from './context/LaunchDarklyToolbarProvider';
-import type { DebugOverridePlugin } from '../../../demo/plugins/DebugOverridePlugin';
+import type { IDebugOverridePlugin } from '../../types/plugin';
 
 export interface LdToolbarProps {
   position?: 'left' | 'right';
-  debugOverridePlugin?: DebugOverridePlugin;
+  debugOverridePlugin?: IDebugOverridePlugin;
 }
 
 export function LdToolbar(props: LdToolbarProps) {
@@ -82,6 +82,7 @@ export function LdToolbar(props: LdToolbarProps) {
 export interface LaunchDarklyToolbarProps extends LdToolbarProps {
   devServerUrl?: string; // Optional - will default to http://localhost:8765
   projectKey?: string; // Optional - will auto-detect first available project if not provided
+  debugOverridePlugin?: IDebugOverridePlugin;
   pollIntervalInMs?: number; // Optional - will default to 5000ms
 }
 

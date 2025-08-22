@@ -1,15 +1,15 @@
 import React, { createContext } from 'react';
-import type { DebugOverridePlugin } from '../../../../demo/plugins/DebugOverridePlugin';
+import type { IDebugOverridePlugin } from '../../../types/plugin';
 
 interface ToolbarContextValue {
-  debugOverridePlugin?: DebugOverridePlugin;
+  debugOverridePlugin?: IDebugOverridePlugin;
 }
 
 const ToolbarContext = createContext<ToolbarContextValue | null>(null);
 
 interface ToolbarProviderProps {
   children: React.ReactNode;
-  debugOverridePlugin?: DebugOverridePlugin;
+  debugOverridePlugin?: IDebugOverridePlugin;
 }
 
 export function ToolbarProvider({ children, debugOverridePlugin }: ToolbarProviderProps) {

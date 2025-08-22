@@ -1,5 +1,4 @@
 import type { LDClient, LDPlugin, LDDebugOverride } from 'launchdarkly-react-client-sdk';
-import type { IDebugOverridePlugin } from '@launchdarkly/toolbar';
 
 /**
  * Configuration options for the DebugOverridePlugin
@@ -11,7 +10,7 @@ export type DebugOverridePluginConfig = {
 
 const DEFAULT_STORAGE_NAMESPACE = 'ld-debug-override';
 
-export class DebugOverridePlugin implements LDPlugin, IDebugOverridePlugin {
+export class DebugOverridePlugin implements LDPlugin {
   private debugOverride?: LDDebugOverride;
   private config: Required<DebugOverridePluginConfig>;
 

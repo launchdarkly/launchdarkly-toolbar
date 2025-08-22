@@ -5,12 +5,12 @@ import { LocalOverridesTabContent } from '../TabContent/LocalOverridesTabContent
 import { SettingsTabContent } from '../TabContent/SettingsTabContent';
 import { ANIMATION_CONFIG, DIMENSIONS } from '../constants';
 import { TabId } from '../types';
-import type { DebugOverridePlugin } from '../../../../demo/plugins/DebugOverridePlugin';
+import type { IDebugOverridePlugin } from '../../../types/plugin';
 
 interface TabContentRendererProps {
   activeTab: TabId;
   slideDirection: number;
-  debugOverridePlugin?: DebugOverridePlugin;
+  debugOverridePlugin?: IDebugOverridePlugin;
 }
 
 export function TabContentRenderer(props: TabContentRendererProps) {

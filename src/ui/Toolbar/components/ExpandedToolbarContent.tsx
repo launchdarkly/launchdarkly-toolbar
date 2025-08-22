@@ -8,7 +8,7 @@ import { TabContentRenderer } from './TabContentRenderer';
 import { ANIMATION_CONFIG, EASING } from '../constants';
 import { ActiveTabId } from '../types';
 import { useToolbarContext } from '../context/LaunchDarklyToolbarProvider';
-import type { DebugOverridePlugin } from '../../../../demo/plugins/DebugOverridePlugin';
+import type { IDebugOverridePlugin } from '../../../types/plugin';
 
 import * as styles from '../LaunchDarklyToolbar.css';
 // import { ErrorMessage } from './ErrorMessage';
@@ -24,7 +24,7 @@ interface ExpandedToolbarContentProps {
   onClose: () => void;
   onTabChange: (tabId: string) => void;
   setSearchIsExpanded: Dispatch<SetStateAction<boolean>>;
-  debugOverridePlugin?: DebugOverridePlugin;
+  debugOverridePlugin?: IDebugOverridePlugin;
 }
 
 function getHeaderLabel(currentProjectKey: string | null, sourceEnvironmentKey: string | null) {
