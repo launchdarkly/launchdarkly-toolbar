@@ -2,7 +2,7 @@ import React, { createContext, useContext, useState, useEffect, useMemo, useCall
 import { DevServerClient } from '../../../services/DevServerClient';
 import { FlagStateManager } from '../../../services/FlagStateManager';
 import { LdToolbarConfig, ToolbarState } from '../../../types/devServer';
-import type { ToolbarPlugin } from '../../../../demo/plugins/ToolbarPlugin';
+import type { DebugOverridePlugin } from '../../../../demo/plugins/DebugOverridePlugin';
 
 const STORAGE_KEY = 'launchdarkly-toolbar-project';
 
@@ -31,13 +31,13 @@ export const useToolbarContext = () => {
 export interface LaunchDarklyToolbarProviderProps {
   children: React.ReactNode;
   config: LdToolbarConfig;
-  toolbarPlugin?: ToolbarPlugin;
+  debugOverridePlugin?: DebugOverridePlugin;
 }
 
 export const LaunchDarklyToolbarProvider: React.FC<LaunchDarklyToolbarProviderProps> = ({
   children,
   config,
-  toolbarPlugin,
+  debugOverridePlugin,
 }) => {
   const [toolbarState, setToolbarState] = useState<
     ToolbarState & {

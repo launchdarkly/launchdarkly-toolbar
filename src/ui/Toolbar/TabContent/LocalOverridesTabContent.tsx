@@ -12,7 +12,7 @@ import {
 } from '../components/LocalFlagControls';
 import { OverrideIndicator } from '../components/OverrideIndicator';
 import { ActionButtonsContainer } from '../components';
-import type { ToolbarPlugin } from '../../../../demo/plugins/ToolbarPlugin';
+import type { DebugOverridePlugin } from '../../../../demo/plugins/DebugOverridePlugin';
 
 import * as styles from './FlagTabContent.css';
 import * as actionStyles from '../components/ActionButtonsContainer.css';
@@ -26,10 +26,10 @@ interface LocalFlag {
 }
 
 interface LocalOverridesTabContentProps {
-  toolbarPlugin: ToolbarPlugin;
+  debugOverridePlugin: DebugOverridePlugin;
 }
 
-export function LocalOverridesTabContent({ toolbarPlugin }: LocalOverridesTabContentProps) {
+export function LocalOverridesTabContent({ debugOverridePlugin }: LocalOverridesTabContentProps) {
   const { searchTerm } = useSearchContext();
   const ldClient = useLDClient();
 
@@ -56,7 +56,7 @@ export function LocalOverridesTabContent({ toolbarPlugin }: LocalOverridesTabCon
     if (!ldClient) return {};
 
     const allFlags = ldClient.allFlags();
-    const overrides = toolbarPlugin.getAllOverrides();
+    const overrides = debugOverridePlugin.getAllOverrides();
     const result: Record<string, LocalFlag> = {};
 
     Object.keys(allFlags).forEach((flagKey) => {
@@ -73,20 +73,20 @@ export function LocalOverridesTabContent({ toolbarPlugin }: LocalOverridesTabCon
     return result;
   };
 
-  console.log('ToolbarPlugin: getAllOverrides', toolbarPlugin.getAllOverrides());
+  console.log('DebugOverridePlugin: getAllOverrides', debugOverridePlugin.getAllOverrides());
   const flags = getFlags();
 
   // Override operations - simple direct calls
   const handleSetOverride = (flagKey: string, value: any) => {
-    toolbarPlugin.setOverride(flagKey, value);
+    debugOverridePlugin.setOverride(flagKey, value);
   };
 
   const handleClearOverride = (flagKey: string) => {
-    toolbarPlugin.removeOverride(flagKey);
+    debugOverridePlugin.removeOverride(flagKey);
   };
 
   const handleClearAllOverrides = () => {
-    toolbarPlugin.clearAllOverrides();
+    debugOverridePlugin.clearAllOverrides();
   };
 
   if (!ldClient) {

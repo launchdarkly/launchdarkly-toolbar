@@ -6,15 +6,15 @@ import { useToolbarState, useToolbarAnimations, useToolbarVisibility } from './h
 
 import * as styles from './LaunchDarklyToolbar.css';
 import { LaunchDarklyToolbarProvider } from './context/LaunchDarklyToolbarProvider';
-import type { ToolbarPlugin } from '../../../demo/plugins/ToolbarPlugin';
+import type { DebugOverridePlugin } from '../../../demo/plugins/DebugOverridePlugin';
 
 export interface LdToolbarProps {
   position?: 'left' | 'right';
-  toolbarPlugin?: ToolbarPlugin;
+  debugOverridePlugin?: DebugOverridePlugin;
 }
 
 export function LdToolbar(props: LdToolbarProps) {
-  const { position = 'right', toolbarPlugin } = props;
+  const { position = 'right', debugOverridePlugin } = props;
   const { searchTerm } = useSearchContext();
 
   const toolbarState = useToolbarState();
@@ -71,7 +71,7 @@ export function LdToolbar(props: LdToolbarProps) {
             onClose={handleClose}
             onTabChange={handleTabChange}
             setSearchIsExpanded={setSearchIsExpanded}
-            toolbarPlugin={toolbarPlugin}
+            debugOverridePlugin={debugOverridePlugin}
           />
         )}
       </AnimatePresence>
@@ -91,7 +91,7 @@ export function LaunchDarklyToolbar(props: LaunchDarklyToolbarProps) {
     position,
     devServerUrl = 'http://localhost:8765',
     pollIntervalInMs = 5000,
-    toolbarPlugin,
+    debugOverridePlugin,
   } = props;
   const isVisible = useToolbarVisibility();
 
@@ -107,10 +107,10 @@ export function LaunchDarklyToolbar(props: LaunchDarklyToolbarProps) {
         devServerUrl,
         pollIntervalInMs,
       }}
-      toolbarPlugin={toolbarPlugin}
+      debugOverridePlugin={debugOverridePlugin}
     >
       <SearchProvider>
-        <LdToolbar position={position} toolbarPlugin={toolbarPlugin} />
+        <LdToolbar position={position} debugOverridePlugin={debugOverridePlugin} />
       </SearchProvider>
     </LaunchDarklyToolbarProvider>
   );

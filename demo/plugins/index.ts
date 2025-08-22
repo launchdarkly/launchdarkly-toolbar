@@ -1,3 +1,3 @@
-import { ToolbarPlugin } from './ToolbarPlugin';
+import { DebugOverridePlugin } from './DebugOverridePlugin';
 
-export const toolbarPlugin = new ToolbarPlugin();
+export const debugOverridePlugin = new DebugOverridePlugin();

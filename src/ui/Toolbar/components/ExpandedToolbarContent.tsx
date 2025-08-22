@@ -8,7 +8,7 @@ import { TabContentRenderer } from './TabContentRenderer';
 import { ANIMATION_CONFIG, EASING } from '../constants';
 import { ActiveTabId } from '../types';
 import { useToolbarContext } from '../context/LaunchDarklyToolbarProvider';
-import type { ToolbarPlugin } from '../../../../demo/plugins/ToolbarPlugin';
+import type { DebugOverridePlugin } from '../../../../demo/plugins/DebugOverridePlugin';
 
 import * as styles from '../LaunchDarklyToolbar.css';
 // import { ErrorMessage } from './ErrorMessage';
@@ -24,7 +24,7 @@ interface ExpandedToolbarContentProps {
   onClose: () => void;
   onTabChange: (tabId: string) => void;
   setSearchIsExpanded: Dispatch<SetStateAction<boolean>>;
-  toolbarPlugin?: ToolbarPlugin;
+  debugOverridePlugin?: DebugOverridePlugin;
 }
 
 function getHeaderLabel(currentProjectKey: string | null, sourceEnvironmentKey: string | null) {
@@ -46,7 +46,7 @@ export function ExpandedToolbarContent(props: ExpandedToolbarContentProps) {
     onClose,
     onTabChange,
     setSearchIsExpanded,
-    toolbarPlugin,
+    debugOverridePlugin,
   } = props;
 
   const { state } = useToolbarContext();
@@ -119,7 +119,7 @@ export function ExpandedToolbarContent(props: ExpandedToolbarContentProps) {
                   <TabContentRenderer
                     activeTab={activeTab}
                     slideDirection={slideDirection}
-                    toolbarPlugin={toolbarPlugin}
+                    debugOverridePlugin={debugOverridePlugin}
                   />
                 )}
               </AnimatePresence>
@@ -142,7 +142,7 @@ export function ExpandedToolbarContent(props: ExpandedToolbarContentProps) {
         transition={ANIMATION_CONFIG.tabsContainer}
       >
         <Tabs activeTab={activeTab || undefined} onTabChange={onTabChange}>
-          {toolbarPlugin && <TabButton id="local-overrides" label="Local Overrides" icon={ArrowUndoIcon} />}
+          {debugOverridePlugin && <TabButton id="local-overrides" label="Local Overrides" icon={ArrowUndoIcon} />}
           <TabButton id="flags" label="Flags" icon={ToggleOffIcon} />
           {/* <TabButton id="events" label="Events" icon="chart-line" /> */}
           <TabButton id="settings" label="Settings" icon={GearIcon} />

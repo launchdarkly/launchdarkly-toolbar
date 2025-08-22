@@ -1,20 +1,20 @@
 import React, { createContext } from 'react';
-import type { ToolbarPlugin } from '../../../../demo/plugins/ToolbarPlugin';
+import type { DebugOverridePlugin } from '../../../../demo/plugins/DebugOverridePlugin';
 
 interface ToolbarContextValue {
-  toolbarPlugin?: ToolbarPlugin;
+  debugOverridePlugin?: DebugOverridePlugin;
 }
 
 const ToolbarContext = createContext<ToolbarContextValue | null>(null);
 
 interface ToolbarProviderProps {
   children: React.ReactNode;
-  toolbarPlugin?: ToolbarPlugin;
+  debugOverridePlugin?: DebugOverridePlugin;
 }
 
-export function ToolbarProvider({ children, toolbarPlugin }: ToolbarProviderProps) {
+export function ToolbarProvider({ children, debugOverridePlugin }: ToolbarProviderProps) {
   const value = {
-    toolbarPlugin,
+    debugOverridePlugin,
   };
 
   return <ToolbarContext.Provider value={value}>{children}</ToolbarContext.Provider>;

@@ -4,7 +4,7 @@ import { ToolbarProvider } from '@launchdarkly/toolbar';
 import { AppWrapper } from './AppWrapper';
 
 import './App.css';
-import { toolbarPlugin } from '../plugins';
+import { debugOverridePlugin } from '../plugins';
 
 function App() {
   const [LDProvider, setLDProvider] = useState<any>(null);
@@ -17,7 +17,7 @@ function App() {
           baseUrl: 'https://app.ld.catamorphic.com',
           streamUrl: 'https://stream.ld.catamorphic.com',
           eventsUrl: 'https://events.ld.catamorphic.com',
-          plugins: [toolbarPlugin],
+          plugins: [debugOverridePlugin],
         },
       });
       setLDProvider(() => Provider);
@@ -32,7 +32,7 @@ function App() {
 
   return (
     <LDProvider>
-      <ToolbarProvider toolbarPlugin={toolbarPlugin}>
+      <ToolbarProvider debugOverridePlugin={debugOverridePlugin}>
         <AppWrapper />
       </ToolbarProvider>
     </LDProvider>
