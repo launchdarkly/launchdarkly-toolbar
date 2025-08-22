@@ -116,6 +116,3 @@ export function LaunchDarklyToolbar(props: LaunchDarklyToolbarProps) {
     </LaunchDarklyToolbarProvider>
   );
 }
-
-// Export the ToolbarProvider for consumers who want automatic override detection
-export { ToolbarProvider } from './context/ToolbarProvider';

@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react';
 import { asyncWithLDProvider } from 'launchdarkly-react-client-sdk';
-import { ToolbarProvider } from '@launchdarkly/toolbar';
 import { AppWrapper } from './AppWrapper';
 
 import './App.css';
@@ -32,9 +31,7 @@ function App() {
 
   return (
     <LDProvider>
-      <ToolbarProvider debugOverridePlugin={debugOverridePlugin}>
-        <AppWrapper />
-      </ToolbarProvider>
+      <AppWrapper />
     </LDProvider>
   );
 }
