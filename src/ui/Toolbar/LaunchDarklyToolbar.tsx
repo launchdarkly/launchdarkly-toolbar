@@ -108,7 +108,6 @@ export function LaunchDarklyToolbar(props: LaunchDarklyToolbarProps) {
         devServerUrl,
         pollIntervalInMs,
       }}
-      debugOverridePlugin={debugOverridePlugin}
     >
       <SearchProvider>
         <LdToolbar position={position} debugOverridePlugin={debugOverridePlugin} />

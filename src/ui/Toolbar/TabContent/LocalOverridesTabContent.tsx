@@ -28,7 +28,8 @@ interface LocalOverridesTabContentProps {
   debugOverridePlugin: IDebugOverridePlugin;
 }
 
-export function LocalOverridesTabContent({ debugOverridePlugin }: LocalOverridesTabContentProps) {
+export function LocalOverridesTabContent(props: LocalOverridesTabContentProps) {
+  const { debugOverridePlugin } = props;
   const { searchTerm } = useSearchContext();
   const ldClient = debugOverridePlugin.getClient();
 
