@@ -1,3 +1,5 @@
+import { LDClient } from 'launchdarkly-js-client-sdk';
+
 /**
  * Interface for debug override plugins that can be used with the LaunchDarkly Toolbar
  */
@@ -25,4 +27,10 @@ export interface IDebugOverridePlugin {
    * @returns Record of flag keys to their override values
    */
   getAllOverrides(): Record<string, unknown>;
+
+  /**
+   * Returns the LaunchDarkly client instance
+   * @returns The LaunchDarkly client with allFlags method
+   */
+  getClient(): LDClient | null;
 }

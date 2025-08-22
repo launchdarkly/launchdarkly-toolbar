@@ -13,6 +13,7 @@ const DEFAULT_STORAGE_NAMESPACE = 'ld-debug-override';
 export class DebugOverridePlugin implements LDPlugin {
   private debugOverride?: LDDebugOverride;
   private config: Required<DebugOverridePluginConfig>;
+  private ldClient: LDClient | null = null;
 
   constructor(config: DebugOverridePluginConfig = {}) {
     this.config = {
@@ -33,8 +34,9 @@ export class DebugOverridePlugin implements LDPlugin {
   /**
    * Called when the plugin is registered with the LaunchDarkly client
    */
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  register(_ldClient: LDClient): void {
+
+  register(ldClient: LDClient): void {
+    this.ldClient = ldClient;
     console.log('debugOverridePlugin: Registered with LaunchDarkly client');
   }
 
@@ -172,6 +174,14 @@ export class DebugOverridePlugin implements LDPlugin {
       console.error('debugOverridePlugin: Failed to get overrides:', error);
       return {};
     }
+  }
+
+  /**
+   * Returns the LaunchDarkly client instance
+   * @returns The LaunchDarkly client with allFlags method
+   */
+  getClient(): LDClient | null {
+    return this.ldClient;
   }
 
   private getStorage(): Storage | null {

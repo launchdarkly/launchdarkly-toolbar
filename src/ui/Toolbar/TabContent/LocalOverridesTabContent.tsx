@@ -1,6 +1,5 @@
 import { useRef, useState } from 'react';
 import { useVirtualizer } from '@tanstack/react-virtual';
-import { useLDClient } from 'launchdarkly-react-client-sdk';
 import { List } from '../../List/List';
 import { ListItem } from '../../List/ListItem';
 import { useSearchContext } from '../context/SearchProvider';
@@ -31,7 +30,7 @@ interface LocalOverridesTabContentProps {
 
 export function LocalOverridesTabContent({ debugOverridePlugin }: LocalOverridesTabContentProps) {
   const { searchTerm } = useSearchContext();
-  const ldClient = useLDClient();
+  const ldClient = debugOverridePlugin.getClient();
 
   const [showOverriddenOnly, setShowOverriddenOnly] = useState(false);
   const parentRef = useRef<HTMLDivElement>(null);

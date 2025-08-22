@@ -34,11 +34,7 @@ export interface LaunchDarklyToolbarProviderProps {
   debugOverridePlugin?: IDebugOverridePlugin;
 }
 
-export const LaunchDarklyToolbarProvider: React.FC<LaunchDarklyToolbarProviderProps> = ({
-  children,
-  config,
-  debugOverridePlugin,
-}) => {
+export const LaunchDarklyToolbarProvider: React.FC<LaunchDarklyToolbarProviderProps> = ({ children, config }) => {
   const [toolbarState, setToolbarState] = useState<
     ToolbarState & {
       availableProjects: string[];
