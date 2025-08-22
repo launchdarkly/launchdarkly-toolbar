@@ -59,16 +59,18 @@ export function LocalOverridesTabContent({ debugOverridePlugin }: LocalOverrides
     const overrides = debugOverridePlugin.getAllOverrides();
     const result: Record<string, LocalFlag> = {};
 
-    Object.keys(allFlags).forEach((flagKey) => {
-      const currentValue = allFlags[flagKey];
-      result[flagKey] = {
-        key: flagKey,
-        name: formatFlagName(flagKey),
-        currentValue,
-        isOverridden: flagKey in overrides,
-        type: inferFlagType(currentValue),
-      };
-    });
+    Object.keys(allFlags)
+      .sort()
+      .forEach((flagKey) => {
+        const currentValue = allFlags[flagKey];
+        result[flagKey] = {
+          key: flagKey,
+          name: formatFlagName(flagKey),
+          currentValue,
+          isOverridden: flagKey in overrides,
+          type: inferFlagType(currentValue),
+        };
+      });
 
     return result;
   };
