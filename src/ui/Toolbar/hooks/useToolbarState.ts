@@ -41,8 +41,9 @@ export function useToolbarState(): UseToolbarStateReturn {
   const hasBeenExpandedRef = useRef(false);
   const toolbarRef = useRef<HTMLDivElement | null>(null);
 
-  const isMac = typeof window !== 'undefined' ? window.navigator.userAgent.includes('Mac') : false;
-  const isDragModifierPressed = useKeyPressed(isMac ? 'Meta' : 'Control');
+  const isMetaPressed = useKeyPressed('Meta');
+  const isControlPressed = useKeyPressed('Control');
+  const isDragModifierPressed = isMetaPressed || isControlPressed;
 
   const { setSearchTerm } = useSearchContext();
 
