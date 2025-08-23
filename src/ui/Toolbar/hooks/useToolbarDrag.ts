@@ -5,17 +5,17 @@ interface Position {
   y: number;
 }
 
-interface UseDragOptions {
+interface UseToolbarDragOptions {
   enabled: boolean;
   onDragEnd: (clientX: number) => void;
   elementRef: React.RefObject<HTMLDivElement | null>;
 }
 
-interface UseDragReturn {
+interface UseToolbarDragReturn {
   handleMouseDown: (event: React.MouseEvent) => void;
 }
 
-export function useDrag({ enabled, onDragEnd, elementRef }: UseDragOptions): UseDragReturn {
+export function useToolbarDrag({ enabled, onDragEnd, elementRef }: UseToolbarDragOptions): UseToolbarDragReturn {
   const handleMouseDown = useCallback(
     (event: React.MouseEvent) => {
       if (!enabled || !elementRef.current) return;

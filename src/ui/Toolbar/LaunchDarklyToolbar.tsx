@@ -3,7 +3,7 @@ import { useState, useCallback } from 'react';
 
 import { SearchProvider, useSearchContext } from './context/SearchProvider';
 import { CircleLogo, ExpandedToolbarContent } from './components';
-import { useToolbarState, useToolbarAnimations, useToolbarVisibility, useDrag } from './hooks';
+import { useToolbarState, useToolbarAnimations, useToolbarVisibility, useToolbarDrag } from './hooks';
 
 import * as styles from './LaunchDarklyToolbar.css';
 import { LaunchDarklyToolbarProvider } from './context/LaunchDarklyToolbarProvider';
@@ -15,7 +15,6 @@ export interface LdToolbarProps {
 export function LdToolbar(props: LdToolbarProps) {
   const { position: initialPosition = 'right' } = props;
   const [position, setPosition] = useState<'left' | 'right'>(initialPosition);
-  const [dragKey, setDragKey] = useState(0);
   const { searchTerm } = useSearchContext();
 
   const toolbarState = useToolbarState();
@@ -54,7 +53,7 @@ export function LdToolbar(props: LdToolbarProps) {
     setPosition(newPosition);
   }, []);
 
-  const { handleMouseDown } = useDrag({
+  const { handleMouseDown } = useToolbarDrag({
     enabled: isDragEnabled,
     onDragEnd: handleDragEnd,
     elementRef: toolbarRef,
