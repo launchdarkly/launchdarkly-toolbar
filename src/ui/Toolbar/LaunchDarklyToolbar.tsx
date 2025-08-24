@@ -4,17 +4,24 @@ import { useState, useCallback } from 'react';
 import { SearchProvider, useSearchContext } from './context/SearchProvider';
 import { CircleLogo, ExpandedToolbarContent } from './components';
 import { useToolbarState, useToolbarAnimations, useToolbarVisibility, useToolbarDrag } from './hooks';
+import { loadToolbarPosition, saveToolbarPosition } from './utils/localStorage';
 
 import * as styles from './LaunchDarklyToolbar.css';
 import { LaunchDarklyToolbarProvider } from './context/LaunchDarklyToolbarProvider';
 
+export type ToolbarPosition = 'left' | 'right';
+
 export interface LdToolbarProps {
-  position?: 'left' | 'right';
+  position?: ToolbarPosition;
 }
 
 export function LdToolbar(props: LdToolbarProps) {
   const { position: initialPosition = 'right' } = props;
-  const [position, setPosition] = useState<'left' | 'right'>(initialPosition);
+  const getInitialPosition = () => {
+    const savedPosition = loadToolbarPosition();
+    return savedPosition || initialPosition;
+  };
+  const [position, setPosition] = useState<ToolbarPosition>(getInitialPosition);
   const { searchTerm } = useSearchContext();
 
   const toolbarState = useToolbarState();
@@ -49,8 +56,9 @@ export function LdToolbar(props: LdToolbarProps) {
 
   const handleDragEnd = useCallback((clientX: number) => {
     const screenWidth = window.innerWidth;
-    const newPosition = clientX < screenWidth / 2 ? 'left' : 'right';
+    const newPosition: ToolbarPosition = clientX < screenWidth / 2 ? 'left' : 'right';
     setPosition(newPosition);
+    saveToolbarPosition(newPosition);
   }, []);
 
   const { handleMouseDown } = useToolbarDrag({

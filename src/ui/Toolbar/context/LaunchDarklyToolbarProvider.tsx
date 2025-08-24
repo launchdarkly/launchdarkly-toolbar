@@ -2,8 +2,9 @@ import React, { createContext, useContext, useState, useEffect, useMemo, useCall
 import { DevServerClient } from '../../../services/DevServerClient';
 import { FlagStateManager } from '../../../services/FlagStateManager';
 import { LdToolbarConfig, ToolbarState } from '../../../types/devServer';
+import { TOOLBAR_STORAGE_KEYS } from '../utils/localStorage';
 
-const STORAGE_KEY = 'launchdarkly-toolbar-project';
+const STORAGE_KEY = TOOLBAR_STORAGE_KEYS.PROJECT;
 
 interface LaunchDarklyToolbarContextValue {
   state: ToolbarState & {

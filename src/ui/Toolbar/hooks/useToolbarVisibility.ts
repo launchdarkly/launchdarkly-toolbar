@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
+import { TOOLBAR_STORAGE_KEYS } from '../utils/localStorage';
 
-const STORAGE_KEY = 'ld-toolbar-disabled';
+const STORAGE_KEY = TOOLBAR_STORAGE_KEYS.DISABLED;
 
 /**
  * Hook that manages toolbar visibility based on localStorage
