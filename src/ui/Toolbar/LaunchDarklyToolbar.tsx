@@ -1,30 +1,20 @@
 import { AnimatePresence, motion } from 'motion/react';
-import { useState, useCallback } from 'react';
+import { useCallback } from 'react';
 
 import { SearchProvider, useSearchContext } from './context/SearchProvider';
 import { CircleLogo, ExpandedToolbarContent } from './components';
-import { useToolbarState, useToolbarAnimations, useToolbarVisibility, useToolbarDrag } from './hooks';
-import { loadToolbarPosition, saveToolbarPosition } from './utils/localStorage';
+import { useToolbarAnimations, useToolbarVisibility, useToolbarDrag, useToolbarState } from './hooks';
+import { useToolbarContext } from './context/LaunchDarklyToolbarProvider';
+import { ToolbarPosition } from './types/toolbar';
 
 import * as styles from './LaunchDarklyToolbar.css';
 import { LaunchDarklyToolbarProvider } from './context/LaunchDarklyToolbarProvider';
 
-export type ToolbarPosition = 'left' | 'right';
-
-export interface LdToolbarProps {
-  position?: ToolbarPosition;
-}
-
-export function LdToolbar(props: LdToolbarProps) {
-  const { position: initialPosition = 'right' } = props;
-  const getInitialPosition = () => {
-    const savedPosition = loadToolbarPosition();
-    return savedPosition || initialPosition;
-  };
-  const [position, setPosition] = useState<ToolbarPosition>(getInitialPosition);
+export function LdToolbar() {
   const { searchTerm } = useSearchContext();
-
+  const { state, handlePositionChange } = useToolbarContext();
   const toolbarState = useToolbarState();
+  const position = state.position;
 
   const {
     isExpanded,
@@ -54,12 +44,14 @@ export function LdToolbar(props: LdToolbarProps) {
 
   const isDragEnabled = !showFullToolbar && isHovered && isDragModifierPressed;
 
-  const handleDragEnd = useCallback((clientX: number) => {
-    const screenWidth = window.innerWidth;
-    const newPosition: ToolbarPosition = clientX < screenWidth / 2 ? 'left' : 'right';
-    setPosition(newPosition);
-    saveToolbarPosition(newPosition);
-  }, []);
+  const handleDragEnd = useCallback(
+    (clientX: number) => {
+      const screenWidth = window.innerWidth;
+      const newPosition: ToolbarPosition = clientX < screenWidth / 2 ? 'left' : 'right';
+      handlePositionChange(newPosition);
+    },
+    [handlePositionChange],
+  );
 
   const { handleMouseDown } = useToolbarDrag({
     enabled: isDragEnabled,
@@ -104,10 +96,11 @@ export function LdToolbar(props: LdToolbarProps) {
   );
 }
 
-export interface LaunchDarklyToolbarProps extends LdToolbarProps {
+export interface LaunchDarklyToolbarProps {
   devServerUrl?: string; // Optional - will default to http://localhost:8765
   projectKey?: string; // Optional - will auto-detect first available project if not provided
   pollIntervalInMs?: number; // Optional - will default to 5000ms
+  position?: ToolbarPosition; // Optional - will default to 'right'
 }
 
 export function LaunchDarklyToolbar(props: LaunchDarklyToolbarProps) {
@@ -126,9 +119,10 @@ export function LaunchDarklyToolbar(props: LaunchDarklyToolbarProps) {
         devServerUrl,
         pollIntervalInMs,
       }}
+      initialPosition={position}
     >
       <SearchProvider>
-        <LdToolbar position={position} />
+        <LdToolbar />
       </SearchProvider>
     </LaunchDarklyToolbarProvider>
   );

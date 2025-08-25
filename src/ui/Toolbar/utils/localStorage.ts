@@ -1,4 +1,4 @@
-import { ToolbarPosition } from '../LaunchDarklyToolbar';
+import { ToolbarPosition } from '../types/toolbar';
 
 export const TOOLBAR_STORAGE_KEYS = {
   POSITION: 'ld-toolbar-position',
