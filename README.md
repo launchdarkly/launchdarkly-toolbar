@@ -2,7 +2,10 @@
 
 > ⚠️ **Warning:** This package is currently not ready for production use and is considered unsupported. Features, APIs, and behavior may change without notice.
 
-A React component that provides a developer-friendly toolbar for interacting with LaunchDarkly during development.
+A React component that provides a developer-friendly toolbar for interacting with LaunchDarkly during development. The toolbar supports two modes:
+
+- **Dev Server Mode**: Connect to a LaunchDarkly CLI dev server for flag browsing and real-time updates
+- **SDK Mode**: Integrate with debug override plugins for local flag testing
 
 ## Installation
 
@@ -22,6 +25,8 @@ import { LaunchDarklyToolbar } from '@launchdarkly/toolbar';
 
 2. **Add the toolbar to your app:**
 
+**Dev Server Mode** (connects to LaunchDarkly CLI dev server):
+
 ```tsx
 function App() {
   return (
@@ -29,31 +34,71 @@ function App() {
       {/* Your app content */}
       <h1>My App</h1>
 
-      {/* LaunchDarkly Toolbar */}
+      {/* LaunchDarkly Toolbar - Dev Server Mode */}
       <LaunchDarklyToolbar devServerUrl="http://localhost:8765" position="right" />
     </div>
   );
 }
 ```
 
-3. **Start your LaunchDarkly dev server:**
+**SDK Mode** (integrates with debug override plugins):
+
+```tsx
+import { debugOverridePlugin } from './your-debug-plugin';
+
+function App() {
+  return (
+    <div>
+      {/* Your app content */}
+      <h1>My App</h1>
+
+      {/* LaunchDarkly Toolbar - SDK Mode */}
+      <LaunchDarklyToolbar debugOverridePlugin={debugOverridePlugin} position="right" />
+    </div>
+  );
+}
+```
+
+3. **Setup your environment:**
+
+**For Dev Server Mode**: Start your LaunchDarkly dev server:
 
 ```bash
 # Make sure your LaunchDarkly dev server is running
-# The toolbar will automatically connect and display your flags
+ldcli dev-server start --project your-project --cors-enabled true
 ```
+
+**For SDK Mode**: No additional setup required - the toolbar integrates directly with your debug plugin.
 
 ## Props
 
-| Prop           | Type                | Default                   | Description                                   |
-| -------------- | ------------------- | ------------------------- | --------------------------------------------- |
-| `devServerUrl` | `string`            | `"http://localhost:8765"` | URL of your LaunchDarkly development server   |
-| `position`     | `"left" \| "right"` | `"right"`                 | Position of the toolbar on screen             |
-| `projectKey`   | `string`            | `undefined`               | Optional project key for multi-project setups |
+| Prop                  | Type                   | Default     | Description                                                               |
+| --------------------- | ---------------------- | ----------- | ------------------------------------------------------------------------- |
+| `devServerUrl`        | `string` (optional)    | `undefined` | URL of your LaunchDarkly dev server. If provided, enables Dev Server Mode |
+| `debugOverridePlugin` | `IDebugOverridePlugin` | `undefined` | Debug override plugin for SDK Mode. Shows Overrides tab when provided     |
+| `position`            | `"left" \| "right"`    | `"right"`   | Position of the toolbar on screen                                         |
+| `projectKey`          | `string` (optional)    | `undefined` | Optional project key for multi-project setups (Dev Server Mode only)      |
+| `pollIntervalInMs`    | `number` (optional)    | `5000`      | Polling interval for dev server updates (Dev Server Mode only)            |
+
+### Mode Determination
+
+The toolbar automatically determines its mode based on the props provided:
+
+- **Dev Server Mode**: When `devServerUrl` is provided
+- **SDK Mode**: When `devServerUrl` is omitted (undefined/null)
+
+### Available Tabs by Mode
+
+| Mode                | Available Tabs                                          |
+| ------------------- | ------------------------------------------------------- |
+| **Dev Server Mode** | Flags, Settings                                         |
+| **SDK Mode**        | Overrides (if `debugOverridePlugin` provided), Settings |
 
 ## Usage Examples
 
-### Basic Usage
+### Dev Server Mode Examples
+
+#### Basic Dev Server Usage
 
 ```tsx
 import { LaunchDarklyToolbar } from '@launchdarkly/toolbar';
@@ -66,13 +111,14 @@ function App() {
         {/* Your app content */}
       </main>
 
-      <LaunchDarklyToolbar />
+      {/* Connect to dev server on default port */}
+      <LaunchDarklyToolbar devServerUrl="http://localhost:8765" />
     </>
   );
 }
 ```
 
-### Custom Configuration
+#### Custom Dev Server Configuration
 
 ```tsx
 import { LaunchDarklyToolbar } from '@launchdarkly/toolbar';
@@ -82,13 +128,40 @@ function App() {
     <>
       <main>{/* Your app content */}</main>
 
-      <LaunchDarklyToolbar devServerUrl="http://localhost:3001" position="left" projectKey="my-project" />
+      <LaunchDarklyToolbar
+        devServerUrl="http://localhost:3001"
+        position="left"
+        projectKey="my-project"
+        pollIntervalInMs={3000}
+      />
     </>
   );
 }
 ```
 
-### Usage
+### SDK Mode Examples
+
+#### Basic SDK Mode Usage
+
+```tsx
+import { LaunchDarklyToolbar } from '@launchdarkly/toolbar';
+import { createDebugOverridePlugin } from './your-debug-plugin';
+
+function App() {
+  const debugPlugin = createDebugOverridePlugin();
+
+  return (
+    <>
+      <main>{/* Your app content */}</main>
+
+      {/* SDK Mode - no devServerUrl provided */}
+      <LaunchDarklyToolbar debugOverridePlugin={debugPlugin} />
+    </>
+  );
+}
+```
+
+#### SDK Mode with Settings Only
 
 ```tsx
 import { LaunchDarklyToolbar } from '@launchdarkly/toolbar';
@@ -98,8 +171,31 @@ function App() {
     <>
       <main>{/* Your app content */}</main>
 
-      {/* Only show toolbar in development */}
-      {process.env.NODE_ENV === 'development' && <LaunchDarklyToolbar />}
+      {/* Shows only Settings tab (no overrides plugin) */}
+      <LaunchDarklyToolbar position="left" />
+    </>
+  );
+}
+```
+
+### Conditional Usage
+
+```tsx
+import { LaunchDarklyToolbar } from '@launchdarkly/toolbar';
+import { debugOverridePlugin } from './debug-plugin';
+
+function App() {
+  return (
+    <>
+      <main>{/* Your app content */}</main>
+
+      {/* Show different modes based on environment */}
+      {process.env.NODE_ENV === 'development' &&
+        (process.env.REACT_APP_USE_DEV_SERVER === 'true' ? (
+          <LaunchDarklyToolbar devServerUrl="http://localhost:8765" />
+        ) : (
+          <LaunchDarklyToolbar debugOverridePlugin={debugOverridePlugin} />
+        ))}
     </>
   );
 }
@@ -107,12 +203,36 @@ function App() {
 
 ## How It Works
 
-The LaunchDarkly Toolbar connects to your LaunchDarkly development server to provide real-time flag management capabilities:
+The LaunchDarkly Toolbar operates in two distinct modes, each designed for different development workflows:
+
+### Dev Server Mode
+
+When `devServerUrl` is provided, the toolbar connects to your LaunchDarkly CLI dev server:
 
 1. **Automatic Discovery** - The toolbar automatically discovers available flags from your dev server
 2. **Real-time Updates** - Flag changes are reflected immediately in your application
-3. **Event Stream** - Monitor flag evaluation events as they happen
+3. **Project Management** - Switch between multiple projects if configured
 4. **Search & Filter** - Quickly find flags using the built-in search functionality
+5. **Live Polling** - Continuously polls the dev server for updates
+
+### SDK Mode
+
+When no `devServerUrl` is provided, the toolbar integrates directly with your application:
+
+1. **Plugin Integration** - Works with debug override plugins to provide local flag testing
+2. **Local Overrides** - Test different flag values without affecting remote flags
+3. **Settings Management** - Access toolbar configuration and controls
+4. **No External Dependencies** - Works entirely within your application context
+
+### Mode-Specific Features
+
+| Feature           | Dev Server Mode          | SDK Mode            |
+| ----------------- | ------------------------ | ------------------- |
+| Flag Browsing     | ✅ Full flag catalog     | ❌ Not available    |
+| Local Overrides   | ❌ Not available         | ✅ Via debug plugin |
+| Real-time Updates | ✅ From dev server       | ❌ Not available    |
+| Project Switching | ✅ Multi-project support | ❌ Not available    |
+| Settings          | ✅ Available             | ✅ Available        |
 
 ## Toolbar Visibility Control
 
@@ -172,12 +292,34 @@ const isEnabled = window.ldToolbar.status();
 window.ldToolbar.toggle();
 ```
 
-## Development Server Setup
+## Setup Instructions
 
-The toolbar requires a LaunchDarkly CLI dev-server to be running with CORS enabled.
+### Dev Server Mode Setup
+
+For Dev Server Mode, you need a LaunchDarkly CLI dev-server running with CORS enabled:
 
 ```bash
 ldcli dev-server start --project demo-project --cors-enabled true
+```
+
+See [Dev Server Setup Guide](./docs/DEV_SERVER_SETUP.md) for detailed instructions.
+
+### SDK Mode Setup
+
+For SDK Mode, you can use the toolbar immediately without any setup, or optionally provide a debug override plugin for local flag testing.
+
+See [SDK Mode Setup Guide](./docs/SDK_MODE_SETUP.md) for detailed instructions and examples.
+
+Basic usage (Settings tab only):
+
+```tsx
+<LaunchDarklyToolbar />
+```
+
+With debug overrides:
+
+```tsx
+<LaunchDarklyToolbar debugOverridePlugin={myDebugPlugin} />
 ```
 
 ## TypeScript
@@ -187,10 +329,18 @@ The package includes complete TypeScript definitions. No additional `@types` pac
 ```tsx
 import type { LaunchDarklyToolbarProps } from '@launchdarkly/toolbar';
 
-const toolbarConfig: LaunchDarklyToolbarProps = {
+// Dev Server Mode configuration
+const devServerConfig: LaunchDarklyToolbarProps = {
   devServerUrl: 'http://localhost:8765',
   position: 'right',
   projectKey: 'my-project',
+  pollIntervalInMs: 5000,
+};
+
+// SDK Mode configuration
+const sdkModeConfig: LaunchDarklyToolbarProps = {
+  debugOverridePlugin: myDebugPlugin,
+  position: 'left',
 };
 ```
 

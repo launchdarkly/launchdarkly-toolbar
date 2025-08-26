@@ -4,17 +4,18 @@ import { LocalOverridesTabContent } from '../TabContent/LocalOverridesTabContent
 // import { EventsTabContent } from '../TabContent/EventsTabContent';
 import { SettingsTabContent } from '../TabContent/SettingsTabContent';
 import { ANIMATION_CONFIG, DIMENSIONS } from '../constants';
-import { TabId } from '../types';
+import { TabId, ToolbarMode } from '../types';
 import type { IDebugOverridePlugin } from '../../../types/plugin';
 
 interface TabContentRendererProps {
   activeTab: TabId;
   slideDirection: number;
   debugOverridePlugin?: IDebugOverridePlugin;
+  mode: ToolbarMode;
 }
 
 export function TabContentRenderer(props: TabContentRendererProps) {
-  const { activeTab, slideDirection, debugOverridePlugin } = props;
+  const { activeTab, slideDirection, debugOverridePlugin, mode } = props;
 
   const renderContent = () => {
     switch (activeTab) {
@@ -24,7 +25,7 @@ export function TabContentRenderer(props: TabContentRendererProps) {
       case 'flags':
         return <FlagTabContent />;
       case 'settings':
-        return <SettingsTabContent />;
+        return <SettingsTabContent mode={mode} />;
       default:
         return null;
     }

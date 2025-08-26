@@ -6,13 +6,13 @@ import { Tabs } from '../../Tabs/Tabs';
 import { TabButton } from '../../Tabs/TabButton';
 import { TabContentRenderer } from './TabContentRenderer';
 import { ANIMATION_CONFIG, EASING } from '../constants';
-import { ActiveTabId } from '../types';
+import { ActiveTabId, ToolbarMode, getTabsForMode } from '../types';
 import { useToolbarContext } from '../context/LaunchDarklyToolbarProvider';
 import type { IDebugOverridePlugin } from '../../../types/plugin';
 
 import * as styles from '../LaunchDarklyToolbar.css';
-// import { ErrorMessage } from './ErrorMessage';
 import { GearIcon, ToggleOffIcon, ArrowUndoIcon } from './icons';
+import { ErrorMessage } from './ErrorMessage';
 
 interface ExpandedToolbarContentProps {
   isExpanded: boolean;
@@ -25,6 +25,7 @@ interface ExpandedToolbarContentProps {
   onTabChange: (tabId: string) => void;
   setSearchIsExpanded: Dispatch<SetStateAction<boolean>>;
   debugOverridePlugin?: IDebugOverridePlugin;
+  mode: ToolbarMode;
 }
 
 function getHeaderLabel(currentProjectKey: string | null, sourceEnvironmentKey: string | null) {
@@ -47,12 +48,17 @@ export function ExpandedToolbarContent(props: ExpandedToolbarContentProps) {
     onTabChange,
     setSearchIsExpanded,
     debugOverridePlugin,
+    mode,
   } = props;
 
   const { state } = useToolbarContext();
 
   const headerLabel = getHeaderLabel(state.currentProjectKey, state.sourceEnvironmentKey);
-  // const { error } = state;
+  const { error } = state;
+
+  const availableTabs = getTabsForMode(mode, !!debugOverridePlugin);
+
+  const shouldShowError = error && mode === 'dev-server' && state.connectionStatus === 'error';
 
   return (
     <motion.div
@@ -101,30 +107,32 @@ export function ExpandedToolbarContent(props: ExpandedToolbarContentProps) {
               searchIsExpanded={searchIsExpanded}
               setSearchIsExpanded={setSearchIsExpanded}
               label={headerLabel}
+              mode={mode}
             />
-            {/* {error && <ErrorMessage error={error} />} */}
-            {/* {true && ( */}
-            <motion.div
-              className={styles.scrollableContent}
-              initial={{ opacity: 0, y: -10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{
-                duration: 0.3,
-                ease: EASING.elastic,
-                delay: 0.1,
-              }}
-            >
-              <AnimatePresence mode="wait">
-                {activeTab && (
-                  <TabContentRenderer
-                    activeTab={activeTab}
-                    slideDirection={slideDirection}
-                    debugOverridePlugin={debugOverridePlugin}
-                  />
-                )}
-              </AnimatePresence>
-            </motion.div>
-            {/* )} */}
+            {shouldShowError && <ErrorMessage error={error} />}
+            {!shouldShowError && (
+              <motion.div
+                className={styles.scrollableContent}
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{
+                  duration: 0.3,
+                  ease: EASING.elastic,
+                  delay: 0.1,
+                }}
+              >
+                <AnimatePresence mode="wait">
+                  {activeTab && (
+                    <TabContentRenderer
+                      activeTab={activeTab}
+                      slideDirection={slideDirection}
+                      debugOverridePlugin={debugOverridePlugin}
+                      mode={mode}
+                    />
+                  )}
+                </AnimatePresence>
+              </motion.div>
+            )}
           </motion.div>
         )}
       </AnimatePresence>
@@ -142,10 +150,11 @@ export function ExpandedToolbarContent(props: ExpandedToolbarContentProps) {
         transition={ANIMATION_CONFIG.tabsContainer}
       >
         <Tabs activeTab={activeTab || undefined} onTabChange={onTabChange}>
-          {debugOverridePlugin && <TabButton id="local-overrides" label="Local Overrides" icon={ArrowUndoIcon} />}
-          <TabButton id="flags" label="Flags" icon={ToggleOffIcon} />
-          {/* <TabButton id="events" label="Events" icon="chart-line" /> */}
-          <TabButton id="settings" label="Settings" icon={GearIcon} />
+          {availableTabs.includes('local-overrides') && (
+            <TabButton id="local-overrides" label="Overrides" icon={ArrowUndoIcon} />
+          )}
+          {availableTabs.includes('flags') && <TabButton id="flags" label="Flags" icon={ToggleOffIcon} />}
+          {availableTabs.includes('settings') && <TabButton id="settings" label="Settings" icon={GearIcon} />}
         </Tabs>
       </motion.div>
     </motion.div>
