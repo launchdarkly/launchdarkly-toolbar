@@ -151,7 +151,7 @@ export function ExpandedToolbarContent(props: ExpandedToolbarContentProps) {
       >
         <Tabs activeTab={activeTab || undefined} onTabChange={onTabChange}>
           {availableTabs.includes('local-overrides') && (
-            <TabButton id="local-overrides" label="Overrides" icon={ArrowUndoIcon} />
+            <TabButton id="local-overrides" label="Flags" icon={ArrowUndoIcon} />
           )}
           {availableTabs.includes('flags') && <TabButton id="flags" label="Flags" icon={ToggleOffIcon} />}
           {availableTabs.includes('settings') && <TabButton id="settings" label="Settings" icon={GearIcon} />}
