@@ -2,6 +2,7 @@ import { useState, useRef, useCallback, useMemo, useEffect, Dispatch, SetStateAc
 
 import { useSearchContext } from '../context/SearchProvider';
 import { TabId, ActiveTabId, TAB_ORDER } from '../types';
+import { useKeyPressed } from './useKeyPressed';
 
 export interface UseToolbarStateReturn {
   // State values
@@ -14,6 +15,7 @@ export interface UseToolbarStateReturn {
   showFullToolbar: boolean;
   slideDirection: number;
   hasBeenExpanded: boolean;
+  isDragModifierPressed: boolean;
 
   // Refs
   toolbarRef: React.RefObject<HTMLDivElement | null>;
@@ -39,9 +41,16 @@ export function useToolbarState(): UseToolbarStateReturn {
   const hasBeenExpandedRef = useRef(false);
   const toolbarRef = useRef<HTMLDivElement | null>(null);
 
+  const isMetaPressed = useKeyPressed('Meta');
+  const isControlPressed = useKeyPressed('Control');
+  const isDragModifierPressed = isMetaPressed || isControlPressed;
+
   const { setSearchTerm } = useSearchContext();
 
-  const showFullToolbar = useMemo(() => isExpanded || (isHovered && !isExpanded), [isExpanded, isHovered]);
+  const showFullToolbar = useMemo(
+    () => isExpanded || (isHovered && !isExpanded && !isDragModifierPressed),
+    [isExpanded, isHovered, isDragModifierPressed],
+  );
 
   const slideDirection = useMemo(() => {
     if (!activeTab || !previousTab) return 1; // Default direction when no tab is selected
@@ -135,6 +144,7 @@ export function useToolbarState(): UseToolbarStateReturn {
     showFullToolbar,
     slideDirection,
     hasBeenExpanded: hasBeenExpandedRef.current,
+    isDragModifierPressed,
 
     // Refs
     toolbarRef,
