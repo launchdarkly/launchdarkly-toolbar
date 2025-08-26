@@ -6,6 +6,7 @@ import { useToolbarContext } from '../context/LaunchDarklyToolbarProvider';
 import { StatusDot } from '../components/StatusDot';
 import { GenericHelpText } from '../components/GenericHelpText';
 import { ChevronDownIcon } from '../components/icons';
+import { TOOLBAR_POSITIONS, type ToolbarPosition } from '../types/toolbar';
 
 import * as styles from './SettingsTab.css';
 
@@ -14,6 +15,7 @@ interface SettingsItem {
   name: string;
   icon: string;
   isProjectSelector?: boolean;
+  isPositionSelector?: boolean;
   isConnectionStatus?: boolean;
   value?: string;
 }
@@ -69,6 +71,53 @@ function ProjectSelector(props: ProjectSelectorProps) {
   );
 }
 
+interface PositionSelectorProps {
+  currentPosition: ToolbarPosition;
+  onPositionChange: (position: ToolbarPosition) => void;
+}
+
+function PositionSelector(props: PositionSelectorProps) {
+  const { currentPosition, onPositionChange } = props;
+
+  function getPositionsDisplayName(position: ToolbarPosition): string {
+    return position.charAt(0).toUpperCase() + position.slice(1);
+  }
+
+  const handlePositionSelect = (key: React.Key | null) => {
+    if (key && typeof key === 'string') {
+      const position = key as ToolbarPosition;
+      if (position !== currentPosition) {
+        onPositionChange(position);
+      }
+    }
+  };
+
+  return (
+    <Select
+      selectedKey={currentPosition}
+      onSelectionChange={handlePositionSelect}
+      aria-label="Select toolbar position"
+      placeholder="Select position"
+      data-theme="dark"
+      className={styles.select}
+    >
+      <Button>
+        <SelectValue />
+        <ChevronDownIcon className={styles.icon} />
+      </Button>
+      <Popover data-theme="dark">
+        <ListBox>
+          {TOOLBAR_POSITIONS.map((position) => (
+            <ListBoxItem id={position} key={position}>
+              {getPositionsDisplayName(position)}
+            </ListBoxItem>
+          ))}
+        </ListBox>
+      </Popover>
+    </Select>
+  );
+}
+
 interface ConnectionStatusDisplayProps {
   status: 'connected' | 'disconnected' | 'error';
 }
@@ -96,8 +145,9 @@ function ConnectionStatusDisplay(props: ConnectionStatusDisplayProps) {
 }
 
 export function SettingsTabContent() {
-  const { state, switchProject } = useToolbarContext();
+  const { state, switchProject, handlePositionChange } = useToolbarContext();
   const { searchTerm } = useSearchContext();
+  const position = state.position;
 
   const handleProjectSwitch = async (projectKey: string) => {
     try {
@@ -107,7 +157,11 @@ export function SettingsTabContent() {
     }
   };
 
-  // Simplified settings data with only 3 items
+  const handlePositionSelect = (newPosition: ToolbarPosition) => {
+    handlePositionChange(newPosition);
+  };
+
+  // Settings data with position selector
   const settingsGroups: SettingsGroup[] = [
     {
       title: 'Configuration',
@@ -117,6 +171,12 @@ export function SettingsTabContent() {
           name: 'Project',
           icon: 'folder',
           isProjectSelector: true,
+        },
+        {
+          id: 'position',
+          name: 'Position',
+          icon: 'move',
+          isPositionSelector: true,
         },
         {
           id: 'environment',
@@ -197,6 +257,8 @@ export function SettingsTabContent() {
                             onProjectChange={handleProjectSwitch}
                             isLoading={state.isLoading}
                           />
+                        ) : item.isPositionSelector ? (
+                          <PositionSelector currentPosition={position} onPositionChange={handlePositionSelect} />
                         ) : (
                           <span className={styles.settingValue}>{item.value}</span>
                         )}

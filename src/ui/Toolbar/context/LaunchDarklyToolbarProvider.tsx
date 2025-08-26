@@ -2,19 +2,23 @@ import React, { createContext, useContext, useState, useEffect, useMemo, useCall
 import { DevServerClient } from '../../../services/DevServerClient';
 import { FlagStateManager } from '../../../services/FlagStateManager';
 import { LdToolbarConfig, ToolbarState } from '../../../types/devServer';
+import { TOOLBAR_STORAGE_KEYS, loadToolbarPosition, saveToolbarPosition } from '../utils/localStorage';
+import { ToolbarPosition } from '../types/toolbar';
 
-const STORAGE_KEY = 'launchdarkly-toolbar-project';
+const STORAGE_KEY = TOOLBAR_STORAGE_KEYS.PROJECT;
 
 interface LaunchDarklyToolbarContextValue {
   state: ToolbarState & {
     availableProjects: string[];
     currentProjectKey: string | null;
+    position: ToolbarPosition;
   };
   setOverride: (flagKey: string, value: any) => Promise<void>;
   clearOverride: (flagKey: string) => Promise<void>;
   clearAllOverrides: () => Promise<void>;
   refresh: () => Promise<void>;
   switchProject: (projectKey: string) => Promise<void>;
+  handlePositionChange: (position: ToolbarPosition) => void;
 }
 
 const LaunchDarklyToolbarContext = createContext<LaunchDarklyToolbarContextValue | null>(null);
@@ -30,23 +34,33 @@ export const useToolbarContext = () => {
 export interface LaunchDarklyToolbarProviderProps {
   children: React.ReactNode;
   config: LdToolbarConfig;
+  initialPosition?: ToolbarPosition;
 }
 
-export const LaunchDarklyToolbarProvider: React.FC<LaunchDarklyToolbarProviderProps> = ({ children, config }) => {
+export const LaunchDarklyToolbarProvider: React.FC<LaunchDarklyToolbarProviderProps> = ({
+  children,
+  config,
+  initialPosition,
+}) => {
   const [toolbarState, setToolbarState] = useState<
     ToolbarState & {
       availableProjects: string[];
       currentProjectKey: string | null;
+      position: ToolbarPosition;
     }
-  >({
-    flags: {},
-    connectionStatus: 'disconnected',
-    lastSyncTime: 0,
-    isLoading: true,
-    error: null,
-    sourceEnvironmentKey: null,
-    availableProjects: [],
-    currentProjectKey: null,
+  >(() => {
+    const savedPosition = loadToolbarPosition();
+    return {
+      flags: {},
+      connectionStatus: 'disconnected',
+      lastSyncTime: 0,
+      isLoading: true,
+      error: null,
+      sourceEnvironmentKey: null,
+      availableProjects: [],
+      currentProjectKey: null,
+      position: savedPosition || initialPosition || 'right',
+    };
   });
 
   const devServerClient = useMemo(
@@ -333,6 +347,14 @@ export const LaunchDarklyToolbarProvider: React.FC<LaunchDarklyToolbarProviderPr
     [devServerClient, flagStateManager, toolbarState.availableProjects],
   );
 
+  const handlePositionChange = useCallback((newPosition: ToolbarPosition) => {
+    setToolbarState((prev) => ({
+      ...prev,
+      position: newPosition,
+    }));
+    saveToolbarPosition(newPosition);
+  }, []);
+
   const value = useMemo(
     () => ({
       state: toolbarState,
@@ -341,8 +363,9 @@ export const LaunchDarklyToolbarProvider: React.FC<LaunchDarklyToolbarProviderPr
       clearAllOverrides,
       refresh,
       switchProject,
+      handlePositionChange,
     }),
-    [toolbarState, setOverride, clearOverride, clearAllOverrides, refresh, switchProject],
+    [toolbarState, setOverride, clearOverride, clearAllOverrides, refresh, switchProject, handlePositionChange],
   );
 
   return <LaunchDarklyToolbarContext.Provider value={value}>{children}</LaunchDarklyToolbarContext.Provider>;

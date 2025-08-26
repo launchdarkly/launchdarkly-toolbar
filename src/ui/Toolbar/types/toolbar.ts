@@ -14,3 +14,6 @@ export interface FeatureFlag {
   lastModified?: Date;
   environment?: string;
 }
+
+export const TOOLBAR_POSITIONS = ['left', 'right'] as const;
+export type ToolbarPosition = (typeof TOOLBAR_POSITIONS)[number];
