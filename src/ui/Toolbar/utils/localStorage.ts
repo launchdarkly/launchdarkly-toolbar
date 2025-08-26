@@ -1,4 +1,4 @@
-import { ToolbarPosition } from '../types/toolbar';
+import { ToolbarPosition, TOOLBAR_POSITIONS } from '../types/toolbar';
 
 export const TOOLBAR_STORAGE_KEYS = {
   POSITION: 'ld-toolbar-position',
@@ -17,7 +17,7 @@ export function saveToolbarPosition(position: ToolbarPosition): void {
 export function loadToolbarPosition(): ToolbarPosition | null {
   try {
     const position = localStorage.getItem(TOOLBAR_STORAGE_KEYS.POSITION);
-    return position === 'left' || position === 'right' ? position : null;
+    return position && TOOLBAR_POSITIONS.includes(position as ToolbarPosition) ? (position as ToolbarPosition) : null;
   } catch (error) {
     console.warn('Failed to load toolbar position from localStorage:', error);
     return null;
