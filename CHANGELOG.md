@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.9.0](https://github.com/launchdarkly/launchdarkly-toolbar/compare/toolbar-v0.8.0...toolbar-v0.9.0) (2025-08-26)
+
+
+### Features
+
+* add drag-and-drop functionality to toolbar ([#56](https://github.com/launchdarkly/launchdarkly-toolbar/issues/56)) ([39ddbd5](https://github.com/launchdarkly/launchdarkly-toolbar/commit/39ddbd5c81ca47d6bece6dcaae60f82ffe6f388f))
+
 ## [0.8.0](https://github.com/launchdarkly/launchdarkly-toolbar/compare/toolbar-v0.7.0...toolbar-v0.8.0) (2025-08-13)
 
 
