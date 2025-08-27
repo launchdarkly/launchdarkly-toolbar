@@ -46,8 +46,6 @@ function App() {
 }
 ```
 
-**For SDK Mode**: No additional setup required - the toolbar integrates directly with your debug plugin.
-
 ## Props
 
 | Prop                  | Type                   | Default     | Description                                                               |
