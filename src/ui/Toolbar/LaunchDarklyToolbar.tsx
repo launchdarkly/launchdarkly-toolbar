@@ -5,7 +5,7 @@ import { SearchProvider, useSearchContext } from './context/SearchProvider';
 import { CircleLogo, ExpandedToolbarContent } from './components';
 import { useToolbarAnimations, useToolbarVisibility, useToolbarDrag, useToolbarState } from './hooks';
 import { useToolbarContext } from './context/LaunchDarklyToolbarProvider';
-import { ToolbarPosition, getToolbarMode } from './types/toolbar';
+import { ToolbarMode, ToolbarPosition, getToolbarMode } from './types/toolbar';
 
 import * as styles from './LaunchDarklyToolbar.css';
 import { LaunchDarklyToolbarProvider } from './context/LaunchDarklyToolbarProvider';
@@ -13,17 +13,15 @@ import type { IDebugOverridePlugin } from '../../types/plugin';
 
 export interface LdToolbarProps {
   debugOverridePlugin?: IDebugOverridePlugin;
-  devServerUrl?: string;
+  mode: ToolbarMode;
 }
 
 export function LdToolbar(props: LdToolbarProps) {
-  const { debugOverridePlugin, devServerUrl } = props;
+  const { debugOverridePlugin, mode } = props;
   const { searchTerm } = useSearchContext();
   const { state, handlePositionChange } = useToolbarContext();
   const toolbarState = useToolbarState();
   const position = state.position;
-
-  const mode = getToolbarMode(devServerUrl);
 
   const {
     isExpanded,
@@ -123,6 +121,8 @@ export function LaunchDarklyToolbar(props: LaunchDarklyToolbarProps) {
     return null;
   }
 
+  const mode = getToolbarMode(devServerUrl);
+
   return (
     <LaunchDarklyToolbarProvider
       config={{
@@ -133,7 +133,7 @@ export function LaunchDarklyToolbar(props: LaunchDarklyToolbarProps) {
       initialPosition={position}
     >
       <SearchProvider>
-        <LdToolbar debugOverridePlugin={debugOverridePlugin} devServerUrl={devServerUrl} />
+        <LdToolbar debugOverridePlugin={debugOverridePlugin} mode={mode} />
       </SearchProvider>
     </LaunchDarklyToolbarProvider>
   );
