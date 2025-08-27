@@ -91,8 +91,13 @@ export function LocalOverridesTabContent(props: LocalOverridesTabContentProps) {
     debugOverridePlugin.clearAllOverrides();
   };
 
-  if (!ldClient) {
-    return <GenericHelpText title="LaunchDarkly client not available" subtitle="Make sure the client is initialized" />;
+  if (!ldClient || !debugOverridePlugin) {
+    return (
+      <GenericHelpText
+        title="LaunchDarkly client is not available"
+        subtitle="To use local flag overrides, ensure the debug override plugin is added to your LaunchDarkly client configuration."
+      />
+    );
   }
 
   const flagEntries = Object.entries(flags);

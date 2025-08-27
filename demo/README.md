@@ -4,12 +4,14 @@ This is a demo application showcasing the LaunchDarkly Toolbar component. It pro
 
 ## Features Demonstrated
 
+- ✅ **Dual Mode Operation** (Dev Server Mode + SDK Mode)
 - ✅ **Animated toolbar** that expands from a circle
 - ✅ **Position configuration** (left/right)
 - ✅ **Dev server connection** with configurable URL
 - ✅ **Project key configuration** with auto-detection fallback
+- ✅ **Debug override plugin** integration
 - ✅ **Flag management** and toggling
-- ✅ **Event monitoring**
+- ✅ **Local override testing**
 - ✅ **Settings configuration**
 - ✅ **Search functionality**
 - ✅ **Responsive design**
@@ -54,30 +56,35 @@ This is a demo application showcasing the LaunchDarkly Toolbar component. It pro
 ## Using the Demo
 
 1. **Configure the toolbar** using the configuration panel on the left:
+   - **Mode**: Choose between Dev Server Mode and SDK Mode
    - **Position**: Choose between left or right positioning
-   - **Dev Server URL**: Set your LaunchDarkly dev server URL (default: http://localhost:8765)
-   - **Project Key**: Optionally specify a project key (auto-detects if empty)
+   - **Dev Server URL**: Set your LaunchDarkly dev server URL (Dev Server Mode only)
+   - **Project Key**: Optionally specify a project key (Dev Server Mode only)
+   - **Debug Plugin**: Enable/disable the debug override plugin (SDK Mode)
 
 2. **Interact with the toolbar:**
    - Look for the circular toolbar in the bottom corner
    - Hover over it to expand the full interface
-   - Explore the different tabs (Flags, Events, Settings)
+   - **Dev Server Mode**: Explore the Flags and Settings tabs
+   - **SDK Mode**: Explore the Overrides (if plugin enabled) and Settings tabs
    - Test the search functionality
-   - Toggle feature flags to see real-time updates
+   - Toggle feature flags or set local overrides
 
 ## Prerequisites
 
-- **LaunchDarkly Dev Server**: Make sure you have a LaunchDarkly development server running
 - **Node.js**: Version 18 or higher
 - **pnpm**: Package manager (used by the workspace)
+- **LaunchDarkly Dev Server** (optional): Only required for Dev Server Mode testing
 
 ## Configuration
 
 The demo allows you to test different configurations:
 
+- **Mode Selection**: Switch between Dev Server Mode and SDK Mode
 - **Position**: Test toolbar positioning on left or right side
-- **Dev Server URL**: Connect to different LaunchDarkly environments
-- **Project Key**: Test auto-detection vs explicit project selection
+- **Dev Server URL**: Connect to different LaunchDarkly environments (Dev Server Mode)
+- **Project Key**: Test auto-detection vs explicit project selection (Dev Server Mode)
+- **Debug Plugin**: Enable/disable override functionality (SDK Mode)
 
 ## Development
 
@@ -85,10 +92,22 @@ This demo is part of a pnpm workspace and automatically uses the local version o
 
 ## Troubleshooting
 
+### Dev Server Mode Issues
+
 1. **Toolbar not appearing**: Check if the dev server URL is correct and accessible
-2. **Connection issues**: Verify your LaunchDarkly dev server is running
-3. **Build errors**: Make sure to run `pnpm build` from the root directory first
-4. **Missing styles**: Ensure CSS imports are working properly
+2. **Connection issues**: Verify your LaunchDarkly dev server is running with CORS enabled
+3. **No flags showing**: Ensure the project key is correct and flags exist in the environment
+
+### SDK Mode Issues
+
+1. **No Overrides tab**: Make sure the debug override plugin is enabled in the demo configuration
+2. **Overrides not working**: Check the browser console for plugin errors
+
+### General Issues
+
+1. **Build errors**: Make sure to run `pnpm build` from the root directory first
+2. **Missing styles**: Ensure CSS imports are working properly
+3. **Mode switching**: Refresh the page after changing between modes in the demo
 
 ## Tech Stack
 

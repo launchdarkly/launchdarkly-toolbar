@@ -1,6 +1,8 @@
 # LaunchDarkly Dev Server Setup
 
-The LaunchDarkly Toolbar requires a LaunchDarkly CLI dev server to be running. Follow these steps to set it up:
+The LaunchDarkly Toolbar **in Dev Server Mode** requires a LaunchDarkly CLI dev server to be running. Follow these steps to set it up:
+
+> **Note:** This setup is only required for **Dev Server Mode**. If you're using the toolbar in **SDK Mode** (without providing `devServerUrl`), you don't need a dev server.
 
 ## 1. Install the LaunchDarkly CLI
 
@@ -40,9 +42,13 @@ ldcli dev-server start --project {{project-name}} --cors-enabled true
 
 **Note:** Replace `{{project-name}}` with your actual LaunchDarkly project key.
 
-The dev server will start on `http://localhost:8765` by default. The toolbar will automatically connect to this URL.
-If the dev-server is running on a different port, you'll need to override the `devServerUrl` when instantiating the `LaunchDarklyToolbar` to establish a connection.
+The dev server will start on `http://localhost:8765` by default. The toolbar will automatically connect to this URL when you provide it as the `devServerUrl` prop.
 
+If the dev-server is running on a different port, you'll need to specify the correct URL:
+
+```tsx
+<LaunchDarklyToolbar devServerUrl="http://localhost:3001" />
+```
 
 ### Common Issues
 

@@ -63,14 +63,28 @@ export const LaunchDarklyToolbarProvider: React.FC<LaunchDarklyToolbarProviderPr
     };
   });
 
-  const devServerClient = useMemo(
-    () => new DevServerClient(config.devServerUrl, config.projectKey),
-    [config.devServerUrl, config.projectKey],
-  );
+  const devServerClient = useMemo(() => {
+    // Only create devServerClient if devServerUrl is provided (dev-server mode)
+    if (config.devServerUrl) {
+      return new DevServerClient(config.devServerUrl, config.projectKey);
+    }
+    return null;
+  }, [config.devServerUrl, config.projectKey]);
 
-  const flagStateManager = useMemo(() => new FlagStateManager(devServerClient), [devServerClient]);
+  const flagStateManager = useMemo(() => {
+    // Only create flagStateManager if we have a devServerClient
+    if (devServerClient) {
+      return new FlagStateManager(devServerClient);
+    }
+    return null;
+  }, [devServerClient]);
 
   const initializeProjectSelection = useCallback(async () => {
+    // Only initialize project selection in dev-server mode
+    if (!devServerClient) {
+      throw new Error('DevServerClient not available - not in dev-server mode');
+    }
+
     // Get available projects
     const availableProjects = await devServerClient.getAvailableProjects();
 
@@ -109,6 +123,17 @@ export const LaunchDarklyToolbarProvider: React.FC<LaunchDarklyToolbarProviderPr
 
   useEffect(() => {
     const setupProjectConnection = async () => {
+      // Skip setup if not in dev-server mode
+      if (!config.devServerUrl) {
+        setToolbarState((prev) => ({
+          ...prev,
+          connectionStatus: 'disconnected',
+          isLoading: false,
+          error: null,
+        }));
+        return;
+      }
+
       try {
         setToolbarState((prev) => ({ ...prev, isLoading: true, error: null }));
 
@@ -132,12 +157,17 @@ export const LaunchDarklyToolbarProvider: React.FC<LaunchDarklyToolbarProviderPr
     };
 
     setupProjectConnection();
-  }, [initializeProjectSelection]);
+  }, [initializeProjectSelection, config.devServerUrl]);
 
   // Load project data after project is set
   useEffect(() => {
     const loadProjectData = async () => {
-      if (!toolbarState.currentProjectKey || toolbarState.connectionStatus !== 'connected') {
+      if (
+        !toolbarState.currentProjectKey ||
+        toolbarState.connectionStatus !== 'connected' ||
+        !devServerClient ||
+        !flagStateManager
+      ) {
         return;
       }
 
@@ -169,7 +199,7 @@ export const LaunchDarklyToolbarProvider: React.FC<LaunchDarklyToolbarProviderPr
 
   // Setup real-time updates
   useEffect(() => {
-    if (toolbarState.connectionStatus !== 'connected') {
+    if (toolbarState.connectionStatus !== 'connected' || !flagStateManager) {
       return;
     }
 
@@ -186,6 +216,11 @@ export const LaunchDarklyToolbarProvider: React.FC<LaunchDarklyToolbarProviderPr
 
   // Setup polling - includes automatic recovery from connection failures
   useEffect(() => {
+    // Skip polling if not in dev-server mode
+    if (!config.devServerUrl || !devServerClient || !flagStateManager) {
+      return;
+    }
+
     const pollInterval = config.pollIntervalInMs;
 
     const checkConnectionAndRecover = async () => {
@@ -223,10 +258,17 @@ export const LaunchDarklyToolbarProvider: React.FC<LaunchDarklyToolbarProviderPr
 
     const interval = setInterval(checkConnectionAndRecover, pollInterval);
     return () => clearInterval(interval);
-  }, [devServerClient, flagStateManager, config.pollIntervalInMs, initializeProjectSelection]);
+  }, [devServerClient, flagStateManager, config.pollIntervalInMs, initializeProjectSelection, config.devServerUrl]);
 
   const setOverride = useCallback(
     async (flagKey: string, value: any) => {
+      if (!flagStateManager) {
+        const errorMessage = 'Flag state manager not available - not in dev-server mode';
+        config.onError?.(errorMessage);
+        setToolbarState((prev) => ({ ...prev, error: errorMessage }));
+        return;
+      }
+
       try {
         setToolbarState((prev) => ({ ...prev, isLoading: true }));
         await flagStateManager.setOverride(flagKey, value);
@@ -244,6 +286,13 @@ export const LaunchDarklyToolbarProvider: React.FC<LaunchDarklyToolbarProviderPr
 
   const clearOverride = useCallback(
     async (flagKey: string) => {
+      if (!flagStateManager) {
+        const errorMessage = 'Flag state manager not available - not in dev-server mode';
+        config.onError?.(errorMessage);
+        setToolbarState((prev) => ({ ...prev, error: errorMessage }));
+        return;
+      }
+
       try {
         setToolbarState((prev) => ({ ...prev, isLoading: true }));
         await flagStateManager.clearOverride(flagKey);
@@ -260,6 +309,13 @@ export const LaunchDarklyToolbarProvider: React.FC<LaunchDarklyToolbarProviderPr
   );
 
   const clearAllOverrides = useCallback(async () => {
+    if (!flagStateManager) {
+      const errorMessage = 'Flag state manager not available - not in dev-server mode';
+      config.onError?.(errorMessage);
+      setToolbarState((prev) => ({ ...prev, error: errorMessage }));
+      return;
+    }
+
     try {
       setToolbarState((prev) => ({ ...prev, isLoading: true }));
 
@@ -283,7 +339,12 @@ export const LaunchDarklyToolbarProvider: React.FC<LaunchDarklyToolbarProviderPr
     try {
       // If no project is selected, or the connection is not established, do not refresh
       // This helps prevent unhelpful errors from being shown to the user
-      if (!toolbarState.currentProjectKey || toolbarState.connectionStatus !== 'connected') {
+      if (
+        !toolbarState.currentProjectKey ||
+        toolbarState.connectionStatus !== 'connected' ||
+        !devServerClient ||
+        !flagStateManager
+      ) {
         return;
       }
       setToolbarState((prev) => ({ ...prev, isLoading: true }));
@@ -311,6 +372,17 @@ export const LaunchDarklyToolbarProvider: React.FC<LaunchDarklyToolbarProviderPr
 
   const switchProject = useCallback(
     async (projectKey: string) => {
+      if (!devServerClient || !flagStateManager) {
+        const errorMessage = 'Dev server client and flag state manager not available - not in dev-server mode';
+        setToolbarState((prev) => ({
+          ...prev,
+          connectionStatus: 'error',
+          error: errorMessage,
+          isLoading: false,
+        }));
+        return;
+      }
+
       try {
         setToolbarState((prev) => ({ ...prev, isLoading: true }));
 
