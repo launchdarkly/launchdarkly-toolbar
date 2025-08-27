@@ -3,7 +3,7 @@ import { asyncWithLDProvider } from 'launchdarkly-react-client-sdk';
 import { AppWrapper } from './AppWrapper';
 
 import './App.css';
-import { debugOverridePlugin } from '../plugins';
+import { debugOverridePlugin } from './plugins';
 
 function App() {
   const [LDProvider, setLDProvider] = useState<any>(null);
