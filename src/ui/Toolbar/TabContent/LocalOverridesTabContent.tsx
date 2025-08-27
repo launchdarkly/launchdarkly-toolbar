@@ -91,7 +91,7 @@ export function LocalOverridesTabContent(props: LocalOverridesTabContentProps) {
     debugOverridePlugin.clearAllOverrides();
   };
 
-  if (!ldClient) {
+  if (!ldClient || !debugOverridePlugin) {
     return (
       <GenericHelpText
         title="LaunchDarkly client is not available"

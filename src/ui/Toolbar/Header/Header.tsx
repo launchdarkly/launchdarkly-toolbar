@@ -24,10 +24,11 @@ export function Header(props: HeaderProps) {
   const { connectionStatus } = state;
   const isConnected = connectionStatus === 'connected';
 
-  const showEnvironment = mode === 'dev-server' && isConnected;
-  const showSearch = mode === 'dev-server' ? isConnected : true;
-  const showRefresh = mode === 'dev-server';
-  const showConnectionStatus = mode === 'dev-server';
+  const isDevServer = mode === 'dev-server';
+  const showEnvironment = isDevServer && isConnected;
+  const showSearch = isDevServer ? isConnected : true;
+  const showRefresh = isDevServer;
+  const showConnectionStatus = isDevServer;
 
   return (
     <>

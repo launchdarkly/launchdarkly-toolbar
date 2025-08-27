@@ -11,7 +11,7 @@ import { useToolbarContext } from '../context/LaunchDarklyToolbarProvider';
 import type { IDebugOverridePlugin } from '../../../types/plugin';
 
 import * as styles from '../LaunchDarklyToolbar.css';
-import { GearIcon, ToggleOffIcon, ArrowUndoIcon } from './icons';
+import { GearIcon, ToggleOffIcon } from './icons';
 import { ErrorMessage } from './ErrorMessage';
 
 interface ExpandedToolbarContentProps {
@@ -151,7 +151,7 @@ export function ExpandedToolbarContent(props: ExpandedToolbarContentProps) {
       >
         <Tabs activeTab={activeTab || undefined} onTabChange={onTabChange}>
           {availableTabs.includes('local-overrides') && (
-            <TabButton id="local-overrides" label="Flags" icon={ArrowUndoIcon} />
+            <TabButton id="local-overrides" label="Flags" icon={ToggleOffIcon} />
           )}
           {availableTabs.includes('flags') && <TabButton id="flags" label="Flags" icon={ToggleOffIcon} />}
           {availableTabs.includes('settings') && <TabButton id="settings" label="Settings" icon={GearIcon} />}
