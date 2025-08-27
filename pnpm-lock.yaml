@@ -27,17 +27,11 @@ importers:
       '@vanilla-extract/webpack-plugin':
         specifier: ^2.3.22
         version: 2.3.22(webpack@5.99.9(esbuild@0.25.5))
-      launchdarkly-js-client-sdk:
-        specifier: link:../js-client-sdk
-        version: link:../js-client-sdk
-      launchdarkly-react-client-sdk:
-        specifier: link:../react-client-sdk
-        version: link:../react-client-sdk
       motion:
         specifier: ^12.19.2
         version: 12.19.2(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
       react-dom:
-        specifier: 19.1.1
+        specifier: ^18.0.0 || ^19.0.0
         version: 19.1.1(react@19.1.1)
     devDependencies:
       '@playwright/test':
