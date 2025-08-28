@@ -5,11 +5,11 @@ const TEST_PROJECT_KEY = 'test-project';
 
 test.describe(`LaunchDarkly Toolbar - ${config.testEnv} environment`, () => {
   test.beforeEach(async ({ page }: { page: Page }) => {
-    // Navigate to the Storybook story for the LaunchDarkly Toolbar
-    await page.goto(config.storyPath);
+    // Navigate to the demo app
+    await page.goto(config.demoPath);
 
-    // Wait for Storybook to load
-    await page.waitForSelector('iframe[title="storybook-preview-iframe"]');
+    // Wait for the demo app to load
+    await page.waitForSelector('[data-testid="launchdarkly-toolbar"]');
 
     await page.route(`**/dev/projects`, async (route) => {
       await route.fulfill({
@@ -75,136 +75,124 @@ test.describe(`LaunchDarkly Toolbar - ${config.testEnv} environment`, () => {
   });
 
   test('should allow users to discover and expand the toolbar naturally', async ({ page }: { page: Page }) => {
-    const iframe = page.frameLocator('iframe[title="storybook-preview-iframe"]');
-
     // User sees the LaunchDarkly logo initially
-    await expect(iframe.getByRole('img', { name: 'LaunchDarkly' })).toBeVisible();
+    await expect(page.getByRole('img', { name: 'LaunchDarkly' })).toBeVisible();
 
     // Toolbar starts collapsed - no navigation visible
-    await expect(iframe.getByRole('tab')).not.toBeVisible();
+    await expect(page.getByRole('tab')).not.toBeVisible();
 
     // User hovers over the toolbar to discover functionality
-    const toolbarContainer = iframe.getByTestId('launchdarkly-toolbar');
+    const toolbarContainer = page.getByTestId('launchdarkly-toolbar');
     await toolbarContainer.hover();
 
     // Toolbar expands showing available tabs
-    await expect(iframe.getByRole('tab', { name: 'Flags' })).toBeVisible();
-    // await expect(iframe.getByRole('tab', { name: 'Events' })).toBeVisible(); // Events tab temporarily disabled
-    await expect(iframe.getByRole('tab', { name: 'Settings' })).toBeVisible();
+    await expect(page.getByRole('tab', { name: 'Flags' })).toBeVisible();
+    // await expect(page.getByRole('tab', { name: 'Events' })).toBeVisible(); // Events tab temporarily disabled
+    await expect(page.getByRole('tab', { name: 'Settings' })).toBeVisible();
 
     // User can see the expanded toolbar interface
-    await expect(iframe.getByRole('tab', { name: 'Flags' })).toBeVisible();
+    await expect(page.getByRole('tab', { name: 'Flags' })).toBeVisible();
   });
 
   test('should support complete flag management workflow', async ({ page }: { page: Page }) => {
-    const iframe = page.frameLocator('iframe[title="storybook-preview-iframe"]');
-
     // Expand toolbar
-    const toolbarContainer = iframe.getByTestId('launchdarkly-toolbar').first();
+    const toolbarContainer = page.getByTestId('launchdarkly-toolbar').first();
     await toolbarContainer.hover();
 
     // Navigate to Flags tab
-    await iframe.getByRole('tab', { name: 'Flags' }).click();
+    await page.getByRole('tab', { name: 'Flags' }).click();
 
     // Verify Flags tab is active and content is visible
-    await expect(iframe.getByRole('tab', { name: 'Flags' })).toHaveAttribute('aria-selected', 'true');
-    await expect(iframe.getByTestId('flag-tab-content')).toBeVisible();
-    await expect(iframe.getByText('test-flag-1')).toBeVisible();
+    await expect(page.getByRole('tab', { name: 'Flags' })).toHaveAttribute('aria-selected', 'true');
+    await expect(page.getByTestId('flag-tab-content')).toBeVisible();
+    await expect(page.getByText('test-flag-1')).toBeVisible();
 
     // User can see and interact with flag toggles
-    const flagToggle = iframe.getByRole('switch').first();
+    const flagToggle = page.getByRole('switch').first();
     await expect(flagToggle).toBeVisible();
 
     // Verify other flags are listed for management
-    await expect(iframe.getByTestId('flag-tab-content')).toBeVisible();
-    await expect(iframe.getByText('test-flag-1')).toBeVisible();
+    await expect(page.getByTestId('flag-tab-content')).toBeVisible();
+    await expect(page.getByText('test-flag-1')).toBeVisible();
   });
 
   test('should allow users to navigate between different sections', async ({ page }: { page: Page }) => {
-    const iframe = page.frameLocator('iframe[title="storybook-preview-iframe"]');
-
     // Expand toolbar and start with Flags
-    const toolbarContainer = iframe.getByTestId('launchdarkly-toolbar').first();
+    const toolbarContainer = page.getByTestId('launchdarkly-toolbar').first();
     await toolbarContainer.hover();
-    await iframe.getByRole('tab', { name: 'Flags' }).click();
+    await page.getByRole('tab', { name: 'Flags' }).click();
 
     // Navigate to Settings tab (Events tab temporarily disabled)
-    await iframe.getByRole('tab', { name: 'Settings' }).click();
-    await expect(iframe.getByRole('tab', { name: 'Settings' })).toHaveAttribute('aria-selected', 'true');
-    await expect(iframe.getByRole('tab', { name: 'Flags' })).toHaveAttribute('aria-selected', 'false');
+    await page.getByRole('tab', { name: 'Settings' }).click();
+    await expect(page.getByRole('tab', { name: 'Settings' })).toHaveAttribute('aria-selected', 'true');
+    await expect(page.getByRole('tab', { name: 'Flags' })).toHaveAttribute('aria-selected', 'false');
 
     // Navigate back to Flags tab
-    await iframe.getByRole('tab', { name: 'Flags' }).click();
-    await expect(iframe.getByRole('tab', { name: 'Flags' })).toHaveAttribute('aria-selected', 'true');
-    await expect(iframe.getByRole('tab', { name: 'Settings' })).toHaveAttribute('aria-selected', 'false');
+    await page.getByRole('tab', { name: 'Flags' }).click();
+    await expect(page.getByRole('tab', { name: 'Flags' })).toHaveAttribute('aria-selected', 'true');
+    await expect(page.getByRole('tab', { name: 'Settings' })).toHaveAttribute('aria-selected', 'false');
   });
 
   test('should show search button and flag content', async ({ page }: { page: Page }) => {
-    const iframe = page.frameLocator('iframe[title="storybook-preview-iframe"]');
-
     // Expand toolbar and go to Flags tab
-    const toolbarContainer = iframe.getByTestId('launchdarkly-toolbar').first();
+    const toolbarContainer = page.getByTestId('launchdarkly-toolbar').first();
     await toolbarContainer.hover();
-    await iframe.getByRole('tab', { name: 'Flags' }).click();
+    await page.getByRole('tab', { name: 'Flags' }).click();
 
     // Verify search functionality is available
-    await expect(iframe.getByRole('button', { name: 'Search' })).toBeVisible();
+    await expect(page.getByRole('button', { name: 'Search' })).toBeVisible();
 
     // Verify flag content is displayed
-    await expect(iframe.getByTestId('flag-tab-content')).toBeVisible();
-    await expect(iframe.getByText('test-flag-1')).toBeVisible();
+    await expect(page.getByTestId('flag-tab-content')).toBeVisible();
+    await expect(page.getByText('test-flag-1')).toBeVisible();
 
     // Verify flag toggles are functional
-    const flagToggles = iframe.getByRole('switch');
+    const flagToggles = page.getByRole('switch');
     await expect(flagToggles.first()).toBeVisible();
   });
 
   test('should provide intuitive ways to close and collapse the toolbar', async ({ page }: { page: Page }) => {
-    const iframe = page.frameLocator('iframe[title="storybook-preview-iframe"]');
-
     // Expand toolbar
-    const toolbarContainer = iframe.getByTestId('launchdarkly-toolbar').first();
+    const toolbarContainer = page.getByTestId('launchdarkly-toolbar').first();
     await toolbarContainer.hover();
-    await iframe.getByRole('tab', { name: 'Flags' }).click();
+    await page.getByRole('tab', { name: 'Flags' }).click();
 
     // Method 1: Use the close button
-    await iframe.getByRole('button', { name: 'Close toolbar' }).click();
-    await expect(iframe.getByRole('tab', { name: 'Flags' })).not.toBeVisible();
-    await expect(iframe.getByRole('img', { name: 'LaunchDarkly' })).toBeVisible();
+    await page.getByRole('button', { name: 'Close toolbar' }).click();
+    await expect(page.getByRole('tab', { name: 'Flags' })).not.toBeVisible();
+    await expect(page.getByRole('img', { name: 'LaunchDarkly' })).toBeVisible();
 
     // Method 2: Click outside to collapse (re-expand first)
     await toolbarContainer.hover();
-    await iframe.getByRole('tab', { name: 'Settings' }).click(); // Changed from Events to Settings
+    await page.getByRole('tab', { name: 'Settings' }).click(); // Changed from Events to Settings
 
     // Click outside the toolbar area
     await page.mouse.click(50, 50);
-    await expect(iframe.getByRole('tab', { name: 'Settings' })).not.toBeVisible();
+    await expect(page.getByRole('tab', { name: 'Settings' })).not.toBeVisible();
   });
 
   test('should maintain proper tab states when switching', async ({ page }: { page: Page }) => {
-    const iframe = page.frameLocator('iframe[title="storybook-preview-iframe"]');
-    const toolbarContainer = iframe.getByTestId('launchdarkly-toolbar').first();
+    const toolbarContainer = page.getByTestId('launchdarkly-toolbar').first();
 
     // Expand and select Settings tab (Events tab temporarily disabled)
     await toolbarContainer.hover();
-    await iframe.getByRole('tab', { name: 'Settings' }).click();
-    await expect(iframe.getByRole('tab', { name: 'Settings' })).toHaveAttribute('aria-selected', 'true');
+    await page.getByRole('tab', { name: 'Settings' }).click();
+    await expect(page.getByRole('tab', { name: 'Settings' })).toHaveAttribute('aria-selected', 'true');
 
     // Switch to Flags tab and verify state change
-    await iframe.getByRole('tab', { name: 'Flags' }).click();
-    await expect(iframe.getByRole('tab', { name: 'Flags' })).toHaveAttribute('aria-selected', 'true');
-    await expect(iframe.getByRole('tab', { name: 'Settings' })).toHaveAttribute('aria-selected', 'false');
-    await expect(iframe.getByTestId('flag-tab-content')).toBeVisible();
-    await expect(iframe.getByText('test-flag-1')).toBeVisible();
+    await page.getByRole('tab', { name: 'Flags' }).click();
+    await expect(page.getByRole('tab', { name: 'Flags' })).toHaveAttribute('aria-selected', 'true');
+    await expect(page.getByRole('tab', { name: 'Settings' })).toHaveAttribute('aria-selected', 'false');
+    await expect(page.getByTestId('flag-tab-content')).toBeVisible();
+    await expect(page.getByText('test-flag-1')).toBeVisible();
   });
 
   test('should be responsive to mouse movement patterns', async ({ page }: { page: Page }) => {
-    const iframe = page.frameLocator('iframe[title="storybook-preview-iframe"]');
-    const toolbarContainer = iframe.getByTestId('launchdarkly-toolbar').first();
+    const toolbarContainer = page.getByTestId('launchdarkly-toolbar').first();
 
     // Hover to expand
     await toolbarContainer.hover();
-    await expect(iframe.getByRole('tab', { name: 'Flags' })).toBeVisible();
+    await expect(page.getByRole('tab', { name: 'Flags' })).toBeVisible();
 
     // Move mouse away from toolbar to a safe area
     await page.mouse.move(300, 300);
@@ -214,15 +202,15 @@ test.describe(`LaunchDarkly Toolbar - ${config.testEnv} environment`, () => {
 
     // Hover again to ensure toolbar still works
     await toolbarContainer.hover();
-    await expect(iframe.getByRole('tab', { name: 'Flags' })).toBeVisible();
+    await expect(page.getByRole('tab', { name: 'Flags' })).toBeVisible();
   });
 
   test('should automatically recover from connection failures', async ({ page }: { page: Page }) => {
-    // Block all network requests except Storybook (localhost:6006) to simulate offline state
+    // Block all network requests except demo app (localhost:5173) to simulate offline state
     await page.route('**/*', async (route) => {
       const url = route.request().url();
-      if (url.includes('localhost:6006')) {
-        // Allow Storybook requests to pass through
+      if (url.includes('localhost:5173')) {
+        // Allow demo app requests to pass through
         await route.continue();
       } else {
         // Block everything else
@@ -230,26 +218,25 @@ test.describe(`LaunchDarkly Toolbar - ${config.testEnv} environment`, () => {
       }
     });
 
-    const iframe = page.frameLocator('iframe[title="storybook-preview-iframe"]');
-    await page.waitForSelector('iframe[title="storybook-preview-iframe"]');
+    await page.waitForSelector('[data-testid="launchdarkly-toolbar"]');
 
     // Expand the toolbar to see the error state
-    const toolbarContainer = iframe.getByTestId('launchdarkly-toolbar');
+    const toolbarContainer = page.getByTestId('launchdarkly-toolbar');
     await toolbarContainer.hover();
-    await iframe.getByRole('tab', { name: 'Flags' }).click();
+    await page.getByRole('tab', { name: 'Flags' }).click();
 
     // Verify we're in an error state initially
-    await expect(iframe.getByText(/Error connecting to dev server/i)).toBeVisible();
+    await expect(page.getByText(/Error connecting to dev server/i)).toBeVisible();
 
     // Now simulate the dev server coming back online by removing the block
     await page.unroute('**/*');
 
     // Wait for automatic recovery to occur (polling should detect the dev server is back online)
     // Wait longer than the poll interval (5000ms) to prevent flakiness
-    await expect(iframe.getByText(/Error connecting to dev server/i)).not.toBeVisible({ timeout: 6000 });
+    await expect(page.getByText(/Error connecting to dev server/i)).not.toBeVisible({ timeout: 6000 });
 
     // Verify flag content is displayed after recovery
-    await expect(iframe.getByTestId('flag-tab-content')).toBeVisible();
-    await expect(iframe.getByText('test-flag-1')).toBeVisible();
+    await expect(page.getByTestId('flag-tab-content')).toBeVisible();
+    await expect(page.getByText('test-flag-1')).toBeVisible();
   });
 });
