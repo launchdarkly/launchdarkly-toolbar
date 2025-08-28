@@ -202,4 +202,45 @@ describe('ExpandedToolbarContent - User Interaction Flows', () => {
       expect(screen.getByTestId('settings-tab-content')).toHaveTextContent('Settings Tab Content - sdk');
     });
   });
+
+  describe('Error Handling and Edge Cases', () => {
+    test('component handles invalid mode gracefully', () => {
+      // GIVEN: Developer accidentally passes an invalid mode (edge case)
+      render(
+        <TestWrapper>
+          <ExpandedToolbarContent
+            {...defaultProps}
+            mode={'invalid-mode' as any} // TypeScript bypass for testing
+          />
+        </TestWrapper>,
+      );
+
+      // WHEN: The component renders
+      // THEN: It doesn't crash and falls back to safe defaults
+      expect(screen.getByRole('tab', { name: /settings/i })).toBeInTheDocument();
+
+      // AND: Only shows settings tab as fallback
+      const tabs = screen.getAllByRole('tab');
+      expect(tabs).toHaveLength(1);
+    });
+
+    test('component handles undefined activeTab gracefully', () => {
+      // GIVEN: Developer doesn't specify an active tab (edge case)
+      render(
+        <TestWrapper>
+          <ExpandedToolbarContent {...defaultProps} activeTab={undefined} mode="dev-server" />
+        </TestWrapper>,
+      );
+
+      // WHEN: The component renders
+      // THEN: It shows the tab structure without crashing
+      expect(screen.getByRole('tab', { name: /flags/i })).toBeInTheDocument();
+      expect(screen.getByRole('tab', { name: /settings/i })).toBeInTheDocument();
+
+      // AND: No tab content is rendered when activeTab is undefined (correct behavior)
+      expect(screen.queryByTestId('settings-tab-content')).not.toBeInTheDocument();
+      expect(screen.queryByTestId('flag-tab-content')).not.toBeInTheDocument();
+      expect(screen.queryByTestId('local-overrides-tab-content')).not.toBeInTheDocument();
+    });
+  });
 });

@@ -146,6 +146,34 @@ describe('LaunchDarklyToolbarProvider - Integration Flows', () => {
       expect(screen.getByTestId('error')).toHaveTextContent('Connection failed');
       expect(screen.getByTestId('is-loading')).toHaveTextContent('false');
     });
+
+    test('developer handles network timeout errors during initial connection', async () => {
+      // GIVEN: Developer's network connection is slow or unreliable
+      mockDevServerClient.getAvailableProjects.mockRejectedValueOnce(new Error('ETIMEDOUT: connect timeout'));
+
+      // WHEN: They attempt to connect with the toolbar
+      render(
+        <LaunchDarklyToolbarProvider
+          config={{
+            devServerUrl: 'http://localhost:8765',
+            pollIntervalInMs: 5000,
+          }}
+          initialPosition="right"
+        >
+          <TestConsumer />
+        </LaunchDarklyToolbarProvider>,
+      );
+
+      // THEN: The error is handled gracefully with a user-friendly message
+      await waitFor(() => {
+        const connectionStatus = screen.getByTestId('connection-status');
+        return connectionStatus.textContent === 'error';
+      });
+
+      expect(screen.getByTestId('error')).toHaveTextContent('ETIMEDOUT: connect timeout');
+      expect(screen.getByTestId('is-loading')).toHaveTextContent('false');
+      expect(screen.getByTestId('current-project')).toHaveTextContent('none');
+    });
   });
 
   describe('Developer Setup Flow - SDK Mode', () => {
