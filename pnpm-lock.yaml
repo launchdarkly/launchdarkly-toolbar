@@ -30,9 +30,6 @@ importers:
       launchdarkly-js-client-sdk:
         specifier: link:../js-client-sdk
         version: link:../js-client-sdk
-      launchdarkly-react-client-sdk:
-        specifier: link:../react-client-sdk
-        version: link:../react-client-sdk
       motion:
         specifier: ^12.19.2
         version: 12.19.2(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
