@@ -1,4 +1,4 @@
-import type { LDClient, LDPlugin, LDDebugOverride } from 'launchdarkly-react-client-sdk';
+import type { LDClient, LDPlugin, LDDebugOverride } from 'launchdarkly-js-client-sdk';
 
 /**
  * Configuration options for the DebugOverridePlugin
