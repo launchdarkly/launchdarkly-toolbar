@@ -1,5 +1,7 @@
-// Import the toolbar directly from the source (local workspace)
-import { LaunchDarklyToolbar } from '@toolbar-workspace/index';
+// Import the toolbar from the built package
+// In local dev, this represents the "local development environment"
+// vs CI which represents "production-like environment"
+import { LaunchDarklyToolbar } from '@launchdarkly/toolbar';
 import { AppWrapper } from '../components/AppWrapper';
 
 export function LocalVersion() {
