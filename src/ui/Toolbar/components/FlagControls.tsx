@@ -14,6 +14,7 @@ import {
 import { ChevronDownIcon, EditIcon, CheckIcon, XIcon } from './icons';
 import { IconButton } from './IconButton';
 import { EnhancedFlag } from '../../../types/devServer';
+import { deepEqual } from '../../../utils';
 
 import * as styles from './FlagControls.css';
 
@@ -47,7 +48,7 @@ interface MultivariateFlagControlProps {
 
 export function MultivariateFlagControl(props: MultivariateFlagControlProps) {
   const { flag, onOverride, disabled = false } = props;
-  const currentVariation = flag.availableVariations.find((v) => v.value === flag.currentValue);
+  const currentVariation = flag.availableVariations.find((v) => deepEqual(v.value, flag.currentValue));
 
   return (
     <Select
