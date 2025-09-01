@@ -34,7 +34,6 @@ export class FlagOverridePlugin implements LDPlugin {
   /**
    * Called when the plugin is registered with the LaunchDarkly client
    */
-
   register(ldClient: LDClient): void {
     this.ldClient = ldClient;
   }

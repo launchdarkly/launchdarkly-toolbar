@@ -3,7 +3,8 @@ import { Switch, TextField, Group, Input } from '@launchpad-ui/components';
 import { EditIcon, CheckIcon, XIcon } from './icons';
 import { IconButton } from './IconButton';
 
-import * as styles from './FlagControls.css';
+import * as sharedStyles from './FlagControls.css';
+import * as styles from './LocalFlagControls.css';
 
 interface LocalFlag {
   key: string;
@@ -23,13 +24,13 @@ export function LocalBooleanFlagControl(props: LocalBooleanFlagControlProps) {
   const { flag, onOverride, disabled = false } = props;
 
   return (
-    <div className={styles.switchContainer}>
+    <div className={sharedStyles.switchContainer}>
       <Switch
         data-theme="dark"
         isSelected={flag.currentValue}
         onChange={onOverride}
         isDisabled={disabled}
-        className={styles.switch_}
+        className={sharedStyles.switch_}
       />
     </div>
   );
@@ -67,15 +68,19 @@ export function LocalStringNumberFlagControl(props: LocalStringNumberFlagControl
   };
 
   return (
-    <div className={styles.customVariantContainer}>
+    <div className={sharedStyles.customVariantContainer}>
       {!isEditing ? (
-        <div className={styles.currentValueGroup}>
-          <div className={styles.currentValueText}>{String(flag.currentValue)}</div>
+        <div className={sharedStyles.currentValueGroup}>
+          <div className={sharedStyles.currentValueText}>{String(flag.currentValue)}</div>
           <IconButton icon={<EditIcon />} label="Edit" onClick={() => setIsEditing(true)} disabled={disabled} />
         </div>
       ) : (
-        <TextField aria-label={`Enter ${flag.type} value`} className={styles.customVariantField} data-theme="dark">
-          <Group className={styles.customVariantFieldGroup}>
+        <TextField
+          aria-label={`Enter ${flag.type} value`}
+          className={sharedStyles.customVariantField}
+          data-theme="dark"
+        >
+          <Group className={sharedStyles.customVariantFieldGroup}>
             <Input
               placeholder={`Enter ${flag.type} value`}
               value={tempValue}
@@ -126,36 +131,27 @@ export function LocalObjectFlagControl(props: LocalObjectFlagControlProps) {
   };
 
   return (
-    <div className={styles.customVariantContainer}>
+    <div className={sharedStyles.customVariantContainer}>
       {!isEditing ? (
-        <div className={styles.currentValueGroup}>
-          <div className={styles.currentValueText}>{JSON.stringify(flag.currentValue)}</div>
+        <div className={sharedStyles.currentValueGroup}>
+          <div className={sharedStyles.currentValueText}>{JSON.stringify(flag.currentValue)}</div>
           <IconButton icon={<EditIcon />} label="Edit JSON" onClick={() => setIsEditing(true)} disabled={disabled} />
         </div>
       ) : (
-        <TextField aria-label="Enter JSON value" className={styles.customVariantField} data-theme="dark">
-          <Group className={styles.customVariantFieldGroup}>
+        <TextField aria-label="Enter JSON value" className={sharedStyles.customVariantField} data-theme="dark">
+          <Group className={sharedStyles.customVariantFieldGroup}>
             <textarea
               placeholder="Enter valid JSON"
               value={tempValue}
               onChange={(e) => handleValueChange(e.target.value)}
               rows={4}
-              style={{
-                width: '100%',
-                fontFamily: 'monospace',
-                fontSize: '12px',
-                border: parseError ? '1px solid red' : '1px solid #ccc',
-                borderRadius: '4px',
-                padding: '8px',
-                backgroundColor: '#2a2a2a',
-                color: '#fff',
-              }}
+              className={parseError ? `${styles.jsonTextarea} ${styles.jsonTextareaError}` : styles.jsonTextarea}
             />
-            <div style={{ display: 'flex', gap: '4px', marginTop: '4px' }}>
+            <div className={styles.jsonButtonGroup}>
               <IconButton icon={<CheckIcon />} label="Confirm" onClick={handleConfirm} />
               <IconButton icon={<XIcon />} label="Cancel" onClick={handleCancel} />
             </div>
-            {parseError && <div style={{ color: 'red', fontSize: '12px', marginTop: '4px' }}>{parseError}</div>}
+            {parseError && <div className={styles.jsonParseError}>{parseError}</div>}
           </Group>
         </TextField>
       )}
