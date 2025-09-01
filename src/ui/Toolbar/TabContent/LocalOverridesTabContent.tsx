@@ -11,7 +11,7 @@ import {
 } from '../components/LocalFlagControls';
 import { OverrideIndicator } from '../components/OverrideIndicator';
 import { ActionButtonsContainer } from '../components';
-import type { IDebugOverridePlugin } from '../../../types/plugin';
+import type { IFlagOverridePlugin } from '../../../types/plugin';
 
 import * as styles from './FlagTabContent.css';
 import * as actionStyles from '../components/ActionButtonsContainer.css';
@@ -25,13 +25,13 @@ interface LocalFlag {
 }
 
 interface LocalOverridesTabContentProps {
-  debugOverridePlugin: IDebugOverridePlugin;
+  flagOverridePlugin: IFlagOverridePlugin;
 }
 
 export function LocalOverridesTabContent(props: LocalOverridesTabContentProps) {
-  const { debugOverridePlugin } = props;
+  const { flagOverridePlugin } = props;
   const { searchTerm } = useSearchContext();
-  const ldClient = debugOverridePlugin.getClient();
+  const ldClient = flagOverridePlugin.getClient();
 
   const [showOverriddenOnly, setShowOverriddenOnly] = useState(false);
   const parentRef = useRef<HTMLDivElement>(null);
@@ -56,7 +56,7 @@ export function LocalOverridesTabContent(props: LocalOverridesTabContentProps) {
     if (!ldClient) return {};
 
     const allFlags = ldClient.allFlags();
-    const overrides = debugOverridePlugin.getAllOverrides();
+    const overrides = flagOverridePlugin.getAllOverrides();
     const result: Record<string, LocalFlag> = {};
 
     Object.keys(allFlags)
@@ -75,27 +75,27 @@ export function LocalOverridesTabContent(props: LocalOverridesTabContentProps) {
     return result;
   };
 
-  console.log('DebugOverridePlugin: getAllOverrides', debugOverridePlugin.getAllOverrides());
+  console.log('FlagOverridePlugin: getAllOverrides', flagOverridePlugin.getAllOverrides());
   const flags = getFlags();
 
   // Override operations - simple direct calls
   const handleSetOverride = (flagKey: string, value: any) => {
-    debugOverridePlugin.setOverride(flagKey, value);
+    flagOverridePlugin.setOverride(flagKey, value);
   };
 
   const handleClearOverride = (flagKey: string) => {
-    debugOverridePlugin.removeOverride(flagKey);
+    flagOverridePlugin.removeOverride(flagKey);
   };
 
   const handleClearAllOverrides = () => {
-    debugOverridePlugin.clearAllOverrides();
+    flagOverridePlugin.clearAllOverrides();
   };
 
-  if (!ldClient || !debugOverridePlugin) {
+  if (!ldClient || !flagOverridePlugin) {
     return (
       <GenericHelpText
         title="LaunchDarkly client is not available"
-        subtitle="To use local flag overrides, ensure the debug override plugin is added to your LaunchDarkly client configuration."
+        subtitle="To use local flag overrides, ensure the flag override plugin is added to your LaunchDarkly client configuration."
       />
     );
   }

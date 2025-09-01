@@ -5,23 +5,23 @@ import { LocalOverridesTabContent } from '../TabContent/LocalOverridesTabContent
 import { SettingsTabContent } from '../TabContent/SettingsTabContent';
 import { ANIMATION_CONFIG, DIMENSIONS } from '../constants';
 import { TabId, ToolbarMode } from '../types';
-import type { IDebugOverridePlugin } from '../../../types/plugin';
+import type { IFlagOverridePlugin } from '../../../types/plugin';
 
 interface TabContentRendererProps {
   activeTab: TabId;
   slideDirection: number;
-  debugOverridePlugin?: IDebugOverridePlugin;
+  flagOverridePlugin?: IFlagOverridePlugin;
   mode: ToolbarMode;
 }
 
 export function TabContentRenderer(props: TabContentRendererProps) {
-  const { activeTab, slideDirection, debugOverridePlugin, mode } = props;
+  const { activeTab, slideDirection, flagOverridePlugin, mode } = props;
 
   const renderContent = () => {
     switch (activeTab) {
       case 'local-overrides':
-        if (!debugOverridePlugin) return null;
-        return <LocalOverridesTabContent debugOverridePlugin={debugOverridePlugin} />;
+        if (!flagOverridePlugin) return null;
+        return <LocalOverridesTabContent flagOverridePlugin={flagOverridePlugin} />;
       case 'flags':
         return <FlagTabContent />;
       case 'settings':

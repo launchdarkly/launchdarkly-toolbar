@@ -1,9 +1,9 @@
 import type { LDClient } from 'launchdarkly-js-client-sdk';
 
 /**
- * Interface for debug override plugins that can be used with the LaunchDarkly Toolbar
+ * Interface for flag override plugins that can be used with the LaunchDarkly Toolbar
  */
-export interface IDebugOverridePlugin {
+export interface IFlagOverridePlugin {
   /**
    * Sets an override value for a feature flag
    * @param flagKey - The key of the flag to override

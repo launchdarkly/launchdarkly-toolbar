@@ -1,21 +1,21 @@
 import type { LDClient, LDPlugin, LDDebugOverride } from 'launchdarkly-js-client-sdk';
 
 /**
- * Configuration options for the DebugOverridePlugin
+ * Configuration options for the FlagOverridePlugin
  */
-export type DebugOverridePluginConfig = {
-  /** Namespace for localStorage keys. Defaults to 'ld-debug-override' */
+export type FlagOverridePluginConfig = {
+  /** Namespace for localStorage keys. Defaults to 'ld-flag-override' */
   storageNamespace?: string;
 };
 
-const DEFAULT_STORAGE_NAMESPACE = 'ld-debug-override';
+const DEFAULT_STORAGE_NAMESPACE = 'ld-flag-override';
 
-export class DebugOverridePlugin implements LDPlugin {
+export class FlagOverridePlugin implements LDPlugin {
   private debugOverride?: LDDebugOverride;
-  private config: Required<DebugOverridePluginConfig>;
+  private config: Required<FlagOverridePluginConfig>;
   private ldClient: LDClient | null = null;
 
-  constructor(config: DebugOverridePluginConfig = {}) {
+  constructor(config: FlagOverridePluginConfig = {}) {
     this.config = {
       storageNamespace: config.storageNamespace ?? DEFAULT_STORAGE_NAMESPACE,
     };
@@ -26,7 +26,7 @@ export class DebugOverridePlugin implements LDPlugin {
    */
   getMetadata(): { name: string; version: string } {
     return {
-      name: 'DebugOverridePlugin',
+      name: 'FlagOverridePlugin',
       version: '1.0.0',
     };
   }
@@ -37,7 +37,7 @@ export class DebugOverridePlugin implements LDPlugin {
 
   register(ldClient: LDClient): void {
     this.ldClient = ldClient;
-    console.log('debugOverridePlugin: Registered with LaunchDarkly client');
+    console.log('flagOverridePlugin: Registered with LaunchDarkly client');
   }
 
   /**
@@ -45,7 +45,7 @@ export class DebugOverridePlugin implements LDPlugin {
    * Loads any existing overrides from localStorage
    */
   registerDebug(debugOverride: LDDebugOverride): void {
-    console.log('debugOverridePlugin: Debug interface registered');
+    console.log('flagOverridePlugin: Debug interface registered');
     this.debugOverride = debugOverride;
     this.loadExistingOverrides();
   }
@@ -72,17 +72,17 @@ export class DebugOverridePlugin implements LDPlugin {
             this.debugOverride.setOverride(flagKey, value);
             loadedCount++;
           } catch {
-            console.warn('debugOverridePlugin: Invalid stored value for', key);
+            console.warn('flagOverridePlugin: Invalid stored value for', key);
             storage.removeItem(key);
           }
         }
       }
 
       if (loadedCount > 0) {
-        console.log(`debugOverridePlugin: Loaded ${loadedCount} existing overrides`);
+        console.log(`flagOverridePlugin: Loaded ${loadedCount} existing overrides`);
       }
     } catch (error) {
-      console.error('debugOverridePlugin: Error loading existing overrides:', error);
+      console.error('flagOverridePlugin: Error loading existing overrides:', error);
     }
   }
 
@@ -93,26 +93,26 @@ export class DebugOverridePlugin implements LDPlugin {
    */
   setOverride(flagKey: string, value: unknown): void {
     if (!this.debugOverride) {
-      console.warn('debugOverridePlugin: Debug interface not available');
+      console.warn('flagOverridePlugin: Debug interface not available');
       return;
     }
 
     if (!flagKey || typeof flagKey !== 'string') {
-      console.error('debugOverridePlugin: Invalid flag key:', flagKey);
+      console.error('flagOverridePlugin: Invalid flag key:', flagKey);
       return;
     }
 
     if (value === undefined) {
-      console.error('debugOverridePlugin: Cannot set undefined value for flag override');
+      console.error('flagOverridePlugin: Cannot set undefined value for flag override');
       return;
     }
 
     try {
       this.persistOverride(flagKey, value);
       this.debugOverride.setOverride(flagKey, value);
-      console.log(`debugOverridePlugin: Set override ${flagKey} =`, value);
+      console.log(`flagOverridePlugin: Set override ${flagKey} =`, value);
     } catch (error) {
-      console.error('debugOverridePlugin: Failed to set override:', error);
+      console.error('flagOverridePlugin: Failed to set override:', error);
     }
   }
 
@@ -122,21 +122,21 @@ export class DebugOverridePlugin implements LDPlugin {
    */
   removeOverride(flagKey: string): void {
     if (!this.debugOverride) {
-      console.warn('debugOverridePlugin: Debug interface not available');
+      console.warn('flagOverridePlugin: Debug interface not available');
       return;
     }
 
     if (!flagKey || typeof flagKey !== 'string') {
-      console.error('debugOverridePlugin: Invalid flag key:', flagKey);
+      console.error('flagOverridePlugin: Invalid flag key:', flagKey);
       return;
     }
 
     try {
       this.removePersistedOverride(flagKey);
       this.debugOverride.removeOverride(flagKey);
-      console.log(`debugOverridePlugin: Removed override for ${flagKey}`);
+      console.log(`flagOverridePlugin: Removed override for ${flagKey}`);
     } catch (error) {
-      console.error('debugOverridePlugin: Failed to remove override:', error);
+      console.error('flagOverridePlugin: Failed to remove override:', error);
     }
   }
 
@@ -145,16 +145,16 @@ export class DebugOverridePlugin implements LDPlugin {
    */
   clearAllOverrides(): void {
     if (!this.debugOverride) {
-      console.warn('debugOverridePlugin: Debug interface not available');
+      console.warn('flagOverridePlugin: Debug interface not available');
       return;
     }
 
     try {
       this.clearPersistedOverrides();
       this.debugOverride.clearAllOverrides();
-      console.log('debugOverridePlugin: Cleared all overrides');
+      console.log('flagOverridePlugin: Cleared all overrides');
     } catch (error) {
-      console.error('debugOverridePlugin: Failed to clear overrides:', error);
+      console.error('flagOverridePlugin: Failed to clear overrides:', error);
     }
   }
 
@@ -164,14 +164,14 @@ export class DebugOverridePlugin implements LDPlugin {
    */
   getAllOverrides(): Record<string, unknown> {
     if (!this.debugOverride) {
-      console.warn('debugOverridePlugin: Debug interface not available');
+      console.warn('flagOverridePlugin: Debug interface not available');
       return {};
     }
 
     try {
       return this.debugOverride.getAllOverrides();
     } catch (error) {
-      console.error('debugOverridePlugin: Failed to get overrides:', error);
+      console.error('flagOverridePlugin: Failed to get overrides:', error);
       return {};
     }
   }
@@ -197,7 +197,7 @@ export class DebugOverridePlugin implements LDPlugin {
       const storageKey = `${this.config.storageNamespace}:${flagKey}`;
       storage.setItem(storageKey, JSON.stringify(value));
     } catch (error) {
-      console.error('debugOverridePlugin: Failed to persist override:', error);
+      console.error('flagOverridePlugin: Failed to persist override:', error);
     }
   }
 
@@ -209,7 +209,7 @@ export class DebugOverridePlugin implements LDPlugin {
       const storageKey = `${this.config.storageNamespace}:${flagKey}`;
       storage.removeItem(storageKey);
     } catch (error) {
-      console.error('debugOverridePlugin: Failed to remove persisted override:', error);
+      console.error('flagOverridePlugin: Failed to remove persisted override:', error);
     }
   }
 
@@ -230,7 +230,7 @@ export class DebugOverridePlugin implements LDPlugin {
 
       keysToRemove.forEach((key) => storage.removeItem(key));
     } catch (error) {
-      console.error('debugOverridePlugin: Failed to clear persisted overrides:', error);
+      console.error('flagOverridePlugin: Failed to clear persisted overrides:', error);
     }
   }
 }

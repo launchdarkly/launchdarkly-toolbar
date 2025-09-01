@@ -3,7 +3,7 @@ import { LaunchDarklyToolbar } from '@launchdarkly/toolbar';
 
 import './App.css';
 import { useLDClient } from 'launchdarkly-react-client-sdk';
-import { debugOverridePlugin } from './plugins';
+import { flagOverridePlugin } from './plugins';
 
 export function AppWrapper() {
   const [position, setPosition] = useState<'left' | 'right'>('left');
@@ -108,7 +108,7 @@ export function AppWrapper() {
         position={position}
         devServerUrl={devServerUrl}
         projectKey={projectKey || undefined}
-        debugOverridePlugin={debugOverridePlugin}
+        flagOverridePlugin={flagOverridePlugin}
       />
     </div>
   );

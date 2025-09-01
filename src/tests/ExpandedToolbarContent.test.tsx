@@ -124,8 +124,8 @@ describe('ExpandedToolbarContent - User Interaction Flows', () => {
   });
 
   describe('SDK Mode - Client-Side Override Flow', () => {
-    test('developer with debug plugin explores client-side override capabilities', () => {
-      // GIVEN: Developer has a debug plugin configured and expands the toolbar
+    test('developer with flag override plugin explores client-side override capabilities', () => {
+      // GIVEN: Developer has a flag override plugin configured and expands the toolbar
       const mockDebugPlugin = {
         getLocalOverrides: vi.fn().mockResolvedValue({}),
         setLocalOverride: vi.fn(),
@@ -140,7 +140,7 @@ describe('ExpandedToolbarContent - User Interaction Flows', () => {
 
       render(
         <TestWrapper>
-          <ExpandedToolbarContent {...defaultProps} mode="sdk" debugOverridePlugin={mockDebugPlugin} />
+          <ExpandedToolbarContent {...defaultProps} mode="sdk" flagOverridePlugin={mockDebugPlugin} />
         </TestWrapper>,
       );
 
@@ -173,7 +173,7 @@ describe('ExpandedToolbarContent - User Interaction Flows', () => {
             {...defaultProps}
             activeTab="local-overrides"
             mode="sdk"
-            debugOverridePlugin={mockDebugPlugin}
+            flagOverridePlugin={mockDebugPlugin}
           />
         </TestWrapper>,
       );
@@ -183,8 +183,8 @@ describe('ExpandedToolbarContent - User Interaction Flows', () => {
       expect(screen.getByTestId('local-overrides-tab-content')).toBeInTheDocument();
     });
 
-    test('developer without debug plugin has limited functionality', () => {
-      // GIVEN: Developer is using the toolbar without debug capabilities
+    test('developer without flag override plugin has limited functionality', () => {
+      // GIVEN: Developer is using the toolbar without a flag override plugin
       render(
         <TestWrapper>
           <ExpandedToolbarContent {...defaultProps} mode="sdk" />

@@ -63,9 +63,9 @@ describe('LaunchDarklyToolbar - User Flows', () => {
   });
 
   describe('SDK Mode - Client-Side Override Flow', () => {
-    test('developer with debug plugin can manage client-side flag overrides', async () => {
-      // GIVEN: Developer has a debug plugin configured for local overrides
-      const mockDebugPlugin = {
+    test('developer with flag override plugin can manage client-side flag overrides', async () => {
+      // GIVEN: Developer has a flag override plugin configured for local overrides
+      const mockFlagOverridePlugin = {
         getLocalOverrides: vi.fn().mockResolvedValue({}),
         setLocalOverride: vi.fn(),
         clearLocalOverride: vi.fn(),
@@ -77,8 +77,8 @@ describe('LaunchDarklyToolbar - User Flows', () => {
         getClient: vi.fn(),
       };
 
-      // WHEN: They load the toolbar with their debug plugin
-      render(<LaunchDarklyToolbar debugOverridePlugin={mockDebugPlugin} />);
+      // WHEN: They load the toolbar with their flag override plugin
+      render(<LaunchDarklyToolbar flagOverridePlugin={mockFlagOverridePlugin} />);
 
       const toolbar = screen.getByTestId('launchdarkly-toolbar');
       fireEvent.mouseEnter(toolbar);
@@ -94,8 +94,8 @@ describe('LaunchDarklyToolbar - User Flows', () => {
       expect(screen.getByRole('tab', { name: /settings/i })).toBeInTheDocument();
     });
 
-    test('developer without debug plugin can only access basic settings', async () => {
-      // GIVEN: Developer is using the toolbar without any debug plugins
+    test('developer without flag override plugin can only access basic settings', async () => {
+      // GIVEN: Developer is using the toolbar without any flag override plugins
       render(<LaunchDarklyToolbar />);
 
       // WHEN: They hover over the toolbar
@@ -140,8 +140,8 @@ describe('LaunchDarklyToolbar - User Flows', () => {
   });
 
   describe('Error Handling and Edge Cases', () => {
-    test('SDK mode without debug plugin shows limited functionality gracefully', async () => {
-      // GIVEN: Developer is using SDK mode but forgot to provide debug plugin
+    test('SDK mode without flag override plugin shows limited functionality gracefully', async () => {
+      // GIVEN: Developer is using SDK mode but forgot to provide flag override plugin
       render(<LaunchDarklyToolbar />);
 
       // WHEN: They expand the toolbar to see available features
@@ -200,13 +200,13 @@ describe('LaunchDarklyToolbar - User Flows', () => {
         return settingsTab;
       });
 
-      // AND: Shows only SDK mode tabs (no debug plugin = settings only)
+      // AND: Shows only SDK mode tabs (no flag override plugin = settings only)
       expect(screen.getByRole('tab', { name: /settings/i })).toBeInTheDocument();
 
       // AND: Does NOT show dev-server mode tabs (flags = server-side flags)
       expect(screen.queryByRole('tab', { name: /flags/i })).not.toBeInTheDocument();
 
-      // AND: Does NOT show local-overrides tab (no debug plugin provided)
+      // AND: Does NOT show local-overrides tab (no flag override plugin provided)
       expect(screen.queryByText('local-overrides')).not.toBeInTheDocument();
 
       // AND: Only has one tab total (settings only - typical SDK mode without plugin)

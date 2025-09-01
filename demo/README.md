@@ -9,7 +9,7 @@ This is a demo application showcasing the LaunchDarkly Toolbar component. It pro
 - ✅ **Position configuration** (left/right)
 - ✅ **Dev server connection** with configurable URL
 - ✅ **Project key configuration** with auto-detection fallback
-- ✅ **Debug override plugin** integration
+- ✅ **Flag override plugin** integration
 - ✅ **Flag management** and toggling
 - ✅ **Local override testing**
 - ✅ **Settings configuration**
@@ -60,7 +60,7 @@ This is a demo application showcasing the LaunchDarkly Toolbar component. It pro
    - **Position**: Choose between left or right positioning
    - **Dev Server URL**: Set your LaunchDarkly dev server URL (Dev Server Mode only)
    - **Project Key**: Optionally specify a project key (Dev Server Mode only)
-   - **Debug Plugin**: Enable/disable the debug override plugin (SDK Mode)
+   - **Debug Plugin**: Enable/disable the flag override plugin (SDK Mode)
 
 2. **Interact with the toolbar:**
    - Look for the circular toolbar in the bottom corner
@@ -100,7 +100,7 @@ This demo is part of a pnpm workspace and automatically uses the local version o
 
 ### SDK Mode Issues
 
-1. **No Overrides tab**: Make sure the debug override plugin is enabled in the demo configuration
+1. **No Overrides tab**: Make sure the flag override plugin is enabled in the demo configuration
 2. **Overrides not working**: Check the browser console for plugin errors
 
 ### General Issues

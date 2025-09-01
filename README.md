@@ -5,7 +5,7 @@
 A React component that provides a developer-friendly toolbar for interacting with LaunchDarkly during development. The toolbar supports two modes:
 
 - **Dev Server Mode**: Connect to a LaunchDarkly CLI dev server for flag browsing and real-time updates
-- **SDK Mode**: Integrate with debug override plugins for local flag testing
+- **SDK Mode**: Integrate with flag override plugins for local flag testing
 
 ## Installation
 
@@ -30,17 +30,17 @@ function App() {
 }
 ```
 
-**SDK Mode** (integrates with debug override plugins):
+**SDK Mode** (integrates with flag override override plugins):
 
 ```tsx
 import { LaunchDarklyToolbar } from '@launchdarkly/toolbar';
-import { debugOverridePlugin } from './your-debug-plugin';
+import { flagOverridePlugin } from './your-flag-override-plugin';
 
 function App() {
   return (
     <div>
       <h1>My App</h1>
-      <LaunchDarklyToolbar debugOverridePlugin={debugOverridePlugin} />
+      <LaunchDarklyToolbar flagOverridePlugin={flagOverridePlugin} />
     </div>
   );
 }
@@ -48,13 +48,13 @@ function App() {
 
 ## Props
 
-| Prop                  | Type                   | Default     | Description                                                               |
-| --------------------- | ---------------------- | ----------- | ------------------------------------------------------------------------- |
-| `devServerUrl`        | `string` (optional)    | `undefined` | URL of your LaunchDarkly dev server. If provided, enables Dev Server Mode |
-| `debugOverridePlugin` | `IDebugOverridePlugin` | `undefined` | Debug override plugin for SDK Mode. Shows Overrides tab when provided     |
-| `position`            | `"left" \| "right"`    | `"right"`   | Position of the toolbar on screen                                         |
-| `projectKey`          | `string` (optional)    | `undefined` | Optional project key for multi-project setups (Dev Server Mode only)      |
-| `pollIntervalInMs`    | `number` (optional)    | `5000`      | Polling interval for dev server updates (Dev Server Mode only)            |
+| Prop                 | Type                  | Default     | Description                                                               |
+| -------------------- | --------------------- | ----------- | ------------------------------------------------------------------------- |
+| `devServerUrl`       | `string` (optional)   | `undefined` | URL of your LaunchDarkly dev server. If provided, enables Dev Server Mode |
+| `flagOverridePlugin` | `IFlagOverridePlugin` | `undefined` | Flag override plugin for SDK Mode. Shows Overrides tab when provided      |
+| `position`           | `"left" \| "right"`   | `"right"`   | Position of the toolbar on screen                                         |
+| `projectKey`         | `string` (optional)   | `undefined` | Optional project key for multi-project setups (Dev Server Mode only)      |
+| `pollIntervalInMs`   | `number` (optional)   | `5000`      | Polling interval for dev server updates (Dev Server Mode only)            |
 
 ## Configuration
 
@@ -67,10 +67,10 @@ The toolbar automatically determines its mode:
 
 ### Available Features by Mode
 
-| Mode                | Available Tabs                                          |
-| ------------------- | ------------------------------------------------------- |
-| **Dev Server Mode** | Flags, Settings                                         |
-| **SDK Mode**        | Overrides (if `debugOverridePlugin` provided), Settings |
+| Mode                | Available Tabs                                         |
+| ------------------- | ------------------------------------------------------ |
+| **Dev Server Mode** | Flags, Settings                                        |
+| **SDK Mode**        | Overrides (if `flagOverridePlugin` provided), Settings |
 
 ## Setup
 
