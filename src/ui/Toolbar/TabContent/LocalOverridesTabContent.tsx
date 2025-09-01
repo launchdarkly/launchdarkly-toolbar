@@ -75,7 +75,6 @@ export function LocalOverridesTabContent(props: LocalOverridesTabContentProps) {
     return result;
   };
 
-  console.log('FlagOverridePlugin: getAllOverrides', flagOverridePlugin.getAllOverrides());
   const flags = getFlags();
 
   // Override operations - simple direct calls

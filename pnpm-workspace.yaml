@@ -2,9 +2,5 @@ packages:
   - .
   - demo
 
-overrides:
-  launchdarkly-js-client-sdk: link:../js-client-sdk
-  launchdarkly-react-client-sdk: link:../react-client-sdk
-
 autoInstallPeers: true
 strictPeerDependencies: true

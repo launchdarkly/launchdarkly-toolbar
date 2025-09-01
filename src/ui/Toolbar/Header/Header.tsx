@@ -5,7 +5,6 @@ import { LogoSection, EnvironmentLabel, SearchSection, ActionButtons } from './c
 import { useToolbarContext } from '../context/LaunchDarklyToolbarProvider';
 import { ConnectionStatus } from '../components';
 import { ToolbarMode } from '../types/toolbar';
-// import { ConnectionStatus } from '../components/ConnectionStatus';
 
 export interface HeaderProps {
   searchTerm: string;
