@@ -4,7 +4,7 @@ import type { LDClient, LDPlugin, LDFlagOverride } from 'launchdarkly-js-client-
  * Configuration options for the FlagOverridePlugin
  */
 export type FlagOverridePluginConfig = {
-  /** Namespace for localStorage keys. Defaults to 'ld-debug-override' */
+  /** Namespace for localStorage keys. Defaults to 'ld-flag-override' */
   storageNamespace?: string;
 };
 
@@ -40,7 +40,6 @@ export class FlagOverridePlugin implements LDPlugin {
    */
   register(ldClient: LDClient): void {
     this.ldClient = ldClient;
-    console.log('flagOverridePlugin: Registered with LaunchDarkly client');
   }
 
   /**
@@ -48,7 +47,6 @@ export class FlagOverridePlugin implements LDPlugin {
    * Loads any existing overrides from localStorage
    */
   registerDebug(flagOverride: LDFlagOverride): void {
-    console.log('flagOverridePlugin: Debug interface registered');
     this.flagOverride = flagOverride;
     this.loadExistingOverrides();
   }
@@ -113,7 +111,6 @@ export class FlagOverridePlugin implements LDPlugin {
     try {
       this.persistOverride(flagKey, value);
       this.flagOverride.setOverride(flagKey, value);
-      console.log(`flagOverridePlugin: Set override ${flagKey} =`, value);
     } catch (error) {
       console.error('flagOverridePlugin: Failed to set override:', error);
     }
@@ -137,7 +134,6 @@ export class FlagOverridePlugin implements LDPlugin {
     try {
       this.removePersistedOverride(flagKey);
       this.flagOverride.removeOverride(flagKey);
-      console.log(`flagOverridePlugin: Removed override for ${flagKey}`);
     } catch (error) {
       console.error('flagOverridePlugin: Failed to remove override:', error);
     }
@@ -155,7 +151,6 @@ export class FlagOverridePlugin implements LDPlugin {
     try {
       this.clearPersistedOverrides();
       this.flagOverride.clearAllOverrides();
-      console.log('flagOverridePlugin: Cleared all overrides');
     } catch (error) {
       console.error('flagOverridePlugin: Failed to clear overrides:', error);
     }

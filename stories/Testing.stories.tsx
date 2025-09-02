@@ -53,7 +53,6 @@ const meta: Meta<typeof LaunchDarklyToolbar> = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-// Mode-based Stories
 export const DevServerMode: Story = {
   args: {
     devServerUrl: 'http://localhost:8765',
