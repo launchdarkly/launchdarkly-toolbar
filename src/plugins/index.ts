@@ -1,4 +1,3 @@
-// Export both plugins for easy importing
 export { FlagOverridePlugin } from './FlagOverridePlugin';
 export type { FlagOverridePluginConfig } from './FlagOverridePlugin';
 

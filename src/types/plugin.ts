@@ -2,7 +2,7 @@ import { LDClient } from 'launchdarkly-js-client-sdk';
 import { ProcessedEvent } from './events';
 
 /**
- * Interface for debug override plugins that can be used with the LaunchDarkly Toolbar
+ * Interface for flag override plugins that can be used with the LaunchDarkly Toolbar
  */
 export interface IFlagOverridePlugin {
   /**

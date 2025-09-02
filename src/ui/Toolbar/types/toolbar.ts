@@ -13,12 +13,12 @@ export function getToolbarMode(devServerUrl?: string): ToolbarMode {
   return devServerUrl ? 'dev-server' : 'sdk';
 }
 
-export function getTabsForMode(mode: ToolbarMode, hasDebugPlugin: boolean): readonly TabId[] {
+export function getTabsForMode(mode: ToolbarMode, hasFlagOverridePlugin: boolean): readonly TabId[] {
   if (mode === 'dev-server') {
     return DEV_SERVER_TABS;
   }
-  // SDK mode only shows local-overrides if debug plugin is available
-  return hasDebugPlugin ? SDK_MODE_TABS : (['settings'] as const);
+  // SDK mode only shows local-overrides if flag override plugin is available
+  return hasFlagOverridePlugin ? SDK_MODE_TABS : (['settings'] as const);
 }
 
 // Feature flag types

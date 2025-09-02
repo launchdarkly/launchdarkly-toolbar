@@ -5,7 +5,7 @@
 A React component that provides a developer-friendly toolbar for interacting with LaunchDarkly during development. The toolbar supports two modes:
 
 - **Dev Server Mode**: Connect to a LaunchDarkly CLI dev server for flag browsing and real-time updates
-- **SDK Mode**: Integrate with debug override plugins for local flag testing
+- **SDK Mode**: Integrate with flag override plugins for local flag testing
 
 ## Installation
 
@@ -30,11 +30,12 @@ function App() {
 }
 ```
 
-**SDK Mode** (integrates with debug override plugins):
+**SDK Mode** (integrates with flag override override plugins):
 
 ```tsx
 import { LaunchDarklyToolbar } from '@launchdarkly/toolbar';
-import { flagOverridePlugin, eventInterceptionPlugin } from './your-plugins';
+import { flagOverridePlugin } from './your-flag-override-plugin';
+import { eventInterceptionPlugin } from './your-event-interception-plugin';
 
 function App() {
   return (

@@ -8,7 +8,7 @@ export type FlagOverridePluginConfig = {
   storageNamespace?: string;
 };
 
-const DEFAULT_STORAGE_NAMESPACE = 'ld-debug-override';
+const DEFAULT_STORAGE_NAMESPACE = 'ld-flag-override';
 
 export class FlagOverridePlugin implements LDPlugin {
   private flagOverride?: LDFlagOverride;
@@ -38,7 +38,6 @@ export class FlagOverridePlugin implements LDPlugin {
   /**
    * Called when the plugin is registered with the LaunchDarkly client
    */
-
   register(ldClient: LDClient): void {
     this.ldClient = ldClient;
     console.log('flagOverridePlugin: Registered with LaunchDarkly client');
@@ -182,7 +181,7 @@ export class FlagOverridePlugin implements LDPlugin {
 
   /**
    * Returns the LaunchDarkly client instance
-   * @returns The LaunchDarkly client with allFlags method
+   * @returns The LaunchDarkly client
    */
   getClient(): LDClient | null {
     return this.ldClient;

@@ -83,7 +83,6 @@ export function FlagOverridesTabContent(_props: FlagOverridesTabContentProps) {
     return result;
   };
 
-  console.log('FlagOverridePlugin: getAllOverrides', flagOverridePlugin.getAllOverrides());
   const flags = getFlags();
 
   // Override operations - simple direct calls
@@ -103,7 +102,7 @@ export function FlagOverridesTabContent(_props: FlagOverridesTabContentProps) {
     return (
       <GenericHelpText
         title="LaunchDarkly client is not available"
-        subtitle="To use local flag overrides, ensure the debug override plugin is added to your LaunchDarkly client configuration."
+        subtitle="To use local flag overrides, ensure the flag override plugin is added to your LaunchDarkly client configuration."
       />
     );
   }

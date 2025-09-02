@@ -6,20 +6,20 @@ import './App.css';
 import { flagOverridePlugin, eventInterceptionPlugin } from './plugins';
 
 function App() {
-  const [LDProvider, setLDProvider] = useState<any>(null);
+  const [LDProvider, setLDProvider] = useState<React.FC<{ children: React.ReactNode }> | null>(null);
 
   useEffect(() => {
     const initializeLD = async () => {
       const Provider = await asyncWithLDProvider({
-        clientSideID: '67b94f6d17a8b408fa943d3c',
+        clientSideID: import.meta.env.VITE_LD_CLIENT_SIDE_ID,
         options: {
-          baseUrl: 'https://app.ld.catamorphic.com',
-          streamUrl: 'https://stream.ld.catamorphic.com',
-          eventsUrl: 'https://events.ld.catamorphic.com',
+          baseUrl: import.meta.env.VITE_LD_BASE_URL,
+          streamUrl: import.meta.env.VITE_LD_STREAM_URL,
+          eventsUrl: import.meta.env.VITE_LD_EVENTS_URL,
           plugins: [flagOverridePlugin, eventInterceptionPlugin],
         },
       });
-      setLDProvider(() => Provider);
+      setLDProvider(() => Provider as React.FC<{ children: React.ReactNode }>);
     };
 
     initializeLD();
