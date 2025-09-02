@@ -1,9 +1,10 @@
-import type { LDClient } from 'launchdarkly-js-client-sdk';
+import { LDClient } from 'launchdarkly-js-client-sdk';
+import { ProcessedEvent } from './events';
 
 /**
  * Interface for debug override plugins that can be used with the LaunchDarkly Toolbar
  */
-export interface IDebugOverridePlugin {
+export interface IFlagOverridePlugin {
   /**
    * Sets an override value for a feature flag
    * @param flagKey - The key of the flag to override
@@ -33,4 +34,27 @@ export interface IDebugOverridePlugin {
    * @returns The LaunchDarkly client with allFlags method
    */
   getClient(): LDClient | null;
+}
+
+/**
+ * Interface for event interception plugins that can be used with the LaunchDarkly Toolbar
+ */
+export interface IEventInterceptionPlugin {
+  /**
+   * Gets all intercepted events from the event store
+   * @returns Array of processed events
+   */
+  getEvents(): ProcessedEvent[];
+
+  /**
+   * Subscribes to event store changes
+   * @param listener - Callback function to be called when events change
+   * @returns Unsubscribe function
+   */
+  subscribe(listener: () => void): () => void;
+
+  /**
+   * Clears all events from the event store
+   */
+  clearEvents(): void;
 }

@@ -178,6 +178,99 @@ body {
   color: #4a5568;
 }
 
+/* Event Testing */
+.event-testing {
+  background: #fff5f5;
+  padding: 20px;
+  border-radius: 8px;
+  border-left: 4px solid #f56565;
+  margin-bottom: 20px;
+}
+
+.event-testing h3 {
+  margin-top: 0;
+  margin-bottom: 10px;
+  color: #2d3748;
+  font-size: 1.3rem;
+}
+
+.event-testing > p {
+  margin-bottom: 15px;
+  color: #4a5568;
+  font-size: 14px;
+}
+
+.test-buttons {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 15px;
+  flex-wrap: wrap;
+}
+
+.test-button {
+  padding: 10px 16px;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.test-button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.test-button:active {
+  transform: translateY(0);
+}
+
+.flag-button {
+  background: #e6fffa;
+  color: #065f46;
+  border: 1px solid #81e6d9;
+}
+
+.flag-button:hover {
+  background: #b2f5ea;
+  border-color: #4fd1c7;
+}
+
+.custom-button {
+  background: #e0e7ff;
+  color: #3730a3;
+  border: 1px solid #a5b4fc;
+}
+
+.custom-button:hover {
+  background: #c7d2fe;
+  border-color: #818cf8;
+}
+
+.identify-button {
+  background: #fef5e7;
+  color: #92400e;
+  border: 1px solid #f6e05e;
+}
+
+.identify-button:hover {
+  background: #fef3c7;
+  border-color: #fbbf24;
+}
+
+.console-hint {
+  background: #f0fff4;
+  padding: 12px;
+  border-radius: 6px;
+  border: 1px solid #9ae6b4;
+  font-size: 13px;
+  color: #276749;
+}
+
 /* Flags Display */
 .flags-display {
   background: #f7fafc;

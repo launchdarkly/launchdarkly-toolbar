@@ -8,10 +8,10 @@ type EnvironmentConfig = {
 
 const envConfig: EnvironmentConfig = {
   ci: {
-    storyPath: '/?path=/story/testing-toolbar--default',
+    storyPath: '/?path=/story/testing-toolbar--dev-server-mode',
   },
   local: {
-    storyPath: '/?path=/story/ui-launchdarklytoolbar--default',
+    storyPath: '/?path=/story/ui-launchdarklytoolbar--dev-server-mode',
   },
 };
 

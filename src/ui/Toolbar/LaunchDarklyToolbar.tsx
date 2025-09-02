@@ -9,15 +9,14 @@ import { ToolbarMode, ToolbarPosition, getToolbarMode } from './types/toolbar';
 
 import * as styles from './LaunchDarklyToolbar.css';
 import { LaunchDarklyToolbarProvider } from './context/LaunchDarklyToolbarProvider';
-import type { IDebugOverridePlugin } from '../../types/plugin';
+import type { IEventInterceptionPlugin, IFlagOverridePlugin } from '../../types/plugin';
 
 export interface LdToolbarProps {
-  debugOverridePlugin?: IDebugOverridePlugin;
   mode: ToolbarMode;
 }
 
 export function LdToolbar(props: LdToolbarProps) {
-  const { debugOverridePlugin, mode } = props;
+  const { mode } = props;
   const { searchTerm } = useSearchContext();
   const { state, handlePositionChange } = useToolbarContext();
   const toolbarState = useToolbarState();
@@ -95,7 +94,6 @@ export function LdToolbar(props: LdToolbarProps) {
             onClose={handleClose}
             onTabChange={handleTabChange}
             setSearchIsExpanded={setSearchIsExpanded}
-            debugOverridePlugin={debugOverridePlugin}
             mode={mode}
           />
         )}
@@ -107,13 +105,21 @@ export function LdToolbar(props: LdToolbarProps) {
 export interface LaunchDarklyToolbarProps {
   devServerUrl?: string; // Optional - will default to http://localhost:8765
   projectKey?: string; // Optional - will auto-detect first available project if not provided
-  debugOverridePlugin?: IDebugOverridePlugin;
+  flagOverridePlugin?: IFlagOverridePlugin;
+  eventInterceptionPlugin?: IEventInterceptionPlugin; // Optional - for event tracking
   pollIntervalInMs?: number; // Optional - will default to 5000ms
   position?: ToolbarPosition; // Optional - will default to 'right'
 }
 
 export function LaunchDarklyToolbar(props: LaunchDarklyToolbarProps) {
-  const { projectKey, position, devServerUrl, pollIntervalInMs = 5000, debugOverridePlugin } = props;
+  const {
+    projectKey,
+    position,
+    devServerUrl,
+    pollIntervalInMs = 5000,
+    flagOverridePlugin,
+    eventInterceptionPlugin,
+  } = props;
   const isVisible = useToolbarVisibility();
 
   // Don't render anything if visibility check fails
@@ -131,9 +137,11 @@ export function LaunchDarklyToolbar(props: LaunchDarklyToolbarProps) {
         pollIntervalInMs,
       }}
       initialPosition={position}
+      flagOverridePlugin={flagOverridePlugin}
+      eventInterceptionPlugin={eventInterceptionPlugin}
     >
       <SearchProvider>
-        <LdToolbar debugOverridePlugin={debugOverridePlugin} mode={mode} />
+        <LdToolbar mode={mode} />
       </SearchProvider>
     </LaunchDarklyToolbarProvider>
   );

@@ -1,5 +1,5 @@
 // Main toolbar types
-export type TabId = 'local-overrides' | 'flags' | 'settings';
+export type TabId = 'local-overrides' | 'flags' | 'events' | 'settings';
 export type ActiveTabId = TabId | undefined;
 
 export const TAB_ORDER: readonly TabId[] = ['local-overrides', 'flags', 'settings'] as const;
@@ -7,7 +7,7 @@ export const TAB_ORDER: readonly TabId[] = ['local-overrides', 'flags', 'setting
 export type ToolbarMode = 'dev-server' | 'sdk';
 
 export const DEV_SERVER_TABS: readonly TabId[] = ['flags', 'settings'] as const;
-export const SDK_MODE_TABS: readonly TabId[] = ['local-overrides', 'settings'] as const;
+export const SDK_MODE_TABS: readonly TabId[] = ['local-overrides', 'events', 'settings'] as const;
 
 export function getToolbarMode(devServerUrl?: string): ToolbarMode {
   return devServerUrl ? 'dev-server' : 'sdk';

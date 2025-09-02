@@ -120,18 +120,18 @@ export function useToolbarState(): UseToolbarStateReturn {
   }, [isExpanded]);
 
   // Handle click outside to close toolbar
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (isExpanded && toolbarRef.current && !toolbarRef.current.contains(event.target as Node)) {
-        setIsExpanded(false);
-      }
-    };
+  // useEffect(() => {
+  //   const handleClickOutside = (event: MouseEvent) => {
+  //     if (isExpanded && toolbarRef.current && !toolbarRef.current.contains(event.target as Node)) {
+  //       setIsExpanded(false);
+  //     }
+  //   };
 
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
-  }, [isExpanded]);
+  //   document.addEventListener('mousedown', handleClickOutside);
+  //   return () => {
+  //     document.removeEventListener('mousedown', handleClickOutside);
+  //   };
+  // }, [isExpanded]);
 
   return {
     // State values

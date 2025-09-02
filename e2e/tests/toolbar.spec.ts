@@ -19,7 +19,7 @@ test.describe(`LaunchDarkly Toolbar - ${config.testEnv} environment`, () => {
       });
     });
 
-    await page.route(`**/dev/projects/test-project*`, async (route) => {
+    await page.route(`**/dev/projects/${TEST_PROJECT_KEY}**`, async (route) => {
       await route.fulfill({
         status: 200,
         contentType: 'application/json',

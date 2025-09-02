@@ -4,6 +4,7 @@ import { expect, test, describe, vi, beforeEach } from 'vitest';
 import { ExpandedToolbarContent } from '../ui/Toolbar/components/ExpandedToolbarContent';
 import { LaunchDarklyToolbarProvider } from '../ui/Toolbar/context/LaunchDarklyToolbarProvider';
 import { SearchProvider } from '../ui/Toolbar/context/SearchProvider';
+import { IFlagOverridePlugin, IEventInterceptionPlugin } from '../types/plugin';
 
 // Mock the DevServerClient and FlagStateManager
 vi.mock('../services/DevServerClient', () => ({
@@ -38,8 +39,12 @@ vi.mock('../ui/Toolbar/TabContent/FlagTabContent', () => ({
   FlagTabContent: () => <div data-testid="flag-tab-content">Flag Tab Content</div>,
 }));
 
-vi.mock('../ui/Toolbar/TabContent/LocalOverridesTabContent', () => ({
-  LocalOverridesTabContent: () => <div data-testid="local-overrides-tab-content">Local Overrides Tab Content</div>,
+vi.mock('../ui/Toolbar/TabContent/FlagOverridesTabContent', () => ({
+  FlagOverridesTabContent: () => <div data-testid="local-overrides-tab-content">Local Overrides Tab Content</div>,
+}));
+
+vi.mock('../ui/Toolbar/TabContent/EventsTabContent', () => ({
+  EventsTabContent: () => <div data-testid="events-tab-content">Events Tab Content</div>,
 }));
 
 vi.mock('../ui/Toolbar/TabContent/SettingsTabContent', () => ({
@@ -53,10 +58,14 @@ function TestWrapper({
   children,
   devServerUrl,
   initialPosition = 'right',
+  flagOverridePlugin,
+  eventInterceptionPlugin,
 }: {
   children: React.ReactNode;
   devServerUrl?: string;
   initialPosition?: 'left' | 'right';
+  flagOverridePlugin?: IFlagOverridePlugin;
+  eventInterceptionPlugin?: IEventInterceptionPlugin;
 }) {
   return (
     <LaunchDarklyToolbarProvider
@@ -65,6 +74,8 @@ function TestWrapper({
         pollIntervalInMs: 5000,
       }}
       initialPosition={initialPosition}
+      flagOverridePlugin={flagOverridePlugin}
+      eventInterceptionPlugin={eventInterceptionPlugin}
     >
       <SearchProvider>{children}</SearchProvider>
     </LaunchDarklyToolbarProvider>
@@ -84,6 +95,29 @@ describe('ExpandedToolbarContent - User Interaction Flows', () => {
     setSearchIsExpanded: vi.fn(),
   };
 
+  const createMockDebugPlugin = (): IFlagOverridePlugin & {
+    getLocalOverrides: () => Promise<Record<string, unknown>>;
+    setLocalOverride: (...args: any[]) => void;
+    clearLocalOverride: (...args: any[]) => void;
+    clearAllLocalOverrides: () => void;
+  } => ({
+    getLocalOverrides: vi.fn().mockResolvedValue({}),
+    setLocalOverride: vi.fn(),
+    clearLocalOverride: vi.fn(),
+    clearAllLocalOverrides: vi.fn(),
+    setOverride: vi.fn(),
+    removeOverride: vi.fn(),
+    clearAllOverrides: vi.fn(),
+    getAllOverrides: vi.fn().mockResolvedValue({}),
+    getClient: vi.fn(),
+  });
+
+  const createMockEventInterceptionPlugin = (): IEventInterceptionPlugin => ({
+    getEvents: vi.fn().mockReturnValue([]),
+    subscribe: vi.fn().mockReturnValue(() => {}),
+    clearEvents: vi.fn(),
+  });
+
   beforeEach(() => {
     vi.clearAllMocks();
   });
@@ -102,8 +136,8 @@ describe('ExpandedToolbarContent - User Interaction Flows', () => {
       expect(screen.getByRole('tab', { name: /flags/i })).toBeInTheDocument(); // Server-side flags
       expect(screen.getByRole('tab', { name: /settings/i })).toBeInTheDocument(); // Configuration
 
-      // AND: Client-side override functionality is not cluttering the interface
-      expect(screen.queryByText('local-overrides')).not.toBeInTheDocument();
+      // AND: Client-side features like events are not available in dev-server mode
+      expect(screen.queryByRole('tab', { name: /events/i })).not.toBeInTheDocument();
 
       // AND: The settings are contextual to dev-server mode
       expect(screen.getByTestId('settings-tab-content')).toHaveTextContent('Settings Tab Content - dev-server');
@@ -125,28 +159,20 @@ describe('ExpandedToolbarContent - User Interaction Flows', () => {
 
   describe('SDK Mode - Client-Side Override Flow', () => {
     test('developer with debug plugin explores client-side override capabilities', () => {
-      // GIVEN: Developer has a debug plugin configured and expands the toolbar
-      const mockDebugPlugin = {
-        getLocalOverrides: vi.fn().mockResolvedValue({}),
-        setLocalOverride: vi.fn(),
-        clearLocalOverride: vi.fn(),
-        clearAllLocalOverrides: vi.fn(),
-        setOverride: vi.fn(),
-        removeOverride: vi.fn(),
-        clearAllOverrides: vi.fn(),
-        getAllOverrides: vi.fn().mockResolvedValue({}),
-        getClient: vi.fn(),
-      };
+      // GIVEN: Developer has a debug plugin and event interception configured
+      const mockDebugPlugin = createMockDebugPlugin();
+      const mockEventInterceptionPlugin = createMockEventInterceptionPlugin();
 
       render(
-        <TestWrapper>
-          <ExpandedToolbarContent {...defaultProps} mode="sdk" debugOverridePlugin={mockDebugPlugin} />
+        <TestWrapper flagOverridePlugin={mockDebugPlugin} eventInterceptionPlugin={mockEventInterceptionPlugin}>
+          <ExpandedToolbarContent {...defaultProps} mode="sdk" />
         </TestWrapper>,
       );
 
       // WHEN: They examine available functionality
-      // THEN: They see client-side override capabilities
+      // THEN: They see client-side override capabilities and events
       expect(screen.getByRole('tab', { name: /flags/i })).toBeInTheDocument(); // Local overrides (labeled as "Flags")
+      expect(screen.getByRole('tab', { name: /events/i })).toBeInTheDocument(); // Events monitoring
       expect(screen.getByRole('tab', { name: /settings/i })).toBeInTheDocument();
 
       // AND: Settings are contextual to SDK mode
@@ -155,32 +181,34 @@ describe('ExpandedToolbarContent - User Interaction Flows', () => {
 
     test('developer works with local flag overrides', () => {
       // GIVEN: Developer wants to override flags locally for testing
-      const mockDebugPlugin = {
-        getLocalOverrides: vi.fn().mockResolvedValue({}),
-        setLocalOverride: vi.fn(),
-        clearLocalOverride: vi.fn(),
-        clearAllLocalOverrides: vi.fn(),
-        setOverride: vi.fn(),
-        removeOverride: vi.fn(),
-        clearAllOverrides: vi.fn(),
-        getAllOverrides: vi.fn().mockResolvedValue({}),
-        getClient: vi.fn(),
-      };
+      const mockDebugPlugin = createMockDebugPlugin();
+      const mockEventInterceptionPlugin = createMockEventInterceptionPlugin();
 
       render(
-        <TestWrapper>
-          <ExpandedToolbarContent
-            {...defaultProps}
-            activeTab="local-overrides"
-            mode="sdk"
-            debugOverridePlugin={mockDebugPlugin}
-          />
+        <TestWrapper flagOverridePlugin={mockDebugPlugin} eventInterceptionPlugin={mockEventInterceptionPlugin}>
+          <ExpandedToolbarContent {...defaultProps} activeTab="local-overrides" mode="sdk" />
         </TestWrapper>,
       );
 
       // WHEN: They navigate to the local overrides tab
       // THEN: They see the client-side override interface
       expect(screen.getByTestId('local-overrides-tab-content')).toBeInTheDocument();
+    });
+
+    test('developer monitors events in SDK mode', () => {
+      // GIVEN: Developer wants to monitor LaunchDarkly events
+      const mockDebugPlugin = createMockDebugPlugin();
+      const mockEventInterceptionPlugin = createMockEventInterceptionPlugin();
+
+      render(
+        <TestWrapper flagOverridePlugin={mockDebugPlugin} eventInterceptionPlugin={mockEventInterceptionPlugin}>
+          <ExpandedToolbarContent {...defaultProps} activeTab="events" mode="sdk" />
+        </TestWrapper>,
+      );
+
+      // WHEN: They navigate to the events tab
+      // THEN: They see the events monitoring interface
+      expect(screen.getByTestId('events-tab-content')).toBeInTheDocument();
     });
 
     test('developer without debug plugin has limited functionality', () => {
@@ -192,8 +220,10 @@ describe('ExpandedToolbarContent - User Interaction Flows', () => {
       );
 
       // WHEN: They explore the available functionality
-      // THEN: They only see basic settings (no flag override capabilities)
+      // THEN: They only see basic settings (no flag override or events capabilities)
       expect(screen.getByRole('tab', { name: /settings/i })).toBeInTheDocument();
+      expect(screen.queryByRole('tab', { name: /flags/i })).not.toBeInTheDocument();
+      expect(screen.queryByRole('tab', { name: /events/i })).not.toBeInTheDocument();
 
       const tabs = screen.getAllByRole('tab');
       expect(tabs).toHaveLength(1); // Only settings tab available
@@ -241,6 +271,7 @@ describe('ExpandedToolbarContent - User Interaction Flows', () => {
       expect(screen.queryByTestId('settings-tab-content')).not.toBeInTheDocument();
       expect(screen.queryByTestId('flag-tab-content')).not.toBeInTheDocument();
       expect(screen.queryByTestId('local-overrides-tab-content')).not.toBeInTheDocument();
+      expect(screen.queryByTestId('events-tab-content')).not.toBeInTheDocument();
     });
   });
 });

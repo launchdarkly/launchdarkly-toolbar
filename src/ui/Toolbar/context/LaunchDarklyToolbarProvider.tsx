@@ -4,6 +4,7 @@ import { FlagStateManager } from '../../../services/FlagStateManager';
 import { LdToolbarConfig, ToolbarState } from '../../../types/devServer';
 import { TOOLBAR_STORAGE_KEYS, loadToolbarPosition, saveToolbarPosition } from '../utils/localStorage';
 import { ToolbarPosition } from '../types/toolbar';
+import { IEventInterceptionPlugin, IFlagOverridePlugin } from '../../../types/plugin';
 
 const STORAGE_KEY = TOOLBAR_STORAGE_KEYS.PROJECT;
 
@@ -19,6 +20,8 @@ interface LaunchDarklyToolbarContextValue {
   refresh: () => Promise<void>;
   switchProject: (projectKey: string) => Promise<void>;
   handlePositionChange: (position: ToolbarPosition) => void;
+  eventInterceptionPlugin?: IEventInterceptionPlugin;
+  flagOverridePlugin?: IFlagOverridePlugin;
 }
 
 const LaunchDarklyToolbarContext = createContext<LaunchDarklyToolbarContextValue | null>(null);
@@ -35,12 +38,16 @@ export interface LaunchDarklyToolbarProviderProps {
   children: React.ReactNode;
   config: LdToolbarConfig;
   initialPosition?: ToolbarPosition;
+  flagOverridePlugin?: IFlagOverridePlugin;
+  eventInterceptionPlugin?: IEventInterceptionPlugin;
 }
 
 export const LaunchDarklyToolbarProvider: React.FC<LaunchDarklyToolbarProviderProps> = ({
   children,
   config,
   initialPosition,
+  flagOverridePlugin,
+  eventInterceptionPlugin,
 }) => {
   const [toolbarState, setToolbarState] = useState<
     ToolbarState & {
@@ -436,8 +443,20 @@ export const LaunchDarklyToolbarProvider: React.FC<LaunchDarklyToolbarProviderPr
       refresh,
       switchProject,
       handlePositionChange,
+      eventInterceptionPlugin,
+      flagOverridePlugin,
     }),
-    [toolbarState, setOverride, clearOverride, clearAllOverrides, refresh, switchProject, handlePositionChange],
+    [
+      toolbarState,
+      setOverride,
+      clearOverride,
+      clearAllOverrides,
+      refresh,
+      switchProject,
+      handlePositionChange,
+      eventInterceptionPlugin,
+      flagOverridePlugin,
+    ],
   );
 
   return <LaunchDarklyToolbarContext.Provider value={value}>{children}</LaunchDarklyToolbarContext.Provider>;

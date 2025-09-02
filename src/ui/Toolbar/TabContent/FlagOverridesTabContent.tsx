@@ -3,6 +3,7 @@ import { useVirtualizer } from '@tanstack/react-virtual';
 import { List } from '../../List/List';
 import { ListItem } from '../../List/ListItem';
 import { useSearchContext } from '../context/SearchProvider';
+import { useToolbarContext } from '../context/LaunchDarklyToolbarProvider';
 import { GenericHelpText } from '../components/GenericHelpText';
 import {
   LocalBooleanFlagControl,
@@ -11,7 +12,6 @@ import {
 } from '../components/LocalFlagControls';
 import { OverrideIndicator } from '../components/OverrideIndicator';
 import { ActionButtonsContainer } from '../components';
-import type { IDebugOverridePlugin } from '../../../types/plugin';
 
 import * as styles from './FlagTabContent.css';
 import * as actionStyles from '../components/ActionButtonsContainer.css';
@@ -24,14 +24,22 @@ interface LocalFlag {
   type: 'boolean' | 'string' | 'number' | 'object';
 }
 
-interface LocalOverridesTabContentProps {
-  debugOverridePlugin: IDebugOverridePlugin;
-}
+interface FlagOverridesTabContentProps {}
 
-export function LocalOverridesTabContent(props: LocalOverridesTabContentProps) {
-  const { debugOverridePlugin } = props;
+export function FlagOverridesTabContent(_props: FlagOverridesTabContentProps) {
+  const { flagOverridePlugin } = useToolbarContext();
   const { searchTerm } = useSearchContext();
-  const ldClient = debugOverridePlugin.getClient();
+
+  if (!flagOverridePlugin) {
+    return (
+      <GenericHelpText
+        title="Debug override plugin not available"
+        subtitle="The debug override plugin is not configured"
+      />
+    );
+  }
+
+  const ldClient = flagOverridePlugin.getClient();
 
   const [showOverriddenOnly, setShowOverriddenOnly] = useState(false);
   const parentRef = useRef<HTMLDivElement>(null);
@@ -56,7 +64,7 @@ export function LocalOverridesTabContent(props: LocalOverridesTabContentProps) {
     if (!ldClient) return {};
 
     const allFlags = ldClient.allFlags();
-    const overrides = debugOverridePlugin.getAllOverrides();
+    const overrides = flagOverridePlugin.getAllOverrides();
     const result: Record<string, LocalFlag> = {};
 
     Object.keys(allFlags)
@@ -75,23 +83,23 @@ export function LocalOverridesTabContent(props: LocalOverridesTabContentProps) {
     return result;
   };
 
-  console.log('DebugOverridePlugin: getAllOverrides', debugOverridePlugin.getAllOverrides());
+  console.log('FlagOverridePlugin: getAllOverrides', flagOverridePlugin.getAllOverrides());
   const flags = getFlags();
 
   // Override operations - simple direct calls
   const handleSetOverride = (flagKey: string, value: any) => {
-    debugOverridePlugin.setOverride(flagKey, value);
+    flagOverridePlugin.setOverride(flagKey, value);
   };
 
   const handleClearOverride = (flagKey: string) => {
-    debugOverridePlugin.removeOverride(flagKey);
+    flagOverridePlugin.removeOverride(flagKey);
   };
 
   const handleClearAllOverrides = () => {
-    debugOverridePlugin.clearAllOverrides();
+    flagOverridePlugin.clearAllOverrides();
   };
 
-  if (!ldClient || !debugOverridePlugin) {
+  if (!ldClient || !flagOverridePlugin) {
     return (
       <GenericHelpText
         title="LaunchDarkly client is not available"

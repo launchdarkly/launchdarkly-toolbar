@@ -3,7 +3,7 @@ import { asyncWithLDProvider } from 'launchdarkly-react-client-sdk';
 import { AppWrapper } from './AppWrapper';
 
 import './App.css';
-import { debugOverridePlugin } from './plugins';
+import { flagOverridePlugin, eventInterceptionPlugin } from './plugins';
 
 function App() {
   const [LDProvider, setLDProvider] = useState<any>(null);
@@ -16,7 +16,7 @@ function App() {
           baseUrl: 'https://app.ld.catamorphic.com',
           streamUrl: 'https://stream.ld.catamorphic.com',
           eventsUrl: 'https://events.ld.catamorphic.com',
-          plugins: [debugOverridePlugin],
+          plugins: [flagOverridePlugin, eventInterceptionPlugin],
         },
       });
       setLDProvider(() => Provider);

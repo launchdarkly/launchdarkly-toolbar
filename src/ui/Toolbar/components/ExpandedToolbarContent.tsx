@@ -8,10 +8,9 @@ import { TabContentRenderer } from './TabContentRenderer';
 import { ANIMATION_CONFIG, EASING } from '../constants';
 import { ActiveTabId, ToolbarMode, getTabsForMode } from '../types';
 import { useToolbarContext } from '../context/LaunchDarklyToolbarProvider';
-import type { IDebugOverridePlugin } from '../../../types/plugin';
 
 import * as styles from '../LaunchDarklyToolbar.css';
-import { GearIcon, ToggleOffIcon } from './icons';
+import { GearIcon, SyncIcon, ToggleOffIcon } from './icons';
 import { ErrorMessage } from './ErrorMessage';
 
 interface ExpandedToolbarContentProps {
@@ -24,7 +23,6 @@ interface ExpandedToolbarContentProps {
   onClose: () => void;
   onTabChange: (tabId: string) => void;
   setSearchIsExpanded: Dispatch<SetStateAction<boolean>>;
-  debugOverridePlugin?: IDebugOverridePlugin;
   mode: ToolbarMode;
 }
 
@@ -47,16 +45,15 @@ export function ExpandedToolbarContent(props: ExpandedToolbarContentProps) {
     onClose,
     onTabChange,
     setSearchIsExpanded,
-    debugOverridePlugin,
     mode,
   } = props;
 
-  const { state } = useToolbarContext();
+  const { state, flagOverridePlugin } = useToolbarContext();
 
   const headerLabel = getHeaderLabel(state.currentProjectKey, state.sourceEnvironmentKey);
   const { error } = state;
 
-  const availableTabs = getTabsForMode(mode, !!debugOverridePlugin);
+  const availableTabs = getTabsForMode(mode, !!flagOverridePlugin);
 
   const shouldShowError = error && mode === 'dev-server' && state.connectionStatus === 'error';
 
@@ -123,12 +120,7 @@ export function ExpandedToolbarContent(props: ExpandedToolbarContentProps) {
               >
                 <AnimatePresence mode="wait">
                   {activeTab && (
-                    <TabContentRenderer
-                      activeTab={activeTab}
-                      slideDirection={slideDirection}
-                      debugOverridePlugin={debugOverridePlugin}
-                      mode={mode}
-                    />
+                    <TabContentRenderer activeTab={activeTab} slideDirection={slideDirection} mode={mode} />
                   )}
                 </AnimatePresence>
               </motion.div>
@@ -153,6 +145,7 @@ export function ExpandedToolbarContent(props: ExpandedToolbarContentProps) {
           {availableTabs.includes('local-overrides') && (
             <TabButton id="local-overrides" label="Flags" icon={ToggleOffIcon} />
           )}
+          {availableTabs.includes('events') && <TabButton id="events" label="Events" icon={SyncIcon} />}
           {availableTabs.includes('flags') && <TabButton id="flags" label="Flags" icon={ToggleOffIcon} />}
           {availableTabs.includes('settings') && <TabButton id="settings" label="Settings" icon={GearIcon} />}
         </Tabs>

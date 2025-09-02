@@ -40,6 +40,21 @@ export const ANIMATION_CONFIG = {
     y: { duration: 0.5, ease: EASING.bounce },
     delay: 0.3,
   },
+  // Event list animations
+  eventList: {
+    liveTail: {
+      dot: {
+        scale: [1, 1.2, 1] as number[],
+        opacity: [0.5, 1, 0.5] as number[],
+        transition: { duration: 1.5, repeat: Infinity, ease: 'easeInOut' as const },
+      },
+      container: {
+        initial: { opacity: 0, y: 20 },
+        animate: { opacity: 1, y: 0 },
+        transition: { duration: 0.4, ease: EASING.smooth },
+      },
+    },
+  },
 } as const;
 
 export const DIMENSIONS = {

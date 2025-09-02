@@ -1,29 +1,28 @@
 import { motion } from 'motion/react';
 import { FlagTabContent } from '../TabContent/FlagTabContent';
-import { LocalOverridesTabContent } from '../TabContent/LocalOverridesTabContent';
-// import { EventsTabContent } from '../TabContent/EventsTabContent';
+import { FlagOverridesTabContent } from '../TabContent/FlagOverridesTabContent';
+import { EventsTabContent } from '../TabContent/EventsTabContent';
 import { SettingsTabContent } from '../TabContent/SettingsTabContent';
 import { ANIMATION_CONFIG, DIMENSIONS } from '../constants';
 import { TabId, ToolbarMode } from '../types';
-import type { IDebugOverridePlugin } from '../../../types/plugin';
 
 interface TabContentRendererProps {
   activeTab: TabId;
   slideDirection: number;
-  debugOverridePlugin?: IDebugOverridePlugin;
   mode: ToolbarMode;
 }
 
 export function TabContentRenderer(props: TabContentRendererProps) {
-  const { activeTab, slideDirection, debugOverridePlugin, mode } = props;
+  const { activeTab, slideDirection, mode } = props;
 
   const renderContent = () => {
     switch (activeTab) {
       case 'local-overrides':
-        if (!debugOverridePlugin) return null;
-        return <LocalOverridesTabContent debugOverridePlugin={debugOverridePlugin} />;
+        return <FlagOverridesTabContent />;
       case 'flags':
         return <FlagTabContent />;
+      case 'events':
+        return <EventsTabContent />;
       case 'settings':
         return <SettingsTabContent mode={mode} />;
       default:
