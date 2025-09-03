@@ -1,4 +1,4 @@
-import type { LDClient } from 'launchdarkly-js-client-sdk';
+import type { LDClient, LDFlagSet, LDFlagValue } from 'launchdarkly-js-client-sdk';
 
 /**
  * Interface for flag override plugins that can be used with the LaunchDarkly Toolbar
@@ -9,7 +9,7 @@ export interface IFlagOverridePlugin {
    * @param flagKey - The key of the flag to override
    * @param value - The value to set for the flag
    */
-  setOverride(flagKey: string, value: unknown): void;
+  setOverride(flagKey: string, value: LDFlagValue): void;
 
   /**
    * Removes an override for a specific feature flag
@@ -26,7 +26,7 @@ export interface IFlagOverridePlugin {
    * Returns all currently active feature flag overrides
    * @returns Record of flag keys to their override values
    */
-  getAllOverrides(): Record<string, unknown>;
+  getAllOverrides(): LDFlagSet;
 
   /**
    * Returns the LaunchDarkly client instance
