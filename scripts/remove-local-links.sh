@@ -91,24 +91,39 @@ else
     log_warning "Could not restore react-client-sdk dependencies"
 fi
 
-# Step 4: Restore toolbar dependencies
-log_step "Restoring toolbar dependencies"
+# Step 4: Remove workspace overrides and restore toolbar dependencies
+log_step "Removing workspace overrides and restoring toolbar dependencies"
 cd "$TOOLBAR_DIR"
 echo -e "${BLUE}📍 Working in: $(pwd)${NC}"
 
-# Note: For toolbar, we need to temporarily modify package.json to remove link: syntax
-# or delete node_modules and pnpm-lock.yaml to force fresh install
-
-echo -e "${YELLOW}Note: Toolbar uses link: syntax in package.json${NC}"
-echo -e "${YELLOW}To fully restore npm versions, you may need to:${NC}"
-echo -e "${YELLOW}  1. Remove 'link:' from package.json dependencies${NC}"
-echo -e "${YELLOW}  2. Run 'pnpm install' to get registry versions${NC}"
+# Remove overrides from pnpm-workspace.yaml
+log_step "Removing workspace overrides from pnpm-workspace.yaml"
+if grep -q "overrides:" pnpm-workspace.yaml 2>/dev/null; then
+    # Create a temporary file without the overrides section
+    awk '
+    /^overrides:/ { in_overrides=1; next }
+    in_overrides && /^[[:space:]]/ { next }
+    in_overrides && !/^[[:space:]]/ { in_overrides=0 }
+    !in_overrides { print }
+    ' pnpm-workspace.yaml > pnpm-workspace.yaml.tmp
+    
+    # Replace original with cleaned version
+    mv pnpm-workspace.yaml.tmp pnpm-workspace.yaml
+    log_success "Workspace overrides removed from pnpm-workspace.yaml"
+else
+    log_success "No overrides section found in pnpm-workspace.yaml"
+fi
 
 # Remove current symlinks
 rm -rf node_modules/launchdarkly-js-client-sdk 2>/dev/null || true
 rm -rf node_modules/launchdarkly-react-client-sdk 2>/dev/null || true
 
-log_success "Toolbar symlinks removed"
+# Reinstall with registry versions
+if pnpm install; then
+    log_success "Toolbar dependencies restored to registry versions"
+else
+    log_warning "Could not restore toolbar dependencies"
+fi
 
 # Verification step
 log_step "Verification"
