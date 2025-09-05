@@ -16,17 +16,15 @@ import { ActionButtonsContainer } from '../components';
 import * as styles from './FlagTabContent.css';
 import * as actionStyles from '../components/ActionButtonsContainer.css';
 import { LocalFlag, LocalOverridesFlagProvider, useLocalOverridesFlagContext } from '../context';
-import { IFlagOverridePlugin } from '../../../types/plugin';
 
-interface LocalOverridesTabContentProps {
-  flagOverridePlugin: IFlagOverridePlugin;
-}
+interface FlagOverridesTabContentProps {}
 
-function LocalOverridesTabContentInner(props: LocalOverridesTabContentProps) {
-  const { flagOverridePlugin } = props;
+// Internal component that uses the provider context
+function FlagOverridesTabContentInner(_props: FlagOverridesTabContentProps) {
+  const { flagOverridePlugin } = useToolbarContext();
   const { searchTerm } = useSearchContext();
   const { flags, isLoading } = useLocalOverridesFlagContext();
-  const ldClient = flagOverridePlugin.getClient();
+  const ldClient = flagOverridePlugin?.getClient();
   const [showOverriddenOnly, setShowOverriddenOnly] = useState(false);
   const parentRef = useRef<HTMLDivElement>(null);
 
@@ -50,20 +48,18 @@ function LocalOverridesTabContentInner(props: LocalOverridesTabContentProps) {
     overscan: 5,
   });
 
-  // Override operations
-  const handleSetOverride = (flagKey: string, value: any) => {
-    flagOverridePlugin.setOverride(flagKey, value);
-  };
+  const totalOverriddenFlags = Object.values(flags).filter((flag) => flag.isOverridden).length;
 
-  const handleClearOverride = (flagKey: string) => {
-    flagOverridePlugin.removeOverride(flagKey);
-  };
+  if (!flagOverridePlugin) {
+    return (
+      <GenericHelpText
+        title="Flag override plugin not available"
+        subtitle="The flag override plugin is not configured"
+      />
+    );
+  }
 
-  const handleClearAllOverrides = () => {
-    flagOverridePlugin.clearAllOverrides();
-  };
-
-  if (!ldClient || !flagOverridePlugin) {
+  if (!ldClient) {
     return (
       <GenericHelpText
         title="LaunchDarkly client is not available"
@@ -76,8 +72,17 @@ function LocalOverridesTabContentInner(props: LocalOverridesTabContentProps) {
     return <GenericHelpText title="Loading flags..." subtitle="Please wait while we load your feature flags" />;
   }
 
-  // Count total overridden flags (not just filtered ones)
-  const totalOverriddenFlags = Object.values(flags).filter((flag) => flag.isOverridden).length;
+  const handleSetOverride = (flagKey: string, value: any) => {
+    flagOverridePlugin?.setOverride(flagKey, value);
+  };
+
+  const handleClearOverride = (flagKey: string) => {
+    flagOverridePlugin?.removeOverride(flagKey);
+  };
+
+  const handleClearAllOverrides = () => {
+    flagOverridePlugin?.clearAllOverrides();
+  };
 
   const renderFlagControl = (flag: LocalFlag) => {
     const handleOverride = (value: any) => handleSetOverride(flag.key, value);
@@ -180,10 +185,21 @@ function LocalOverridesTabContentInner(props: LocalOverridesTabContentProps) {
   );
 }
 
-export function LocalOverridesTabContent(props: LocalOverridesTabContentProps) {
+export function FlagOverridesTabContent(props: FlagOverridesTabContentProps) {
+  const { flagOverridePlugin } = useToolbarContext();
+
+  if (!flagOverridePlugin) {
+    return (
+      <GenericHelpText
+        title="Debug override plugin not available"
+        subtitle="The debug override plugin is not configured"
+      />
+    );
+  }
+
   return (
-    <LocalOverridesFlagProvider flagOverridePlugin={props.flagOverridePlugin}>
-      <LocalOverridesTabContentInner {...props} />
+    <LocalOverridesFlagProvider flagOverridePlugin={flagOverridePlugin}>
+      <FlagOverridesTabContentInner {...props} />
     </LocalOverridesFlagProvider>
   );
 }

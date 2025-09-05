@@ -1,4 +1,4 @@
-import type { LDClient, LDPlugin, LDFlagOverride } from 'launchdarkly-js-client-sdk';
+import type { LDClient, LDPlugin, LDDebugOverride } from 'launchdarkly-js-client-sdk';
 
 /**
  * Configuration options for the FlagOverridePlugin
@@ -11,7 +11,7 @@ export type FlagOverridePluginConfig = {
 const DEFAULT_STORAGE_NAMESPACE = 'ld-flag-override';
 
 export class FlagOverridePlugin implements LDPlugin {
-  private flagOverride?: LDFlagOverride;
+  private flagOverride?: LDDebugOverride;
   private config: FlagOverridePluginConfig;
   private ldClient: LDClient | null = null;
 
@@ -46,7 +46,7 @@ export class FlagOverridePlugin implements LDPlugin {
    * Called when the debug interface is available
    * Loads any existing overrides from localStorage
    */
-  registerDebug(flagOverride: LDFlagOverride): void {
+  registerDebug(flagOverride: LDDebugOverride): void {
     this.flagOverride = flagOverride;
     this.loadExistingOverrides();
   }

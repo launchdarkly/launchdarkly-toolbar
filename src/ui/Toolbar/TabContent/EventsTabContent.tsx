@@ -1,4 +1,4 @@
-import { useRef } from 'react';
+import { useMemo, useRef } from 'react';
 import { useVirtualizer } from '@tanstack/react-virtual';
 import { motion } from 'motion/react';
 import { List } from '../../List/List';
@@ -6,8 +6,9 @@ import { ListItem } from '../../List/ListItem';
 import { useSearchContext } from '../context/SearchProvider';
 import { useToolbarContext } from '../context/LaunchDarklyToolbarProvider';
 import { GenericHelpText } from '../components/GenericHelpText';
-import { ActionButtonsContainer } from '../components';
+import { ActionButtonsContainer, DoNotTrackWarning } from '../components';
 import { ANIMATION_CONFIG } from '../constants/animations';
+import { isDoNotTrackEnabled } from '../../../utils';
 
 import * as styles from './EventsTabContent.css';
 
@@ -36,6 +37,8 @@ export function EventsTabContent(_props: EventsTabContentProps) {
   const { events, eventStats } = useEvents(eventInterceptionPlugin, searchTerm);
   const currentDate = useCurrentDate(); // Updates every second by default
   const parentRef = useRef<HTMLDivElement>(null);
+
+  const doNotTrackEnabled = useMemo(() => isDoNotTrackEnabled(), []);
 
   const handleClearEvents = () => {
     if (eventInterceptionPlugin) {
@@ -76,6 +79,10 @@ export function EventsTabContent(_props: EventsTabContentProps) {
         subtitle="The event interception plugin is not configured"
       />
     );
+  }
+
+  if (doNotTrackEnabled) {
+    return <DoNotTrackWarning />;
   }
 
   if (events.length === 0) {
