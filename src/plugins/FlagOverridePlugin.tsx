@@ -53,8 +53,6 @@ export class FlagOverridePlugin implements LDPlugin {
     const storage = this.getStorage();
     if (!storage) return;
 
-    let loadedCount = 0;
-
     try {
       for (let i = 0; i < storage.length; i++) {
         const key = storage.key(i);
@@ -67,16 +65,11 @@ export class FlagOverridePlugin implements LDPlugin {
             const flagKey = key.replace(this.config.storageNamespace + ':', '');
 
             this.debugOverride.setOverride(flagKey, value);
-            loadedCount++;
           } catch {
             console.warn('flagOverridePlugin: Invalid stored value for', key);
             storage.removeItem(key);
           }
         }
-      }
-
-      if (loadedCount > 0) {
-        console.log(`flagOverridePlugin: Loaded ${loadedCount} existing overrides`);
       }
     } catch (error) {
       console.error('flagOverridePlugin: Error loading existing overrides:', error);
