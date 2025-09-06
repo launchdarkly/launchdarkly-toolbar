@@ -1,0 +1,202 @@
+import { render, screen, act } from '@testing-library/react';
+import { expect, test, describe, vi, beforeEach } from 'vitest';
+
+import {
+  LocalOverridesFlagProvider,
+  useLocalOverridesFlagContext,
+} from '../ui/Toolbar/context/LocalOverridesFlagProvider';
+import type { IFlagOverridePlugin } from '../types/plugin';
+
+// Test component that uses the context
+function TestConsumer() {
+  const { flags, isLoading } = useLocalOverridesFlagContext();
+
+  if (isLoading) {
+    return <div data-testid="loading">Loading...</div>;
+  }
+
+  return (
+    <div data-testid="flags-data">
+      {Object.entries(flags).map(([key, flag]) => (
+        <div key={key} data-testid={`flag-${key}`}>
+          {flag.name}: {String(flag.currentValue)} ({flag.isOverridden ? 'overridden' : 'original'})
+        </div>
+      ))}
+    </div>
+  );
+}
+
+describe('LocalOverridesFlagProvider', () => {
+  let mockLdClient: any;
+  let mockFlagOverridePlugin: IFlagOverridePlugin;
+
+  beforeEach(() => {
+    // Mock LaunchDarkly client
+    mockLdClient = {
+      allFlags: vi.fn(),
+      on: vi.fn(),
+      off: vi.fn(),
+    };
+
+    // Mock flag override plugin
+    mockFlagOverridePlugin = {
+      getClient: vi.fn().mockReturnValue(mockLdClient),
+      getAllOverrides: vi.fn().mockReturnValue({}),
+      setOverride: vi.fn(),
+      removeOverride: vi.fn(),
+      clearAllOverrides: vi.fn(),
+    };
+  });
+
+  test('provides initial flag data from LaunchDarkly client', () => {
+    // GIVEN: LaunchDarkly client has some flags
+    mockLdClient.allFlags.mockReturnValue({
+      'feature-flag-1': true,
+      'test-string-flag': 'hello',
+      'number-flag': 42,
+    });
+
+    // WHEN: Component is rendered with the provider
+    render(
+      <LocalOverridesFlagProvider flagOverridePlugin={mockFlagOverridePlugin}>
+        <TestConsumer />
+      </LocalOverridesFlagProvider>,
+    );
+
+    // THEN: Flags are displayed (loading completes synchronously in this implementation)
+    expect(screen.getByTestId('flags-data')).toBeInTheDocument();
+    expect(screen.getByTestId('flag-feature-flag-1')).toHaveTextContent('Feature Flag 1: true (original)');
+    expect(screen.getByTestId('flag-test-string-flag')).toHaveTextContent('Test String Flag: hello (original)');
+    expect(screen.getByTestId('flag-number-flag')).toHaveTextContent('Number Flag: 42 (original)');
+  });
+
+  test('marks overridden flags correctly', async () => {
+    // GIVEN: LaunchDarkly client has flags and some are overridden
+    mockLdClient.allFlags.mockReturnValue({
+      'feature-flag-1': false, // This one is overridden
+      'normal-flag': true, // This one is not
+    });
+
+    (mockFlagOverridePlugin.getAllOverrides as any).mockReturnValue({
+      'feature-flag-1': false, // Override exists
+    });
+
+    // WHEN: Component is rendered
+    render(
+      <LocalOverridesFlagProvider flagOverridePlugin={mockFlagOverridePlugin}>
+        <TestConsumer />
+      </LocalOverridesFlagProvider>,
+    );
+
+    await act(async () => {
+      await new Promise((resolve) => setTimeout(resolve, 0));
+    });
+
+    // THEN: Overridden flag is marked correctly
+    expect(screen.getByTestId('flag-feature-flag-1')).toHaveTextContent('Feature Flag 1: false (overridden)');
+    expect(screen.getByTestId('flag-normal-flag')).toHaveTextContent('Normal Flag: true (original)');
+  });
+
+  test('handles LaunchDarkly client change events', async () => {
+    // GIVEN: Provider is set up with initial flags
+    mockLdClient.allFlags.mockReturnValue({
+      'dynamic-flag': 'initial',
+    });
+
+    let changeHandler: (changes: Record<string, { current: any }>) => void;
+    mockLdClient.on.mockImplementation((event: string, handler: any) => {
+      if (event === 'change') {
+        changeHandler = handler;
+      }
+    });
+
+    render(
+      <LocalOverridesFlagProvider flagOverridePlugin={mockFlagOverridePlugin}>
+        <TestConsumer />
+      </LocalOverridesFlagProvider>,
+    );
+
+    await act(async () => {
+      await new Promise((resolve) => setTimeout(resolve, 0));
+    });
+
+    // Initial state
+    expect(screen.getByTestId('flag-dynamic-flag')).toHaveTextContent('Dynamic Flag: initial (original)');
+
+    // WHEN: LaunchDarkly client emits a change event
+    mockLdClient.allFlags.mockReturnValue({
+      'dynamic-flag': 'updated',
+    });
+
+    await act(async () => {
+      changeHandler!({ 'dynamic-flag': { current: 'updated' } });
+    });
+
+    // THEN: The flag value is updated
+    expect(screen.getByTestId('flag-dynamic-flag')).toHaveTextContent('Dynamic Flag: updated (original)');
+  });
+
+  test('handles null LaunchDarkly client gracefully', async () => {
+    // GIVEN: Plugin returns null client (edge case)
+    (mockFlagOverridePlugin.getClient as any).mockReturnValue(null);
+
+    // WHEN: Component is rendered
+    render(
+      <LocalOverridesFlagProvider flagOverridePlugin={mockFlagOverridePlugin}>
+        <TestConsumer />
+      </LocalOverridesFlagProvider>,
+    );
+
+    await act(async () => {
+      await new Promise((resolve) => setTimeout(resolve, 0));
+    });
+
+    // THEN: No flags are shown, but component doesn't crash
+    expect(screen.getByTestId('flags-data')).toBeInTheDocument();
+    expect(screen.getByTestId('flags-data')).toBeEmptyDOMElement();
+  });
+
+  test('throws error when useLocalOverridesFlagContext is used outside provider', () => {
+    // GIVEN: Component tries to use context outside provider
+    const TestComponentOutsideProvider = () => {
+      useLocalOverridesFlagContext(); // This should throw
+      return <div>Should not render</div>;
+    };
+
+    // WHEN/THEN: Error is thrown
+    // Need to suppress console.error for this test
+    const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+
+    expect(() => {
+      render(<TestComponentOutsideProvider />);
+    }).toThrow('useLocalOverridesFlagContext must be used within a LocalOverridesFlagProvider');
+
+    consoleSpy.mockRestore();
+  });
+
+  test('infers correct flag types', async () => {
+    // GIVEN: Flags with different types
+    mockLdClient.allFlags.mockReturnValue({
+      'boolean-flag': true,
+      'string-flag': 'hello',
+      'number-flag': 42,
+      'object-flag': { key: 'value' },
+    });
+
+    render(
+      <LocalOverridesFlagProvider flagOverridePlugin={mockFlagOverridePlugin}>
+        <TestConsumer />
+      </LocalOverridesFlagProvider>,
+    );
+
+    await act(async () => {
+      await new Promise((resolve) => setTimeout(resolve, 0));
+    });
+
+    // THEN: All flag types are handled
+    expect(screen.getByTestId('flag-boolean-flag')).toBeInTheDocument();
+    expect(screen.getByTestId('flag-string-flag')).toBeInTheDocument();
+    expect(screen.getByTestId('flag-number-flag')).toBeInTheDocument();
+    expect(screen.getByTestId('flag-object-flag')).toBeInTheDocument();
+  });
+});

@@ -1,10 +1,10 @@
 import { AnimatePresence, motion } from 'motion/react';
 import { useCallback } from 'react';
 
-import { SearchProvider, useSearchContext } from './context/SearchProvider';
+import { SearchProvider, useSearchContext } from './context';
 import { CircleLogo, ExpandedToolbarContent } from './components';
 import { useToolbarAnimations, useToolbarVisibility, useToolbarDrag, useToolbarState } from './hooks';
-import { useToolbarContext } from './context/LaunchDarklyToolbarProvider';
+import { useToolbarContext } from './context';
 import { ToolbarMode, ToolbarPosition, getToolbarMode } from './types/toolbar';
 
 import * as styles from './LaunchDarklyToolbar.css';

@@ -15,77 +15,42 @@ import { ActionButtonsContainer } from '../components';
 
 import * as styles from './FlagTabContent.css';
 import * as actionStyles from '../components/ActionButtonsContainer.css';
+import { LocalFlag, LocalOverridesFlagProvider, useLocalOverridesFlagContext } from '../context';
+import { IFlagOverridePlugin } from '../../../types/plugin';
 
-interface LocalFlag {
-  key: string;
-  name: string;
-  currentValue: any;
-  isOverridden: boolean;
-  type: 'boolean' | 'string' | 'number' | 'object';
+interface LocalOverridesTabContentProps {
+  flagOverridePlugin: IFlagOverridePlugin;
 }
 
-interface FlagOverridesTabContentProps {}
-
-export function FlagOverridesTabContent(_props: FlagOverridesTabContentProps) {
-  const { flagOverridePlugin } = useToolbarContext();
+function LocalOverridesTabContentInner(props: LocalOverridesTabContentProps) {
+  const { flagOverridePlugin } = props;
   const { searchTerm } = useSearchContext();
-
-  if (!flagOverridePlugin) {
-    return (
-      <GenericHelpText
-        title="Debug override plugin not available"
-        subtitle="The debug override plugin is not configured"
-      />
-    );
-  }
-
+  const { flags, isLoading } = useLocalOverridesFlagContext();
   const ldClient = flagOverridePlugin.getClient();
-
   const [showOverriddenOnly, setShowOverriddenOnly] = useState(false);
   const parentRef = useRef<HTMLDivElement>(null);
 
-  // Helper functions
-  const formatFlagName = (flagKey: string): string => {
-    return flagKey
-      .split('-')
-      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-      .join(' ');
-  };
+  // Prepare data for virtualizer (must be done before useVirtualizer hook)
+  const flagEntries = Object.entries(flags);
+  const filteredFlags = flagEntries.filter(([flagKey, flag]) => {
+    // Apply search filter
+    const matchesSearch =
+      flag.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      flagKey.toLowerCase().includes(searchTerm.trim().toLowerCase());
 
-  const inferFlagType = (value: any): 'boolean' | 'string' | 'number' | 'object' => {
-    if (typeof value === 'boolean') return 'boolean';
-    if (typeof value === 'string') return 'string';
-    if (typeof value === 'number') return 'number';
-    return 'object';
-  };
+    // Apply override filter if enabled
+    const matchesOverrideFilter = showOverriddenOnly ? flag.isOverridden : true;
+    return matchesSearch && matchesOverrideFilter;
+  });
 
-  // Get flags directly from LDClient (includes overrides automatically)
-  const getFlags = (): Record<string, LocalFlag> => {
-    if (!ldClient) return {};
+  const virtualizer = useVirtualizer({
+    count: filteredFlags.length,
+    getScrollElement: () => parentRef.current,
+    estimateSize: () => 85, // Estimate item height
+    overscan: 5,
+  });
 
-    const allFlags = ldClient.allFlags();
-    const overrides = flagOverridePlugin.getAllOverrides();
-    const result: Record<string, LocalFlag> = {};
-
-    Object.keys(allFlags)
-      .sort()
-      .forEach((flagKey) => {
-        const currentValue = allFlags[flagKey];
-        result[flagKey] = {
-          key: flagKey,
-          name: formatFlagName(flagKey),
-          currentValue,
-          isOverridden: flagKey in overrides,
-          type: inferFlagType(currentValue),
-        };
-      });
-
-    return result;
-  };
-
-  const flags = getFlags();
-
-  // Override operations - simple direct calls
+  // Override operations
   const handleSetOverride = (flagKey: string, value: any) => {
     flagOverridePlugin.setOverride(flagKey, value);
   };
@@ -107,24 +72,9 @@ export function FlagOverridesTabContent(_props: FlagOverridesTabContentProps) {
     );
   }
 
-  const flagEntries = Object.entries(flags);
-  const filteredFlags = flagEntries.filter(([flagKey, flag]) => {
-    // Apply search filter
-    const matchesSearch =
-      flag.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      flagKey.toLowerCase().includes(searchTerm.trim().toLowerCase());
-
-    // Apply override filter if enabled
-    const matchesOverrideFilter = showOverriddenOnly ? flag.isOverridden : true;
-    return matchesSearch && matchesOverrideFilter;
-  });
-
-  const virtualizer = useVirtualizer({
-    count: filteredFlags.length,
-    getScrollElement: () => parentRef.current,
-    estimateSize: () => 85, // Estimate item height
-    overscan: 5,
-  });
+  if (isLoading) {
+    return <GenericHelpText title="Loading flags..." subtitle="Please wait while we load your feature flags" />;
+  }
 
   // Count total overridden flags (not just filtered ones)
   const totalOverriddenFlags = Object.values(flags).filter((flag) => flag.isOverridden).length;
@@ -227,5 +177,13 @@ export function FlagOverridesTabContent(_props: FlagOverridesTabContentProps) {
         )}
       </>
     </div>
+  );
+}
+
+export function LocalOverridesTabContent(props: LocalOverridesTabContentProps) {
+  return (
+    <LocalOverridesFlagProvider flagOverridePlugin={props.flagOverridePlugin}>
+      <LocalOverridesTabContentInner {...props} />
+    </LocalOverridesFlagProvider>
   );
 }

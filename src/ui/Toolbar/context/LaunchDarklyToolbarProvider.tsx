@@ -1,4 +1,5 @@
-import React, { createContext, useContext, useState, useEffect, useMemo, useCallback } from 'react';
+import { createContext, useContext, useState, useEffect, useMemo, useCallback } from 'react';
+import type { FC, ReactNode } from 'react';
 import { DevServerClient } from '../../../services/DevServerClient';
 import { FlagStateManager } from '../../../services/FlagStateManager';
 import { LdToolbarConfig, ToolbarState } from '../../../types/devServer';
@@ -35,14 +36,14 @@ export const useToolbarContext = () => {
 };
 
 export interface LaunchDarklyToolbarProviderProps {
-  children: React.ReactNode;
+  children: ReactNode;
   config: LdToolbarConfig;
   initialPosition?: ToolbarPosition;
   flagOverridePlugin?: IFlagOverridePlugin;
   eventInterceptionPlugin?: IEventInterceptionPlugin;
 }
 
-export const LaunchDarklyToolbarProvider: React.FC<LaunchDarklyToolbarProviderProps> = ({
+export const LaunchDarklyToolbarProvider: FC<LaunchDarklyToolbarProviderProps> = ({
   children,
   config,
   initialPosition,
