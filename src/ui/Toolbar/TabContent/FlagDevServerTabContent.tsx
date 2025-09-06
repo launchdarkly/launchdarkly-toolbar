@@ -10,10 +10,10 @@ import { BooleanFlagControl, MultivariateFlagControl, StringNumberFlagControl } 
 import { OverrideIndicator } from '../components/OverrideIndicator';
 import { ActionButtonsContainer } from '../components';
 
-import * as styles from './FlagTabContent.css';
+import * as styles from './FlagDevServerTabContent.css';
 import * as actionStyles from '../components/ActionButtonsContainer.css';
 
-export function FlagTabContent() {
+export function FlagDevServerTabContent() {
   const { searchTerm } = useSearchContext();
   const { state, setOverride, clearOverride, clearAllOverrides } = useToolbarContext();
   const { flags } = state;

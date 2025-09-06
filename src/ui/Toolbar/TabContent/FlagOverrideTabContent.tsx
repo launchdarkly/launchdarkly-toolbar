@@ -15,7 +15,7 @@ import { ActionButtonsContainer } from '../components';
 import type { IFlagOverridePlugin } from '../../../types/plugin';
 import type { LocalFlag } from '../context';
 
-import * as styles from './FlagTabContent.css';
+import * as styles from './FlagDevServerTabContent.css';
 import * as actionStyles from '../components/ActionButtonsContainer.css';
 
 interface FlagOverrideTabContentProps {

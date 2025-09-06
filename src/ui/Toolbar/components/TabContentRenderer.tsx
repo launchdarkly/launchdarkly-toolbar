@@ -1,5 +1,5 @@
 import { motion } from 'motion/react';
-import { FlagTabContent } from '../TabContent/FlagTabContent';
+import { FlagDevServerTabContent } from '../TabContent/FlagDevServerTabContent';
 // import { EventsTabContent } from '../TabContent/EventsTabContent';
 import { SettingsTabContent } from '../TabContent/SettingsTabContent';
 import { ANIMATION_CONFIG, DIMENSIONS } from '../constants';
@@ -23,7 +23,7 @@ export function TabContentRenderer(props: TabContentRendererProps) {
         if (!flagOverridePlugin) return null;
         return <FlagOverrideTabContent flagOverridePlugin={flagOverridePlugin} />;
       case 'flags':
-        return <FlagTabContent />;
+        return <FlagDevServerTabContent />;
       case 'settings':
         return <SettingsTabContent mode={mode} />;
       default:

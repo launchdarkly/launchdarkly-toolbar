@@ -34,8 +34,8 @@ vi.mock('../services/FlagStateManager', () => ({
 }));
 
 // Mock the tab content components
-vi.mock('../ui/Toolbar/TabContent/FlagTabContent', () => ({
-  FlagTabContent: () => <div data-testid="flag-tab-content">Flag Tab Content</div>,
+vi.mock('../ui/Toolbar/TabContent/FlagDevServerTabContent', () => ({
+  FlagDevServerTabContent: () => <div data-testid="flag-tab-content">Flag Tab Content</div>,
 }));
 
 vi.mock('../ui/Toolbar/TabContent/FlagOverrideTabContent', () => ({

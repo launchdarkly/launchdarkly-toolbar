@@ -3,11 +3,13 @@ description:
 globs: src/ui/Toolbar/**/*.ts,src/ui/Toolbar/**/*.tsx
 alwaysApply: false
 ---
+
 # Toolbar Architecture Patterns
 
 ## Component Organization
 
 ### Nested Component Structure
+
 Follow the established pattern for complex components:
 
 ```
@@ -36,6 +38,7 @@ Component/
 ```
 
 ### Index File Patterns
+
 Each directory must have an `index.ts` that exports all public items:
 
 ```typescript
@@ -58,6 +61,7 @@ export * from './component';
 ## Constants Organization
 
 ### Typed Constant Patterns
+
 Use `as const` assertions for immutable configurations:
 
 ```typescript
@@ -73,6 +77,7 @@ export const DIMENSIONS = {
 ```
 
 ### Animation Configuration Standards
+
 Structure animation configs by component/purpose:
 
 ```typescript
@@ -91,6 +96,7 @@ export const ANIMATION_CONFIG = {
 ## Type Organization
 
 ### Tab and ID Patterns
+
 Define string union types with corresponding order arrays:
 
 ```typescript
@@ -101,6 +107,7 @@ export const TAB_ORDER: readonly TabId[] = ['flags', 'events', 'settings'] as co
 ```
 
 ### Feature Data Types
+
 Define clear interfaces for data structures:
 
 ```typescript
@@ -118,6 +125,7 @@ export interface FeatureFlag {
 ## Context Patterns
 
 ### Simplified Context + Provider + Hook Pattern
+
 Follow the established three-part context pattern:
 
 ```typescript
@@ -152,6 +160,7 @@ export function useContext() {
 ## Component Naming Conventions
 
 ### File Naming
+
 - Main component: `ToolbarComponent.tsx`
 - Sub-components: `SubComponentName.tsx`
 - Hook files: `useComponentFeature.ts`
@@ -159,13 +168,17 @@ export function useContext() {
 - Constant files: `animations.ts`, `config.ts`
 
 ### Tab Content Pattern
+
 For tab-based content, use descriptive names with individual CSS modules:
-- `FlagTabContent.tsx` + `FlagTabContent.module.css`
+
+- `FlagDevServerTabContent.tsx` + `FlagDevServerTabContent.module.css`
 - `EventsTabContent.tsx` + `EventsTabContent.module.css`
 - `SettingsTabContent.tsx` + `SettingsTab.module.css`
 
 ### Component Helper Patterns
+
 For component groups, use clear categorization:
+
 - `ActionButtons.tsx`
 - `SearchSection.tsx`
 - `LogoSection.tsx`
@@ -174,6 +187,7 @@ For component groups, use clear categorization:
 ## Data Organization
 
 ### Mock Data Structure
+
 Centralize mock/test data in `src/tests/mocks/`:
 
 ```
@@ -184,6 +198,7 @@ src/tests/mocks/
 ```
 
 ### Data File Patterns
+
 Export mock data with clear typing:
 
 ```typescript
@@ -206,13 +221,16 @@ export const mockFeatureFlags: FeatureFlag[] = [
 ## CSS Module Organization
 
 ### Component-Specific Styles
+
 - `Component.module.css` for main component styles
 - `SubComponent.module.css` for nested component styles
 - Each tab content component has its own CSS module
 - Group related styles logically within files
 
 ### Class Naming in CSS Modules
+
 Use descriptive, component-scoped class names:
+
 - `.toolbarContainer`
 - `.expandedContent`
 - `.tabButton`
@@ -221,6 +239,7 @@ Use descriptive, component-scoped class names:
 ## Error Handling Patterns
 
 ### Error Components
+
 Use standardized error components for consistent UX:
 
 ```typescript
@@ -235,6 +254,7 @@ Use standardized error components for consistent UX:
 ```
 
 ### Error Component Structure
+
 - `ErrorMessage.tsx` for error states
 - `GenericHelpText.tsx` for help text and no-results states
 - Consistent styling through CSS modules
@@ -242,6 +262,7 @@ Use standardized error components for consistent UX:
 ## Import Standards for Toolbar
 
 ### Import Order for Toolbar Components
+
 ```typescript
 import { useState, useCallback } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
@@ -254,7 +275,9 @@ import { SubComponent } from './components';
 ```
 
 ### Re-export Pattern
+
 Use index files to create clean import paths:
+
 ```typescript
 // Instead of
 import { CircleLogo } from './components/CircleLogo';
@@ -267,15 +290,18 @@ import { CircleLogo, ExpandedToolbarContent } from './components';
 ## Updated Architecture Notes
 
 ### Context Usage
+
 - Use `SearchProvider` for search functionality across tabs
 - Use `LaunchDarklyToolbarProvider` for toolbar state and API interactions
 - Each context has a focused responsibility
 
 ### Component Composition
+
 - Tab content components use shared components (`GenericHelpText`, `List`, `ListItem`)
 - Error states handled consistently with `ErrorMessage`
 - Search functionality integrated through `useSearchContext`
 
 ### Virtualization
-- Use `@tanstack/react-virtual` for large lists (see `FlagTabContent`)
+
+- Use `@tanstack/react-virtual` for large lists (see `FlagDevServerTabContent`)
 - Implement proper scroll containers and estimateSize functions
