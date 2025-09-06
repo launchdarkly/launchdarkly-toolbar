@@ -7,7 +7,7 @@ import { flagOverridePlugin } from './plugins';
 
 export function AppWrapper() {
   const [position, setPosition] = useState<'left' | 'right'>('left');
-  const [devServerUrl, setDevServerUrl] = useState('http://localhost:8765');
+  const [devServerUrl, setDevServerUrl] = useState('');
   const [projectKey, setProjectKey] = useState('');
 
   const ldClient = useLDClient();
@@ -107,6 +107,7 @@ export function AppWrapper() {
       <LaunchDarklyToolbar
         position={position}
         projectKey={projectKey || undefined}
+        devServerUrl={devServerUrl || undefined}
         flagOverridePlugin={flagOverridePlugin}
       />
     </div>
