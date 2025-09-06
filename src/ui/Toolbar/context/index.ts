@@ -1,8 +1,8 @@
 export { LaunchDarklyToolbarProvider, useToolbarContext } from './LaunchDarklyToolbarProvider';
 export { SearchProvider, useSearchContext } from './SearchProvider';
 export {
-  LocalOverridesFlagProvider,
-  useLocalOverridesFlagContext,
+  FlagOverrideFlagProvider,
+  useFlagOverrideContext,
   type LocalFlag,
-  type LocalOverridesFlagContextType,
-} from './LocalOverridesFlagProvider';
+  type FlagOverrideContextType,
+} from './FlagOverrideFlagProvider';

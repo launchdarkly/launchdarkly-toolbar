@@ -3,7 +3,7 @@ import { useVirtualizer } from '@tanstack/react-virtual';
 import { List } from '../../List/List';
 import { ListItem } from '../../List/ListItem';
 import { useSearchContext } from '../context';
-import { LocalOverridesFlagProvider, useLocalOverridesFlagContext } from '../context';
+import { FlagOverrideFlagProvider, useFlagOverrideContext } from '../context';
 import { GenericHelpText } from '../components/GenericHelpText';
 import {
   LocalBooleanFlagControl,
@@ -18,14 +18,14 @@ import type { LocalFlag } from '../context';
 import * as styles from './FlagTabContent.css';
 import * as actionStyles from '../components/ActionButtonsContainer.css';
 
-interface LocalOverridesTabContentProps {
+interface FlagOverrideTabContentProps {
   flagOverridePlugin: IFlagOverridePlugin;
 }
 
-function LocalOverridesTabContentInner(props: LocalOverridesTabContentProps) {
+function FlagOverrideTabContentInner(props: FlagOverrideTabContentProps) {
   const { flagOverridePlugin } = props;
   const { searchTerm } = useSearchContext();
-  const { flags, isLoading } = useLocalOverridesFlagContext();
+  const { flags, isLoading } = useFlagOverrideContext();
   const ldClient = flagOverridePlugin.getClient();
   const [showOverriddenOnly, setShowOverriddenOnly] = useState(false);
   const parentRef = useRef<HTMLDivElement>(null);
@@ -180,10 +180,10 @@ function LocalOverridesTabContentInner(props: LocalOverridesTabContentProps) {
   );
 }
 
-export function LocalOverridesTabContent(props: LocalOverridesTabContentProps) {
+export function FlagOverrideTabContent(props: FlagOverrideTabContentProps) {
   return (
-    <LocalOverridesFlagProvider flagOverridePlugin={props.flagOverridePlugin}>
-      <LocalOverridesTabContentInner {...props} />
-    </LocalOverridesFlagProvider>
+    <FlagOverrideFlagProvider flagOverridePlugin={props.flagOverridePlugin}>
+      <FlagOverrideTabContentInner {...props} />
+    </FlagOverrideFlagProvider>
   );
 }

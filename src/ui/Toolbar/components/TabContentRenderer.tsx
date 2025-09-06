@@ -1,11 +1,11 @@
 import { motion } from 'motion/react';
 import { FlagTabContent } from '../TabContent/FlagTabContent';
-import { LocalOverridesTabContent } from '../TabContent/LocalOverridesTabContent';
 // import { EventsTabContent } from '../TabContent/EventsTabContent';
 import { SettingsTabContent } from '../TabContent/SettingsTabContent';
 import { ANIMATION_CONFIG, DIMENSIONS } from '../constants';
 import { TabId, ToolbarMode } from '../types';
 import type { IFlagOverridePlugin } from '../../../types/plugin';
+import { FlagOverrideTabContent } from '../TabContent/FlagOverrideTabContent';
 
 interface TabContentRendererProps {
   activeTab: TabId;
@@ -21,7 +21,7 @@ export function TabContentRenderer(props: TabContentRendererProps) {
     switch (activeTab) {
       case 'local-overrides':
         if (!flagOverridePlugin) return null;
-        return <LocalOverridesTabContent flagOverridePlugin={flagOverridePlugin} />;
+        return <FlagOverrideTabContent flagOverridePlugin={flagOverridePlugin} />;
       case 'flags':
         return <FlagTabContent />;
       case 'settings':

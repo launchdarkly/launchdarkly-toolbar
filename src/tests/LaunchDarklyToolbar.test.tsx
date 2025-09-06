@@ -66,10 +66,10 @@ describe('LaunchDarklyToolbar - User Flows', () => {
     test('developer with flag override plugin can manage client-side flag overrides', async () => {
       // GIVEN: Developer has a flag override plugin configured for local overrides
       const mockFlagOverridePlugin = {
-        getLocalOverrides: vi.fn().mockResolvedValue({}),
-        setLocalOverride: vi.fn(),
-        clearLocalOverride: vi.fn(),
-        clearAllLocalOverrides: vi.fn(),
+        getFlagOverride: vi.fn().mockResolvedValue({}),
+        setFlagOverride: vi.fn(),
+        clearFlagOverride: vi.fn(),
+        clearAllFlagOverride: vi.fn(),
         setOverride: vi.fn(),
         removeOverride: vi.fn(),
         clearAllOverrides: vi.fn(),

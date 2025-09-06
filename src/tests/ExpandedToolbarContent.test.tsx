@@ -38,8 +38,8 @@ vi.mock('../ui/Toolbar/TabContent/FlagTabContent', () => ({
   FlagTabContent: () => <div data-testid="flag-tab-content">Flag Tab Content</div>,
 }));
 
-vi.mock('../ui/Toolbar/TabContent/LocalOverridesTabContent', () => ({
-  LocalOverridesTabContent: () => <div data-testid="local-overrides-tab-content">Local Overrides Tab Content</div>,
+vi.mock('../ui/Toolbar/TabContent/FlagOverrideTabContent', () => ({
+  FlagOverrideTabContent: () => <div data-testid="local-overrides-tab-content">Local Overrides Tab Content</div>,
 }));
 
 vi.mock('../ui/Toolbar/TabContent/SettingsTabContent', () => ({
@@ -127,10 +127,10 @@ describe('ExpandedToolbarContent - User Interaction Flows', () => {
     test('developer with flag override plugin explores client-side override capabilities', () => {
       // GIVEN: Developer has a flag override plugin configured and expands the toolbar
       const mockDebugPlugin = {
-        getLocalOverrides: vi.fn().mockResolvedValue({}),
-        setLocalOverride: vi.fn(),
-        clearLocalOverride: vi.fn(),
-        clearAllLocalOverrides: vi.fn(),
+        getFlagOverride: vi.fn().mockResolvedValue({}),
+        setFlagOverride: vi.fn(),
+        clearFlagOverride: vi.fn(),
+        clearAllFlagOverride: vi.fn(),
         setOverride: vi.fn(),
         removeOverride: vi.fn(),
         clearAllOverrides: vi.fn(),
@@ -156,10 +156,10 @@ describe('ExpandedToolbarContent - User Interaction Flows', () => {
     test('developer works with local flag overrides', () => {
       // GIVEN: Developer wants to override flags locally for testing
       const mockDebugPlugin = {
-        getLocalOverrides: vi.fn().mockResolvedValue({}),
-        setLocalOverride: vi.fn(),
-        clearLocalOverride: vi.fn(),
-        clearAllLocalOverrides: vi.fn(),
+        getFlagOverride: vi.fn().mockResolvedValue({}),
+        setFlagOverride: vi.fn(),
+        clearFlagOverride: vi.fn(),
+        clearAllFlagOverride: vi.fn(),
         setOverride: vi.fn(),
         removeOverride: vi.fn(),
         clearAllOverrides: vi.fn(),
