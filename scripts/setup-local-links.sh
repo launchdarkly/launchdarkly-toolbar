@@ -123,30 +123,18 @@ else
     exit 1
 fi
 
-# Step 4: Add workspace overrides and link SDKs to toolbar (using pnpm)
-log_step "Adding workspace overrides and linking SDKs → toolbar (pnpm)"
+# Step 4: Link both SDKs to toolbar (using pnpm)
+log_step "Linking SDKs → toolbar (pnpm)"
 cd "$TOOLBAR_DIR"
 echo -e "${BLUE}📍 Working in: $(pwd)${NC}"
-
-# Add overrides to pnpm-workspace.yaml
-log_step "Adding workspace overrides to pnpm-workspace.yaml"
-if ! grep -q "overrides:" pnpm-workspace.yaml 2>/dev/null; then
-    echo "" >> pnpm-workspace.yaml
-    echo "overrides:" >> pnpm-workspace.yaml
-    echo "  launchdarkly-js-client-sdk: link:../js-client-sdk" >> pnpm-workspace.yaml
-    echo "  launchdarkly-react-client-sdk: link:../react-client-sdk" >> pnpm-workspace.yaml
-    log_success "Workspace overrides added to pnpm-workspace.yaml"
-else
-    log_warning "Overrides section already exists in pnpm-workspace.yaml"
-fi
 
 # Remove existing node_modules links
 rm -rf node_modules/launchdarkly-js-client-sdk 2>/dev/null || true
 rm -rf node_modules/launchdarkly-react-client-sdk 2>/dev/null || true
 
-# Install with workspace overrides
+# Link using pnpm (which should use the package.json link: syntax)
 if pnpm install; then
-    log_success "Dependencies installed in toolbar with workspace overrides"
+    log_success "Dependencies installed in toolbar (using pnpm link: syntax)"
 else
     log_error "Failed to install toolbar dependencies"
     exit 1
