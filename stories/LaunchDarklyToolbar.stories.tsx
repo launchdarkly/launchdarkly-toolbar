@@ -16,6 +16,7 @@ const meta: Meta<typeof LaunchDarklyToolbar> = {
   },
   args: {
     position: 'right',
+    devServerUrl: 'http://localhost:8765',
   },
   argTypes: {
     projectKey: {
