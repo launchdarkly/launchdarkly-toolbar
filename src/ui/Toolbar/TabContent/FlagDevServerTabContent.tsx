@@ -78,7 +78,7 @@ export function FlagDevServerTabContent() {
   const genericHelpSubtitle = showOverriddenOnly ? 'You have not set any overrides yet' : 'Try adjusting your search';
 
   return (
-    <div data-testid="flag-tab-content">
+    <div data-testid="flag-dev-server-tab-content">
       <>
         <ActionButtonsContainer>
           <button

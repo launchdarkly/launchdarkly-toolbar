@@ -100,10 +100,10 @@ export const ANIMATION_CONFIG = {
 Define string union types with corresponding order arrays:
 
 ```typescript
-export type TabId = 'flags' | 'events' | 'settings';
+export type TabId = 'flag-dev-server' | 'events' | 'settings';
 export type ActiveTabId = TabId | undefined;
 
-export const TAB_ORDER: readonly TabId[] = ['flags', 'events', 'settings'] as const;
+export const TAB_ORDER: readonly TabId[] = ['flag-dev-server', 'events', 'settings'] as const;
 ```
 
 ### Feature Data Types

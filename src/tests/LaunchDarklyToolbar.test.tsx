@@ -206,8 +206,8 @@ describe('LaunchDarklyToolbar - User Flows', () => {
       // AND: Does NOT show dev-server mode tabs (flags = server-side flags)
       expect(screen.queryByRole('tab', { name: /flags/i })).not.toBeInTheDocument();
 
-      // AND: Does NOT show local-overrides tab (no flag override plugin provided)
-      expect(screen.queryByText('local-overrides')).not.toBeInTheDocument();
+      // AND: Does NOT show flag-sdk tab (no flag override plugin provided)
+      expect(screen.queryByText('flag-sdk')).not.toBeInTheDocument();
 
       // AND: Only has one tab total (settings only - typical SDK mode without plugin)
       const tabs = screen.getAllByRole('tab');

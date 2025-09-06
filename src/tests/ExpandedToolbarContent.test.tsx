@@ -35,11 +35,11 @@ vi.mock('../services/FlagStateManager', () => ({
 
 // Mock the tab content components
 vi.mock('../ui/Toolbar/TabContent/FlagDevServerTabContent', () => ({
-  FlagDevServerTabContent: () => <div data-testid="flag-tab-content">Flag Tab Content</div>,
+  FlagDevServerTabContent: () => <div data-testid="flag-dev-server-tab-content">Flag Tab Content</div>,
 }));
 
 vi.mock('../ui/Toolbar/TabContent/FlagOverrideTabContent', () => ({
-  FlagOverrideTabContent: () => <div data-testid="local-overrides-tab-content">Local Overrides Tab Content</div>,
+  FlagOverrideTabContent: () => <div data-testid="flag-sdk-tab-content">Local Overrides Tab Content</div>,
 }));
 
 vi.mock('../ui/Toolbar/TabContent/SettingsTabContent', () => ({
@@ -103,7 +103,7 @@ describe('ExpandedToolbarContent - User Interaction Flows', () => {
       expect(screen.getByRole('tab', { name: /settings/i })).toBeInTheDocument(); // Configuration
 
       // AND: Client-side override functionality is not cluttering the interface
-      expect(screen.queryByText('local-overrides')).not.toBeInTheDocument();
+      expect(screen.queryByText('flag-sdk')).not.toBeInTheDocument();
 
       // AND: The settings are contextual to dev-server mode
       expect(screen.getByTestId('settings-tab-content')).toHaveTextContent('Settings Tab Content - dev-server');
@@ -113,13 +113,13 @@ describe('ExpandedToolbarContent - User Interaction Flows', () => {
       // GIVEN: Developer wants to work with server-side flags
       render(
         <TestWrapper devServerUrl="http://localhost:8765">
-          <ExpandedToolbarContent {...defaultProps} activeTab="flags" mode="dev-server" />
+          <ExpandedToolbarContent {...defaultProps} activeTab="flag-dev-server" mode="dev-server" />
         </TestWrapper>,
       );
 
       // WHEN: They select the flags tab
       // THEN: They see the server-side flag management interface
-      expect(screen.getByTestId('flag-tab-content')).toBeInTheDocument();
+      expect(screen.getByTestId('flag-dev-server-tab-content')).toBeInTheDocument();
     });
   });
 
@@ -171,7 +171,7 @@ describe('ExpandedToolbarContent - User Interaction Flows', () => {
         <TestWrapper>
           <ExpandedToolbarContent
             {...defaultProps}
-            activeTab="local-overrides"
+            activeTab="flag-sdk"
             mode="sdk"
             flagOverridePlugin={mockDebugPlugin}
           />
@@ -180,7 +180,7 @@ describe('ExpandedToolbarContent - User Interaction Flows', () => {
 
       // WHEN: They navigate to the local overrides tab
       // THEN: They see the client-side override interface
-      expect(screen.getByTestId('local-overrides-tab-content')).toBeInTheDocument();
+      expect(screen.getByTestId('flag-sdk-tab-content')).toBeInTheDocument();
     });
 
     test('developer without flag override plugin has limited functionality', () => {
@@ -239,8 +239,8 @@ describe('ExpandedToolbarContent - User Interaction Flows', () => {
 
       // AND: No tab content is rendered when activeTab is undefined (correct behavior)
       expect(screen.queryByTestId('settings-tab-content')).not.toBeInTheDocument();
-      expect(screen.queryByTestId('flag-tab-content')).not.toBeInTheDocument();
-      expect(screen.queryByTestId('local-overrides-tab-content')).not.toBeInTheDocument();
+      expect(screen.queryByTestId('flag-dev-server-tab-content')).not.toBeInTheDocument();
+      expect(screen.queryByTestId('flag-sdk-tab-content')).not.toBeInTheDocument();
     });
   });
 });

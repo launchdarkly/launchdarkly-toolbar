@@ -115,7 +115,7 @@ function FlagOverrideTabContentInner(props: FlagOverrideTabContentProps) {
     : 'Try adjusting your search or check if flags are available';
 
   return (
-    <div data-testid="local-overrides-tab-content">
+    <div data-testid="flag-sdk-tab-content">
       <>
         <ActionButtonsContainer>
           <button

@@ -6,7 +6,7 @@ import { Tabs } from '../../Tabs/Tabs';
 import { TabButton } from '../../Tabs/TabButton';
 import { TabContentRenderer } from './TabContentRenderer';
 import { ANIMATION_CONFIG, EASING } from '../constants';
-import { ActiveTabId, ToolbarMode, getTabsForMode } from '../types';
+import { ActiveTabId, ToolbarMode, getTabsForMode, getDefaultActiveTab } from '../types';
 import { useToolbarContext } from '../context/LaunchDarklyToolbarProvider';
 import type { IFlagOverridePlugin } from '../../../types/plugin';
 
@@ -57,6 +57,7 @@ export function ExpandedToolbarContent(props: ExpandedToolbarContentProps) {
   const { error } = state;
 
   const availableTabs = getTabsForMode(mode, !!flagOverridePlugin);
+  const defaultActiveTab = getDefaultActiveTab(mode);
 
   const shouldShowError = error && mode === 'dev-server' && state.connectionStatus === 'error';
 
@@ -149,11 +150,11 @@ export function ExpandedToolbarContent(props: ExpandedToolbarContentProps) {
         }}
         transition={ANIMATION_CONFIG.tabsContainer}
       >
-        <Tabs activeTab={activeTab || undefined} onTabChange={onTabChange}>
-          {availableTabs.includes('local-overrides') && (
-            <TabButton id="local-overrides" label="Flags" icon={ToggleOffIcon} />
+        <Tabs defaultActiveTab={defaultActiveTab} activeTab={activeTab} onTabChange={onTabChange}>
+          {availableTabs.includes('flag-sdk') && <TabButton id="flag-sdk" label="Flags" icon={ToggleOffIcon} />}
+          {availableTabs.includes('flag-dev-server') && (
+            <TabButton id="flag-dev-server" label="Flags" icon={ToggleOffIcon} />
           )}
-          {availableTabs.includes('flags') && <TabButton id="flags" label="Flags" icon={ToggleOffIcon} />}
           {availableTabs.includes('settings') && <TabButton id="settings" label="Settings" icon={GearIcon} />}
         </Tabs>
       </motion.div>

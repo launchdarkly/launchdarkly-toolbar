@@ -19,10 +19,10 @@ export function TabContentRenderer(props: TabContentRendererProps) {
 
   const renderContent = () => {
     switch (activeTab) {
-      case 'local-overrides':
+      case 'flag-sdk':
         if (!flagOverridePlugin) return null;
         return <FlagOverrideTabContent flagOverridePlugin={flagOverridePlugin} />;
-      case 'flags':
+      case 'flag-dev-server':
         return <FlagDevServerTabContent />;
       case 'settings':
         return <SettingsTabContent mode={mode} />;
