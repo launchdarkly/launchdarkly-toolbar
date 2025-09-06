@@ -3,7 +3,7 @@ import { useVirtualizer } from '@tanstack/react-virtual';
 import { List } from '../../List/List';
 import { ListItem } from '../../List/ListItem';
 import { useSearchContext } from '../context';
-import { FlagOverrideFlagProvider, useFlagOverrideContext } from '../context';
+import { FlagOverrideProvider, useFlagOverrideContext } from '../context';
 import { GenericHelpText } from '../components/GenericHelpText';
 import {
   LocalBooleanFlagControl,
@@ -182,8 +182,8 @@ function FlagOverrideTabContentInner(props: FlagOverrideTabContentProps) {
 
 export function FlagOverrideTabContent(props: FlagOverrideTabContentProps) {
   return (
-    <FlagOverrideFlagProvider flagOverridePlugin={props.flagOverridePlugin}>
+    <FlagOverrideProvider flagOverridePlugin={props.flagOverridePlugin}>
       <FlagOverrideTabContentInner {...props} />
-    </FlagOverrideFlagProvider>
+    </FlagOverrideProvider>
   );
 }

@@ -16,12 +16,12 @@ interface FlagOverrideContextType {
 
 const FlagOverrideContext = createContext<FlagOverrideContextType | null>(null);
 
-interface FlagOverrideFlagProviderProps {
+interface FlagOverrideProviderProps {
   children: React.ReactNode;
   flagOverridePlugin: IFlagOverridePlugin;
 }
 
-export function FlagOverrideFlagProvider({ children, flagOverridePlugin }: FlagOverrideFlagProviderProps) {
+export function FlagOverrideProvider({ children, flagOverridePlugin }: FlagOverrideProviderProps) {
   const [flags, setFlags] = useState<Record<string, LocalFlag>>({});
   const [isLoading, setIsLoading] = useState(true);
 
@@ -122,7 +122,7 @@ export function FlagOverrideFlagProvider({ children, flagOverridePlugin }: FlagO
 export function useFlagOverrideContext() {
   const context = useContext(FlagOverrideContext);
   if (!context) {
-    throw new Error('useFlagOverrideContext must be used within a FlagOverrideFlagProvider');
+    throw new Error('useFlagOverrideContext must be used within a FlagOverrideProvider');
   }
   return context;
 }
