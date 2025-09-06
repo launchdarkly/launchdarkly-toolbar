@@ -9,19 +9,19 @@ interface LocalFlag {
   type: 'boolean' | 'string' | 'number' | 'object';
 }
 
-interface FlagOverrideContextType {
+interface FlagSdkOverrideContextType {
   flags: Record<string, LocalFlag>;
   isLoading: boolean;
 }
 
-const FlagOverrideContext = createContext<FlagOverrideContextType | null>(null);
+const FlagSdkOverrideContext = createContext<FlagSdkOverrideContextType | null>(null);
 
-interface FlagOverrideProviderProps {
+interface FlagSdkOverrideProviderProps {
   children: React.ReactNode;
   flagOverridePlugin: IFlagOverridePlugin;
 }
 
-export function FlagOverrideProvider({ children, flagOverridePlugin }: FlagOverrideProviderProps) {
+export function FlagSdkOverrideProvider({ children, flagOverridePlugin }: FlagSdkOverrideProviderProps) {
   const [flags, setFlags] = useState<Record<string, LocalFlag>>({});
   const [isLoading, setIsLoading] = useState(true);
 
@@ -115,17 +115,17 @@ export function FlagOverrideProvider({ children, flagOverridePlugin }: FlagOverr
     };
   }, [ldClient, buildFlags]);
 
-  return <FlagOverrideContext.Provider value={{ flags, isLoading }}>{children}</FlagOverrideContext.Provider>;
+  return <FlagSdkOverrideContext.Provider value={{ flags, isLoading }}>{children}</FlagSdkOverrideContext.Provider>;
 }
 
 // Hook to access the local overrides flag context
-export function useFlagOverrideContext() {
-  const context = useContext(FlagOverrideContext);
+export function useFlagSdkOverrideContext() {
+  const context = useContext(FlagSdkOverrideContext);
   if (!context) {
-    throw new Error('useFlagOverrideContext must be used within a FlagOverrideProvider');
+    throw new Error('useFlagSdkOverrideContext must be used within a FlagSdkOverrideProvider');
   }
   return context;
 }
 
 // Export types for external use
-export type { LocalFlag, FlagOverrideContextType };
+export type { LocalFlag, FlagSdkOverrideContextType };

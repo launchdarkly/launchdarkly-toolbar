@@ -1,8 +1,8 @@
 export { DevServerProvider, useDevServerContext } from './DevServerProvider';
 export { SearchProvider, useSearchContext } from './SearchProvider';
 export {
-  FlagOverrideProvider,
-  useFlagOverrideContext,
+  FlagSdkOverrideProvider,
+  useFlagSdkOverrideContext,
   type LocalFlag,
-  type FlagOverrideContextType,
-} from './FlagOverrideProvider';
+  type FlagSdkOverrideContextType,
+} from './FlagSdkOverrideProvider';

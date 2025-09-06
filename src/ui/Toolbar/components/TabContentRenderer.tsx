@@ -5,7 +5,7 @@ import { SettingsTabContent } from '../TabContent/SettingsTabContent';
 import { ANIMATION_CONFIG, DIMENSIONS } from '../constants';
 import { TabId, ToolbarMode } from '../types';
 import type { IFlagOverridePlugin } from '../../../types/plugin';
-import { FlagOverrideTabContent } from '../TabContent/FlagOverrideTabContent';
+import { FlagSdkOverrideTabContent } from '../TabContent/FlagSdkOverrideTabContent';
 
 interface TabContentRendererProps {
   activeTab: TabId;
@@ -21,7 +21,7 @@ export function TabContentRenderer(props: TabContentRendererProps) {
     switch (activeTab) {
       case 'flag-sdk':
         if (!flagOverridePlugin) return null;
-        return <FlagOverrideTabContent flagOverridePlugin={flagOverridePlugin} />;
+        return <FlagSdkOverrideTabContent flagOverridePlugin={flagOverridePlugin} />;
       case 'flag-dev-server':
         return <FlagDevServerTabContent />;
       case 'settings':

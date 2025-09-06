@@ -1,12 +1,12 @@
 import { render, screen, act } from '@testing-library/react';
 import { expect, test, describe, vi, beforeEach } from 'vitest';
 
-import { FlagOverrideProvider, useFlagOverrideContext } from '../ui/Toolbar/context/FlagOverrideProvider';
+import { FlagSdkOverrideProvider, useFlagSdkOverrideContext } from '../ui/Toolbar/context/FlagSdkOverrideProvider';
 import type { IFlagOverridePlugin } from '../types/plugin';
 
 // Test component that uses the context
 function TestConsumer() {
-  const { flags, isLoading } = useFlagOverrideContext();
+  const { flags, isLoading } = useFlagSdkOverrideContext();
 
   if (isLoading) {
     return <div data-testid="loading">Loading...</div>;
@@ -23,7 +23,7 @@ function TestConsumer() {
   );
 }
 
-describe('FlagOverrideProvider', () => {
+describe('FlagSdkOverrideProvider', () => {
   let mockLdClient: any;
   let mockFlagOverridePlugin: IFlagOverridePlugin;
 
@@ -55,9 +55,9 @@ describe('FlagOverrideProvider', () => {
 
     // WHEN: Component is rendered with the provider
     render(
-      <FlagOverrideProvider flagOverridePlugin={mockFlagOverridePlugin}>
+      <FlagSdkOverrideProvider flagOverridePlugin={mockFlagOverridePlugin}>
         <TestConsumer />
-      </FlagOverrideProvider>,
+      </FlagSdkOverrideProvider>,
     );
 
     // THEN: Flags are displayed (loading completes synchronously in this implementation)
@@ -80,9 +80,9 @@ describe('FlagOverrideProvider', () => {
 
     // WHEN: Component is rendered
     render(
-      <FlagOverrideProvider flagOverridePlugin={mockFlagOverridePlugin}>
+      <FlagSdkOverrideProvider flagOverridePlugin={mockFlagOverridePlugin}>
         <TestConsumer />
-      </FlagOverrideProvider>,
+      </FlagSdkOverrideProvider>,
     );
 
     await act(async () => {
@@ -108,9 +108,9 @@ describe('FlagOverrideProvider', () => {
     });
 
     render(
-      <FlagOverrideProvider flagOverridePlugin={mockFlagOverridePlugin}>
+      <FlagSdkOverrideProvider flagOverridePlugin={mockFlagOverridePlugin}>
         <TestConsumer />
-      </FlagOverrideProvider>,
+      </FlagSdkOverrideProvider>,
     );
 
     await act(async () => {
@@ -139,9 +139,9 @@ describe('FlagOverrideProvider', () => {
 
     // WHEN: Component is rendered
     render(
-      <FlagOverrideProvider flagOverridePlugin={mockFlagOverridePlugin}>
+      <FlagSdkOverrideProvider flagOverridePlugin={mockFlagOverridePlugin}>
         <TestConsumer />
-      </FlagOverrideProvider>,
+      </FlagSdkOverrideProvider>,
     );
 
     await act(async () => {
@@ -153,10 +153,10 @@ describe('FlagOverrideProvider', () => {
     expect(screen.getByTestId('flags-data')).toBeEmptyDOMElement();
   });
 
-  test('throws error when useFlagOverrideContext is used outside provider', () => {
+  test('throws error when useFlagSdkOverrideContext is used outside provider', () => {
     // GIVEN: Component tries to use context outside provider
     const TestComponentOutsideProvider = () => {
-      useFlagOverrideContext(); // This should throw
+      useFlagSdkOverrideContext(); // This should throw
       return <div>Should not render</div>;
     };
 
@@ -166,7 +166,7 @@ describe('FlagOverrideProvider', () => {
 
     expect(() => {
       render(<TestComponentOutsideProvider />);
-    }).toThrow('useFlagOverrideContext must be used within a FlagOverrideProvider');
+    }).toThrow('useFlagSdkOverrideContext must be used within a FlagSdkOverrideProvider');
 
     consoleSpy.mockRestore();
   });
@@ -181,9 +181,9 @@ describe('FlagOverrideProvider', () => {
     });
 
     render(
-      <FlagOverrideProvider flagOverridePlugin={mockFlagOverridePlugin}>
+      <FlagSdkOverrideProvider flagOverridePlugin={mockFlagOverridePlugin}>
         <TestConsumer />
-      </FlagOverrideProvider>,
+      </FlagSdkOverrideProvider>,
     );
 
     await act(async () => {
