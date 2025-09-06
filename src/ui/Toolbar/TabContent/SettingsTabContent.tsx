@@ -2,7 +2,7 @@ import { Button, ListBox, Popover, Select, SelectValue, ListBoxItem } from '@lau
 import { List } from '../../List/List';
 import { ListItem } from '../../List/ListItem';
 import { useSearchContext } from '../context/SearchProvider';
-import { useToolbarContext } from '../context/LaunchDarklyToolbarProvider';
+import { useDevServerContext } from '../context/DevServerProvider';
 import { StatusDot } from '../components/StatusDot';
 import { GenericHelpText } from '../components/GenericHelpText';
 import { ChevronDownIcon } from '../components/icons';
@@ -150,7 +150,7 @@ interface SettingsTabContentProps {
 
 export function SettingsTabContent(props: SettingsTabContentProps) {
   const { mode } = props;
-  const { state, switchProject, handlePositionChange } = useToolbarContext();
+  const { state, switchProject, handlePositionChange } = useDevServerContext();
   const { searchTerm } = useSearchContext();
   const position = state.position;
 

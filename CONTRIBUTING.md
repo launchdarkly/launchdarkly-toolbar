@@ -199,7 +199,7 @@ This command:
 - **Functional components** with hooks
 - **Named exports** preferred over default exports
 - **Custom hooks** for reusable logic
-- **Context** for shared state (see `SearchProvider`, `LaunchDarklyToolbarProvider`)
+- **Context** for shared state (see `SearchProvider`, `DevServerProvider`)
 
 ### Styling
 

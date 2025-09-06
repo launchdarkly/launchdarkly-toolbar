@@ -3,7 +3,7 @@ import { useVirtualizer } from '@tanstack/react-virtual';
 import { List } from '../../List/List';
 import { ListItem } from '../../List/ListItem';
 import { useSearchContext } from '../context/SearchProvider';
-import { useToolbarContext } from '../context/LaunchDarklyToolbarProvider';
+import { useDevServerContext } from '../context/DevServerProvider';
 import { EnhancedFlag } from '../../../types/devServer';
 import { GenericHelpText } from '../components/GenericHelpText';
 import { BooleanFlagControl, MultivariateFlagControl, StringNumberFlagControl } from '../components/FlagControls';
@@ -15,7 +15,7 @@ import * as actionStyles from '../components/ActionButtonsContainer.css';
 
 export function FlagDevServerTabContent() {
   const { searchTerm } = useSearchContext();
-  const { state, setOverride, clearOverride, clearAllOverrides } = useToolbarContext();
+  const { state, setOverride, clearOverride, clearAllOverrides } = useDevServerContext();
   const { flags } = state;
 
   const [showOverriddenOnly, setShowOverriddenOnly] = useState(false);

@@ -1,7 +1,7 @@
 import { render, screen, waitFor } from '@testing-library/react';
 import { expect, test, describe, vi, beforeEach } from 'vitest';
 
-import { LaunchDarklyToolbarProvider, useToolbarContext } from '../ui/Toolbar/context/LaunchDarklyToolbarProvider';
+import { DevServerProvider, useDevServerContext } from '../ui/Toolbar/context/DevServerProvider';
 
 // Mock the DevServerClient and FlagStateManager
 const mockDevServerClient = {
@@ -37,7 +37,7 @@ vi.mock('../services/FlagStateManager', () => ({
 
 // Test component that consumes the context
 function TestConsumer() {
-  const { state } = useToolbarContext();
+  const { state } = useDevServerContext();
 
   return (
     <div>
@@ -51,7 +51,7 @@ function TestConsumer() {
   );
 }
 
-describe('LaunchDarklyToolbarProvider - Integration Flows', () => {
+describe('DevServerProvider - Integration Flows', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     localStorage.clear();
@@ -61,7 +61,7 @@ describe('LaunchDarklyToolbarProvider - Integration Flows', () => {
     test('developer connects to dev server and gets project auto-detection', async () => {
       // GIVEN: Developer starts up the toolbar pointing to their dev server
       render(
-        <LaunchDarklyToolbarProvider
+        <DevServerProvider
           config={{
             devServerUrl: 'http://localhost:8765',
             pollIntervalInMs: 5000,
@@ -69,7 +69,7 @@ describe('LaunchDarklyToolbarProvider - Integration Flows', () => {
           initialPosition="right"
         >
           <TestConsumer />
-        </LaunchDarklyToolbarProvider>,
+        </DevServerProvider>,
       );
 
       // WHEN: The toolbar initializes
@@ -99,7 +99,7 @@ describe('LaunchDarklyToolbarProvider - Integration Flows', () => {
 
       // WHEN: They configure the toolbar with their specific project
       render(
-        <LaunchDarklyToolbarProvider
+        <DevServerProvider
           config={{
             devServerUrl: 'http://localhost:8765',
             projectKey: 'explicit-project',
@@ -108,7 +108,7 @@ describe('LaunchDarklyToolbarProvider - Integration Flows', () => {
           initialPosition="right"
         >
           <TestConsumer />
-        </LaunchDarklyToolbarProvider>,
+        </DevServerProvider>,
       );
 
       // THEN: The toolbar connects using their specified project
@@ -126,7 +126,7 @@ describe('LaunchDarklyToolbarProvider - Integration Flows', () => {
 
       // WHEN: They try to connect with the toolbar
       render(
-        <LaunchDarklyToolbarProvider
+        <DevServerProvider
           config={{
             devServerUrl: 'http://localhost:8765',
             pollIntervalInMs: 5000,
@@ -134,7 +134,7 @@ describe('LaunchDarklyToolbarProvider - Integration Flows', () => {
           initialPosition="right"
         >
           <TestConsumer />
-        </LaunchDarklyToolbarProvider>,
+        </DevServerProvider>,
       );
 
       // THEN: The toolbar shows a clear error state instead of failing silently
@@ -153,7 +153,7 @@ describe('LaunchDarklyToolbarProvider - Integration Flows', () => {
 
       // WHEN: They attempt to connect with the toolbar
       render(
-        <LaunchDarklyToolbarProvider
+        <DevServerProvider
           config={{
             devServerUrl: 'http://localhost:8765',
             pollIntervalInMs: 5000,
@@ -161,7 +161,7 @@ describe('LaunchDarklyToolbarProvider - Integration Flows', () => {
           initialPosition="right"
         >
           <TestConsumer />
-        </LaunchDarklyToolbarProvider>,
+        </DevServerProvider>,
       );
 
       // THEN: The error is handled gracefully with a user-friendly message
@@ -180,14 +180,14 @@ describe('LaunchDarklyToolbarProvider - Integration Flows', () => {
     test('developer uses toolbar in client-side only mode', async () => {
       // GIVEN: Developer wants to use toolbar without a dev server (client-side only)
       render(
-        <LaunchDarklyToolbarProvider
+        <DevServerProvider
           config={{
             pollIntervalInMs: 5000,
           }}
           initialPosition="left"
         >
           <TestConsumer />
-        </LaunchDarklyToolbarProvider>,
+        </DevServerProvider>,
       );
 
       // WHEN: The toolbar initializes in SDK mode
@@ -216,12 +216,12 @@ describe('LaunchDarklyToolbarProvider - Integration Flows', () => {
 
       // WHEN: They load the toolbar again (even with different config)
       render(
-        <LaunchDarklyToolbarProvider
+        <DevServerProvider
           config={{ pollIntervalInMs: 5000 }}
           initialPosition="right" // This should be overridden by localStorage
         >
           <TestConsumer />
-        </LaunchDarklyToolbarProvider>,
+        </DevServerProvider>,
       );
 
       // THEN: Their preference is respected
@@ -231,9 +231,9 @@ describe('LaunchDarklyToolbarProvider - Integration Flows', () => {
     test('developer gets sensible defaults when no preferences are set', () => {
       // GIVEN: Developer hasn't configured any preferences
       render(
-        <LaunchDarklyToolbarProvider config={{ pollIntervalInMs: 5000 }}>
+        <DevServerProvider config={{ pollIntervalInMs: 5000 }}>
           <TestConsumer />
-        </LaunchDarklyToolbarProvider>,
+        </DevServerProvider>,
       );
 
       // WHEN: The toolbar loads

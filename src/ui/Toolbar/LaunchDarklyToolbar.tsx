@@ -4,11 +4,11 @@ import { useCallback } from 'react';
 import { SearchProvider, useSearchContext } from './context';
 import { CircleLogo, ExpandedToolbarContent } from './components';
 import { useToolbarAnimations, useToolbarVisibility, useToolbarDrag, useToolbarState } from './hooks';
-import { useToolbarContext } from './context';
+import { useDevServerContext } from './context';
 import { ToolbarMode, ToolbarPosition, getToolbarMode } from './types/toolbar';
 
 import * as styles from './LaunchDarklyToolbar.css';
-import { LaunchDarklyToolbarProvider } from './context';
+import { DevServerProvider } from './context';
 import type { IFlagOverridePlugin } from '../../types/plugin';
 
 export interface LdToolbarProps {
@@ -19,7 +19,7 @@ export interface LdToolbarProps {
 export function LdToolbar(props: LdToolbarProps) {
   const { flagOverridePlugin, mode } = props;
   const { searchTerm } = useSearchContext();
-  const { state, handlePositionChange } = useToolbarContext();
+  const { state, handlePositionChange } = useDevServerContext();
   const toolbarState = useToolbarState();
   const position = state.position;
 
@@ -124,7 +124,7 @@ export function LaunchDarklyToolbar(props: LaunchDarklyToolbarProps) {
   const mode = getToolbarMode(devServerUrl);
 
   return (
-    <LaunchDarklyToolbarProvider
+    <DevServerProvider
       config={{
         projectKey,
         devServerUrl,
@@ -135,6 +135,6 @@ export function LaunchDarklyToolbar(props: LaunchDarklyToolbarProps) {
       <SearchProvider>
         <LdToolbar flagOverridePlugin={flagOverridePlugin} mode={mode} />
       </SearchProvider>
-    </LaunchDarklyToolbarProvider>
+    </DevServerProvider>
   );
 }

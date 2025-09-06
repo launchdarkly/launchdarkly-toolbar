@@ -39,7 +39,7 @@ describe('Component', () => {
 
 ### Context Testing
 
-- Wrap components with required providers (`SearchProvider`, `LaunchDarklyToolbarProvider`)
+- Wrap components with required providers (`SearchProvider`, `DevServerProvider`)
 - Test context interactions and state changes
 - Mock context values when needed
 
@@ -47,9 +47,9 @@ describe('Component', () => {
 // Example context wrapping
 const AllProviders = ({ children }: { children: React.ReactNode }) => (
   <SearchProvider>
-    <LaunchDarklyToolbarProvider config={{ projectKey: 'test' }}>
+    <DevServerProvider config={{ projectKey: 'test' }}>
       {children}
-    </LaunchDarklyToolbarProvider>
+    </DevServerProvider>
   </SearchProvider>
 );
 
@@ -187,9 +187,9 @@ describe('FlagDevServerTabContent', () => {
   it('filters flags based on search term', () => {
     render(
       <SearchProvider>
-        <LaunchDarklyToolbarProvider config={{ projectKey: 'test' }}>
+        <DevServerProvider config={{ projectKey: 'test' }}>
           <FlagDevServerTabContent />
-        </LaunchDarklyToolbarProvider>
+        </DevServerProvider>
       </SearchProvider>
     );
 

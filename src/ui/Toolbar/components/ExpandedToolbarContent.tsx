@@ -7,7 +7,7 @@ import { TabButton } from '../../Tabs/TabButton';
 import { TabContentRenderer } from './TabContentRenderer';
 import { ANIMATION_CONFIG, EASING } from '../constants';
 import { ActiveTabId, ToolbarMode, getTabsForMode, getDefaultActiveTab } from '../types';
-import { useToolbarContext } from '../context/LaunchDarklyToolbarProvider';
+import { useDevServerContext } from '../context/DevServerProvider';
 import type { IFlagOverridePlugin } from '../../../types/plugin';
 
 import * as styles from '../LaunchDarklyToolbar.css';
@@ -51,7 +51,7 @@ export function ExpandedToolbarContent(props: ExpandedToolbarContentProps) {
     mode,
   } = props;
 
-  const { state } = useToolbarContext();
+  const { state } = useDevServerContext();
 
   const headerLabel = getHeaderLabel(state.currentProjectKey, state.sourceEnvironmentKey);
   const { error } = state;

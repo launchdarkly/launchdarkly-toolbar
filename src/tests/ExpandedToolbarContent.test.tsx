@@ -2,7 +2,7 @@ import { render, screen } from '@testing-library/react';
 import { expect, test, describe, vi, beforeEach } from 'vitest';
 
 import { ExpandedToolbarContent } from '../ui/Toolbar/components/ExpandedToolbarContent';
-import { LaunchDarklyToolbarProvider } from '../ui/Toolbar/context/LaunchDarklyToolbarProvider';
+import { DevServerProvider } from '../ui/Toolbar/context/DevServerProvider';
 import { SearchProvider } from '../ui/Toolbar/context/SearchProvider';
 
 // Mock the DevServerClient and FlagStateManager
@@ -59,7 +59,7 @@ function TestWrapper({
   initialPosition?: 'left' | 'right';
 }) {
   return (
-    <LaunchDarklyToolbarProvider
+    <DevServerProvider
       config={{
         devServerUrl,
         pollIntervalInMs: 5000,
@@ -67,7 +67,7 @@ function TestWrapper({
       initialPosition={initialPosition}
     >
       <SearchProvider>{children}</SearchProvider>
-    </LaunchDarklyToolbarProvider>
+    </DevServerProvider>
   );
 }
 
