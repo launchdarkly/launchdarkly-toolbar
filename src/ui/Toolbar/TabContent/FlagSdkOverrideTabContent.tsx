@@ -64,14 +64,22 @@ function FlagSdkOverrideTabContentInner(props: FlagSdkOverrideTabContentProps) {
     overscan: VIRTUALIZATION.OVERSCAN,
   });
 
-  // Early returns after all hooks have been called
-  const ldClient = flagOverridePlugin?.getClient();
+  if (!flagOverridePlugin) {
+    return (
+      <GenericHelpText
+        title="Flag override plugin is not available"
+        subtitle="To use local flag overrides, ensure the flag override plugin is added to your LaunchDarkly client configuration."
+      />
+    );
+  }
 
-  if (!ldClient || !flagOverridePlugin) {
+  const ldClient = flagOverridePlugin.getClient();
+
+  if (!ldClient) {
     return (
       <GenericHelpText
         title="LaunchDarkly client is not available"
-        subtitle="To use local flag overrides, ensure the flag override plugin is added to your LaunchDarkly client configuration."
+        subtitle="To use local flag overrides, ensure your LaunchDarkly client is properly initialized."
       />
     );
   }
