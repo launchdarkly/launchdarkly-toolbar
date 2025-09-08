@@ -26,10 +26,8 @@ export class EventInterceptionPlugin implements LDPlugin {
       ...config,
     };
 
-    // Initialize event store
     this.eventStore = new EventStore();
 
-    // Initialize event hook
     this.eventEnqueueHook = new EventEnqueueHook({
       filter: config.filter,
       onNewEvent: (event: ProcessedEvent) => {
@@ -42,7 +40,6 @@ export class EventInterceptionPlugin implements LDPlugin {
           });
         }
 
-        // Add to event store
         this.eventStore.addEvent(event);
       },
     });
@@ -51,7 +48,6 @@ export class EventInterceptionPlugin implements LDPlugin {
   getMetadata() {
     return {
       name: 'EventInterceptionPlugin',
-      version: '1.0.0',
     };
   }
 
@@ -59,11 +55,8 @@ export class EventInterceptionPlugin implements LDPlugin {
     return [this.eventEnqueueHook];
   }
 
-  register(_client: LDClient): void {
-    console.log('EventInterceptionPlugin: Registered with LaunchDarkly client');
-  }
+  register(_client: LDClient): void {}
 
-  // Simplified API - just expose events and subscription
   getEvents(): ProcessedEvent[] {
     return this.eventStore.getEvents();
   }

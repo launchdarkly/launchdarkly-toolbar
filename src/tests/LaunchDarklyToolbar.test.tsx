@@ -57,7 +57,7 @@ describe('LaunchDarklyToolbar - User Flows', () => {
       expect(screen.getByRole('tab', { name: /flags/i })).toBeInTheDocument();
       expect(screen.getByRole('tab', { name: /settings/i })).toBeInTheDocument();
 
-      // AND: Client-side override and eventsfunctionality is not available (they should use the dev server)
+      // AND: Client-side override and events functionality is not available (they should use the dev server)
       expect(screen.queryByRole('tab', { name: /events/i })).not.toBeInTheDocument();
     });
   });
@@ -75,12 +75,16 @@ describe('LaunchDarklyToolbar - User Flows', () => {
         clearAllOverrides: vi.fn(),
         getAllOverrides: vi.fn().mockResolvedValue({}),
         getClient: vi.fn(),
+        getMetadata: vi.fn(),
+        register: vi.fn(),
       };
 
       const mockEventInterceptionPlugin = {
         getEvents: vi.fn().mockReturnValue([]),
         subscribe: vi.fn().mockReturnValue(() => {}),
         clearEvents: vi.fn(),
+        getMetadata: vi.fn(),
+        register: vi.fn(),
       };
 
       // WHEN: They load the toolbar with both plugins

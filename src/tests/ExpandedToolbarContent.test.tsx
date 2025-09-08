@@ -104,12 +104,16 @@ describe('ExpandedToolbarContent - User Interaction Flows', () => {
     clearAllOverrides: vi.fn(),
     getAllOverrides: vi.fn().mockResolvedValue({}),
     getClient: vi.fn(),
+    getMetadata: vi.fn(),
+    register: vi.fn(),
   });
 
   const createMockEventInterceptionPlugin = (): IEventInterceptionPlugin => ({
     getEvents: vi.fn().mockReturnValue([]),
     subscribe: vi.fn().mockReturnValue(() => {}),
     clearEvents: vi.fn(),
+    getMetadata: vi.fn(),
+    register: vi.fn(),
   });
 
   beforeEach(() => {

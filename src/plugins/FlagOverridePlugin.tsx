@@ -30,10 +30,6 @@ export class FlagOverridePlugin implements LDPlugin {
     };
   }
 
-  getHooks() {
-    return [];
-  }
-
   /**
    * Called when the plugin is registered with the LaunchDarkly client
    */

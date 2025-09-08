@@ -1,10 +1,10 @@
-import type { LDClient, LDFlagSet, LDFlagValue } from 'launchdarkly-js-client-sdk';
+import type { LDClient, LDFlagSet, LDFlagValue, LDPlugin } from 'launchdarkly-js-client-sdk';
 import { ProcessedEvent } from './events';
 
 /**
  * Interface for flag override plugins that can be used with the LaunchDarkly Toolbar
  */
-export interface IFlagOverridePlugin {
+export interface IFlagOverridePlugin extends LDPlugin {
   /**
    * Sets an override value for a feature flag
    * @param flagKey - The key of the flag to override
@@ -39,7 +39,7 @@ export interface IFlagOverridePlugin {
 /**
  * Interface for event interception plugins that can be used with the LaunchDarkly Toolbar
  */
-export interface IEventInterceptionPlugin {
+export interface IEventInterceptionPlugin extends LDPlugin {
   /**
    * Gets all intercepted events from the event store
    * @returns Array of processed events
