@@ -6,8 +6,9 @@ import { Tabs } from '../../Tabs/Tabs';
 import { TabButton } from '../../Tabs/TabButton';
 import { TabContentRenderer } from './TabContentRenderer';
 import { ANIMATION_CONFIG, EASING } from '../constants';
-import { ActiveTabId, ToolbarMode, getTabsForMode } from '../types';
-import { useToolbarContext } from '../context/LaunchDarklyToolbarProvider';
+import { ActiveTabId, ToolbarMode, getTabsForMode, getDefaultActiveTab } from '../types';
+import { useDevServerContext } from '../context/DevServerProvider';
+import type { IFlagOverridePlugin } from '../../../types/plugin';
 
 import * as styles from '../LaunchDarklyToolbar.css';
 import { GearIcon, SyncIcon, ToggleOffIcon } from './icons';
@@ -24,6 +25,7 @@ interface ExpandedToolbarContentProps {
   onTabChange: (tabId: string) => void;
   setSearchIsExpanded: Dispatch<SetStateAction<boolean>>;
   mode: ToolbarMode;
+  flagOverridePlugin?: IFlagOverridePlugin;
 }
 
 function getHeaderLabel(currentProjectKey: string | null, sourceEnvironmentKey: string | null) {
@@ -46,14 +48,16 @@ export function ExpandedToolbarContent(props: ExpandedToolbarContentProps) {
     onTabChange,
     setSearchIsExpanded,
     mode,
+    flagOverridePlugin,
   } = props;
 
-  const { state, flagOverridePlugin } = useToolbarContext();
+  const { state } = useDevServerContext();
 
   const headerLabel = getHeaderLabel(state.currentProjectKey, state.sourceEnvironmentKey);
   const { error } = state;
 
   const availableTabs = getTabsForMode(mode, !!flagOverridePlugin);
+  const defaultActiveTab = getDefaultActiveTab(mode);
 
   const shouldShowError = error && mode === 'dev-server' && state.connectionStatus === 'error';
 
@@ -141,12 +145,13 @@ export function ExpandedToolbarContent(props: ExpandedToolbarContentProps) {
         }}
         transition={ANIMATION_CONFIG.tabsContainer}
       >
-        <Tabs activeTab={activeTab || undefined} onTabChange={onTabChange}>
-          {availableTabs.includes('local-overrides') && (
-            <TabButton id="local-overrides" label="Flags" icon={ToggleOffIcon} />
+        <Tabs defaultActiveTab={defaultActiveTab} activeTab={activeTab} onTabChange={onTabChange}>
+          {availableTabs.includes('flag-sdk') && <TabButton id="flag-sdk" label="Flags" icon={ToggleOffIcon} />}
+          {availableTabs.includes('flag-dev-server') && (
+            <TabButton id="flag-dev-server" label="Flags" icon={ToggleOffIcon} />
           )}
           {availableTabs.includes('events') && <TabButton id="events" label="Events" icon={SyncIcon} />}
-          {availableTabs.includes('flags') && <TabButton id="flags" label="Flags" icon={ToggleOffIcon} />}
+          {availableTabs.includes('flags-sdk') && <TabButton id="flags-sdk" label="Flags" icon={ToggleOffIcon} />}
           {availableTabs.includes('settings') && <TabButton id="settings" label="Settings" icon={GearIcon} />}
         </Tabs>
       </motion.div>

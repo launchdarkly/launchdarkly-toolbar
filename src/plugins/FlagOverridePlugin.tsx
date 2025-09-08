@@ -1,4 +1,4 @@
-import type { LDClient, LDPlugin, LDDebugOverride } from 'launchdarkly-js-client-sdk';
+import type { LDClient, LDPlugin, LDDebugOverride, LDPluginMetadata } from 'launchdarkly-js-client-sdk';
 
 /**
  * Configuration options for the FlagOverridePlugin
@@ -24,10 +24,9 @@ export class FlagOverridePlugin implements LDPlugin {
   /**
    * Returns plugin metadata
    */
-  getMetadata(): { name: string; version: string } {
+  getMetadata(): LDPluginMetadata {
     return {
       name: 'FlagOverridePlugin',
-      version: '1.0.0',
     };
   }
 
@@ -57,8 +56,6 @@ export class FlagOverridePlugin implements LDPlugin {
     const storage = this.getStorage();
     if (!storage) return;
 
-    let loadedCount = 0;
-
     try {
       for (let i = 0; i < storage.length; i++) {
         const key = storage.key(i);
@@ -77,10 +74,6 @@ export class FlagOverridePlugin implements LDPlugin {
             storage.removeItem(key);
           }
         }
-      }
-
-      if (loadedCount > 0) {
-        console.log(`flagOverridePlugin: Loaded ${loadedCount} existing overrides`);
       }
     } catch (error) {
       console.error('flagOverridePlugin: Error loading existing overrides:', error);

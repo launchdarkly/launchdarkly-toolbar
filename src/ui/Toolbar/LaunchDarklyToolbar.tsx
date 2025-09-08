@@ -4,12 +4,21 @@ import { useCallback } from 'react';
 import { SearchProvider, useSearchContext } from './context';
 import { CircleLogo, ExpandedToolbarContent } from './components';
 import { useToolbarAnimations, useToolbarVisibility, useToolbarDrag, useToolbarState } from './hooks';
+<<<<<<< HEAD
 import { useToolbarContext } from './context';
 import { ToolbarMode, ToolbarPosition, getToolbarMode } from './types/toolbar';
 
 import * as styles from './LaunchDarklyToolbar.css';
 import { LaunchDarklyToolbarProvider } from './context/LaunchDarklyToolbarProvider';
 import type { IEventInterceptionPlugin, IFlagOverridePlugin } from '../../types/plugin';
+=======
+import { useDevServerContext } from './context';
+import { ToolbarMode, ToolbarPosition, getToolbarMode } from './types/toolbar';
+
+import * as styles from './LaunchDarklyToolbar.css';
+import { DevServerProvider } from './context';
+import type { IFlagOverridePlugin } from '../../types/plugin';
+>>>>>>> origin/toolbar-plugin-poc-react-sdk
 
 export interface LdToolbarProps {
   mode: ToolbarMode;
@@ -18,7 +27,7 @@ export interface LdToolbarProps {
 export function LdToolbar(props: LdToolbarProps) {
   const { mode } = props;
   const { searchTerm } = useSearchContext();
-  const { state, handlePositionChange } = useToolbarContext();
+  const { state, handlePositionChange } = useDevServerContext();
   const toolbarState = useToolbarState();
   const position = state.position;
 
@@ -130,7 +139,7 @@ export function LaunchDarklyToolbar(props: LaunchDarklyToolbarProps) {
   const mode = getToolbarMode(devServerUrl);
 
   return (
-    <LaunchDarklyToolbarProvider
+    <DevServerProvider
       config={{
         projectKey,
         devServerUrl,
@@ -143,6 +152,6 @@ export function LaunchDarklyToolbar(props: LaunchDarklyToolbarProps) {
       <SearchProvider>
         <LdToolbar mode={mode} />
       </SearchProvider>
-    </LaunchDarklyToolbarProvider>
+    </DevServerProvider>
   );
 }

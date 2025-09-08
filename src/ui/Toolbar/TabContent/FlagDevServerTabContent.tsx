@@ -1,21 +1,22 @@
-import { useRef, useState } from 'react';
+import { useRef, useState, useMemo, useCallback } from 'react';
 import { useVirtualizer } from '@tanstack/react-virtual';
 import { List } from '../../List/List';
 import { ListItem } from '../../List/ListItem';
 import { useSearchContext } from '../context/SearchProvider';
-import { useToolbarContext } from '../context/LaunchDarklyToolbarProvider';
+import { useDevServerContext } from '../context/DevServerProvider';
 import { EnhancedFlag } from '../../../types/devServer';
 import { GenericHelpText } from '../components/GenericHelpText';
 import { BooleanFlagControl, MultivariateFlagControl, StringNumberFlagControl } from '../components/FlagControls';
 import { OverrideIndicator } from '../components/OverrideIndicator';
 import { ActionButtonsContainer } from '../components';
+import { VIRTUALIZATION } from '../constants';
 
-import * as styles from './FlagTabContent.css';
+import * as styles from './FlagDevServerTabContent.css';
 import * as actionStyles from '../components/ActionButtonsContainer.css';
 
-export function FlagTabContent() {
+export function FlagDevServerTabContent() {
   const { searchTerm } = useSearchContext();
-  const { state, setOverride, clearOverride, clearAllOverrides } = useToolbarContext();
+  const { state, setOverride, clearOverride, clearAllOverrides } = useDevServerContext();
   const { flags } = state;
 
   const [showOverriddenOnly, setShowOverriddenOnly] = useState(false);
@@ -36,12 +37,14 @@ export function FlagTabContent() {
   const virtualizer = useVirtualizer({
     count: filteredFlags.length,
     getScrollElement: () => parentRef.current,
-    estimateSize: () => 85, // Estimate item height
-    overscan: 5,
+    estimateSize: () => VIRTUALIZATION.ITEM_HEIGHT,
+    overscan: VIRTUALIZATION.OVERSCAN,
   });
 
   // Count total overridden flags (not just filtered ones)
-  const totalOverriddenFlags = Object.values(flags).filter((flag) => flag.isOverridden).length;
+  const totalOverriddenFlags = useMemo(() => {
+    return Object.values(flags).filter((flag) => flag.isOverridden).length;
+  }, [flags]);
 
   const renderFlagControl = (flag: EnhancedFlag) => {
     const handleOverride = (value: any) => setOverride(flag.key, value);
@@ -67,18 +70,21 @@ export function FlagTabContent() {
     setShowOverriddenOnly(false);
   };
 
-  const onClearOverride = (flagKey: string) => {
-    if (totalOverriddenFlags <= 1) {
-      setShowOverriddenOnly(false);
-    }
-    clearOverride(flagKey);
-  };
+  const onClearOverride = useCallback(
+    (flagKey: string) => {
+      if (totalOverriddenFlags <= 1) {
+        setShowOverriddenOnly(false);
+      }
+      clearOverride(flagKey);
+    },
+    [totalOverriddenFlags, setShowOverriddenOnly, clearOverride],
+  );
 
   const genericHelpTitle = showOverriddenOnly ? 'No overrides found' : 'No flags found';
   const genericHelpSubtitle = showOverriddenOnly ? 'You have not set any overrides yet' : 'Try adjusting your search';
 
   return (
-    <div data-testid="flag-tab-content">
+    <div data-testid="flag-dev-server-tab-content">
       <>
         <ActionButtonsContainer>
           <button

@@ -108,7 +108,7 @@ test.describe(`LaunchDarkly Toolbar - ${config.testEnv} environment`, () => {
 
     // Verify Flags tab is active and content is visible
     await expect(iframe.getByRole('tab', { name: 'Flags' })).toHaveAttribute('aria-selected', 'true');
-    await expect(iframe.getByTestId('flag-tab-content')).toBeVisible();
+    await expect(iframe.getByTestId('flag-dev-server-tab-content')).toBeVisible();
     await expect(iframe.getByText('test-flag-1')).toBeVisible();
 
     // User can see and interact with flag toggles
@@ -116,7 +116,7 @@ test.describe(`LaunchDarkly Toolbar - ${config.testEnv} environment`, () => {
     await expect(flagToggle).toBeVisible();
 
     // Verify other flags are listed for management
-    await expect(iframe.getByTestId('flag-tab-content')).toBeVisible();
+    await expect(iframe.getByTestId('flag-dev-server-tab-content')).toBeVisible();
     await expect(iframe.getByText('test-flag-1')).toBeVisible();
   });
 
@@ -151,7 +151,7 @@ test.describe(`LaunchDarkly Toolbar - ${config.testEnv} environment`, () => {
     await expect(iframe.getByRole('button', { name: 'Search' })).toBeVisible();
 
     // Verify flag content is displayed
-    await expect(iframe.getByTestId('flag-tab-content')).toBeVisible();
+    await expect(iframe.getByTestId('flag-dev-server-tab-content')).toBeVisible();
     await expect(iframe.getByText('test-flag-1')).toBeVisible();
 
     // Verify flag toggles are functional
@@ -194,7 +194,7 @@ test.describe(`LaunchDarkly Toolbar - ${config.testEnv} environment`, () => {
     await iframe.getByRole('tab', { name: 'Flags' }).click();
     await expect(iframe.getByRole('tab', { name: 'Flags' })).toHaveAttribute('aria-selected', 'true');
     await expect(iframe.getByRole('tab', { name: 'Settings' })).toHaveAttribute('aria-selected', 'false');
-    await expect(iframe.getByTestId('flag-tab-content')).toBeVisible();
+    await expect(iframe.getByTestId('flag-dev-server-tab-content')).toBeVisible();
     await expect(iframe.getByText('test-flag-1')).toBeVisible();
   });
 
@@ -249,7 +249,7 @@ test.describe(`LaunchDarkly Toolbar - ${config.testEnv} environment`, () => {
     await expect(iframe.getByText(/Error connecting to dev server/i)).not.toBeVisible({ timeout: 6000 });
 
     // Verify flag content is displayed after recovery
-    await expect(iframe.getByTestId('flag-tab-content')).toBeVisible();
+    await expect(iframe.getByTestId('flag-dev-server-tab-content')).toBeVisible();
     await expect(iframe.getByText('test-flag-1')).toBeVisible();
   });
 });

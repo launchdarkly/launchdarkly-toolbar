@@ -179,6 +179,7 @@ export function AppWrapper() {
       <LaunchDarklyToolbar
         position={position}
         projectKey={projectKey || undefined}
+        devServerUrl={devServerUrl || undefined}
         flagOverridePlugin={flagOverridePlugin}
         eventInterceptionPlugin={eventInterceptionPlugin}
       />

@@ -2,13 +2,8 @@ import { useRef, useState, useMemo, useCallback } from 'react';
 import { useVirtualizer } from '@tanstack/react-virtual';
 import { List } from '../../List/List';
 import { ListItem } from '../../List/ListItem';
-<<<<<<<< HEAD:src/ui/Toolbar/TabContent/FlagOverridesTabContent.tsx
-import { useSearchContext } from '../context/SearchProvider';
-import { useToolbarContext } from '../context/LaunchDarklyToolbarProvider';
-========
 import { useSearchContext } from '../context';
 import { FlagSdkOverrideProvider, useFlagSdkOverrideContext } from '../context';
->>>>>>>> origin/toolbar-plugin-poc-react-sdk:src/ui/Toolbar/TabContent/FlagSdkOverrideTabContent.tsx
 import { GenericHelpText } from '../components/GenericHelpText';
 import {
   LocalBooleanFlagControl,
@@ -17,27 +12,13 @@ import {
 } from '../components/LocalFlagControls';
 import { OverrideIndicator } from '../components/OverrideIndicator';
 import { ActionButtonsContainer } from '../components';
-<<<<<<<< HEAD:src/ui/Toolbar/TabContent/FlagOverridesTabContent.tsx
-========
 import { VIRTUALIZATION } from '../constants';
 import type { IFlagOverridePlugin } from '../../../types/plugin';
 import type { LocalFlag } from '../context';
->>>>>>>> origin/toolbar-plugin-poc-react-sdk:src/ui/Toolbar/TabContent/FlagSdkOverrideTabContent.tsx
 
 import * as sharedStyles from './FlagDevServerTabContent.css';
 import * as actionStyles from '../components/ActionButtonsContainer.css';
-import { LocalFlag, LocalOverridesFlagProvider, useLocalOverridesFlagContext } from '../context';
 
-<<<<<<<< HEAD:src/ui/Toolbar/TabContent/FlagOverridesTabContent.tsx
-interface FlagOverridesTabContentProps {}
-
-// Internal component that uses the provider context
-function FlagOverridesTabContentInner(_props: FlagOverridesTabContentProps) {
-  const { flagOverridePlugin } = useToolbarContext();
-  const { searchTerm } = useSearchContext();
-  const { flags, isLoading } = useLocalOverridesFlagContext();
-  const ldClient = flagOverridePlugin?.getClient();
-========
 interface FlagSdkOverrideTabContentProps {
   flagOverridePlugin: IFlagOverridePlugin;
 }
@@ -47,7 +28,6 @@ function FlagSdkOverrideTabContentInner(props: FlagSdkOverrideTabContentProps) {
   const { searchTerm } = useSearchContext();
   const { flags, isLoading } = useFlagSdkOverrideContext();
   const ldClient = flagOverridePlugin.getClient();
->>>>>>>> origin/toolbar-plugin-poc-react-sdk:src/ui/Toolbar/TabContent/FlagSdkOverrideTabContent.tsx
   const [showOverriddenOnly, setShowOverriddenOnly] = useState(false);
   const parentRef = useRef<HTMLDivElement>(null);
 
@@ -71,9 +51,6 @@ function FlagSdkOverrideTabContentInner(props: FlagSdkOverrideTabContentProps) {
     overscan: VIRTUALIZATION.OVERSCAN,
   });
 
-<<<<<<<< HEAD:src/ui/Toolbar/TabContent/FlagOverridesTabContent.tsx
-  const totalOverriddenFlags = Object.values(flags).filter((flag) => flag.isOverridden).length;
-========
   // Override operations
   const handleSetOverride = (flagKey: string, value: any) => {
     flagOverridePlugin.setOverride(flagKey, value);
@@ -107,41 +84,6 @@ function FlagSdkOverrideTabContentInner(props: FlagSdkOverrideTabContentProps) {
   const totalOverriddenFlags = useMemo(() => {
     return Object.values(flags).filter((flag) => flag.isOverridden).length;
   }, [flags]);
->>>>>>>> origin/toolbar-plugin-poc-react-sdk:src/ui/Toolbar/TabContent/FlagSdkOverrideTabContent.tsx
-
-  if (!flagOverridePlugin) {
-    return (
-      <GenericHelpText
-        title="Flag override plugin not available"
-        subtitle="The flag override plugin is not configured"
-      />
-    );
-  }
-
-  if (!ldClient) {
-    return (
-      <GenericHelpText
-        title="LaunchDarkly client is not available"
-        subtitle="To use local flag overrides, ensure the flag override plugin is added to your LaunchDarkly client configuration."
-      />
-    );
-  }
-
-  if (isLoading) {
-    return <GenericHelpText title="Loading flags..." subtitle="Please wait while we load your feature flags" />;
-  }
-
-  const handleSetOverride = (flagKey: string, value: any) => {
-    flagOverridePlugin?.setOverride(flagKey, value);
-  };
-
-  const handleClearOverride = (flagKey: string) => {
-    flagOverridePlugin?.removeOverride(flagKey);
-  };
-
-  const handleClearAllOverrides = () => {
-    flagOverridePlugin?.clearAllOverrides();
-  };
 
   const renderFlagControl = (flag: LocalFlag) => {
     const handleOverride = (value: any) => handleSetOverride(flag.key, value);
@@ -244,29 +186,10 @@ function FlagSdkOverrideTabContentInner(props: FlagSdkOverrideTabContentProps) {
   );
 }
 
-<<<<<<<< HEAD:src/ui/Toolbar/TabContent/FlagOverridesTabContent.tsx
-export function FlagOverridesTabContent(props: FlagOverridesTabContentProps) {
-  const { flagOverridePlugin } = useToolbarContext();
-
-  if (!flagOverridePlugin) {
-    return (
-      <GenericHelpText
-        title="Debug override plugin not available"
-        subtitle="The debug override plugin is not configured"
-      />
-    );
-  }
-
-  return (
-    <LocalOverridesFlagProvider flagOverridePlugin={flagOverridePlugin}>
-      <FlagOverridesTabContentInner {...props} />
-    </LocalOverridesFlagProvider>
-========
 export function FlagSdkOverrideTabContent(props: FlagSdkOverrideTabContentProps) {
   return (
     <FlagSdkOverrideProvider flagOverridePlugin={props.flagOverridePlugin}>
       <FlagSdkOverrideTabContentInner {...props} />
     </FlagSdkOverrideProvider>
->>>>>>>> origin/toolbar-plugin-poc-react-sdk:src/ui/Toolbar/TabContent/FlagSdkOverrideTabContent.tsx
   );
 }

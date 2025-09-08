@@ -8,41 +8,41 @@ describe('Tabs', () => {
   test('renders children correctly', () => {
     render(
       <Tabs>
-        <TabButton id="tab1" label="Tab 1" />
-        <TabButton id="tab2" label="Tab 2" />
-        <TabButton id="tab3" label="Tab 3" />
+        <TabButton id="flag-sdk" label="SDK Flags" />
+        <TabButton id="flag-dev-server" label="Dev Server Flags" />
+        <TabButton id="settings" label="Settings" />
       </Tabs>,
     );
 
-    expect(screen.getByText('Tab 1')).toBeInTheDocument();
-    expect(screen.getByText('Tab 2')).toBeInTheDocument();
-    expect(screen.getByText('Tab 3')).toBeInTheDocument();
+    expect(screen.getByText('SDK Flags')).toBeInTheDocument();
+    expect(screen.getByText('Dev Server Flags')).toBeInTheDocument();
+    expect(screen.getByText('Settings')).toBeInTheDocument();
   });
 
   test('calls onTabChange when tab is clicked', () => {
     const onTabChange = vi.fn();
     render(
       <Tabs onTabChange={onTabChange}>
-        <TabButton id="tab1" label="Tab 1" />
-        <TabButton id="tab2" label="Tab 2" />
-        <TabButton id="tab3" label="Tab 3" />
+        <TabButton id="flag-sdk" label="SDK Flags" />
+        <TabButton id="flag-dev-server" label="Dev Server Flags" />
+        <TabButton id="settings" label="Settings" />
       </Tabs>,
     );
 
-    fireEvent.click(screen.getByText('Tab 2'));
-    expect(onTabChange).toHaveBeenCalledWith('tab2');
+    fireEvent.click(screen.getByText('Dev Server Flags'));
+    expect(onTabChange).toHaveBeenCalledWith('flag-dev-server');
   });
 
   test('handles disabled tabs', () => {
     render(
       <Tabs>
-        <TabButton id="tab1" label="Tab 1" />
-        <TabButton id="tab2" label="Tab 2" disabled />
-        <TabButton id="tab3" label="Tab 3" />
+        <TabButton id="flag-sdk" label="SDK Flags" />
+        <TabButton id="flag-dev-server" label="Dev Server Flags" disabled />
+        <TabButton id="settings" label="Settings" />
       </Tabs>,
     );
 
-    const disabledTab = screen.getByText('Tab 2');
+    const disabledTab = screen.getByText('Dev Server Flags');
     expect(disabledTab).toBeDisabled();
   });
 
@@ -51,7 +51,7 @@ describe('Tabs', () => {
     console.error = vi.fn();
 
     expect(() => {
-      render(<TabButton id="tab1" label="Tab 1" />);
+      render(<TabButton id="settings" label="Settings" />);
     }).toThrow('useTabsContext must be used within a Tabs component');
 
     console.error = consoleError;

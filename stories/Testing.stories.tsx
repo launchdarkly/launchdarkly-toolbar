@@ -18,8 +18,7 @@ const meta: Meta<typeof LaunchDarklyToolbar> = {
   },
   args: {
     position: 'right',
-    flagOverridePlugin: new FlagOverridePlugin(),
-    eventInterceptionPlugin: new EventInterceptionPlugin(),
+    devServerUrl: 'http://localhost:8765',
   },
   argTypes: {
     projectKey: {
@@ -43,10 +42,6 @@ const meta: Meta<typeof LaunchDarklyToolbar> = {
       table: { disable: true },
       description: 'Plugin for flag overrides functionality',
     },
-    eventInterceptionPlugin: {
-      table: { disable: true },
-      description: 'Plugin for event interception and tracking',
-    },
   },
 };
 
@@ -58,9 +53,6 @@ export const DevServerMode: Story = {
     devServerUrl: 'http://localhost:8765',
     projectKey: 'test-project',
     position: 'right',
-    // No plugins needed for dev-server mode
-    flagOverridePlugin: undefined,
-    eventInterceptionPlugin: undefined,
   },
   parameters: {
     docs: {
@@ -77,7 +69,6 @@ export const SdkMode: Story = {
     // No devServerUrl - triggers SDK mode
     position: 'right',
     flagOverridePlugin: new FlagOverridePlugin(),
-    eventInterceptionPlugin: new EventInterceptionPlugin(),
   },
   parameters: {
     docs: {

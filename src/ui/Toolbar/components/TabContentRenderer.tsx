@@ -1,28 +1,28 @@
 import { motion } from 'motion/react';
-import { FlagTabContent } from '../TabContent/FlagTabContent';
-import { FlagOverridesTabContent } from '../TabContent/FlagOverridesTabContent';
-import { EventsTabContent } from '../TabContent/EventsTabContent';
+import { FlagDevServerTabContent } from '../TabContent/FlagDevServerTabContent';
+// import { EventsTabContent } from '../TabContent/EventsTabContent';
 import { SettingsTabContent } from '../TabContent/SettingsTabContent';
 import { ANIMATION_CONFIG, DIMENSIONS } from '../constants';
 import { TabId, ToolbarMode } from '../types';
+import type { IFlagOverridePlugin } from '../../../types/plugin';
 
 interface TabContentRendererProps {
   activeTab: TabId;
   slideDirection: number;
   mode: ToolbarMode;
+  flagOverridePlugin?: IFlagOverridePlugin;
 }
 
 export function TabContentRenderer(props: TabContentRendererProps) {
-  const { activeTab, slideDirection, mode } = props;
+  const { activeTab, slideDirection, mode, flagOverridePlugin } = props;
 
   const renderContent = () => {
     switch (activeTab) {
-      case 'local-overrides':
-        return <FlagOverridesTabContent />;
-      case 'flags':
-        return <FlagTabContent />;
-      case 'events':
-        return <EventsTabContent />;
+      case 'flag-sdk':
+        if (!flagOverridePlugin) return null;
+        return <FlagSdkOverrideTabContent flagOverridePlugin={flagOverridePlugin} />;
+      case 'flag-dev-server':
+        return <FlagDevServerTabContent />;
       case 'settings':
         return <SettingsTabContent mode={mode} />;
       default:

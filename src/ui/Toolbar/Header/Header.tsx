@@ -2,7 +2,7 @@ import { Dispatch, SetStateAction } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import * as styles from './Header.css';
 import { LogoSection, EnvironmentLabel, SearchSection, ActionButtons } from './components';
-import { useToolbarContext } from '../context/LaunchDarklyToolbarProvider';
+import { useDevServerContext } from '../context/DevServerProvider';
 import { ConnectionStatus } from '../components';
 import { ToolbarMode } from '../types/toolbar';
 
@@ -19,7 +19,7 @@ export interface HeaderProps {
 export function Header(props: HeaderProps) {
   const { onClose, onSearch, searchTerm, searchIsExpanded, setSearchIsExpanded, label, mode } = props;
 
-  const { state, refresh } = useToolbarContext();
+  const { state, refresh } = useDevServerContext();
   const { connectionStatus } = state;
   const isConnected = connectionStatus === 'connected';
 

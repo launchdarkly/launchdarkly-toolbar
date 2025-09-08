@@ -106,7 +106,7 @@ if grep -q "overrides:" pnpm-workspace.yaml 2>/dev/null; then
     in_overrides && !/^[[:space:]]/ { in_overrides=0 }
     !in_overrides { print }
     ' pnpm-workspace.yaml > pnpm-workspace.yaml.tmp
-    
+
     # Replace original with cleaned version
     mv pnpm-workspace.yaml.tmp pnpm-workspace.yaml
     log_success "Workspace overrides removed from pnpm-workspace.yaml"
@@ -139,7 +139,16 @@ fi
 
 # Check react-client-sdk
 if [ -L "$REACT_SDK_DIR/node_modules/launchdarkly-js-client-sdk" ]; then
+    log_warning "react-client-sdk still has symlink to js-client-sdk"
 else
+    log_success "react-client-sdk: No symlinks found"
+fi
+
+# Check toolbar
+if [ -L "$TOOLBAR_DIR/node_modules/launchdarkly-js-client-sdk" ] || [ -L "$TOOLBAR_DIR/node_modules/launchdarkly-react-client-sdk" ]; then
+    log_warning "toolbar still has symlinks"
+else
+    log_success "toolbar: No symlinks found"
 fi
 
 # Final message

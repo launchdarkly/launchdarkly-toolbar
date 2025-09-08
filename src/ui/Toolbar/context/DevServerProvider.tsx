@@ -9,7 +9,7 @@ import { IEventInterceptionPlugin, IFlagOverridePlugin } from '../../../types/pl
 
 const STORAGE_KEY = TOOLBAR_STORAGE_KEYS.PROJECT;
 
-interface LaunchDarklyToolbarContextValue {
+interface DevServerContextValue {
   state: ToolbarState & {
     availableProjects: string[];
     currentProjectKey: string | null;
@@ -21,35 +21,25 @@ interface LaunchDarklyToolbarContextValue {
   refresh: () => Promise<void>;
   switchProject: (projectKey: string) => Promise<void>;
   handlePositionChange: (position: ToolbarPosition) => void;
-  eventInterceptionPlugin?: IEventInterceptionPlugin;
-  flagOverridePlugin?: IFlagOverridePlugin;
 }
 
-const LaunchDarklyToolbarContext = createContext<LaunchDarklyToolbarContextValue | null>(null);
+const DevServerContext = createContext<DevServerContextValue | null>(null);
 
-export const useToolbarContext = () => {
-  const context = useContext(LaunchDarklyToolbarContext);
+export const useDevServerContext = () => {
+  const context = useContext(DevServerContext);
   if (!context) {
-    throw new Error('useToolbarContext must be used within LaunchDarklyToolbarProvider');
+    throw new Error('useDevServerContext must be used within DevServerProvider');
   }
   return context;
 };
 
-export interface LaunchDarklyToolbarProviderProps {
+export interface DevServerProviderProps {
   children: ReactNode;
   config: LdToolbarConfig;
   initialPosition?: ToolbarPosition;
-  flagOverridePlugin?: IFlagOverridePlugin;
-  eventInterceptionPlugin?: IEventInterceptionPlugin;
 }
 
-export const LaunchDarklyToolbarProvider: FC<LaunchDarklyToolbarProviderProps> = ({
-  children,
-  config,
-  initialPosition,
-  flagOverridePlugin,
-  eventInterceptionPlugin,
-}) => {
+export const DevServerProvider: FC<DevServerProviderProps> = ({ children, config, initialPosition }) => {
   const [toolbarState, setToolbarState] = useState<
     ToolbarState & {
       availableProjects: string[];
@@ -444,21 +434,9 @@ export const LaunchDarklyToolbarProvider: FC<LaunchDarklyToolbarProviderProps> =
       refresh,
       switchProject,
       handlePositionChange,
-      eventInterceptionPlugin,
-      flagOverridePlugin,
     }),
-    [
-      toolbarState,
-      setOverride,
-      clearOverride,
-      clearAllOverrides,
-      refresh,
-      switchProject,
-      handlePositionChange,
-      eventInterceptionPlugin,
-      flagOverridePlugin,
-    ],
+    [toolbarState, setOverride, clearOverride, clearAllOverrides, refresh, switchProject, handlePositionChange],
   );
 
-  return <LaunchDarklyToolbarContext.Provider value={value}>{children}</LaunchDarklyToolbarContext.Provider>;
+  return <DevServerContext.Provider value={value}>{children}</DevServerContext.Provider>;
 };
