@@ -157,8 +157,8 @@ export function ExpandedToolbarContent(props: ExpandedToolbarContentProps) {
           {availableTabs.includes('flag-dev-server') && (
             <TabButton id="flag-dev-server" label="Flags" icon={ToggleOffIcon} />
           )}
-          {availableTabs.includes('events') && <TabButton id="events" label="Events" icon={SyncIcon} />}
           {availableTabs.includes('flag-sdk') && <TabButton id="flag-sdk" label="Flags" icon={ToggleOffIcon} />}
+          {availableTabs.includes('events') && <TabButton id="events" label="Events" icon={SyncIcon} />}
           {availableTabs.includes('settings') && <TabButton id="settings" label="Settings" icon={GearIcon} />}
         </Tabs>
       </motion.div>
