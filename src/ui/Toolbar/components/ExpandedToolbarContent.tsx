@@ -6,7 +6,7 @@ import { Tabs } from '../../Tabs/Tabs';
 import { TabButton } from '../../Tabs/TabButton';
 import { TabContentRenderer } from './TabContentRenderer';
 import { ANIMATION_CONFIG, EASING } from '../constants';
-import { ActiveTabId, ToolbarMode, getTabsForMode, getDefaultActiveTab } from '../types';
+import { ActiveTabId, ToolbarMode, getTabsForMode, getDefaultActiveTab, TAB_ORDER } from '../types';
 import { useDevServerContext } from '../context/DevServerProvider';
 import type { IFlagOverridePlugin, IEventInterceptionPlugin } from '../../../types/plugin';
 
@@ -154,12 +154,20 @@ export function ExpandedToolbarContent(props: ExpandedToolbarContentProps) {
         transition={ANIMATION_CONFIG.tabsContainer}
       >
         <Tabs defaultActiveTab={defaultActiveTab} activeTab={activeTab} onTabChange={onTabChange}>
-          {availableTabs.includes('flag-dev-server') && (
-            <TabButton id="flag-dev-server" label="Flags" icon={ToggleOffIcon} />
-          )}
-          {availableTabs.includes('flag-sdk') && <TabButton id="flag-sdk" label="Flags" icon={ToggleOffIcon} />}
-          {availableTabs.includes('events') && <TabButton id="events" label="Events" icon={SyncIcon} />}
-          {availableTabs.includes('settings') && <TabButton id="settings" label="Settings" icon={GearIcon} />}
+          {TAB_ORDER.filter((tabId) => availableTabs.includes(tabId)).map((tabId) => {
+            switch (tabId) {
+              case 'flag-dev-server':
+                return <TabButton key={tabId} id={tabId} label="Flags" icon={ToggleOffIcon} />;
+              case 'flag-sdk':
+                return <TabButton key={tabId} id={tabId} label="Flags" icon={ToggleOffIcon} />;
+              case 'events':
+                return <TabButton key={tabId} id={tabId} label="Events" icon={SyncIcon} />;
+              case 'settings':
+                return <TabButton key={tabId} id={tabId} label="Settings" icon={GearIcon} />;
+              default:
+                return null;
+            }
+          })}
         </Tabs>
       </motion.div>
     </motion.div>

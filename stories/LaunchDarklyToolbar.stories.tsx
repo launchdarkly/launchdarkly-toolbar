@@ -72,9 +72,6 @@ export const DevServerMode: Story = {
     devServerUrl: 'http://localhost:8765',
     projectKey: 'test-project',
     position: 'right',
-    // No plugins needed for dev-server mode
-    flagOverridePlugin: undefined,
-    eventInterceptionPlugin: undefined,
   },
   parameters: {
     docs: {
