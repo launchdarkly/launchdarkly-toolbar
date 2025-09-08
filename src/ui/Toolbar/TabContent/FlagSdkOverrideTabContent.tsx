@@ -30,6 +30,20 @@ function FlagSdkOverrideTabContentInner(props: FlagSdkOverrideTabContentProps) {
   const [showOverriddenOnly, setShowOverriddenOnly] = useState(false);
   const parentRef = useRef<HTMLDivElement>(null);
 
+  const handleClearOverride = useCallback(
+    (flagKey: string) => {
+      if (flagOverridePlugin) {
+        flagOverridePlugin.removeOverride(flagKey);
+      }
+    },
+    [flagOverridePlugin],
+  );
+
+  // Count total overridden flags (not just filtered ones)
+  const totalOverriddenFlags = useMemo(() => {
+    return Object.values(flags).filter((flag) => flag.isOverridden).length;
+  }, [flags]);
+
   // Prepare data for virtualizer (must be done before useVirtualizer hook)
   const flagEntries = Object.entries(flags);
   const filteredFlags = flagEntries.filter(([flagKey, flag]) => {
@@ -50,6 +64,7 @@ function FlagSdkOverrideTabContentInner(props: FlagSdkOverrideTabContentProps) {
     overscan: VIRTUALIZATION.OVERSCAN,
   });
 
+  // Early returns after all hooks have been called
   const ldClient = flagOverridePlugin?.getClient();
 
   if (!ldClient || !flagOverridePlugin) {
@@ -70,21 +85,9 @@ function FlagSdkOverrideTabContentInner(props: FlagSdkOverrideTabContentProps) {
     flagOverridePlugin.setOverride(flagKey, value);
   };
 
-  const handleClearOverride = useCallback(
-    (flagKey: string) => {
-      flagOverridePlugin.removeOverride(flagKey);
-    },
-    [flagOverridePlugin],
-  );
-
   const handleClearAllOverrides = () => {
     flagOverridePlugin.clearAllOverrides();
   };
-
-  // Count total overridden flags (not just filtered ones)
-  const totalOverriddenFlags = useMemo(() => {
-    return Object.values(flags).filter((flag) => flag.isOverridden).length;
-  }, [flags]);
 
   const renderFlagControl = (flag: LocalFlag) => {
     const handleOverride = (value: any) => handleSetOverride(flag.key, value);
