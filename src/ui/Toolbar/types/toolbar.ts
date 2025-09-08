@@ -19,7 +19,11 @@ export function getTabsForMode(
   hasEventInterceptionPlugin: boolean,
 ): readonly TabId[] {
   if (mode === 'dev-server') {
-    return DEV_SERVER_TABS;
+    // Dev-server mode: always show flag-dev-server, conditionally show events
+    const tabs: TabId[] = ['flag-dev-server'];
+
+    tabs.push('settings');
+    return tabs as readonly TabId[];
   }
 
   // SDK mode: conditionally show tabs based on available plugins
