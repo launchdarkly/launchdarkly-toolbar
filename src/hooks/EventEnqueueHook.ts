@@ -40,13 +40,6 @@ export class EventEnqueueHook implements Hook {
 
       const processedEvent = this.processEvent(context);
 
-      console.log('🎯 EventEnqueueHook triggered:', {
-        eventKind: processedEvent.kind,
-        eventKey: processedEvent.key,
-        category: processedEvent.category,
-        displayName: processedEvent.displayName,
-      });
-
       this.config.onNewEvent?.(processedEvent);
     } catch (error) {
       // Simple error handling - just log and continue

@@ -7,11 +7,4 @@ export const flagOverridePlugin = new FlagOverridePlugin({
 });
 
 // Plugin for event interception
-export const eventInterceptionPlugin = new EventInterceptionPlugin({
-  filter: {
-    includeFeature: true,
-    includeCustom: true,
-    includeIdentify: true,
-  },
-  enableLogging: true,
-});
+export const eventInterceptionPlugin = new EventInterceptionPlugin();
