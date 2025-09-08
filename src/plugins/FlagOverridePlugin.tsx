@@ -1,4 +1,4 @@
-import type { LDClient, LDPlugin, LDDebugOverride } from 'launchdarkly-js-client-sdk';
+import type { LDClient, LDPlugin, LDDebugOverride, LDPluginMetadata } from 'launchdarkly-js-client-sdk';
 
 /**
  * Configuration options for the FlagOverridePlugin
@@ -24,10 +24,9 @@ export class FlagOverridePlugin implements LDPlugin {
   /**
    * Returns plugin metadata
    */
-  getMetadata(): { name: string; version: string } {
+  getMetadata(): LDPluginMetadata {
     return {
       name: 'FlagOverridePlugin',
-      version: '1.0.0',
     };
   }
 

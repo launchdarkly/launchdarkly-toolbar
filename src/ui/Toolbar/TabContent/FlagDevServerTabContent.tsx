@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import { useRef, useState, useMemo, useCallback } from 'react';
 import { useVirtualizer } from '@tanstack/react-virtual';
 import { List } from '../../List/List';
 import { ListItem } from '../../List/ListItem';
@@ -9,6 +9,7 @@ import { GenericHelpText } from '../components/GenericHelpText';
 import { BooleanFlagControl, MultivariateFlagControl, StringNumberFlagControl } from '../components/FlagControls';
 import { OverrideIndicator } from '../components/OverrideIndicator';
 import { ActionButtonsContainer } from '../components';
+import { VIRTUALIZATION } from '../constants';
 
 import * as styles from './FlagDevServerTabContent.css';
 import * as actionStyles from '../components/ActionButtonsContainer.css';
@@ -36,12 +37,14 @@ export function FlagDevServerTabContent() {
   const virtualizer = useVirtualizer({
     count: filteredFlags.length,
     getScrollElement: () => parentRef.current,
-    estimateSize: () => 85, // Estimate item height
-    overscan: 5,
+    estimateSize: () => VIRTUALIZATION.ITEM_HEIGHT,
+    overscan: VIRTUALIZATION.OVERSCAN,
   });
 
   // Count total overridden flags (not just filtered ones)
-  const totalOverriddenFlags = Object.values(flags).filter((flag) => flag.isOverridden).length;
+  const totalOverriddenFlags = useMemo(() => {
+    return Object.values(flags).filter((flag) => flag.isOverridden).length;
+  }, [flags]);
 
   const renderFlagControl = (flag: EnhancedFlag) => {
     const handleOverride = (value: any) => setOverride(flag.key, value);
@@ -67,12 +70,15 @@ export function FlagDevServerTabContent() {
     setShowOverriddenOnly(false);
   };
 
-  const onClearOverride = (flagKey: string) => {
-    if (totalOverriddenFlags <= 1) {
-      setShowOverriddenOnly(false);
-    }
-    clearOverride(flagKey);
-  };
+  const onClearOverride = useCallback(
+    (flagKey: string) => {
+      if (totalOverriddenFlags <= 1) {
+        setShowOverriddenOnly(false);
+      }
+      clearOverride(flagKey);
+    },
+    [totalOverriddenFlags, setShowOverriddenOnly, clearOverride],
+  );
 
   const genericHelpTitle = showOverriddenOnly ? 'No overrides found' : 'No flags found';
   const genericHelpSubtitle = showOverriddenOnly ? 'You have not set any overrides yet' : 'Try adjusting your search';

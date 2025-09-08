@@ -1,18 +1,11 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { Switch, TextField, Group, Input } from '@launchpad-ui/components';
 import { EditIcon, CheckIcon, XIcon } from './icons';
 import { IconButton } from './IconButton';
+import type { LocalFlag } from '../context';
 
 import * as sharedStyles from './FlagControls.css';
 import * as styles from './LocalFlagControls.css';
-
-interface LocalFlag {
-  key: string;
-  name: string;
-  currentValue: any;
-  isOverridden: boolean;
-  type: 'boolean' | 'string' | 'number' | 'object';
-}
 
 interface LocalBooleanFlagControlProps {
   flag: LocalFlag;
@@ -105,8 +98,10 @@ interface LocalObjectFlagControlProps {
 export function LocalObjectFlagControl(props: LocalObjectFlagControlProps) {
   const { flag, onOverride, disabled = false } = props;
   const [isEditing, setIsEditing] = useState(false);
-  const [tempValue, setTempValue] = useState(JSON.stringify(flag.currentValue, null, 2));
+  const [tempValue, setTempValue] = useState(() => JSON.stringify(flag.currentValue, null, 2));
   const [parseError, setParseError] = useState<string | null>(null);
+
+  const displayValue = useMemo(() => JSON.stringify(flag.currentValue), [flag.currentValue]);
 
   const handleConfirm = () => {
     try {
@@ -134,7 +129,7 @@ export function LocalObjectFlagControl(props: LocalObjectFlagControlProps) {
     <div className={sharedStyles.customVariantContainer}>
       {!isEditing ? (
         <div className={sharedStyles.currentValueGroup}>
-          <div className={sharedStyles.currentValueText}>{JSON.stringify(flag.currentValue)}</div>
+          <div className={sharedStyles.currentValueText}>{displayValue}</div>
           <IconButton icon={<EditIcon />} label="Edit JSON" onClick={() => setIsEditing(true)} disabled={disabled} />
         </div>
       ) : (

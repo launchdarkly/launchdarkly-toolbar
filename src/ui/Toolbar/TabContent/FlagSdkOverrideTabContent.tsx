@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import { useRef, useState, useMemo, useCallback } from 'react';
 import { useVirtualizer } from '@tanstack/react-virtual';
 import { List } from '../../List/List';
 import { ListItem } from '../../List/ListItem';
@@ -12,10 +12,11 @@ import {
 } from '../components/LocalFlagControls';
 import { OverrideIndicator } from '../components/OverrideIndicator';
 import { ActionButtonsContainer } from '../components';
+import { VIRTUALIZATION } from '../constants';
 import type { IFlagOverridePlugin } from '../../../types/plugin';
 import type { LocalFlag } from '../context';
 
-import * as styles from './FlagDevServerTabContent.css';
+import * as sharedStyles from './FlagDevServerTabContent.css';
 import * as actionStyles from '../components/ActionButtonsContainer.css';
 
 interface FlagSdkOverrideTabContentProps {
@@ -46,8 +47,8 @@ function FlagSdkOverrideTabContentInner(props: FlagSdkOverrideTabContentProps) {
   const virtualizer = useVirtualizer({
     count: filteredFlags.length,
     getScrollElement: () => parentRef.current,
-    estimateSize: () => 85, // Estimate item height
-    overscan: 5,
+    estimateSize: () => VIRTUALIZATION.ITEM_HEIGHT,
+    overscan: VIRTUALIZATION.OVERSCAN,
   });
 
   // Override operations
@@ -55,9 +56,12 @@ function FlagSdkOverrideTabContentInner(props: FlagSdkOverrideTabContentProps) {
     flagOverridePlugin.setOverride(flagKey, value);
   };
 
-  const handleClearOverride = (flagKey: string) => {
-    flagOverridePlugin.removeOverride(flagKey);
-  };
+  const handleClearOverride = useCallback(
+    (flagKey: string) => {
+      flagOverridePlugin.removeOverride(flagKey);
+    },
+    [flagOverridePlugin],
+  );
 
   const handleClearAllOverrides = () => {
     flagOverridePlugin.clearAllOverrides();
@@ -77,7 +81,9 @@ function FlagSdkOverrideTabContentInner(props: FlagSdkOverrideTabContentProps) {
   }
 
   // Count total overridden flags (not just filtered ones)
-  const totalOverriddenFlags = Object.values(flags).filter((flag) => flag.isOverridden).length;
+  const totalOverriddenFlags = useMemo(() => {
+    return Object.values(flags).filter((flag) => flag.isOverridden).length;
+  }, [flags]);
 
   const renderFlagControl = (flag: LocalFlag) => {
     const handleOverride = (value: any) => handleSetOverride(flag.key, value);
@@ -136,10 +142,10 @@ function FlagSdkOverrideTabContentInner(props: FlagSdkOverrideTabContentProps) {
         {filteredFlags.length === 0 && (searchTerm.trim() || showOverriddenOnly) ? (
           <GenericHelpText title={genericHelpTitle} subtitle={genericHelpSubtitle} />
         ) : (
-          <div ref={parentRef} className={styles.virtualContainer}>
+          <div ref={parentRef} className={sharedStyles.virtualContainer}>
             <List>
               <div
-                className={styles.virtualInner}
+                className={sharedStyles.virtualInner}
                 style={{
                   height: virtualizer.getTotalSize(),
                 }}
@@ -150,7 +156,7 @@ function FlagSdkOverrideTabContentInner(props: FlagSdkOverrideTabContentProps) {
                   return (
                     <div
                       key={virtualItem.key}
-                      className={styles.virtualItem}
+                      className={sharedStyles.virtualItem}
                       style={{
                         height: `${virtualItem.size}px`,
                         transform: `translateY(${virtualItem.start}px)`,
@@ -158,15 +164,15 @@ function FlagSdkOverrideTabContentInner(props: FlagSdkOverrideTabContentProps) {
                       }}
                     >
                       <ListItem>
-                        <div className={styles.flagHeader}>
-                          <span className={styles.flagName}>
-                            <span className={styles.flagNameText}>{flag.name}</span>
+                        <div className={sharedStyles.flagHeader}>
+                          <span className={sharedStyles.flagName}>
+                            <span className={sharedStyles.flagNameText}>{flag.name}</span>
                             {flag.isOverridden && <OverrideIndicator onClear={() => handleClearOverride(flagKey)} />}
                           </span>
-                          <span className={styles.flagKey}>{flagKey}</span>
+                          <span className={sharedStyles.flagKey}>{flagKey}</span>
                         </div>
 
-                        <div className={styles.flagOptions}>{renderFlagControl(flag)}</div>
+                        <div className={sharedStyles.flagOptions}>{renderFlagControl(flag)}</div>
                       </ListItem>
                     </div>
                   );
