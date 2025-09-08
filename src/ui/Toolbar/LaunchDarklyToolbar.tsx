@@ -109,7 +109,7 @@ export function LdToolbar(props: LdToolbarProps) {
 export interface LaunchDarklyToolbarProps {
   devServerUrl?: string; // Optional - will default to http://localhost:8765
   projectKey?: string; // Optional - will auto-detect first available project if not provided
-  flagOverridePlugin?: IFlagOverridePlugin;
+  flagOverridePlugin?: IFlagOverridePlugin; // Optional - for flag override functionality
   eventInterceptionPlugin?: IEventInterceptionPlugin; // Optional - for event tracking
   pollIntervalInMs?: number; // Optional - will default to 5000ms
   position?: ToolbarPosition; // Optional - will default to 'right'
