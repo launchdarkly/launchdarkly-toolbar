@@ -7,8 +7,7 @@
     "dev": "vite",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
-    "preview": "vite preview",
-    "upgrade-launchpad": "pnpm up \"@launchpad-ui/*\" react-aria \"@react-aria/*\" \"@react-types/*\" \"@react-stately/*\" react-aria-components react react-dom @types/react @types/react-dom --latest -r"
+    "preview": "vite preview"
   },
   "dependencies": {
     "@launchdarkly/toolbar": "workspace:*",
