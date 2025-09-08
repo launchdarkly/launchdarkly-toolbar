@@ -39,17 +39,12 @@ vi.mock('../ui/Toolbar/TabContent/FlagDevServerTabContent', () => ({
   FlagDevServerTabContent: () => <div data-testid="flag-dev-server-tab-content">Flag Tab Content</div>,
 }));
 
-<<<<<<< HEAD
-vi.mock('../ui/Toolbar/TabContent/FlagOverridesTabContent', () => ({
-  FlagOverridesTabContent: () => <div data-testid="local-overrides-tab-content">Local Overrides Tab Content</div>,
+vi.mock('../ui/Toolbar/TabContent/FlagSdkOverrideTabContent', () => ({
+  FlagSdkOverrideTabContent: () => <div data-testid="flag-sdk-tab-content">Flag SDK Override Tab Content</div>,
 }));
 
 vi.mock('../ui/Toolbar/TabContent/EventsTabContent', () => ({
   EventsTabContent: () => <div data-testid="events-tab-content">Events Tab Content</div>,
-=======
-vi.mock('../ui/Toolbar/TabContent/FlagSdkOverrideTabContent', () => ({
-  FlagSdkOverrideTabContent: () => <div data-testid="flag-sdk-tab-content">Local Overrides Tab Content</div>,
->>>>>>> origin/toolbar-plugin-poc-react-sdk
 }));
 
 vi.mock('../ui/Toolbar/TabContent/SettingsTabContent', () => ({
@@ -63,14 +58,10 @@ function TestWrapper({
   children,
   devServerUrl,
   initialPosition = 'right',
-  flagOverridePlugin,
-  eventInterceptionPlugin,
 }: {
   children: React.ReactNode;
   devServerUrl?: string;
   initialPosition?: 'left' | 'right';
-  flagOverridePlugin?: IFlagOverridePlugin;
-  eventInterceptionPlugin?: IEventInterceptionPlugin;
 }) {
   return (
     <DevServerProvider
@@ -79,8 +70,6 @@ function TestWrapper({
         pollIntervalInMs: 5000,
       }}
       initialPosition={initialPosition}
-      flagOverridePlugin={flagOverridePlugin}
-      eventInterceptionPlugin={eventInterceptionPlugin}
     >
       <SearchProvider>{children}</SearchProvider>
     </DevServerProvider>
@@ -129,7 +118,9 @@ describe('ExpandedToolbarContent - User Interaction Flows', () => {
 
   describe('Dev Server Mode - Server-Side Flag Management Flow', () => {
     test('developer explores server-side flag management interface', () => {
-      // GIVEN: Developer has expanded the toolbar in dev server mode
+      // GIVEN: Developer has expanded the toolbar in dev server mode with event plugin
+      const mockEventInterceptionPlugin = createMockEventInterceptionPlugin();
+
       render(
         <TestWrapper devServerUrl="http://localhost:8765">
           <ExpandedToolbarContent {...defaultProps} mode="dev-server" />
@@ -139,15 +130,11 @@ describe('ExpandedToolbarContent - User Interaction Flows', () => {
       // WHEN: They look at the available tabs
       // THEN: They see server-side focused functionality
       expect(screen.getByRole('tab', { name: /flags/i })).toBeInTheDocument(); // Server-side flags
+      expect(screen.getByRole('tab', { name: /events/i })).toBeInTheDocument(); // Events available in dev-server mode
       expect(screen.getByRole('tab', { name: /settings/i })).toBeInTheDocument(); // Configuration
 
-<<<<<<< HEAD
-      // AND: Client-side features like events are not available in dev-server mode
-      expect(screen.queryByRole('tab', { name: /events/i })).not.toBeInTheDocument();
-=======
-      // AND: Client-side override functionality is not cluttering the interface
+      // AND: Client-side override functionality is not available in dev-server mode
       expect(screen.queryByText('flag-sdk')).not.toBeInTheDocument();
->>>>>>> origin/toolbar-plugin-poc-react-sdk
 
       // AND: The settings are contextual to dev-server mode
       expect(screen.getByTestId('settings-tab-content')).toHaveTextContent('Settings Tab Content - dev-server');
@@ -155,6 +142,8 @@ describe('ExpandedToolbarContent - User Interaction Flows', () => {
 
     test('developer navigates to server-side flags view', () => {
       // GIVEN: Developer wants to work with server-side flags
+      const mockEventInterceptionPlugin = createMockEventInterceptionPlugin();
+
       render(
         <TestWrapper devServerUrl="http://localhost:8765">
           <ExpandedToolbarContent {...defaultProps} activeTab="flag-dev-server" mode="dev-server" />
@@ -168,30 +157,19 @@ describe('ExpandedToolbarContent - User Interaction Flows', () => {
   });
 
   describe('SDK Mode - Client-Side Override Flow', () => {
-<<<<<<< HEAD
-    test('developer with debug plugin explores client-side override capabilities', () => {
-      // GIVEN: Developer has a debug plugin and event interception configured
+    test('developer with flag override plugin explores client-side override capabilities', () => {
+      // GIVEN: Developer has a flag override plugin and event interception configured
       const mockDebugPlugin = createMockDebugPlugin();
       const mockEventInterceptionPlugin = createMockEventInterceptionPlugin();
-=======
-    test('developer with flag override plugin explores client-side override capabilities', () => {
-      // GIVEN: Developer has a flag override plugin configured and expands the toolbar
-      const mockDebugPlugin = {
-        getFlagSdkOverride: vi.fn().mockResolvedValue({}),
-        setFlagSdkOverride: vi.fn(),
-        clearFlagSdkOverride: vi.fn(),
-        clearAllFlagSdkOverride: vi.fn(),
-        setOverride: vi.fn(),
-        removeOverride: vi.fn(),
-        clearAllOverrides: vi.fn(),
-        getAllOverrides: vi.fn().mockResolvedValue({}),
-        getClient: vi.fn(),
-      };
->>>>>>> origin/toolbar-plugin-poc-react-sdk
 
       render(
-        <TestWrapper flagOverridePlugin={mockDebugPlugin} eventInterceptionPlugin={mockEventInterceptionPlugin}>
-          <ExpandedToolbarContent {...defaultProps} mode="sdk" />
+        <TestWrapper>
+          <ExpandedToolbarContent
+            {...defaultProps}
+            mode="sdk"
+            flagOverridePlugin={mockDebugPlugin}
+            eventInterceptionPlugin={mockEventInterceptionPlugin}
+          />
         </TestWrapper>,
       );
 
@@ -207,25 +185,8 @@ describe('ExpandedToolbarContent - User Interaction Flows', () => {
 
     test('developer works with local flag overrides', () => {
       // GIVEN: Developer wants to override flags locally for testing
-<<<<<<< HEAD
       const mockDebugPlugin = createMockDebugPlugin();
       const mockEventInterceptionPlugin = createMockEventInterceptionPlugin();
-
-      render(
-        <TestWrapper flagOverridePlugin={mockDebugPlugin} eventInterceptionPlugin={mockEventInterceptionPlugin}>
-          <ExpandedToolbarContent {...defaultProps} activeTab="local-overrides" mode="sdk" />
-=======
-      const mockDebugPlugin = {
-        getFlagSdkOverride: vi.fn().mockResolvedValue({}),
-        setFlagSdkOverride: vi.fn(),
-        clearFlagSdkOverride: vi.fn(),
-        clearAllFlagSdkOverride: vi.fn(),
-        setOverride: vi.fn(),
-        removeOverride: vi.fn(),
-        clearAllOverrides: vi.fn(),
-        getAllOverrides: vi.fn().mockResolvedValue({}),
-        getClient: vi.fn(),
-      };
 
       render(
         <TestWrapper>
@@ -234,8 +195,8 @@ describe('ExpandedToolbarContent - User Interaction Flows', () => {
             activeTab="flag-sdk"
             mode="sdk"
             flagOverridePlugin={mockDebugPlugin}
+            eventInterceptionPlugin={mockEventInterceptionPlugin}
           />
->>>>>>> origin/toolbar-plugin-poc-react-sdk
         </TestWrapper>,
       );
 
@@ -250,8 +211,13 @@ describe('ExpandedToolbarContent - User Interaction Flows', () => {
       const mockEventInterceptionPlugin = createMockEventInterceptionPlugin();
 
       render(
-        <TestWrapper flagOverridePlugin={mockDebugPlugin} eventInterceptionPlugin={mockEventInterceptionPlugin}>
-          <ExpandedToolbarContent {...defaultProps} activeTab="events" mode="sdk" />
+        <TestWrapper>
+          <ExpandedToolbarContent
+            {...defaultProps}
+            activeTab="events"
+            mode="sdk"
+            eventInterceptionPlugin={mockEventInterceptionPlugin}
+          />
         </TestWrapper>,
       );
 
@@ -318,14 +284,9 @@ describe('ExpandedToolbarContent - User Interaction Flows', () => {
 
       // AND: No tab content is rendered when activeTab is undefined (correct behavior)
       expect(screen.queryByTestId('settings-tab-content')).not.toBeInTheDocument();
-<<<<<<< HEAD
-      expect(screen.queryByTestId('flag-tab-content')).not.toBeInTheDocument();
-      expect(screen.queryByTestId('local-overrides-tab-content')).not.toBeInTheDocument();
-      expect(screen.queryByTestId('events-tab-content')).not.toBeInTheDocument();
-=======
       expect(screen.queryByTestId('flag-dev-server-tab-content')).not.toBeInTheDocument();
       expect(screen.queryByTestId('flag-sdk-tab-content')).not.toBeInTheDocument();
->>>>>>> origin/toolbar-plugin-poc-react-sdk
+      expect(screen.queryByTestId('events-tab-content')).not.toBeInTheDocument();
     });
   });
 });

@@ -8,7 +8,7 @@ import { TabContentRenderer } from './TabContentRenderer';
 import { ANIMATION_CONFIG, EASING } from '../constants';
 import { ActiveTabId, ToolbarMode, getTabsForMode, getDefaultActiveTab } from '../types';
 import { useDevServerContext } from '../context/DevServerProvider';
-import type { IFlagOverridePlugin } from '../../../types/plugin';
+import type { IFlagOverridePlugin, IEventInterceptionPlugin } from '../../../types/plugin';
 
 import * as styles from '../LaunchDarklyToolbar.css';
 import { GearIcon, SyncIcon, ToggleOffIcon } from './icons';
@@ -26,6 +26,7 @@ interface ExpandedToolbarContentProps {
   setSearchIsExpanded: Dispatch<SetStateAction<boolean>>;
   mode: ToolbarMode;
   flagOverridePlugin?: IFlagOverridePlugin;
+  eventInterceptionPlugin?: IEventInterceptionPlugin;
 }
 
 function getHeaderLabel(currentProjectKey: string | null, sourceEnvironmentKey: string | null) {
@@ -49,6 +50,7 @@ export function ExpandedToolbarContent(props: ExpandedToolbarContentProps) {
     setSearchIsExpanded,
     mode,
     flagOverridePlugin,
+    eventInterceptionPlugin,
   } = props;
 
   const { state } = useDevServerContext();
@@ -56,8 +58,8 @@ export function ExpandedToolbarContent(props: ExpandedToolbarContentProps) {
   const headerLabel = getHeaderLabel(state.currentProjectKey, state.sourceEnvironmentKey);
   const { error } = state;
 
-  const availableTabs = getTabsForMode(mode, !!flagOverridePlugin);
-  const defaultActiveTab = getDefaultActiveTab(mode);
+  const availableTabs = getTabsForMode(mode, !!flagOverridePlugin, !!eventInterceptionPlugin);
+  const defaultActiveTab = getDefaultActiveTab(mode, !!flagOverridePlugin, !!eventInterceptionPlugin);
 
   const shouldShowError = error && mode === 'dev-server' && state.connectionStatus === 'error';
 
@@ -124,7 +126,13 @@ export function ExpandedToolbarContent(props: ExpandedToolbarContentProps) {
               >
                 <AnimatePresence mode="wait">
                   {activeTab && (
-                    <TabContentRenderer activeTab={activeTab} slideDirection={slideDirection} mode={mode} />
+                    <TabContentRenderer
+                      activeTab={activeTab}
+                      slideDirection={slideDirection}
+                      mode={mode}
+                      flagOverridePlugin={flagOverridePlugin}
+                      eventInterceptionPlugin={eventInterceptionPlugin}
+                    />
                   )}
                 </AnimatePresence>
               </motion.div>
@@ -146,12 +154,11 @@ export function ExpandedToolbarContent(props: ExpandedToolbarContentProps) {
         transition={ANIMATION_CONFIG.tabsContainer}
       >
         <Tabs defaultActiveTab={defaultActiveTab} activeTab={activeTab} onTabChange={onTabChange}>
-          {availableTabs.includes('flag-sdk') && <TabButton id="flag-sdk" label="Flags" icon={ToggleOffIcon} />}
           {availableTabs.includes('flag-dev-server') && (
             <TabButton id="flag-dev-server" label="Flags" icon={ToggleOffIcon} />
           )}
           {availableTabs.includes('events') && <TabButton id="events" label="Events" icon={SyncIcon} />}
-          {availableTabs.includes('flags-sdk') && <TabButton id="flags-sdk" label="Flags" icon={ToggleOffIcon} />}
+          {availableTabs.includes('flag-sdk') && <TabButton id="flag-sdk" label="Flags" icon={ToggleOffIcon} />}
           {availableTabs.includes('settings') && <TabButton id="settings" label="Settings" icon={GearIcon} />}
         </Tabs>
       </motion.div>

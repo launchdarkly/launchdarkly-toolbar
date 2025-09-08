@@ -4,28 +4,21 @@ import { useCallback } from 'react';
 import { SearchProvider, useSearchContext } from './context';
 import { CircleLogo, ExpandedToolbarContent } from './components';
 import { useToolbarAnimations, useToolbarVisibility, useToolbarDrag, useToolbarState } from './hooks';
-<<<<<<< HEAD
-import { useToolbarContext } from './context';
-import { ToolbarMode, ToolbarPosition, getToolbarMode } from './types/toolbar';
-
-import * as styles from './LaunchDarklyToolbar.css';
-import { LaunchDarklyToolbarProvider } from './context/LaunchDarklyToolbarProvider';
-import type { IEventInterceptionPlugin, IFlagOverridePlugin } from '../../types/plugin';
-=======
 import { useDevServerContext } from './context';
 import { ToolbarMode, ToolbarPosition, getToolbarMode } from './types/toolbar';
 
 import * as styles from './LaunchDarklyToolbar.css';
 import { DevServerProvider } from './context';
-import type { IFlagOverridePlugin } from '../../types/plugin';
->>>>>>> origin/toolbar-plugin-poc-react-sdk
+import type { IEventInterceptionPlugin, IFlagOverridePlugin } from '../../types/plugin';
 
 export interface LdToolbarProps {
   mode: ToolbarMode;
+  flagOverridePlugin?: IFlagOverridePlugin;
+  eventInterceptionPlugin?: IEventInterceptionPlugin;
 }
 
 export function LdToolbar(props: LdToolbarProps) {
-  const { mode } = props;
+  const { mode, flagOverridePlugin, eventInterceptionPlugin } = props;
   const { searchTerm } = useSearchContext();
   const { state, handlePositionChange } = useDevServerContext();
   const toolbarState = useToolbarState();
@@ -104,6 +97,8 @@ export function LdToolbar(props: LdToolbarProps) {
             onTabChange={handleTabChange}
             setSearchIsExpanded={setSearchIsExpanded}
             mode={mode}
+            flagOverridePlugin={flagOverridePlugin}
+            eventInterceptionPlugin={eventInterceptionPlugin}
           />
         )}
       </AnimatePresence>
@@ -146,11 +141,13 @@ export function LaunchDarklyToolbar(props: LaunchDarklyToolbarProps) {
         pollIntervalInMs,
       }}
       initialPosition={position}
-      flagOverridePlugin={flagOverridePlugin}
-      eventInterceptionPlugin={eventInterceptionPlugin}
     >
       <SearchProvider>
-        <LdToolbar mode={mode} />
+        <LdToolbar
+          mode={mode}
+          flagOverridePlugin={flagOverridePlugin}
+          eventInterceptionPlugin={eventInterceptionPlugin}
+        />
       </SearchProvider>
     </DevServerProvider>
   );

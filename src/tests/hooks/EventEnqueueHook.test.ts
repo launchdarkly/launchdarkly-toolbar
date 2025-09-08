@@ -300,7 +300,7 @@ describe('EventEnqueueHook', () => {
       const invalidContext = {
         ...mockFeatureContext,
         kind: 'invalid-kind',
-      } as EventEnqueueContext;
+      } as unknown as EventEnqueueContext;
 
       hook = new EventEnqueueHook({ onNewEvent: mockOnNewEvent });
       hook.afterEventEnqueue(invalidContext);
@@ -401,7 +401,7 @@ describe('EventEnqueueHook', () => {
       const summaryContext = {
         ...mockFeatureContext,
         kind: 'summary',
-      } as EventEnqueueContext;
+      } as unknown as EventEnqueueContext;
 
       hook.afterEventEnqueue(summaryContext);
 
@@ -536,7 +536,7 @@ describe('EventEnqueueHook', () => {
         variation: null,
         creationDate: Date.now(),
         trackEvents: undefined,
-        reason: null,
+        reason: undefined,
       };
 
       expect(() => hook.afterEventEnqueue(contextWithNulls)).not.toThrow();
@@ -548,7 +548,7 @@ describe('EventEnqueueHook', () => {
         flagVersion: undefined,
         variation: null,
         trackEvents: undefined,
-        reason: null,
+        reason: undefined,
       });
     });
 

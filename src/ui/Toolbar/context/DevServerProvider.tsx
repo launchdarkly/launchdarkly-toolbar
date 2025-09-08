@@ -5,7 +5,6 @@ import { FlagStateManager } from '../../../services/FlagStateManager';
 import { LdToolbarConfig, ToolbarState } from '../../../types/devServer';
 import { TOOLBAR_STORAGE_KEYS, loadToolbarPosition, saveToolbarPosition } from '../utils/localStorage';
 import { ToolbarPosition } from '../types/toolbar';
-import { IEventInterceptionPlugin, IFlagOverridePlugin } from '../../../types/plugin';
 
 const STORAGE_KEY = TOOLBAR_STORAGE_KEYS.PROJECT;
 

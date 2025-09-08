@@ -20,14 +20,13 @@ import * as sharedStyles from './FlagDevServerTabContent.css';
 import * as actionStyles from '../components/ActionButtonsContainer.css';
 
 interface FlagSdkOverrideTabContentProps {
-  flagOverridePlugin: IFlagOverridePlugin;
+  flagOverridePlugin?: IFlagOverridePlugin;
 }
 
 function FlagSdkOverrideTabContentInner(props: FlagSdkOverrideTabContentProps) {
   const { flagOverridePlugin } = props;
   const { searchTerm } = useSearchContext();
   const { flags, isLoading } = useFlagSdkOverrideContext();
-  const ldClient = flagOverridePlugin.getClient();
   const [showOverriddenOnly, setShowOverriddenOnly] = useState(false);
   const parentRef = useRef<HTMLDivElement>(null);
 
@@ -51,6 +50,21 @@ function FlagSdkOverrideTabContentInner(props: FlagSdkOverrideTabContentProps) {
     overscan: VIRTUALIZATION.OVERSCAN,
   });
 
+  const ldClient = flagOverridePlugin?.getClient();
+
+  if (!ldClient || !flagOverridePlugin) {
+    return (
+      <GenericHelpText
+        title="LaunchDarkly client is not available"
+        subtitle="To use local flag overrides, ensure the flag override plugin is added to your LaunchDarkly client configuration."
+      />
+    );
+  }
+
+  if (isLoading) {
+    return <GenericHelpText title="Loading flags..." subtitle="Please wait while we load your feature flags" />;
+  }
+
   // Override operations
   const handleSetOverride = (flagKey: string, value: any) => {
     flagOverridePlugin.setOverride(flagKey, value);
@@ -66,19 +80,6 @@ function FlagSdkOverrideTabContentInner(props: FlagSdkOverrideTabContentProps) {
   const handleClearAllOverrides = () => {
     flagOverridePlugin.clearAllOverrides();
   };
-
-  if (!ldClient || !flagOverridePlugin) {
-    return (
-      <GenericHelpText
-        title="LaunchDarkly client is not available"
-        subtitle="To use local flag overrides, ensure the flag override plugin is added to your LaunchDarkly client configuration."
-      />
-    );
-  }
-
-  if (isLoading) {
-    return <GenericHelpText title="Loading flags..." subtitle="Please wait while we load your feature flags" />;
-  }
 
   // Count total overridden flags (not just filtered ones)
   const totalOverriddenFlags = useMemo(() => {
@@ -187,6 +188,10 @@ function FlagSdkOverrideTabContentInner(props: FlagSdkOverrideTabContentProps) {
 }
 
 export function FlagSdkOverrideTabContent(props: FlagSdkOverrideTabContentProps) {
+  if (!props.flagOverridePlugin) {
+    return <div>No flag override plugin available</div>;
+  }
+
   return (
     <FlagSdkOverrideProvider flagOverridePlugin={props.flagOverridePlugin}>
       <FlagSdkOverrideTabContentInner {...props} />

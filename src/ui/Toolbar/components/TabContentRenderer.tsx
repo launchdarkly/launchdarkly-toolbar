@@ -1,28 +1,31 @@
 import { motion } from 'motion/react';
 import { FlagDevServerTabContent } from '../TabContent/FlagDevServerTabContent';
-// import { EventsTabContent } from '../TabContent/EventsTabContent';
+import { FlagSdkOverrideTabContent } from '../TabContent/FlagSdkOverrideTabContent';
+import { EventsTabContent } from '../TabContent/EventsTabContent';
 import { SettingsTabContent } from '../TabContent/SettingsTabContent';
 import { ANIMATION_CONFIG, DIMENSIONS } from '../constants';
 import { TabId, ToolbarMode } from '../types';
-import type { IFlagOverridePlugin } from '../../../types/plugin';
+import type { IFlagOverridePlugin, IEventInterceptionPlugin } from '../../../types/plugin';
 
 interface TabContentRendererProps {
   activeTab: TabId;
   slideDirection: number;
   mode: ToolbarMode;
   flagOverridePlugin?: IFlagOverridePlugin;
+  eventInterceptionPlugin?: IEventInterceptionPlugin;
 }
 
 export function TabContentRenderer(props: TabContentRendererProps) {
-  const { activeTab, slideDirection, mode, flagOverridePlugin } = props;
+  const { activeTab, slideDirection, mode, flagOverridePlugin, eventInterceptionPlugin } = props;
 
   const renderContent = () => {
     switch (activeTab) {
       case 'flag-sdk':
-        if (!flagOverridePlugin) return null;
         return <FlagSdkOverrideTabContent flagOverridePlugin={flagOverridePlugin} />;
       case 'flag-dev-server':
         return <FlagDevServerTabContent />;
+      case 'events':
+        return <EventsTabContent eventInterceptionPlugin={eventInterceptionPlugin} />;
       case 'settings':
         return <SettingsTabContent mode={mode} />;
       default:

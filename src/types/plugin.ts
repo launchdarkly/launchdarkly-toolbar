@@ -1,8 +1,5 @@
 import type { LDClient, LDFlagSet, LDFlagValue } from 'launchdarkly-js-client-sdk';
-<<<<<<< HEAD
 import { ProcessedEvent } from './events';
-=======
->>>>>>> origin/toolbar-plugin-poc-react-sdk
 
 /**
  * Interface for flag override plugins that can be used with the LaunchDarkly Toolbar

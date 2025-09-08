@@ -68,7 +68,6 @@ export class FlagOverridePlugin implements LDPlugin {
             const flagKey = key.replace(this.config.storageNamespace + ':', '');
 
             this.flagOverride.setOverride(flagKey, value);
-            loadedCount++;
           } catch {
             console.warn('flagOverridePlugin: Invalid stored value for', key);
             storage.removeItem(key);

@@ -3,19 +3,21 @@ import { useVirtualizer } from '@tanstack/react-virtual';
 import { motion } from 'motion/react';
 import { List } from '../../List/List';
 import { ListItem } from '../../List/ListItem';
-import { useSearchContext } from '../context/SearchProvider';
-import { useToolbarContext } from '../context/LaunchDarklyToolbarProvider';
+import { useSearchContext } from '../context';
 import { GenericHelpText } from '../components/GenericHelpText';
 import { ActionButtonsContainer, DoNotTrackWarning } from '../components';
-import { ANIMATION_CONFIG } from '../constants/animations';
+import { ANIMATION_CONFIG, VIRTUALIZATION } from '../constants';
 import { isDoNotTrackEnabled } from '../../../utils';
 
 import * as styles from './EventsTabContent.css';
 
 import * as actionStyles from '../components/ActionButtonsContainer.css';
 import { useCurrentDate, useEvents } from '../hooks';
+import type { IEventInterceptionPlugin } from '../../../types/plugin';
 
-interface EventsTabContentProps {}
+interface EventsTabContentProps {
+  eventInterceptionPlugin?: IEventInterceptionPlugin;
+}
 
 function formatTimeAgo(timestamp: number, currentDate: Date): string {
   const now = currentDate.getTime();
@@ -31,8 +33,8 @@ function formatTimeAgo(timestamp: number, currentDate: Date): string {
   return 'just now';
 }
 
-export function EventsTabContent(_props: EventsTabContentProps) {
-  const { eventInterceptionPlugin } = useToolbarContext();
+export function EventsTabContent(props: EventsTabContentProps) {
+  const { eventInterceptionPlugin } = props;
   const { searchTerm } = useSearchContext();
   const { events, eventStats } = useEvents(eventInterceptionPlugin, searchTerm);
   const currentDate = useCurrentDate(); // Updates every second by default
@@ -68,8 +70,8 @@ export function EventsTabContent(_props: EventsTabContentProps) {
   const virtualizer = useVirtualizer({
     count: events.length,
     getScrollElement: () => parentRef.current,
-    estimateSize: () => 85,
-    overscan: 5,
+    estimateSize: () => VIRTUALIZATION.ITEM_HEIGHT,
+    overscan: VIRTUALIZATION.OVERSCAN,
   });
 
   if (!eventInterceptionPlugin) {
