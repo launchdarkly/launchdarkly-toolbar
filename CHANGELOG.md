@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.10.1](https://github.com/launchdarkly/launchdarkly-toolbar/compare/toolbar-v0.10.0...toolbar-v0.10.1) (2025-09-09)
+
+
+### Bug Fixes
+
+* bump release action version ([#74](https://github.com/launchdarkly/launchdarkly-toolbar/issues/74)) ([b59d92c](https://github.com/launchdarkly/launchdarkly-toolbar/commit/b59d92c0e7730bc80fecb3af9490f182223fe513))
+
 ## [0.10.0](https://github.com/launchdarkly/launchdarkly-toolbar/compare/toolbar-v0.9.1...toolbar-v0.10.0) (2025-09-08)
 
 
