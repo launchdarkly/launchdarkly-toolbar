@@ -108,6 +108,9 @@ importers:
       jsdom:
         specifier: ^26.1.0
         version: 26.1.0
+      launchdarkly-js-client-sdk:
+        specifier: ^3.9.0
+        version: 3.9.0
       oxlint:
         specifier: ^1.0.0
         version: 1.3.0
