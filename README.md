@@ -34,13 +34,13 @@ function App() {
 
 ```tsx
 import { LaunchDarklyToolbar } from '@launchdarkly/toolbar';
-import { flagOverridePlugin } from './your-flag-override-plugin';
+import { debugOverridePlugin } from './your-flag-override-plugin';
 
 function App() {
   return (
     <div>
       <h1>My App</h1>
-      <LaunchDarklyToolbar flagOverridePlugin={flagOverridePlugin} />
+      <LaunchDarklyToolbar debugOverridePlugin={debugOverridePlugin} />
     </div>
   );
 }
@@ -48,13 +48,13 @@ function App() {
 
 ## Props
 
-| Prop                 | Type                  | Default     | Description                                                               |
-| -------------------- | --------------------- | ----------- | ------------------------------------------------------------------------- |
-| `devServerUrl`       | `string` (optional)   | `undefined` | URL of your LaunchDarkly dev server. If provided, enables Dev Server Mode |
-| `flagOverridePlugin` | `IFlagOverridePlugin` | `undefined` | Flag override plugin for SDK Mode. Shows Overrides tab when provided      |
-| `position`           | `"left" \| "right"`   | `"right"`   | Position of the toolbar on screen                                         |
-| `projectKey`         | `string` (optional)   | `undefined` | Optional project key for multi-project setups (Dev Server Mode only)      |
-| `pollIntervalInMs`   | `number` (optional)   | `5000`      | Polling interval for dev server updates (Dev Server Mode only)            |
+| Prop                  | Type                   | Default     | Description                                                               |
+| --------------------- | ---------------------- | ----------- | ------------------------------------------------------------------------- |
+| `devServerUrl`        | `string` (optional)    | `undefined` | URL of your LaunchDarkly dev server. If provided, enables Dev Server Mode |
+| `debugOverridePlugin` | `IDebugOverridePlugin` | `undefined` | Flag override plugin for SDK Mode. Shows Overrides tab when provided      |
+| `position`            | `"left" \| "right"`    | `"right"`   | Position of the toolbar on screen                                         |
+| `projectKey`          | `string` (optional)    | `undefined` | Optional project key for multi-project setups (Dev Server Mode only)      |
+| `pollIntervalInMs`    | `number` (optional)    | `5000`      | Polling interval for dev server updates (Dev Server Mode only)            |
 
 ## Configuration
 
@@ -67,10 +67,10 @@ The toolbar automatically determines its mode:
 
 ### Available Features by Mode
 
-| Mode                | Available Tabs                                         |
-| ------------------- | ------------------------------------------------------ |
-| **Dev Server Mode** | Flags, Settings                                        |
-| **SDK Mode**        | Overrides (if `flagOverridePlugin` provided), Settings |
+| Mode                | Available Tabs                                          |
+| ------------------- | ------------------------------------------------------- |
+| **Dev Server Mode** | Flags, Settings                                         |
+| **SDK Mode**        | Overrides (if `debugOverridePlugin` provided), Settings |
 
 ## Setup
 

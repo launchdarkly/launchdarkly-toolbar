@@ -8,7 +8,7 @@ import { TabContentRenderer } from './TabContentRenderer';
 import { ANIMATION_CONFIG, EASING } from '../constants';
 import { ActiveTabId, ToolbarMode, getTabsForMode, getDefaultActiveTab } from '../types';
 import { useDevServerContext } from '../context/DevServerProvider';
-import type { IFlagOverridePlugin } from '../../../types/plugin';
+import type { IDebugOverridePlugin } from '../../../types/plugin';
 
 import * as styles from '../LaunchDarklyToolbar.css';
 import { GearIcon, ToggleOffIcon } from './icons';
@@ -24,7 +24,7 @@ interface ExpandedToolbarContentProps {
   onClose: () => void;
   onTabChange: (tabId: string) => void;
   setSearchIsExpanded: Dispatch<SetStateAction<boolean>>;
-  flagOverridePlugin?: IFlagOverridePlugin;
+  debugOverridePlugin?: IDebugOverridePlugin;
   mode: ToolbarMode;
 }
 
@@ -47,7 +47,7 @@ export function ExpandedToolbarContent(props: ExpandedToolbarContentProps) {
     onClose,
     onTabChange,
     setSearchIsExpanded,
-    flagOverridePlugin,
+    debugOverridePlugin,
     mode,
   } = props;
 
@@ -56,7 +56,7 @@ export function ExpandedToolbarContent(props: ExpandedToolbarContentProps) {
   const headerLabel = getHeaderLabel(state.currentProjectKey, state.sourceEnvironmentKey);
   const { error } = state;
 
-  const availableTabs = getTabsForMode(mode, !!flagOverridePlugin);
+  const availableTabs = getTabsForMode(mode, !!debugOverridePlugin);
   const defaultActiveTab = getDefaultActiveTab(mode);
 
   const shouldShowError = error && mode === 'dev-server' && state.connectionStatus === 'error';
@@ -127,7 +127,7 @@ export function ExpandedToolbarContent(props: ExpandedToolbarContentProps) {
                     <TabContentRenderer
                       activeTab={activeTab}
                       slideDirection={slideDirection}
-                      flagOverridePlugin={flagOverridePlugin}
+                      debugOverridePlugin={debugOverridePlugin}
                       mode={mode}
                     />
                   )}

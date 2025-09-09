@@ -269,7 +269,7 @@ export const DevServerProvider: FC<DevServerProviderProps> = ({ children, config
       try {
         setToolbarState((prev) => ({ ...prev, isLoading: true }));
         await flagStateManager.setOverride(flagKey, value);
-        config.onFlagOverride?.(flagKey, value, true);
+        config.onDebugOverride?.(flagKey, value, true);
       } catch (error) {
         const errorMessage = error instanceof Error ? error.message : 'Unknown error';
         config.onError?.(errorMessage);
@@ -293,7 +293,7 @@ export const DevServerProvider: FC<DevServerProviderProps> = ({ children, config
       try {
         setToolbarState((prev) => ({ ...prev, isLoading: true }));
         await flagStateManager.clearOverride(flagKey);
-        config.onFlagOverride?.(flagKey, null, false);
+        config.onDebugOverride?.(flagKey, null, false);
       } catch (error) {
         const errorMessage = error instanceof Error ? error.message : 'Unknown error';
         config.onError?.(errorMessage);
@@ -321,7 +321,7 @@ export const DevServerProvider: FC<DevServerProviderProps> = ({ children, config
       await Promise.all(overriddenFlags.map(([flagKey]) => flagStateManager.clearOverride(flagKey)));
 
       overriddenFlags.forEach(([flagKey]) => {
-        config.onFlagOverride?.(flagKey, null, false);
+        config.onDebugOverride?.(flagKey, null, false);
       });
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Unknown error';

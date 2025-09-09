@@ -1,2 +1,2 @@
-export { FlagOverridePlugin } from './FlagOverridePlugin';
-export type { FlagOverridePluginConfig } from './FlagOverridePlugin';
+export { DebugOverridePlugin } from './DebugOverridePlugin';
+export type { DebugOverridePluginConfig } from './DebugOverridePlugin';

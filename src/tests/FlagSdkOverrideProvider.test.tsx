@@ -2,7 +2,7 @@ import { render, screen, act } from '@testing-library/react';
 import { expect, test, describe, vi, beforeEach } from 'vitest';
 
 import { FlagSdkOverrideProvider, useFlagSdkOverrideContext } from '../ui/Toolbar/context/FlagSdkOverrideProvider';
-import type { IFlagOverridePlugin } from '../types/plugin';
+import type { IDebugOverridePlugin } from '../types/plugin';
 
 // Test component that uses the context
 function TestConsumer() {
@@ -25,7 +25,7 @@ function TestConsumer() {
 
 describe('FlagSdkOverrideProvider', () => {
   let mockLdClient: any;
-  let mockFlagOverridePlugin: IFlagOverridePlugin;
+  let mockDebugOverridePlugin: IDebugOverridePlugin;
 
   beforeEach(() => {
     // Mock LaunchDarkly client
@@ -36,7 +36,7 @@ describe('FlagSdkOverrideProvider', () => {
     };
 
     // Mock flag override plugin
-    mockFlagOverridePlugin = {
+    mockDebugOverridePlugin = {
       getClient: vi.fn().mockReturnValue(mockLdClient),
       getAllOverrides: vi.fn().mockReturnValue({}),
       setOverride: vi.fn(),
@@ -55,7 +55,7 @@ describe('FlagSdkOverrideProvider', () => {
 
     // WHEN: Component is rendered with the provider
     render(
-      <FlagSdkOverrideProvider flagOverridePlugin={mockFlagOverridePlugin}>
+      <FlagSdkOverrideProvider debugOverridePlugin={mockDebugOverridePlugin}>
         <TestConsumer />
       </FlagSdkOverrideProvider>,
     );
@@ -74,13 +74,13 @@ describe('FlagSdkOverrideProvider', () => {
       'normal-flag': true, // This one is not
     });
 
-    (mockFlagOverridePlugin.getAllOverrides as any).mockReturnValue({
+    (mockDebugOverridePlugin.getAllOverrides as any).mockReturnValue({
       'feature-flag-1': false, // Override exists
     });
 
     // WHEN: Component is rendered
     render(
-      <FlagSdkOverrideProvider flagOverridePlugin={mockFlagOverridePlugin}>
+      <FlagSdkOverrideProvider debugOverridePlugin={mockDebugOverridePlugin}>
         <TestConsumer />
       </FlagSdkOverrideProvider>,
     );
@@ -108,7 +108,7 @@ describe('FlagSdkOverrideProvider', () => {
     });
 
     render(
-      <FlagSdkOverrideProvider flagOverridePlugin={mockFlagOverridePlugin}>
+      <FlagSdkOverrideProvider debugOverridePlugin={mockDebugOverridePlugin}>
         <TestConsumer />
       </FlagSdkOverrideProvider>,
     );
@@ -135,11 +135,11 @@ describe('FlagSdkOverrideProvider', () => {
 
   test('handles null LaunchDarkly client gracefully', async () => {
     // GIVEN: Plugin returns null client (edge case)
-    (mockFlagOverridePlugin.getClient as any).mockReturnValue(null);
+    (mockDebugOverridePlugin.getClient as any).mockReturnValue(null);
 
     // WHEN: Component is rendered
     render(
-      <FlagSdkOverrideProvider flagOverridePlugin={mockFlagOverridePlugin}>
+      <FlagSdkOverrideProvider debugOverridePlugin={mockDebugOverridePlugin}>
         <TestConsumer />
       </FlagSdkOverrideProvider>,
     );
@@ -181,7 +181,7 @@ describe('FlagSdkOverrideProvider', () => {
     });
 
     render(
-      <FlagSdkOverrideProvider flagOverridePlugin={mockFlagOverridePlugin}>
+      <FlagSdkOverrideProvider debugOverridePlugin={mockDebugOverridePlugin}>
         <TestConsumer />
       </FlagSdkOverrideProvider>,
     );

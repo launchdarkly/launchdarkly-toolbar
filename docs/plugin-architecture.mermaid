@@ -7,7 +7,7 @@ graph TB
     end
 
     subgraph "🔧 Plugin Layer"
-        FlagOverridePlugin[FlagOverridePlugin<br/>LDPlugin Implementation]
+        DebugOverridePlugin[DebugOverridePlugin<br/>LDPlugin Implementation]
     end
 
     subgraph "🚀 LaunchDarkly SDK Stack"
@@ -31,11 +31,11 @@ graph TB
     App -->|Initialize with plugin| ReactSDK
     ReactSDK -->|Initialize client| JSSDK
     JSSDK -->|Core logic| CommonSDK
-    FlagOverridePlugin -->|Register plugin| ReactSDK
+    DebugOverridePlugin -->|Register plugin| ReactSDK
 
     %% 🔧 Debug Interface Handshake
-    CommonSDK -->|Provide debug interface| FlagOverridePlugin
-    FlagOverridePlugin -->|Store overrides| OverrideStore
+    CommonSDK -->|Provide debug interface| DebugOverridePlugin
+    DebugOverridePlugin -->|Store overrides| OverrideStore
 
     %% 🎨 Client Flow (JS SDK)
     ReactSDK -->|Provide context| App
@@ -43,13 +43,13 @@ graph TB
     Toolbar -->|Render controls| TabContent
 
     %% ⚡ Direct Plugin Integration
-    Toolbar -.->|flagOverridePlugin prop| FlagOverridePlugin
-    TabContent -.->|"setOverride(), getAllOverrides()"| FlagOverridePlugin
+    Toolbar -.->|debugOverridePlugin prop| DebugOverridePlugin
+    TabContent -.->|"setOverride(), getAllOverrides()"| DebugOverridePlugin
 
 
 
     %% 💾 Storage Management
-    FlagOverridePlugin -->|Persist overrides| LocalStorage
+    DebugOverridePlugin -->|Persist overrides| LocalStorage
 
     %% 🎯 Flag Evaluation Priority
     CommonSDK -->|Evaluate flags| FlagStore
@@ -67,7 +67,7 @@ graph TB
     classDef flags fill:#f87171,color:black
 
     class App,Toolbar,TabContent app
-    class FlagOverridePlugin plugin
+    class DebugOverridePlugin plugin
     class ReactSDK,JSSDK,CommonSDK sdk
     class FlagStore,OverrideStore flags
     class LocalStorage storage

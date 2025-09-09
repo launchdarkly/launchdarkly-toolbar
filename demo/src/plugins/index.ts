@@ -1,3 +1,3 @@
-import { FlagOverridePlugin } from '@launchdarkly/toolbar';
+import { DebugOverridePlugin } from '@launchdarkly/toolbar';
 
-export const flagOverridePlugin = new FlagOverridePlugin();
+export const debugOverridePlugin = new DebugOverridePlugin();

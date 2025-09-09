@@ -3,7 +3,7 @@ import { asyncWithLDProvider } from 'launchdarkly-react-client-sdk';
 import { AppWrapper } from './AppWrapper';
 
 import './App.css';
-import { flagOverridePlugin } from './plugins';
+import { debugOverridePlugin } from './plugins';
 
 function App() {
   const [LDProvider, setLDProvider] = useState<React.FC<{ children: React.ReactNode }> | null>(null);
@@ -16,7 +16,7 @@ function App() {
           baseUrl: import.meta.env.VITE_LD_BASE_URL,
           streamUrl: import.meta.env.VITE_LD_STREAM_URL,
           eventsUrl: import.meta.env.VITE_LD_EVENTS_URL,
-          plugins: [flagOverridePlugin],
+          plugins: [debugOverridePlugin],
         },
       });
       setLDProvider(() => Provider as React.FC<{ children: React.ReactNode }>);

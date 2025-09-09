@@ -140,7 +140,7 @@ describe('ExpandedToolbarContent - User Interaction Flows', () => {
 
       render(
         <TestWrapper>
-          <ExpandedToolbarContent {...defaultProps} mode="sdk" flagOverridePlugin={mockDebugPlugin} />
+          <ExpandedToolbarContent {...defaultProps} mode="sdk" debugOverridePlugin={mockDebugPlugin} />
         </TestWrapper>,
       );
 
@@ -173,7 +173,7 @@ describe('ExpandedToolbarContent - User Interaction Flows', () => {
             {...defaultProps}
             activeTab="flag-sdk"
             mode="sdk"
-            flagOverridePlugin={mockDebugPlugin}
+            debugOverridePlugin={mockDebugPlugin}
           />
         </TestWrapper>,
       );

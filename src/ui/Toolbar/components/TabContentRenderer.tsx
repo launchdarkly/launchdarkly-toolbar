@@ -4,24 +4,24 @@ import { FlagDevServerTabContent } from '../TabContent/FlagDevServerTabContent';
 import { SettingsTabContent } from '../TabContent/SettingsTabContent';
 import { ANIMATION_CONFIG, DIMENSIONS } from '../constants';
 import { TabId, ToolbarMode } from '../types';
-import type { IFlagOverridePlugin } from '../../../types/plugin';
+import type { IDebugOverridePlugin } from '../../../types/plugin';
 import { FlagSdkOverrideTabContent } from '../TabContent/FlagSdkOverrideTabContent';
 
 interface TabContentRendererProps {
   activeTab: TabId;
   slideDirection: number;
-  flagOverridePlugin?: IFlagOverridePlugin;
+  debugOverridePlugin?: IDebugOverridePlugin;
   mode: ToolbarMode;
 }
 
 export function TabContentRenderer(props: TabContentRendererProps) {
-  const { activeTab, slideDirection, flagOverridePlugin, mode } = props;
+  const { activeTab, slideDirection, debugOverridePlugin, mode } = props;
 
   const renderContent = () => {
     switch (activeTab) {
       case 'flag-sdk':
-        if (!flagOverridePlugin) return null;
-        return <FlagSdkOverrideTabContent flagOverridePlugin={flagOverridePlugin} />;
+        if (!debugOverridePlugin) return null;
+        return <FlagSdkOverrideTabContent debugOverridePlugin={debugOverridePlugin} />;
       case 'flag-dev-server':
         return <FlagDevServerTabContent />;
       case 'settings':
