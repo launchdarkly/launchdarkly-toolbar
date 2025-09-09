@@ -65,7 +65,7 @@ describe('LaunchDarklyToolbar - User Flows', () => {
   describe('SDK Mode - Client-Side Override Flow', () => {
     test('developer with flag override plugin can manage client-side flag overrides', async () => {
       // GIVEN: Developer has a flag override plugin configured for local overrides
-      const mockDebugOverridePlugin = {
+      const mockFlagOverridePlugin = {
         getFlagSdkOverride: vi.fn().mockResolvedValue({}),
         setFlagSdkOverride: vi.fn(),
         clearFlagSdkOverride: vi.fn(),
@@ -75,10 +75,12 @@ describe('LaunchDarklyToolbar - User Flows', () => {
         clearAllOverrides: vi.fn(),
         getAllOverrides: vi.fn().mockResolvedValue({}),
         getClient: vi.fn(),
+        getMetadata: vi.fn(),
+        register: vi.fn(),
       };
 
       // WHEN: They load the toolbar with their flag override plugin
-      render(<LaunchDarklyToolbar debugOverridePlugin={mockDebugOverridePlugin} />);
+      render(<LaunchDarklyToolbar flagOverridePlugin={mockFlagOverridePlugin} />);
 
       const toolbar = screen.getByTestId('launchdarkly-toolbar');
       fireEvent.mouseEnter(toolbar);

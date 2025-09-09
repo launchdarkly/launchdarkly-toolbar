@@ -126,7 +126,7 @@ describe('ExpandedToolbarContent - User Interaction Flows', () => {
   describe('SDK Mode - Client-Side Override Flow', () => {
     test('developer with flag override plugin explores client-side override capabilities', () => {
       // GIVEN: Developer has a flag override plugin configured and expands the toolbar
-      const mockDebugPlugin = {
+      const mockFlagOverridePlugin = {
         getFlagSdkOverride: vi.fn().mockResolvedValue({}),
         setFlagSdkOverride: vi.fn(),
         clearFlagSdkOverride: vi.fn(),
@@ -136,11 +136,13 @@ describe('ExpandedToolbarContent - User Interaction Flows', () => {
         clearAllOverrides: vi.fn(),
         getAllOverrides: vi.fn().mockResolvedValue({}),
         getClient: vi.fn(),
+        getMetadata: vi.fn(),
+        register: vi.fn(),
       };
 
       render(
         <TestWrapper>
-          <ExpandedToolbarContent {...defaultProps} mode="sdk" debugOverridePlugin={mockDebugPlugin} />
+          <ExpandedToolbarContent {...defaultProps} mode="sdk" flagOverridePlugin={mockFlagOverridePlugin} />
         </TestWrapper>,
       );
 
@@ -155,7 +157,7 @@ describe('ExpandedToolbarContent - User Interaction Flows', () => {
 
     test('developer works with local flag overrides', () => {
       // GIVEN: Developer wants to override flags locally for testing
-      const mockDebugPlugin = {
+      const mockFlagOverridePlugin = {
         getFlagSdkOverride: vi.fn().mockResolvedValue({}),
         setFlagSdkOverride: vi.fn(),
         clearFlagSdkOverride: vi.fn(),
@@ -165,6 +167,8 @@ describe('ExpandedToolbarContent - User Interaction Flows', () => {
         clearAllOverrides: vi.fn(),
         getAllOverrides: vi.fn().mockResolvedValue({}),
         getClient: vi.fn(),
+        getMetadata: vi.fn(),
+        register: vi.fn(),
       };
 
       render(
@@ -173,7 +177,7 @@ describe('ExpandedToolbarContent - User Interaction Flows', () => {
             {...defaultProps}
             activeTab="flag-sdk"
             mode="sdk"
-            debugOverridePlugin={mockDebugPlugin}
+            flagOverridePlugin={mockFlagOverridePlugin}
           />
         </TestWrapper>,
       );

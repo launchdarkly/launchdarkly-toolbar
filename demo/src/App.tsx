@@ -6,7 +6,7 @@ import './App.css';
 import { Home } from './pages/Home';
 import { DevServerMode } from './pages/DevServerMode';
 import { SDKMode } from './pages/SDKMode';
-import { debugOverridePlugin } from './plugins';
+import { flagOverridePlugin } from './plugins';
 
 function App() {
   const [LDProvider, setLDProvider] = useState<React.FC<{ children: React.ReactNode }> | null>(null);
@@ -19,7 +19,7 @@ function App() {
           baseUrl: import.meta.env.VITE_LD_BASE_URL,
           streamUrl: import.meta.env.VITE_LD_STREAM_URL,
           eventsUrl: import.meta.env.VITE_LD_EVENTS_URL,
-          plugins: [debugOverridePlugin],
+          plugins: [flagOverridePlugin],
         },
       });
       setLDProvider(() => Provider as React.FC<{ children: React.ReactNode }>);

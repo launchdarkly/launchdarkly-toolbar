@@ -1,5 +1,5 @@
 import { createContext, useContext, useState, useEffect, useCallback } from 'react';
-import type { IDebugOverridePlugin } from '../../../types/plugin';
+import type { IFlagOverridePlugin } from '../../../types/plugin';
 
 interface LocalFlag {
   key: string;
@@ -18,14 +18,14 @@ const FlagSdkOverrideContext = createContext<FlagSdkOverrideContextType | null>(
 
 interface FlagSdkOverrideProviderProps {
   children: React.ReactNode;
-  debugOverridePlugin: IDebugOverridePlugin;
+  flagOverridePlugin: IFlagOverridePlugin;
 }
 
-export function FlagSdkOverrideProvider({ children, debugOverridePlugin }: FlagSdkOverrideProviderProps) {
+export function FlagSdkOverrideProvider({ children, flagOverridePlugin }: FlagSdkOverrideProviderProps) {
   const [flags, setFlags] = useState<Record<string, LocalFlag>>({});
   const [isLoading, setIsLoading] = useState(true);
 
-  const ldClient = debugOverridePlugin.getClient();
+  const ldClient = flagOverridePlugin.getClient();
 
   // Helper functions - memoized to prevent unnecessary re-renders
   const formatFlagName = useCallback((flagKey: string): string => {
@@ -45,7 +45,7 @@ export function FlagSdkOverrideProvider({ children, debugOverridePlugin }: FlagS
   // Build flags from raw values and overrides
   const buildFlags = useCallback(
     (allFlags: Record<string, any>): Record<string, LocalFlag> => {
-      const overrides = debugOverridePlugin.getAllOverrides();
+      const overrides = flagOverridePlugin.getAllOverrides();
       const result: Record<string, LocalFlag> = {};
 
       Object.keys(allFlags)
@@ -63,7 +63,7 @@ export function FlagSdkOverrideProvider({ children, debugOverridePlugin }: FlagS
 
       return result;
     },
-    [debugOverridePlugin, formatFlagName, inferFlagType],
+    [flagOverridePlugin, formatFlagName, inferFlagType],
   );
 
   useEffect(() => {

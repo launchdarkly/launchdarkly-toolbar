@@ -60,7 +60,7 @@ This is a demo application showcasing the LaunchDarkly Toolbar component. It pro
    - **Position**: Choose between left or right positioning
    - **Dev Server URL**: Set your LaunchDarkly dev server URL (Dev Server Mode only)
    - **Project Key**: Optionally specify a project key (Dev Server Mode only)
-   - **Debug Plugin**: Enable/disable the flag override plugin (SDK Mode)
+   - **Flag Override Plugin**: Enable/disable the flag override plugin (SDK Mode)
 
 2. **Interact with the toolbar:**
    - Look for the circular toolbar in the bottom corner
@@ -84,7 +84,7 @@ The demo allows you to test different configurations:
 - **Position**: Test toolbar positioning on left or right side
 - **Dev Server URL**: Connect to different LaunchDarkly environments (Dev Server Mode)
 - **Project Key**: Test auto-detection vs explicit project selection (Dev Server Mode)
-- **Debug Plugin**: Enable/disable override functionality (SDK Mode)
+- **Flag Override Plugin**: Enable/disable override functionality (SDK Mode)
 
 ## Development
 
