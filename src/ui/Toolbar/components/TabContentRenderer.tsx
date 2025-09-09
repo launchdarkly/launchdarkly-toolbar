@@ -21,6 +21,7 @@ export function TabContentRenderer(props: TabContentRendererProps) {
   const renderContent = () => {
     switch (activeTab) {
       case 'flag-sdk':
+        if (!debugOverridePlugin) return null;
         return <FlagSdkOverrideTabContent debugOverridePlugin={debugOverridePlugin} />;
       case 'flag-dev-server':
         return <FlagDevServerTabContent />;
