@@ -34,7 +34,7 @@ function App() {
 
 ```tsx
 import { LaunchDarklyToolbar } from '@launchdarkly/toolbar';
-import { debugOverridePlugin } from './your-flag-override-plugin';
+import { debugOverridePlugin } from './your-debug-override-plugin';
 import { eventInterceptionPlugin } from './your-event-interception-plugin';
 
 function App() {

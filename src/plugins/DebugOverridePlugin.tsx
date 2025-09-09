@@ -4,11 +4,11 @@ import type { LDClient, LDPlugin, LDDebugOverride, LDPluginMetadata } from 'laun
  * Configuration options for the DebugOverridePlugin
  */
 export type DebugOverridePluginConfig = {
-  /** Namespace for localStorage keys. Defaults to 'ld-flag-override' */
+  /** Namespace for localStorage keys. Defaults to 'ld-debug-override' */
   storageNamespace?: string;
 };
 
-const DEFAULT_STORAGE_NAMESPACE = 'ld-flag-override';
+const DEFAULT_STORAGE_NAMESPACE = 'ld-debug-override';
 
 export class DebugOverridePlugin implements LDPlugin {
   private debugOverride?: LDDebugOverride;
