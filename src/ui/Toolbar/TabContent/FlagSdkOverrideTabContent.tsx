@@ -19,15 +19,15 @@ import type { LocalFlag } from '../context';
 import * as sharedStyles from './FlagDevServerTabContent.css';
 import * as actionStyles from '../components/ActionButtonsContainer.css';
 
-interface FlagSdkOverrideTabContentProps {
+interface FlagSdkOverrideTabContentInnerProps {
   debugOverridePlugin: IDebugOverridePlugin;
 }
 
-function FlagSdkOverrideTabContentInner(props: FlagSdkOverrideTabContentProps) {
+function FlagSdkOverrideTabContentInner(props: FlagSdkOverrideTabContentInnerProps) {
   const { debugOverridePlugin } = props;
   const { searchTerm } = useSearchContext();
   const { flags, isLoading } = useFlagSdkOverrideContext();
-  const ldClient = debugOverridePlugin.getClient();
+  const ldClient = debugOverridePlugin?.getClient();
   const [showOverriddenOnly, setShowOverriddenOnly] = useState(false);
   const parentRef = useRef<HTMLDivElement>(null);
 
@@ -51,6 +51,19 @@ function FlagSdkOverrideTabContentInner(props: FlagSdkOverrideTabContentProps) {
     overscan: VIRTUALIZATION.OVERSCAN,
   });
 
+  if (!ldClient) {
+    return (
+      <GenericHelpText
+        title="LaunchDarkly client is not available"
+        subtitle="To use local flag overrides, ensure the LaunchDarkly client is initialized and available."
+      />
+    );
+  }
+
+  if (isLoading) {
+    return <GenericHelpText title="Loading flags..." subtitle="Please wait while we load your feature flags" />;
+  }
+
   // Override operations
   const handleSetOverride = (flagKey: string, value: any) => {
     debugOverridePlugin.setOverride(flagKey, value);
@@ -66,19 +79,6 @@ function FlagSdkOverrideTabContentInner(props: FlagSdkOverrideTabContentProps) {
   const handleClearAllOverrides = () => {
     debugOverridePlugin.clearAllOverrides();
   };
-
-  if (!ldClient || !debugOverridePlugin) {
-    return (
-      <GenericHelpText
-        title="LaunchDarkly client is not available"
-        subtitle="To use local flag overrides, ensure the flag override plugin is added to your LaunchDarkly client configuration."
-      />
-    );
-  }
-
-  if (isLoading) {
-    return <GenericHelpText title="Loading flags..." subtitle="Please wait while we load your feature flags" />;
-  }
 
   // Count total overridden flags (not just filtered ones)
   const totalOverriddenFlags = useMemo(() => {
@@ -186,10 +186,23 @@ function FlagSdkOverrideTabContentInner(props: FlagSdkOverrideTabContentProps) {
   );
 }
 
+interface FlagSdkOverrideTabContentProps {
+  debugOverridePlugin?: IDebugOverridePlugin;
+}
+
 export function FlagSdkOverrideTabContent(props: FlagSdkOverrideTabContentProps) {
+  if (!props.debugOverridePlugin) {
+    return (
+      <GenericHelpText
+        title="Debug override plugin is not available"
+        subtitle="To use local flag overrides, ensure the debug override plugin is added to your LaunchDarkly client configuration."
+      />
+    );
+  }
+
   return (
     <FlagSdkOverrideProvider debugOverridePlugin={props.debugOverridePlugin}>
-      <FlagSdkOverrideTabContentInner {...props} />
+      <FlagSdkOverrideTabContentInner debugOverridePlugin={props.debugOverridePlugin} />
     </FlagSdkOverrideProvider>
   );
 }
