@@ -2,16 +2,16 @@ type Environment = 'ci' | 'local';
 
 type EnvironmentConfig = {
   [key in Environment]: {
-    storyPath: string;
+    basePath: string;
   };
 };
 
 const envConfig: EnvironmentConfig = {
   ci: {
-    storyPath: '/?path=/story/testing-toolbar--default',
+    basePath: '/ci',
   },
   local: {
-    storyPath: '/?path=/story/ui-launchdarklytoolbar--default',
+    basePath: '/local',
   },
 };
 

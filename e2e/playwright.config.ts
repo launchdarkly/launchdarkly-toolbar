@@ -22,7 +22,7 @@ export default defineConfig({
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
   use: {
     /* Base URL to use in actions like `await page.goto('/')`. */
-    baseURL: 'http://localhost:6006',
+    baseURL: 'http://localhost:5173',
 
     /* Collect trace when retrying the failed test or on CI for all tests. */
     trace: process.env.CI ? 'retain-on-failure' : 'on-first-retry',
@@ -47,8 +47,8 @@ export default defineConfig({
 
   /* Run your local dev server before starting the tests */
   webServer: {
-    command: process.env.CI ? 'pnpm exec http-server storybook-static -p 6006 -s' : 'pnpm storybook',
-    url: 'http://localhost:6006',
+    command: process.env.CI ? 'pnpm demo:build && pnpm exec http-server demo/dist -p 5173 -s' : 'pnpm demo:dev',
+    url: 'http://localhost:5173',
     reuseExistingServer: !process.env.CI,
     timeout: 120 * 1000,
   },

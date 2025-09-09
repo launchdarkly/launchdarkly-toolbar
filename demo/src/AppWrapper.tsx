@@ -1,17 +1,17 @@
-import { useState } from 'react';
-import { LaunchDarklyToolbar } from '@launchdarkly/toolbar';
-
+import type { ReactNode } from 'react';
 import './App.css';
 import { useLDClient } from 'launchdarkly-react-client-sdk';
-import { debugOverridePlugin } from './plugins';
 
-export function AppWrapper() {
-  const [position, setPosition] = useState<'left' | 'right'>('left');
-  const [devServerUrl, setDevServerUrl] = useState('');
-  const [projectKey, setProjectKey] = useState('');
+interface AppWrapperProps {
+  children: ReactNode;
+  version: 'CI' | 'Local';
+  mode: 'dev-server' | 'sdk';
+  position: 'left' | 'right';
+  onPositionChange: (position: 'left' | 'right') => void;
+}
 
+export function AppWrapper({ children, version, mode, position, onPositionChange }: AppWrapperProps) {
   const ldClient = useLDClient();
-
   const allFlags = ldClient?.allFlags() || {};
 
   const formatValue = (value: unknown): string => {
@@ -34,42 +34,35 @@ export function AppWrapper() {
     <div className="app">
       <div className="container">
         <header className="header">
-          <h1>LaunchDarkly Toolbar Demo</h1>
-          <p>This demo showcases the LaunchDarkly Toolbar component with different configurations.</p>
+          <h1>
+            LaunchDarkly Toolbar Demo ({version} - {mode.replace('-', ' ')} mode)
+          </h1>
+          <p>
+            This demo showcases the LaunchDarkly Toolbar component with different configurations.
+            {version === 'CI' && ' Using the built/published version.'}
+            {version === 'Local' && ' Using the local workspace version.'}
+            {mode === 'dev-server' && ' Testing with LaunchDarkly dev server integration.'}
+            {mode === 'sdk' && ' Testing with direct LaunchDarkly React SDK integration.'}
+          </p>
         </header>
 
         <main className="main">
           <div className="config-panel">
             <h2>Configuration</h2>
+
             <div className="config-group">
               <label htmlFor="position">Position:</label>
-              <select id="position" value={position} onChange={(e) => setPosition(e.target.value as 'left' | 'right')}>
+              <select
+                id="position"
+                value={position}
+                onChange={(e) => onPositionChange(e.target.value as 'left' | 'right')}
+              >
                 <option value="right">Right</option>
                 <option value="left">Left</option>
               </select>
             </div>
 
-            <div className="config-group">
-              <label htmlFor="devServerUrl">Dev Server URL:</label>
-              <input
-                id="devServerUrl"
-                type="text"
-                value={devServerUrl}
-                onChange={(e) => setDevServerUrl(e.target.value)}
-                placeholder="http://localhost:8765"
-              />
-            </div>
-
-            <div className="config-group">
-              <label htmlFor="projectKey">Project Key (optional):</label>
-              <input
-                id="projectKey"
-                type="text"
-                value={projectKey}
-                onChange={(e) => setProjectKey(e.target.value)}
-                placeholder="Leave empty for auto-detection"
-              />
-            </div>
+            {children}
           </div>
 
           <div className="demo-content">
@@ -102,14 +95,6 @@ export function AppWrapper() {
           </div>
         </main>
       </div>
-
-      {/* The LaunchDarkly Toolbar */}
-      <LaunchDarklyToolbar
-        position={position}
-        projectKey={projectKey || undefined}
-        devServerUrl={devServerUrl || undefined}
-        debugOverridePlugin={debugOverridePlugin}
-      />
     </div>
   );
 }
