@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { LaunchDarklyToolbar } from '@launchdarkly/toolbar';
 import { AppWrapper } from '../AppWrapper';
-import { debugOverridePlugin } from '../plugins';
+import { flagOverridePlugin } from '../plugins';
 
 interface SDKModeProps {
   version: 'CI' | 'Local';
@@ -19,7 +19,7 @@ export function SDKMode({ version }: SDKModeProps) {
         </p>
       </div>
 
-      <LaunchDarklyToolbar position={position} debugOverridePlugin={debugOverridePlugin} />
+      <LaunchDarklyToolbar position={position} flagOverridePlugin={flagOverridePlugin} />
     </AppWrapper>
   );
 }
