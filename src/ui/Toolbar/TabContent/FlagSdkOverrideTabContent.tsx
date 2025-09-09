@@ -20,7 +20,7 @@ import * as sharedStyles from './FlagDevServerTabContent.css';
 import * as actionStyles from '../components/ActionButtonsContainer.css';
 
 interface FlagSdkOverrideTabContentProps {
-  debugOverridePlugin?: IDebugOverridePlugin;
+  debugOverridePlugin: IDebugOverridePlugin;
 }
 
 function FlagSdkOverrideTabContentInner(props: FlagSdkOverrideTabContentProps) {
