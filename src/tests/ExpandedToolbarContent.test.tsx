@@ -136,6 +136,8 @@ describe('ExpandedToolbarContent - User Interaction Flows', () => {
         clearAllOverrides: vi.fn(),
         getAllOverrides: vi.fn().mockResolvedValue({}),
         getClient: vi.fn(),
+        getMetadata: vi.fn(),
+        register: vi.fn(),
       };
 
       render(
@@ -165,6 +167,8 @@ describe('ExpandedToolbarContent - User Interaction Flows', () => {
         clearAllOverrides: vi.fn(),
         getAllOverrides: vi.fn().mockResolvedValue({}),
         getClient: vi.fn(),
+        getMetadata: vi.fn(),
+        register: vi.fn(),
       };
 
       render(
