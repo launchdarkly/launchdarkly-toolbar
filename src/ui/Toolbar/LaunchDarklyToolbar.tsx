@@ -9,16 +9,16 @@ import { ToolbarMode, ToolbarPosition, getToolbarMode } from './types/toolbar';
 
 import * as styles from './LaunchDarklyToolbar.css';
 import { DevServerProvider } from './context';
-import type { IEventInterceptionPlugin, IDebugOverridePlugin } from '../../types/plugin';
+import type { IEventInterceptionPlugin, IFlagOverridePlugin } from '../../types/plugin';
 
 export interface LdToolbarProps {
   mode: ToolbarMode;
-  debugOverridePlugin?: IDebugOverridePlugin;
+  flagOverridePlugin?: IFlagOverridePlugin;
   eventInterceptionPlugin?: IEventInterceptionPlugin;
 }
 
 export function LdToolbar(props: LdToolbarProps) {
-  const { mode, debugOverridePlugin, eventInterceptionPlugin } = props;
+  const { mode, flagOverridePlugin, eventInterceptionPlugin } = props;
   const { searchTerm } = useSearchContext();
   const { state, handlePositionChange } = useDevServerContext();
   const toolbarState = useToolbarState();
@@ -96,8 +96,9 @@ export function LdToolbar(props: LdToolbarProps) {
             onClose={handleClose}
             onTabChange={handleTabChange}
             setSearchIsExpanded={setSearchIsExpanded}
+            flagOverridePlugin={flagOverridePlugin}
             mode={mode}
-            debugOverridePlugin={debugOverridePlugin}
+            flagOverridePlugin={flagOverridePlugin}
             eventInterceptionPlugin={eventInterceptionPlugin}
           />
         )}
@@ -109,7 +110,7 @@ export function LdToolbar(props: LdToolbarProps) {
 export interface LaunchDarklyToolbarProps {
   devServerUrl?: string; // Optional - will default to http://localhost:8765
   projectKey?: string; // Optional - will auto-detect first available project if not provided
-  debugOverridePlugin?: IDebugOverridePlugin; // Optional - for flag override functionality
+  flagOverridePlugin?: IFlagOverridePlugin; // Optional - for flag override functionality
   eventInterceptionPlugin?: IEventInterceptionPlugin; // Optional - for event tracking
   pollIntervalInMs?: number; // Optional - will default to 5000ms
   position?: ToolbarPosition; // Optional - will default to 'right'
@@ -121,7 +122,7 @@ export function LaunchDarklyToolbar(props: LaunchDarklyToolbarProps) {
     position,
     devServerUrl,
     pollIntervalInMs = 5000,
-    debugOverridePlugin,
+    flagOverridePlugin,
     eventInterceptionPlugin,
   } = props;
   const isVisible = useToolbarVisibility();
@@ -145,7 +146,7 @@ export function LaunchDarklyToolbar(props: LaunchDarklyToolbarProps) {
       <SearchProvider>
         <LdToolbar
           mode={mode}
-          debugOverridePlugin={debugOverridePlugin}
+          flagOverridePlugin={flagOverridePlugin}
           eventInterceptionPlugin={eventInterceptionPlugin}
         />
       </SearchProvider>

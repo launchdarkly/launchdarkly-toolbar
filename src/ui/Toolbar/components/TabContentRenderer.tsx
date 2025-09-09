@@ -5,24 +5,23 @@ import { EventsTabContent } from '../TabContent/EventsTabContent';
 import { SettingsTabContent } from '../TabContent/SettingsTabContent';
 import { ANIMATION_CONFIG, DIMENSIONS } from '../constants';
 import { TabId, ToolbarMode } from '../types';
-import type { IDebugOverridePlugin, IEventInterceptionPlugin } from '../../../types/plugin';
+import type { IFlagOverridePlugin, IEventInterceptionPlugin } from '../../../types/plugin';
 
 interface TabContentRendererProps {
   activeTab: TabId;
   slideDirection: number;
   mode: ToolbarMode;
-  debugOverridePlugin?: IDebugOverridePlugin;
+  flagOverridePlugin?: IFlagOverridePlugin;
   eventInterceptionPlugin?: IEventInterceptionPlugin;
 }
 
 export function TabContentRenderer(props: TabContentRendererProps) {
-  const { activeTab, slideDirection, mode, debugOverridePlugin, eventInterceptionPlugin } = props;
+  const { activeTab, slideDirection, mode, flagOverridePlugin, eventInterceptionPlugin } = props;
 
   const renderContent = () => {
     switch (activeTab) {
       case 'flag-sdk':
-        if (!debugOverridePlugin) return null;
-        return <FlagSdkOverrideTabContent debugOverridePlugin={debugOverridePlugin} />;
+        return <FlagSdkOverrideTabContent flagOverridePlugin={flagOverridePlugin} />;
       case 'flag-dev-server':
         return <FlagDevServerTabContent />;
       case 'events':

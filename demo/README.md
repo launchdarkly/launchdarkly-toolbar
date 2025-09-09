@@ -9,9 +9,8 @@ This is a demo application showcasing the LaunchDarkly Toolbar component. It pro
 - ✅ **Position configuration** (left/right)
 - ✅ **Dev server connection** with configurable URL
 - ✅ **Project key configuration** with auto-detection fallback
-- ✅ **Debug override plugin** integration
-- # ✅ **Event interception plugin** integration
 - ✅ **Flag override plugin** integration
+- ✅ **Event interception plugin** integration
 - ✅ **Flag management** and toggling
 - ✅ **Local override testing**
 - ✅ **Event monitoring** and tracking
@@ -63,14 +62,14 @@ This is a demo application showcasing the LaunchDarkly Toolbar component. It pro
    - **Position**: Choose between left or right positioning
    - **Dev Server URL**: Set your LaunchDarkly dev server URL (Dev Server Mode only)
    - **Project Key**: Optionally specify a project key (Dev Server Mode only)
-   - **Debug Plugin**: Enable/disable the debug override plugin (SDK Mode)
+   - **Flag Override Plugin**: Enable/disable the flag override plugin (SDK Mode)
    - **Event Plugin**: Enable/disable the event interception plugin (SDK Mode)
 
 2. **Interact with the toolbar:**
    - Look for the circular toolbar in the bottom corner
    - Hover over it to expand the full interface
    - **Dev Server Mode**: Explore the Flags and Settings tabs
-   - **SDK Mode**: Explore the Overrides (if debug plugin enabled), Events (if event plugin enabled), and Settings tabs
+   - **SDK Mode**: Explore the Overrides (if flag override plugin enabled), Events (if event plugin enabled), and Settings tabs
    - Test the search functionality
    - Toggle feature flags or set local overrides
 
@@ -88,7 +87,7 @@ The demo allows you to test different configurations:
 - **Position**: Test toolbar positioning on left or right side
 - **Dev Server URL**: Connect to different LaunchDarkly environments (Dev Server Mode)
 - **Project Key**: Test auto-detection vs explicit project selection (Dev Server Mode)
-- **Debug Plugin**: Enable/disable override functionality (SDK Mode)
+- **Flag Override Plugin**: Enable/disable override functionality (SDK Mode)
 - **Event Plugin**: Enable/disable event interception and monitoring (SDK Mode)
 
 ## Development
@@ -105,7 +104,7 @@ This demo is part of a pnpm workspace and automatically uses the local version o
 
 ### SDK Mode Issues
 
-1. **No Overrides tab**: Make sure the debug override plugin is enabled in the demo configuration
+1. **No Overrides tab**: Make sure the flag override plugin is enabled in the demo configuration
 2. **No Events tab**: Make sure the event interception plugin is enabled in the demo configuration
 3. **Overrides not working**: Check the browser console for plugin errors
 4. **Events not showing**: Verify the event plugin is properly configured and LaunchDarkly events are being generated

@@ -4,7 +4,7 @@ import { expect, test, describe, vi, beforeEach } from 'vitest';
 import { ExpandedToolbarContent } from '../ui/Toolbar/components/ExpandedToolbarContent';
 import { DevServerProvider } from '../ui/Toolbar/context/DevServerProvider';
 import { SearchProvider } from '../ui/Toolbar/context/SearchProvider';
-import { IDebugOverridePlugin, IEventInterceptionPlugin } from '../types/plugin';
+import { IFlagOverridePlugin, IEventInterceptionPlugin } from '../types/plugin';
 
 // Mock the DevServerClient and FlagStateManager
 vi.mock('../services/DevServerClient', () => ({
@@ -89,7 +89,7 @@ describe('ExpandedToolbarContent - User Interaction Flows', () => {
     setSearchIsExpanded: vi.fn(),
   };
 
-  const createMockDebugPlugin = (): IDebugOverridePlugin & {
+  const createMockFlagOverridePlugin = (): IFlagOverridePlugin & {
     getLocalOverrides: () => Promise<Record<string, unknown>>;
     setLocalOverride: (...args: any[]) => void;
     clearLocalOverride: (...args: any[]) => void;
@@ -104,8 +104,6 @@ describe('ExpandedToolbarContent - User Interaction Flows', () => {
     clearAllOverrides: vi.fn(),
     getAllOverrides: vi.fn().mockResolvedValue({}),
     getClient: vi.fn(),
-    getMetadata: vi.fn(),
-    register: vi.fn(),
   });
 
   const createMockEventInterceptionPlugin = (): IEventInterceptionPlugin => ({
@@ -159,7 +157,7 @@ describe('ExpandedToolbarContent - User Interaction Flows', () => {
   describe('SDK Mode - Client-Side Override Flow', () => {
     test('developer with flag override plugin explores client-side override capabilities', () => {
       // GIVEN: Developer has a flag override plugin and event interception configured
-      const mockDebugPlugin = createMockDebugPlugin();
+      const mockFlagOverridePlugin = createMockFlagOverridePlugin();
       const mockEventInterceptionPlugin = createMockEventInterceptionPlugin();
 
       render(
@@ -167,7 +165,7 @@ describe('ExpandedToolbarContent - User Interaction Flows', () => {
           <ExpandedToolbarContent
             {...defaultProps}
             mode="sdk"
-            debugOverridePlugin={mockDebugPlugin}
+            flagOverridePlugin={mockFlagOverridePlugin}
             eventInterceptionPlugin={mockEventInterceptionPlugin}
           />
         </TestWrapper>,
@@ -185,7 +183,7 @@ describe('ExpandedToolbarContent - User Interaction Flows', () => {
 
     test('developer works with local flag overrides', () => {
       // GIVEN: Developer wants to override flags locally for testing
-      const mockDebugPlugin = createMockDebugPlugin();
+      const mockFlagOverridePlugin = createMockFlagOverridePlugin();
       const mockEventInterceptionPlugin = createMockEventInterceptionPlugin();
 
       render(
@@ -194,7 +192,7 @@ describe('ExpandedToolbarContent - User Interaction Flows', () => {
             {...defaultProps}
             activeTab="flag-sdk"
             mode="sdk"
-            debugOverridePlugin={mockDebugPlugin}
+            flagOverridePlugin={mockFlagOverridePlugin}
             eventInterceptionPlugin={mockEventInterceptionPlugin}
           />
         </TestWrapper>,
@@ -225,7 +223,7 @@ describe('ExpandedToolbarContent - User Interaction Flows', () => {
       expect(screen.getByTestId('events-tab-content')).toBeInTheDocument();
     });
 
-    test('developer without debug plugin has limited functionality', () => {
+    test('developer without flag override plugin has limited functionality', () => {
       // GIVEN: Developer is using the toolbar without debug capabilities
       render(
         <TestWrapper>

@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react';
 
 import { LaunchDarklyToolbar } from '../src/ui/Toolbar/LaunchDarklyToolbar';
-import { DebugOverridePlugin } from '../src/plugins/DebugOverridePlugin';
+import { FlagOverridePlugin } from '../src/plugins/FlagOverridePlugin';
 import { EventInterceptionPlugin } from '../src/plugins/EventInterceptionPlugin';
 
 const meta: Meta<typeof LaunchDarklyToolbar> = {
@@ -18,7 +18,7 @@ const meta: Meta<typeof LaunchDarklyToolbar> = {
   },
   args: {
     position: 'right',
-    debugOverridePlugin: new DebugOverridePlugin(),
+    flagOverridePlugin: new FlagOverridePlugin(),
     eventInterceptionPlugin: new EventInterceptionPlugin(),
   },
   argTypes: {
@@ -39,7 +39,7 @@ const meta: Meta<typeof LaunchDarklyToolbar> = {
       control: { type: 'number', min: 1000, max: 30000, step: 1000 },
       description: 'Polling interval in milliseconds for fetching data from dev server',
     },
-    debugOverridePlugin: {
+    flagOverridePlugin: {
       table: { disable: true },
       description: 'Plugin for flag overrides functionality',
     },
@@ -87,7 +87,7 @@ export const SdkMode: Story = {
   args: {
     // No devServerUrl - triggers SDK mode
     position: 'right',
-    debugOverridePlugin: new DebugOverridePlugin(),
+    flagOverridePlugin: new FlagOverridePlugin(),
     eventInterceptionPlugin: new EventInterceptionPlugin(),
   },
   parameters: {

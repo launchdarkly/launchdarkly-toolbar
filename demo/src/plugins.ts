@@ -1,6 +1,6 @@
-import { DebugOverridePlugin } from '../../src/plugins/DebugOverridePlugin';
+import { FlagOverridePlugin } from '../../src/plugins/FlagOverridePlugin';
 
 // Plugin for flag overrides
-export const debugOverridePlugin = new DebugOverridePlugin({
+export const flagOverridePlugin = new FlagOverridePlugin({
   storageNamespace: 'ld-demo-overrides',
 });
