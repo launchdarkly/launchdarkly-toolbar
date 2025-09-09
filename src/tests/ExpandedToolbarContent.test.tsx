@@ -207,7 +207,6 @@ describe('ExpandedToolbarContent - User Interaction Flows', () => {
 
     test('developer monitors events in SDK mode', () => {
       // GIVEN: Developer wants to monitor LaunchDarkly events
-      const mockDebugPlugin = createMockDebugPlugin();
       const mockEventInterceptionPlugin = createMockEventInterceptionPlugin();
 
       render(
