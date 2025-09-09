@@ -2,5 +2,7 @@ packages:
   - .
   - demo
 
-autoInstallPeers: true
+autoInstallPeers: false
 strictPeerDependencies: true
+
+

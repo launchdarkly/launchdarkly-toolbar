@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.10.0](https://github.com/launchdarkly/launchdarkly-toolbar/compare/toolbar-v0.9.1...toolbar-v0.10.0) (2025-09-08)
+
+
+### Features
+
+* bump launchpad ([#69](https://github.com/launchdarkly/launchdarkly-toolbar/issues/69)) ([f1573e4](https://github.com/launchdarkly/launchdarkly-toolbar/commit/f1573e492c67719c453eb57a9a18dac4a0a2a961))
+* bump launchpad again ([f1573e4](https://github.com/launchdarkly/launchdarkly-toolbar/commit/f1573e492c67719c453eb57a9a18dac4a0a2a961))
+
 ## [0.9.1](https://github.com/launchdarkly/launchdarkly-toolbar/compare/toolbar-v0.9.0...toolbar-v0.9.1) (2025-08-28)
 
 
