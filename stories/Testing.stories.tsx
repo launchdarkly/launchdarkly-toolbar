@@ -2,7 +2,6 @@ import type { Meta, StoryObj } from '@storybook/react';
 
 import { LaunchDarklyToolbar } from '@launchdarkly/toolbar';
 import { DebugOverridePlugin } from '../src/plugins/DebugOverridePlugin';
-import { EventInterceptionPlugin } from '../src/plugins/EventInterceptionPlugin';
 
 const meta: Meta<typeof LaunchDarklyToolbar> = {
   title: 'Testing/Toolbar',

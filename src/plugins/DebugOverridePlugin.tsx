@@ -1,4 +1,5 @@
-import type { LDClient, LDPlugin, LDDebugOverride, LDPluginMetadata } from 'launchdarkly-js-client-sdk';
+import type { LDClient, LDDebugOverride, LDPluginMetadata, LDFlagSet } from 'launchdarkly-js-client-sdk';
+import { IDebugOverridePlugin } from '../types/plugin';
 
 /**
  * Configuration options for the DebugOverridePlugin
@@ -10,7 +11,7 @@ export type DebugOverridePluginConfig = {
 
 const DEFAULT_STORAGE_NAMESPACE = 'ld-debug-override';
 
-export class DebugOverridePlugin implements LDPlugin {
+export class DebugOverridePlugin implements IDebugOverridePlugin {
   private debugOverride?: LDDebugOverride;
   private config: DebugOverridePluginConfig;
   private ldClient: LDClient | null = null;
@@ -148,7 +149,7 @@ export class DebugOverridePlugin implements LDPlugin {
    * Returns all currently active feature flag overrides
    * @returns Record of flag keys to their override values
    */
-  getAllOverrides(): Record<string, unknown> {
+  getAllOverrides(): Record<string, LDFlagSet> {
     if (!this.debugOverride) {
       console.warn('debugOverridePlugin: Debug interface not available');
       return {};

@@ -25,15 +25,14 @@ export function useEvents(
       return;
     }
 
-    // Get initial events
-    const initialEvents = eventInterceptionPlugin.getEvents();
-    setEvents(initialEvents.slice().reverse()); // Most recent first
+    const updateEvents = () => {
+      const allEvents = eventInterceptionPlugin.getEvents();
+      setEvents([...allEvents].reverse());
+    };
 
-    // Subscribe to updates
-    const unsubscribe = eventInterceptionPlugin.subscribe(() => {
-      const updatedEvents = eventInterceptionPlugin.getEvents();
-      setEvents(updatedEvents.slice().reverse()); // Most recent first
-    });
+    updateEvents();
+
+    const unsubscribe = eventInterceptionPlugin.subscribe(updateEvents);
 
     return unsubscribe;
   }, [eventInterceptionPlugin]);
