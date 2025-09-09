@@ -3,7 +3,7 @@ import type { LDClient, LDDebugOverride, LDFlagSet, LDFlagValue } from 'launchda
 /**
  * Interface for flag override plugins that can be used with the LaunchDarkly Toolbar
  */
-export interface IDebugOverridePlugin extends LDDebugOverride {
+export interface IFlagOverridePlugin extends LDDebugOverride {
   /**
    * Sets an override value for a feature flag
    * @param flagKey - The key of the flag to override
