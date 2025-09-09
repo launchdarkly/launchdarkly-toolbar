@@ -4,7 +4,7 @@ import { ProcessedEvent } from './events';
 /**
  * Interface for flag override plugins that can be used with the LaunchDarkly Toolbar
  */
-export interface IFlagOverridePlugin extends LDPlugin {
+export interface IDebugOverridePlugin extends LDPlugin {
   /**
    * Sets an override value for a feature flag
    * @param flagKey - The key of the flag to override

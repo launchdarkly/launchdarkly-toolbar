@@ -8,7 +8,7 @@ import { TabContentRenderer } from './TabContentRenderer';
 import { ANIMATION_CONFIG, EASING } from '../constants';
 import { ActiveTabId, ToolbarMode, getTabsForMode, getDefaultActiveTab, TAB_ORDER } from '../types';
 import { useDevServerContext } from '../context/DevServerProvider';
-import type { IFlagOverridePlugin, IEventInterceptionPlugin } from '../../../types/plugin';
+import type { IDebugOverridePlugin, IEventInterceptionPlugin } from '../../../types/plugin';
 
 import * as styles from '../LaunchDarklyToolbar.css';
 import { GearIcon, SyncIcon, ToggleOffIcon } from './icons';
@@ -25,7 +25,7 @@ interface ExpandedToolbarContentProps {
   onTabChange: (tabId: string) => void;
   setSearchIsExpanded: Dispatch<SetStateAction<boolean>>;
   mode: ToolbarMode;
-  flagOverridePlugin?: IFlagOverridePlugin;
+  debugOverridePlugin?: IDebugOverridePlugin;
   eventInterceptionPlugin?: IEventInterceptionPlugin;
 }
 
@@ -49,7 +49,7 @@ export function ExpandedToolbarContent(props: ExpandedToolbarContentProps) {
     onTabChange,
     setSearchIsExpanded,
     mode,
-    flagOverridePlugin,
+    debugOverridePlugin,
     eventInterceptionPlugin,
   } = props;
 
@@ -58,8 +58,8 @@ export function ExpandedToolbarContent(props: ExpandedToolbarContentProps) {
   const headerLabel = getHeaderLabel(state.currentProjectKey, state.sourceEnvironmentKey);
   const { error } = state;
 
-  const availableTabs = getTabsForMode(mode, !!flagOverridePlugin, !!eventInterceptionPlugin);
-  const defaultActiveTab = getDefaultActiveTab(mode, !!flagOverridePlugin, !!eventInterceptionPlugin);
+  const availableTabs = getTabsForMode(mode, !!debugOverridePlugin, !!eventInterceptionPlugin);
+  const defaultActiveTab = getDefaultActiveTab(mode, !!debugOverridePlugin, !!eventInterceptionPlugin);
 
   const shouldShowError = error && mode === 'dev-server' && state.connectionStatus === 'error';
 
@@ -130,7 +130,7 @@ export function ExpandedToolbarContent(props: ExpandedToolbarContentProps) {
                       activeTab={activeTab}
                       slideDirection={slideDirection}
                       mode={mode}
-                      flagOverridePlugin={flagOverridePlugin}
+                      debugOverridePlugin={debugOverridePlugin}
                       eventInterceptionPlugin={eventInterceptionPlugin}
                     />
                   )}

@@ -15,7 +15,7 @@ export function getToolbarMode(devServerUrl?: string): ToolbarMode {
 
 export function getTabsForMode(
   mode: ToolbarMode,
-  hasFlagOverridePlugin: boolean,
+  hasDebugOverridePlugin: boolean,
   hasEventInterceptionPlugin: boolean,
 ): readonly TabId[] {
   if (mode === 'dev-server') {
@@ -29,7 +29,7 @@ export function getTabsForMode(
   // SDK mode: conditionally show tabs based on available plugins
   const tabs: TabId[] = [];
 
-  if (hasFlagOverridePlugin) {
+  if (hasDebugOverridePlugin) {
     tabs.push('flag-sdk');
   }
 
@@ -44,7 +44,7 @@ export function getTabsForMode(
 
 export function getDefaultActiveTab(
   mode: ToolbarMode,
-  hasFlagOverridePlugin?: boolean,
+  hasDebugOverridePlugin?: boolean,
   hasEventInterceptionPlugin?: boolean,
 ): TabId {
   if (mode === 'dev-server') {
@@ -53,7 +53,7 @@ export function getDefaultActiveTab(
 
   if (mode === 'sdk') {
     // In SDK mode, prefer flag-sdk if available, then events, then settings
-    if (hasFlagOverridePlugin) {
+    if (hasDebugOverridePlugin) {
       return 'flag-sdk';
     }
     if (hasEventInterceptionPlugin) {

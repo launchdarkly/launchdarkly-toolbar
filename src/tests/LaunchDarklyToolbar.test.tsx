@@ -65,7 +65,7 @@ describe('LaunchDarklyToolbar - User Flows', () => {
   describe('SDK Mode - Client-Side Override Flow', () => {
     test('developer with flag override plugin can manage client-side flag overrides', async () => {
       // GIVEN: Developer has both flag override and event interception plugins configured
-      const mockFlagOverridePlugin = {
+      const mockDebugOverridePlugin = {
         getFlagSdkOverride: vi.fn().mockResolvedValue({}),
         setFlagSdkOverride: vi.fn(),
         clearFlagSdkOverride: vi.fn(),
@@ -90,7 +90,7 @@ describe('LaunchDarklyToolbar - User Flows', () => {
       // WHEN: They load the toolbar with both plugins
       render(
         <LaunchDarklyToolbar
-          flagOverridePlugin={mockFlagOverridePlugin}
+          debugOverridePlugin={mockDebugOverridePlugin}
           eventInterceptionPlugin={mockEventInterceptionPlugin}
         />,
       );

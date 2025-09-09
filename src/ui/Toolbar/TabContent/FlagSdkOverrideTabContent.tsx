@@ -13,18 +13,18 @@ import {
 import { OverrideIndicator } from '../components/OverrideIndicator';
 import { ActionButtonsContainer } from '../components';
 import { VIRTUALIZATION } from '../constants';
-import type { IFlagOverridePlugin } from '../../../types/plugin';
+import type { IDebugOverridePlugin } from '../../../types/plugin';
 import type { LocalFlag } from '../context';
 
 import * as sharedStyles from './FlagDevServerTabContent.css';
 import * as actionStyles from '../components/ActionButtonsContainer.css';
 
 interface FlagSdkOverrideTabContentProps {
-  flagOverridePlugin?: IFlagOverridePlugin;
+  debugOverridePlugin?: IDebugOverridePlugin;
 }
 
 function FlagSdkOverrideTabContentInner(props: FlagSdkOverrideTabContentProps) {
-  const { flagOverridePlugin } = props;
+  const { debugOverridePlugin } = props;
   const { searchTerm } = useSearchContext();
   const { flags, isLoading } = useFlagSdkOverrideContext();
   const [showOverriddenOnly, setShowOverriddenOnly] = useState(false);
@@ -32,11 +32,11 @@ function FlagSdkOverrideTabContentInner(props: FlagSdkOverrideTabContentProps) {
 
   const handleClearOverride = useCallback(
     (flagKey: string) => {
-      if (flagOverridePlugin) {
-        flagOverridePlugin.removeOverride(flagKey);
+      if (debugOverridePlugin) {
+        debugOverridePlugin.removeOverride(flagKey);
       }
     },
-    [flagOverridePlugin],
+    [debugOverridePlugin],
   );
 
   // Count total overridden flags (not just filtered ones)
@@ -64,7 +64,7 @@ function FlagSdkOverrideTabContentInner(props: FlagSdkOverrideTabContentProps) {
     overscan: VIRTUALIZATION.OVERSCAN,
   });
 
-  if (!flagOverridePlugin) {
+  if (!debugOverridePlugin) {
     return (
       <GenericHelpText
         title="Flag override plugin is not available"
@@ -73,7 +73,7 @@ function FlagSdkOverrideTabContentInner(props: FlagSdkOverrideTabContentProps) {
     );
   }
 
-  const ldClient = flagOverridePlugin.getClient();
+  const ldClient = debugOverridePlugin.getClient();
 
   if (!ldClient) {
     return (
@@ -90,11 +90,11 @@ function FlagSdkOverrideTabContentInner(props: FlagSdkOverrideTabContentProps) {
 
   // Override operations
   const handleSetOverride = (flagKey: string, value: any) => {
-    flagOverridePlugin.setOverride(flagKey, value);
+    debugOverridePlugin.setOverride(flagKey, value);
   };
 
   const handleClearAllOverrides = () => {
-    flagOverridePlugin.clearAllOverrides();
+    debugOverridePlugin.clearAllOverrides();
   };
 
   const renderFlagControl = (flag: LocalFlag) => {
@@ -199,12 +199,12 @@ function FlagSdkOverrideTabContentInner(props: FlagSdkOverrideTabContentProps) {
 }
 
 export function FlagSdkOverrideTabContent(props: FlagSdkOverrideTabContentProps) {
-  if (!props.flagOverridePlugin) {
+  if (!props.debugOverridePlugin) {
     return <div>No flag override plugin available</div>;
   }
 
   return (
-    <FlagSdkOverrideProvider flagOverridePlugin={props.flagOverridePlugin}>
+    <FlagSdkOverrideProvider debugOverridePlugin={props.debugOverridePlugin}>
       <FlagSdkOverrideTabContentInner {...props} />
     </FlagSdkOverrideProvider>
   );

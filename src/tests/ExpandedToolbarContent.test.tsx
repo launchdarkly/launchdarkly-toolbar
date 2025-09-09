@@ -4,7 +4,7 @@ import { expect, test, describe, vi, beforeEach } from 'vitest';
 import { ExpandedToolbarContent } from '../ui/Toolbar/components/ExpandedToolbarContent';
 import { DevServerProvider } from '../ui/Toolbar/context/DevServerProvider';
 import { SearchProvider } from '../ui/Toolbar/context/SearchProvider';
-import { IFlagOverridePlugin, IEventInterceptionPlugin } from '../types/plugin';
+import { IDebugOverridePlugin, IEventInterceptionPlugin } from '../types/plugin';
 
 // Mock the DevServerClient and FlagStateManager
 vi.mock('../services/DevServerClient', () => ({
@@ -89,7 +89,7 @@ describe('ExpandedToolbarContent - User Interaction Flows', () => {
     setSearchIsExpanded: vi.fn(),
   };
 
-  const createMockDebugPlugin = (): IFlagOverridePlugin & {
+  const createMockDebugPlugin = (): IDebugOverridePlugin & {
     getLocalOverrides: () => Promise<Record<string, unknown>>;
     setLocalOverride: (...args: any[]) => void;
     clearLocalOverride: (...args: any[]) => void;
@@ -167,7 +167,7 @@ describe('ExpandedToolbarContent - User Interaction Flows', () => {
           <ExpandedToolbarContent
             {...defaultProps}
             mode="sdk"
-            flagOverridePlugin={mockDebugPlugin}
+            debugOverridePlugin={mockDebugPlugin}
             eventInterceptionPlugin={mockEventInterceptionPlugin}
           />
         </TestWrapper>,
@@ -194,7 +194,7 @@ describe('ExpandedToolbarContent - User Interaction Flows', () => {
             {...defaultProps}
             activeTab="flag-sdk"
             mode="sdk"
-            flagOverridePlugin={mockDebugPlugin}
+            debugOverridePlugin={mockDebugPlugin}
             eventInterceptionPlugin={mockEventInterceptionPlugin}
           />
         </TestWrapper>,

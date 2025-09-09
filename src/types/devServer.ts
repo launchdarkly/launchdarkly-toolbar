@@ -25,7 +25,7 @@ export interface LdToolbarConfig {
   showEnvironmentInfo?: boolean;
 
   // Events
-  onFlagOverride?: (flagKey: string, value: any, isOverride: boolean) => void;
+  onDebugOverride?: (flagKey: string, value: any, isOverride: boolean) => void;
   onError?: (error: string) => void;
 }
 
