@@ -18,7 +18,12 @@ This directory contains end-to-end tests for the LaunchDarkly Toolbar that can t
 
 ### Local Development Testing
 
+**Prerequisites**: Make sure `pnpm dev:watch` is running to continuously build the local source changes.
+
 ```bash
+# Start the watch build process (run this first in a separate terminal)
+pnpm dev:watch
+
 # Test local build (tests both dev-server and SDK modes)
 pnpm test:e2e:local
 
@@ -101,7 +106,9 @@ describe('LaunchDarkly Toolbar - {environment}', () => {
 
 ## Development Workflow
 
-1. **Local Development**: Use `pnpm test:e2e:local` to test your changes against the workspace source
+1. **Local Development**:
+   - Start `pnpm dev:watch` to continuously build source changes
+   - Use `pnpm test:e2e:local` to test your changes against the workspace source
 2. **Pre-commit**: Run `pnpm test:e2e:ci` to test the built/published version
 3. **CI Pipeline**: Automatically runs `pnpm test:e2e:ci` on push to verify production builds
 
@@ -137,6 +144,9 @@ Tests automatically configure:
 ```bash
 # Check current build status
 pnpm dev:status
+
+# Start watch build for local development
+pnpm dev:watch
 
 # Rebuild everything
 pnpm build && pnpm demo:build
