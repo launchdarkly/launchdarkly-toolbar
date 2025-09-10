@@ -4,16 +4,68 @@
 
 A React component that provides a developer-friendly toolbar for interacting with LaunchDarkly during development. The toolbar supports two modes:
 
+- **SDK Mode**: Integrate with your LaunchDarkly SDK for local flag overrides and testing (recommended)
 - **Dev Server Mode**: Connect to a LaunchDarkly CLI dev server for flag browsing and real-time updates
-- **SDK Mode**: Integrate with flag override plugins for local flag testing
 
 ## Installation
 
 ```bash
-npm install @launchdarkly/toolbar
+# npm
+npm install @launchdarkly/toolbar@next
+
+# yarn
+yarn add @launchdarkly/toolbar@next
+
+# pnpm
+pnpm add @launchdarkly/toolbar@next
 ```
 
 ## Quick Start
+
+**SDK Mode** (recommended - integrates with your LaunchDarkly SDK):
+
+```tsx
+import { useEffect, useState } from 'react';
+import { asyncWithLDProvider } from 'launchdarkly-react-client-sdk';
+import { LaunchDarklyToolbar, FlagOverridePlugin } from '@launchdarkly/toolbar';
+
+// Create the plugin instance
+const flagOverridePlugin = new FlagOverridePlugin();
+
+function App() {
+  const [LDProvider, setLDProvider] = useState(null);
+
+  useEffect(() => {
+    const initializeLD = async () => {
+      const Provider = await asyncWithLDProvider({
+        clientSideID: 'your-client-side-id',
+        context: { key: 'user-key', name: 'User Name' },
+        options: {
+          // Pass the plugin to the SDK
+          plugins: [flagOverridePlugin],
+        },
+      });
+      setLDProvider(() => Provider);
+    };
+
+    initializeLD();
+  }, []);
+
+  if (!LDProvider) {
+    return <div>Loading LaunchDarkly...</div>;
+  }
+
+  return (
+    <LDProvider>
+      <div>
+        <h1>My App</h1>
+        {/* Pass the same plugin instance to the toolbar */}
+        <LaunchDarklyToolbar flagOverridePlugin={flagOverridePlugin} />
+      </div>
+    </LDProvider>
+  );
+}
+```
 
 **Dev Server Mode** (connects to LaunchDarkly CLI dev server):
 
@@ -30,28 +82,12 @@ function App() {
 }
 ```
 
-**SDK Mode** (integrates with flag override override plugins):
-
-```tsx
-import { LaunchDarklyToolbar } from '@launchdarkly/toolbar';
-import { flagOverridePlugin } from './your-flag-override-plugin';
-
-function App() {
-  return (
-    <div>
-      <h1>My App</h1>
-      <LaunchDarklyToolbar flagOverridePlugin={flagOverridePlugin} />
-    </div>
-  );
-}
-```
-
 ## Props
 
 | Prop                 | Type                  | Default     | Description                                                               |
 | -------------------- | --------------------- | ----------- | ------------------------------------------------------------------------- |
+| `flagOverridePlugin` | `IFlagOverridePlugin` | `undefined` | Flag override plugin for SDK Mode. Enables flag overrides and testing     |
 | `devServerUrl`       | `string` (optional)   | `undefined` | URL of your LaunchDarkly dev server. If provided, enables Dev Server Mode |
-| `flagOverridePlugin` | `IFlagOverridePlugin` | `undefined` | Flag override plugin for SDK Mode. Shows Overrides tab when provided      |
 | `position`           | `"left" \| "right"`   | `"right"`   | Position of the toolbar on screen                                         |
 | `projectKey`         | `string` (optional)   | `undefined` | Optional project key for multi-project setups (Dev Server Mode only)      |
 | `pollIntervalInMs`   | `number` (optional)   | `5000`      | Polling interval for dev server updates (Dev Server Mode only)            |
@@ -62,25 +98,86 @@ function App() {
 
 The toolbar automatically determines its mode:
 
+- **SDK Mode**: When `flagOverridePlugin` is provided (recommended for most use cases)
 - **Dev Server Mode**: When `devServerUrl` is provided
-- **SDK Mode**: When `devServerUrl` is omitted
 
 ### Available Features by Mode
 
-| Mode                | Available Tabs                                         |
-| ------------------- | ------------------------------------------------------ |
-| **Dev Server Mode** | Flags, Settings                                        |
-| **SDK Mode**        | Overrides (if `flagOverridePlugin` provided), Settings |
+| Mode                | Available Tabs      |
+| ------------------- | ------------------- |
+| **SDK Mode**        | Overrides, Settings |
+| **Dev Server Mode** | Flags, Settings     |
 
 ## Setup
 
-**Dev Server Mode**: Start your LaunchDarkly dev server with CORS enabled:
+### SDK Mode (Recommended)
+
+SDK Mode integrates directly with your LaunchDarkly client, allowing you to:
+
+- Override flag values locally without affecting other users
+- Test different flag variations instantly
+- Work offline or with any LaunchDarkly environment
+- Maintain full type safety with your existing SDK setup
+
+Setup is straightforward:
+
+1. Create a `FlagOverridePlugin` instance
+2. Pass the plugin to your LaunchDarkly SDK's `plugins` array
+3. Pass the same plugin instance to the toolbar component
+4. Wrap your app with the LaunchDarkly provider
+
+```tsx
+import { useEffect, useState } from 'react';
+import { asyncWithLDProvider } from 'launchdarkly-react-client-sdk';
+import { LaunchDarklyToolbar, FlagOverridePlugin } from '@launchdarkly/toolbar';
+
+// Create the plugin instance (outside component to avoid recreating)
+const flagOverridePlugin = new FlagOverridePlugin({
+  storageNamespace: 'my-app-overrides', // Optional: customize storage key
+});
+
+function App() {
+  const [LDProvider, setLDProvider] = useState(null);
+
+  useEffect(() => {
+    const initializeLD = async () => {
+      const Provider = await asyncWithLDProvider({
+        clientSideID: 'your-client-side-id',
+        context: { key: 'user-key', name: 'User Name' },
+        options: {
+          plugins: [flagOverridePlugin], // Add plugin to SDK
+        },
+      });
+      setLDProvider(() => Provider);
+    };
+
+    initializeLD();
+  }, []);
+
+  if (!LDProvider) return <div>Loading...</div>;
+
+  return (
+    <LDProvider>
+      <YourAppContent />
+      <LaunchDarklyToolbar flagOverridePlugin={flagOverridePlugin} />
+    </LDProvider>
+  );
+}
+```
+
+### Dev Server Mode
+
+For teams using the LaunchDarkly CLI dev server, start it with CORS enabled:
 
 ```bash
 ldcli dev-server start --project your-project --cors-enabled true
 ```
 
-**SDK Mode**: No additional setup required.
+Then connect the toolbar:
+
+```tsx
+<LaunchDarklyToolbar devServerUrl="http://localhost:8765" />
+```
 
 ## Visibility Control
 
