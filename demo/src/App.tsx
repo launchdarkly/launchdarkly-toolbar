@@ -33,15 +33,17 @@ function App() {
   }
 
   return (
-    <Router>
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/ci/dev-server" element={<DevServerMode version="CI" />} />
-        <Route path="/ci/sdk" element={<SDKMode version="CI" />} />
-        <Route path="/local/dev-server" element={<DevServerMode version="Local" />} />
-        <Route path="/local/sdk" element={<SDKMode version="Local" />} />
-      </Routes>
-    </Router>
+    <LDProvider>
+      <Router>
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/ci/dev-server" element={<DevServerMode version="CI" />} />
+          <Route path="/ci/sdk" element={<SDKMode version="CI" />} />
+          <Route path="/local/dev-server" element={<DevServerMode version="Local" />} />
+          <Route path="/local/sdk" element={<SDKMode version="Local" />} />
+        </Routes>
+      </Router>
+    </LDProvider>
   );
 }
 
