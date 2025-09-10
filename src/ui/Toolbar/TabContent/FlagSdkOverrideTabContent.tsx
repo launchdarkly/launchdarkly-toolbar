@@ -204,7 +204,12 @@ interface FlagSdkOverrideTabContentProps {
 
 export function FlagSdkOverrideTabContent(props: FlagSdkOverrideTabContentProps) {
   if (!props.flagOverridePlugin) {
-    return <div>No flag override plugin available</div>;
+    return (
+      <GenericHelpText
+        title="Flag override plugin is not available"
+        subtitle="To use local flag overrides, ensure the flag override plugin is added to your LaunchDarkly client configuration."
+      />
+    );
   }
 
   return (

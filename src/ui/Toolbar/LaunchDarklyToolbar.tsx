@@ -97,9 +97,8 @@ export function LdToolbar(props: LdToolbarProps) {
             onTabChange={handleTabChange}
             setSearchIsExpanded={setSearchIsExpanded}
             flagOverridePlugin={flagOverridePlugin}
-            mode={mode}
-            flagOverridePlugin={flagOverridePlugin}
             eventInterceptionPlugin={eventInterceptionPlugin}
+            mode={mode}
           />
         )}
       </AnimatePresence>
