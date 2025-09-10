@@ -1,6 +1,6 @@
 # LaunchDarkly Toolbar
 
-> ⚠️ **Warning:** This package is currently not ready for production use and is considered unsupported. Features, APIs, and behavior may change without notice.
+> 🚧 **Beta:** This package is currently in beta. While functional and tested, APIs may still evolve based on feedback. Please report any issues or suggestions!
 
 A React component that provides a developer-friendly toolbar for interacting with LaunchDarkly during development. The toolbar supports two modes:
 
