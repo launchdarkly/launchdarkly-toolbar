@@ -42,8 +42,6 @@ describe('FlagSdkOverrideProvider', () => {
       setOverride: vi.fn(),
       removeOverride: vi.fn(),
       clearAllOverrides: vi.fn(),
-      getMetadata: vi.fn(),
-      register: vi.fn(),
     };
   });
 

@@ -6,3 +6,7 @@ autoInstallPeers: false
 strictPeerDependencies: true
 
 
+
+overrides:
+  launchdarkly-js-client-sdk: link:../js-client-sdk
+  launchdarkly-react-client-sdk: link:../react-client-sdk

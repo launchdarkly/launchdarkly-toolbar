@@ -75,19 +75,6 @@ function FlagSdkOverrideTabContentInner(props: FlagSdkOverrideTabContentInnerPro
 
   const ldClient = flagOverridePlugin.getClient();
 
-  if (!ldClient) {
-    return (
-      <GenericHelpText
-        title="LaunchDarkly client is not available"
-        subtitle="To use local flag overrides, ensure your LaunchDarkly client is properly initialized."
-      />
-    );
-  }
-
-  if (isLoading) {
-    return <GenericHelpText title="Loading flags..." subtitle="Please wait while we load your feature flags" />;
-  }
-
   // Override operations
   const handleSetOverride = (flagKey: string, value: any) => {
     flagOverridePlugin.setOverride(flagKey, value);
@@ -116,7 +103,19 @@ function FlagSdkOverrideTabContentInner(props: FlagSdkOverrideTabContentInnerPro
     }
   };
 
-  // Handle no flags case
+  if (!ldClient) {
+    return (
+      <GenericHelpText
+        title="LaunchDarkly client is not available"
+        subtitle="To use local flag overrides, ensure your LaunchDarkly client is properly initialized."
+      />
+    );
+  }
+
+  if (isLoading) {
+    return <GenericHelpText title="Loading flags..." subtitle="Please wait while we load your feature flags" />;
+  }
+
   if (flagEntries.length === 0) {
     return (
       <GenericHelpText
@@ -126,7 +125,6 @@ function FlagSdkOverrideTabContentInner(props: FlagSdkOverrideTabContentInnerPro
     );
   }
 
-  // Generate help text based on current state
   const genericHelpTitle = showOverriddenOnly ? 'No overridden flags found' : 'No results found';
   const genericHelpSubtitle = showOverriddenOnly
     ? 'No overridden flags match your search'
