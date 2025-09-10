@@ -19,13 +19,13 @@ export interface EnhancedFlag {
 // Configuration Interface
 export interface LdToolbarConfig {
   // Dev server configuration
-  devServerUrl: string; // defaults to http://localhost:8765
+  devServerUrl?: string; // Optional - defaults to SDK mode if not provided
   pollIntervalInMs: number; // Auto-refresh interval in ms. Defaults to 5000ms
   projectKey?: string; // Optional - will auto-detect first available project if not provided
   showEnvironmentInfo?: boolean;
 
   // Events
-  onFlagOverride?: (flagKey: string, value: any, isOverride: boolean) => void;
+  onDebugOverride?: (flagKey: string, value: any, isOverride: boolean) => void;
   onError?: (error: string) => void;
 }
 

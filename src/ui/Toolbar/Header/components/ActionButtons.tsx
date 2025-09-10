@@ -11,10 +11,11 @@ interface ActionButtonsProps {
   onClose: () => void;
   onRefresh: () => void;
   showSearchButton: boolean;
+  showRefreshButton: boolean;
 }
 
 export function ActionButtons(props: ActionButtonsProps) {
-  const { searchIsExpanded, setSearchIsExpanded, onClose, onRefresh, showSearchButton } = props;
+  const { searchIsExpanded, setSearchIsExpanded, onClose, onRefresh, showSearchButton, showRefreshButton } = props;
   const [isSpinning, setIsSpinning] = useState(false);
   const [rotationCount, setRotationCount] = useState(0);
 
@@ -56,23 +57,25 @@ export function ActionButtons(props: ActionButtonsProps) {
           )}
         </AnimatePresence>
       )}
-      <IconButton
-        icon={
-          <motion.span
-            animate={{ rotate: rotationCount }}
-            transition={{
-              duration: 1,
-              ease: 'linear',
-            }}
-            style={{ display: 'inline-flex', alignItems: 'center' }}
-          >
-            <SyncIcon />
-          </motion.span>
-        }
-        label="Refresh"
-        onClick={handleRefreshClick}
-        className={styles.actionButton}
-      />
+      {showRefreshButton && (
+        <IconButton
+          icon={
+            <motion.span
+              animate={{ rotate: rotationCount }}
+              transition={{
+                duration: 1,
+                ease: 'linear',
+              }}
+              style={{ display: 'inline-flex', alignItems: 'center' }}
+            >
+              <SyncIcon />
+            </motion.span>
+          }
+          label="Refresh"
+          onClick={handleRefreshClick}
+          className={styles.actionButton}
+        />
+      )}
       <div className={styles.closeButtonArea}>
         <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} transition={{ duration: 0.1 }}>
           <IconButton

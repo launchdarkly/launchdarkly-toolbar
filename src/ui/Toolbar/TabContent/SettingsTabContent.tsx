@@ -2,11 +2,11 @@ import { Button, ListBox, Popover, Select, SelectValue, ListBoxItem } from '@lau
 import { List } from '../../List/List';
 import { ListItem } from '../../List/ListItem';
 import { useSearchContext } from '../context/SearchProvider';
-import { useToolbarContext } from '../context/LaunchDarklyToolbarProvider';
+import { useDevServerContext } from '../context/DevServerProvider';
 import { StatusDot } from '../components/StatusDot';
 import { GenericHelpText } from '../components/GenericHelpText';
 import { ChevronDownIcon } from '../components/icons';
-import { TOOLBAR_POSITIONS, type ToolbarPosition } from '../types/toolbar';
+import { TOOLBAR_POSITIONS, type ToolbarPosition, type ToolbarMode } from '../types/toolbar';
 
 import * as styles from './SettingsTab.css';
 
@@ -144,8 +144,13 @@ function ConnectionStatusDisplay(props: ConnectionStatusDisplayProps) {
   );
 }
 
-export function SettingsTabContent() {
-  const { state, switchProject, handlePositionChange } = useToolbarContext();
+interface SettingsTabContentProps {
+  mode: ToolbarMode;
+}
+
+export function SettingsTabContent(props: SettingsTabContentProps) {
+  const { mode } = props;
+  const { state, switchProject, handlePositionChange } = useDevServerContext();
   const { searchTerm } = useSearchContext();
   const position = state.position;
 
@@ -161,38 +166,64 @@ export function SettingsTabContent() {
     handlePositionChange(newPosition);
   };
 
-  // Settings data with position selector
-  const settingsGroups: SettingsGroup[] = [
-    {
-      title: 'Configuration',
-      items: [
+  // Settings data based on mode
+  const getSettingsGroups = (): SettingsGroup[] => {
+    if (mode === 'dev-server') {
+      return [
         {
-          id: 'project',
-          name: 'Project',
-          icon: 'folder',
-          isProjectSelector: true,
+          title: 'Dev Server Configuration',
+          items: [
+            {
+              id: 'project',
+              name: 'Project',
+              icon: 'folder',
+              isProjectSelector: true,
+            },
+            {
+              id: 'environment',
+              name: 'Environment',
+              icon: 'globe',
+              value: state.sourceEnvironmentKey || 'Unknown',
+            },
+            {
+              id: 'connection',
+              name: 'Connection status',
+              icon: 'link',
+              isConnectionStatus: true,
+            },
+          ],
         },
         {
-          id: 'position',
-          name: 'Position',
-          icon: 'move',
-          isPositionSelector: true,
+          title: 'Toolbar Settings',
+          items: [
+            {
+              id: 'position',
+              name: 'Position',
+              icon: 'move',
+              isPositionSelector: true,
+            },
+          ],
         },
+      ];
+    } else {
+      // SDK Mode
+      return [
         {
-          id: 'environment',
-          name: 'Environment',
-          icon: 'globe',
-          value: state.sourceEnvironmentKey || 'Unknown',
+          title: 'Toolbar Settings',
+          items: [
+            {
+              id: 'position',
+              name: 'Position',
+              icon: 'move',
+              isPositionSelector: true,
+            },
+          ],
         },
-        {
-          id: 'connection',
-          name: 'Connection status',
-          icon: 'link',
-          isConnectionStatus: true,
-        },
-      ],
-    },
-  ];
+      ];
+    }
+  };
+
+  const settingsGroups = getSettingsGroups();
 
   // Check if any groups have filtered results
   const hasResults = settingsGroups.some((group) =>

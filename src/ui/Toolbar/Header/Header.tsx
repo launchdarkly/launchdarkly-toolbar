@@ -2,8 +2,9 @@ import { Dispatch, SetStateAction } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import * as styles from './Header.css';
 import { LogoSection, EnvironmentLabel, SearchSection, ActionButtons } from './components';
-import { useToolbarContext } from '../context/LaunchDarklyToolbarProvider';
-import { ConnectionStatus } from '../components/ConnectionStatus';
+import { useDevServerContext } from '../context/DevServerProvider';
+import { ConnectionStatus } from '../components';
+import { ToolbarMode } from '../types/toolbar';
 
 export interface HeaderProps {
   searchTerm: string;
@@ -12,14 +13,21 @@ export interface HeaderProps {
   searchIsExpanded: boolean;
   setSearchIsExpanded: Dispatch<SetStateAction<boolean>>;
   label: string;
+  mode: ToolbarMode;
 }
 
 export function Header(props: HeaderProps) {
-  const { onClose, onSearch, searchTerm, searchIsExpanded, setSearchIsExpanded, label } = props;
+  const { onClose, onSearch, searchTerm, searchIsExpanded, setSearchIsExpanded, label, mode } = props;
 
-  const { state, refresh } = useToolbarContext();
+  const { state, refresh } = useDevServerContext();
   const { connectionStatus } = state;
   const isConnected = connectionStatus === 'connected';
+
+  const isDevServer = mode === 'dev-server';
+  const showEnvironment = isDevServer && isConnected;
+  const showSearch = isDevServer ? isConnected : true;
+  const showRefresh = isDevServer;
+  const showConnectionStatus = isDevServer;
 
   return (
     <>
@@ -27,19 +35,21 @@ export function Header(props: HeaderProps) {
         <LogoSection />
 
         <div className={styles.centerSection}>
-          {isConnected && (
+          {(showEnvironment || showSearch) && (
             <AnimatePresence mode="wait">
               {!searchIsExpanded ? (
-                <motion.div
-                  key="environment"
-                  className={styles.environmentWrapper}
-                  initial={{ opacity: 0, scale: 0.9 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  exit={{ opacity: 0, scale: 0.9 }}
-                  transition={{ duration: 0.2 }}
-                >
-                  <EnvironmentLabel label={label} />
-                </motion.div>
+                showEnvironment ? (
+                  <motion.div
+                    key="environment"
+                    className={styles.environmentWrapper}
+                    initial={{ opacity: 0, scale: 0.9 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.9 }}
+                    transition={{ duration: 0.2 }}
+                  >
+                    <EnvironmentLabel label={label} />
+                  </motion.div>
+                ) : null
               ) : (
                 <motion.div
                   key="search"
@@ -65,10 +75,11 @@ export function Header(props: HeaderProps) {
           setSearchIsExpanded={setSearchIsExpanded}
           onClose={onClose}
           onRefresh={refresh}
-          showSearchButton={isConnected}
+          showSearchButton={showSearch}
+          showRefreshButton={showRefresh}
         />
       </div>
-      <ConnectionStatus status={connectionStatus} lastSyncTime={state.lastSyncTime} />
+      {showConnectionStatus && <ConnectionStatus status={connectionStatus} lastSyncTime={state.lastSyncTime} />}
     </>
   );
 }

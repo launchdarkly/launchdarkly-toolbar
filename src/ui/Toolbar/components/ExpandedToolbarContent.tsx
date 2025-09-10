@@ -6,12 +6,13 @@ import { Tabs } from '../../Tabs/Tabs';
 import { TabButton } from '../../Tabs/TabButton';
 import { TabContentRenderer } from './TabContentRenderer';
 import { ANIMATION_CONFIG, EASING } from '../constants';
-import { ActiveTabId } from '../types';
-import { useToolbarContext } from '../context/LaunchDarklyToolbarProvider';
+import { ActiveTabId, ToolbarMode, getTabsForMode, getDefaultActiveTab } from '../types';
+import { useDevServerContext } from '../context/DevServerProvider';
+import type { IFlagOverridePlugin } from '../../../types/plugin';
 
 import * as styles from '../LaunchDarklyToolbar.css';
-import { ErrorMessage } from './ErrorMessage';
 import { GearIcon, ToggleOffIcon } from './icons';
+import { ErrorMessage } from './ErrorMessage';
 
 interface ExpandedToolbarContentProps {
   isExpanded: boolean;
@@ -23,6 +24,8 @@ interface ExpandedToolbarContentProps {
   onClose: () => void;
   onTabChange: (tabId: string) => void;
   setSearchIsExpanded: Dispatch<SetStateAction<boolean>>;
+  flagOverridePlugin?: IFlagOverridePlugin;
+  mode: ToolbarMode;
 }
 
 function getHeaderLabel(currentProjectKey: string | null, sourceEnvironmentKey: string | null) {
@@ -44,12 +47,19 @@ export function ExpandedToolbarContent(props: ExpandedToolbarContentProps) {
     onClose,
     onTabChange,
     setSearchIsExpanded,
+    flagOverridePlugin,
+    mode,
   } = props;
 
-  const { state } = useToolbarContext();
+  const { state } = useDevServerContext();
 
   const headerLabel = getHeaderLabel(state.currentProjectKey, state.sourceEnvironmentKey);
   const { error } = state;
+
+  const availableTabs = getTabsForMode(mode, !!flagOverridePlugin);
+  const defaultActiveTab = getDefaultActiveTab(mode);
+
+  const shouldShowError = error && mode === 'dev-server' && state.connectionStatus === 'error';
 
   return (
     <motion.div
@@ -98,9 +108,10 @@ export function ExpandedToolbarContent(props: ExpandedToolbarContentProps) {
               searchIsExpanded={searchIsExpanded}
               setSearchIsExpanded={setSearchIsExpanded}
               label={headerLabel}
+              mode={mode}
             />
-            {error && <ErrorMessage error={error} />}
-            {!error && (
+            {shouldShowError && <ErrorMessage error={error} />}
+            {!shouldShowError && (
               <motion.div
                 className={styles.scrollableContent}
                 initial={{ opacity: 0, y: -10 }}
@@ -112,7 +123,14 @@ export function ExpandedToolbarContent(props: ExpandedToolbarContentProps) {
                 }}
               >
                 <AnimatePresence mode="wait">
-                  {activeTab && <TabContentRenderer activeTab={activeTab} slideDirection={slideDirection} />}
+                  {activeTab && (
+                    <TabContentRenderer
+                      activeTab={activeTab}
+                      slideDirection={slideDirection}
+                      flagOverridePlugin={flagOverridePlugin}
+                      mode={mode}
+                    />
+                  )}
                 </AnimatePresence>
               </motion.div>
             )}
@@ -132,10 +150,12 @@ export function ExpandedToolbarContent(props: ExpandedToolbarContentProps) {
         }}
         transition={ANIMATION_CONFIG.tabsContainer}
       >
-        <Tabs activeTab={activeTab || undefined} onTabChange={onTabChange}>
-          <TabButton id="flags" label="Flags" icon={ToggleOffIcon} />
-          {/* <TabButton id="events" label="Events" icon="chart-line" /> */}
-          <TabButton id="settings" label="Settings" icon={GearIcon} />
+        <Tabs defaultActiveTab={defaultActiveTab} activeTab={activeTab} onTabChange={onTabChange}>
+          {availableTabs.includes('flag-sdk') && <TabButton id="flag-sdk" label="Flags" icon={ToggleOffIcon} />}
+          {availableTabs.includes('flag-dev-server') && (
+            <TabButton id="flag-dev-server" label="Flags" icon={ToggleOffIcon} />
+          )}
+          {availableTabs.includes('settings') && <TabButton id="settings" label="Settings" icon={GearIcon} />}
         </Tabs>
       </motion.div>
     </motion.div>

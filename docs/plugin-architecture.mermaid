@@ -1,0 +1,73 @@
+graph TB
+    %% Main Components
+    subgraph "🎯 Application Layer"
+        App[Demo App<br/>Entry Point<br/>LD Client Init]
+        Toolbar[LaunchDarkly Toolbar<br/>UI Component<br/>Position & Animation]
+        TabContent[FlagSdkOverrideTabContent<br/>Override Controls<br/>Real-time Updates]
+    end
+
+    subgraph "🔧 Plugin Layer"
+        FlagOverridePlugin[FlagOverridePlugin<br/>LDPlugin Implementation]
+    end
+
+    subgraph "🚀 LaunchDarkly SDK Stack"
+        ReactSDK[React Client SDK<br/>asyncWithLDProvider]
+        JSSDK[JavaScript Client SDK<br/>initialize function]
+        CommonSDK[JS SDK Common<br/>Core Logic]
+    end
+
+    subgraph "🎛️ Flag Management"
+        FlagStore[Flag Store<br/>Priority: Overrides → Real Flags]
+        OverrideStore[Flag Overrides<br/>In-Memory Cache]
+    end
+
+    subgraph "💾 Persistence Layer"
+        LocalStorage[(Local Storage<br/>ld-flag-override:* keys)]
+    end
+
+
+
+    %% 🔄 Plugin Registration & Initialization
+    App -->|Initialize with plugin| ReactSDK
+    ReactSDK -->|Initialize client| JSSDK
+    JSSDK -->|Core logic| CommonSDK
+    FlagOverridePlugin -->|Register plugin| ReactSDK
+
+    %% 🔧 Debug Interface Handshake
+    CommonSDK -->|Provide debug interface| FlagOverridePlugin
+    FlagOverridePlugin -->|Store overrides| OverrideStore
+
+    %% 🎨 Client Flow (JS SDK)
+    ReactSDK -->|Provide context| App
+    App -->|Render toolbar| Toolbar
+    Toolbar -->|Render controls| TabContent
+
+    %% ⚡ Direct Plugin Integration
+    Toolbar -.->|FlagOverridePlugin prop| FlagOverridePlugin
+    TabContent -.->|"setOverride(), getAllOverrides()"| FlagOverridePlugin
+
+
+
+    %% 💾 Storage Management
+    FlagOverridePlugin -->|Persist overrides| LocalStorage
+
+    %% 🎯 Flag Evaluation Priority
+    CommonSDK -->|Evaluate flags| FlagStore
+    FlagStore -->|Check first| OverrideStore
+    OverrideStore -.->|Return override if exists| FlagStore
+    FlagStore -.->|Use real flag value| CommonSDK
+
+
+
+    %% Styling
+    classDef app fill:#61dafb,color:black
+    classDef plugin fill:#f7df1e,color:black
+    classDef sdk fill:#4ade80,color:black
+    classDef storage fill:#fbbf24,color:black
+    classDef flags fill:#f87171,color:black
+
+    class App,Toolbar,TabContent app
+    class FlagOverridePlugin plugin
+    class ReactSDK,JSSDK,CommonSDK sdk
+    class FlagStore,OverrideStore flags
+    class LocalStorage storage

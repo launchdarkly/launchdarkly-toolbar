@@ -1,6 +1,6 @@
 packages:
-  - '.'
-  - 'demo'
+  - .
+  - demo
 
 autoInstallPeers: false
 strictPeerDependencies: true

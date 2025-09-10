@@ -1,18 +1,25 @@
 import { AnimatePresence, motion } from 'motion/react';
 import { useCallback } from 'react';
 
-import { SearchProvider, useSearchContext } from './context/SearchProvider';
+import { SearchProvider, useSearchContext } from './context';
 import { CircleLogo, ExpandedToolbarContent } from './components';
 import { useToolbarAnimations, useToolbarVisibility, useToolbarDrag, useToolbarState } from './hooks';
-import { useToolbarContext } from './context/LaunchDarklyToolbarProvider';
-import { ToolbarPosition } from './types/toolbar';
+import { useDevServerContext } from './context';
+import { ToolbarMode, ToolbarPosition, getToolbarMode } from './types/toolbar';
 
 import * as styles from './LaunchDarklyToolbar.css';
-import { LaunchDarklyToolbarProvider } from './context/LaunchDarklyToolbarProvider';
+import { DevServerProvider } from './context';
+import type { IFlagOverridePlugin } from '../../types/plugin';
 
-export function LdToolbar() {
+export interface LdToolbarProps {
+  flagOverridePlugin?: IFlagOverridePlugin;
+  mode: ToolbarMode;
+}
+
+export function LdToolbar(props: LdToolbarProps) {
+  const { flagOverridePlugin, mode } = props;
   const { searchTerm } = useSearchContext();
-  const { state, handlePositionChange } = useToolbarContext();
+  const { state, handlePositionChange } = useDevServerContext();
   const toolbarState = useToolbarState();
   const position = state.position;
 
@@ -76,7 +83,6 @@ export function LdToolbar() {
       aria-label="LaunchDarkly Developer Toolbar"
     >
       <AnimatePresence>{!showFullToolbar && <CircleLogo hasBeenExpanded={hasBeenExpanded} />}</AnimatePresence>
-
       <AnimatePresence>
         {showFullToolbar && (
           <ExpandedToolbarContent
@@ -89,6 +95,8 @@ export function LdToolbar() {
             onClose={handleClose}
             onTabChange={handleTabChange}
             setSearchIsExpanded={setSearchIsExpanded}
+            flagOverridePlugin={flagOverridePlugin}
+            mode={mode}
           />
         )}
       </AnimatePresence>
@@ -99,12 +107,13 @@ export function LdToolbar() {
 export interface LaunchDarklyToolbarProps {
   devServerUrl?: string; // Optional - will default to http://localhost:8765
   projectKey?: string; // Optional - will auto-detect first available project if not provided
+  flagOverridePlugin?: IFlagOverridePlugin;
   pollIntervalInMs?: number; // Optional - will default to 5000ms
   position?: ToolbarPosition; // Optional - will default to 'right'
 }
 
 export function LaunchDarklyToolbar(props: LaunchDarklyToolbarProps) {
-  const { projectKey, position, devServerUrl = 'http://localhost:8765', pollIntervalInMs = 5000 } = props;
+  const { projectKey, position, devServerUrl, pollIntervalInMs = 5000, flagOverridePlugin } = props;
   const isVisible = useToolbarVisibility();
 
   // Don't render anything if visibility check fails
@@ -112,8 +121,10 @@ export function LaunchDarklyToolbar(props: LaunchDarklyToolbarProps) {
     return null;
   }
 
+  const mode = getToolbarMode(devServerUrl);
+
   return (
-    <LaunchDarklyToolbarProvider
+    <DevServerProvider
       config={{
         projectKey,
         devServerUrl,
@@ -122,8 +133,8 @@ export function LaunchDarklyToolbar(props: LaunchDarklyToolbarProps) {
       initialPosition={position}
     >
       <SearchProvider>
-        <LdToolbar />
+        <LdToolbar flagOverridePlugin={flagOverridePlugin} mode={mode} />
       </SearchProvider>
-    </LaunchDarklyToolbarProvider>
+    </DevServerProvider>
   );
 }

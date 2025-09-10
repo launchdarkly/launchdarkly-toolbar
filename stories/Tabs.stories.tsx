@@ -3,6 +3,8 @@ import type { Meta, StoryObj } from '@storybook/react';
 
 import { Tabs } from '../src/ui/Tabs/Tabs';
 import { TabButton } from '../src/ui/Tabs/TabButton';
+import { ToggleOffIcon, GearIcon } from '../src/ui/Toolbar/components/icons';
+import { TabId } from '../src/ui/Toolbar/types';
 
 const meta: Meta<typeof Tabs> = {
   title: 'Components/Tabs',
@@ -29,30 +31,28 @@ type Story = StoryObj<typeof meta>;
 export const Default: Story = {
   render: () => (
     <Tabs>
-      <TabButton id="code" label="Code" icon="code-circle" />
-      <TabButton id="flags" label="Flags" icon="flag" />
-      <TabButton id="settings" label="Settings" icon="gear" />
+      <TabButton id="flag-dev-server" label="Flags" icon={ToggleOffIcon} />
+      <TabButton id="settings" label="Settings" icon={GearIcon} />
     </Tabs>
   ),
 };
 
 export const WithActiveTab: Story = {
   render: () => (
-    <Tabs activeTab="flags">
-      <TabButton id="code" label="Code" icon="code-circle" />
-      <TabButton id="flags" label="Flags" icon="flag" />
-      <TabButton id="settings" label="Settings" icon="gear" />
+    <Tabs activeTab="flag-dev-server">
+      <TabButton id="flag-sdk" label="SDK Flags" icon={ToggleOffIcon} />
+      <TabButton id="flag-dev-server" label="Dev Server Flags" icon={ToggleOffIcon} />
+      <TabButton id="settings" label="Settings" icon={GearIcon} />
     </Tabs>
   ),
 };
 
-export const CustomTabs: Story = {
+export const AllTabs: Story = {
   render: () => (
-    <Tabs activeTab="analytics">
-      <TabButton id="dashboard" label="Dashboard" />
-      <TabButton id="analytics" label="Analytics" />
-      <TabButton id="reports" label="Reports" />
-      <TabButton id="settings" label="Settings" />
+    <Tabs activeTab="flag-sdk">
+      <TabButton id="flag-sdk" label="SDK Flags" icon={ToggleOffIcon} />
+      <TabButton id="flag-dev-server" label="Dev Server Flags" icon={ToggleOffIcon} />
+      <TabButton id="settings" label="Settings" icon={GearIcon} />
     </Tabs>
   ),
 };
@@ -60,39 +60,35 @@ export const CustomTabs: Story = {
 export const WithDisabledTab: Story = {
   render: () => (
     <Tabs>
-      <TabButton id="code" label="Code" icon="code-circle" />
-      <TabButton id="flags" label="Flags" icon="flag" />
-      <TabButton id="settings" label="Settings" icon="gear" />
-      <TabButton id="disabled" label="Disabled" disabled />
+      <TabButton id="flag-dev-server" label="Flags" icon={ToggleOffIcon} />
+      <TabButton id="settings" label="Settings" icon={GearIcon} disabled />
     </Tabs>
   ),
 };
 
-export const ManyTabs: Story = {
+export const DevServerMode: Story = {
   render: () => (
-    <Tabs activeTab="experiments">
-      <TabButton id="overview" label="Overview" />
-      <TabButton id="features" label="Flags" />
-      <TabButton id="experiments" label="Experiments" />
-      <TabButton id="metrics" label="Metrics" />
-      <TabButton id="audiences" label="Audiences" />
-      <TabButton id="integrations" label="Integrations" />
-      <TabButton id="settings" label="Settings" />
-      <TabButton id="billing" label="Billing" />
+    <Tabs activeTab="flag-dev-server">
+      <TabButton id="flag-dev-server" label="Dev Server Flags" icon={ToggleOffIcon} />
+      <TabButton id="settings" label="Settings" icon={GearIcon} />
     </Tabs>
   ),
 };
 
 export const Interactive: Story = {
   render: () => {
-    const [activeTab, setActiveTab] = React.useState('flags');
+    const [activeTab, setActiveTab] = React.useState<TabId>('flag-dev-server');
+
+    const handleTabChange = (tabId: string) => {
+      setActiveTab(tabId as TabId);
+    };
 
     return (
       <div style={{ padding: '20px' }}>
-        <Tabs activeTab={activeTab} onTabChange={setActiveTab}>
-          <TabButton id="flags" label="Flags" icon="toggle-off" />
-          <TabButton id="events" label="Events" icon="chart-line" />
-          <TabButton id="settings" label="Settings" icon="gear-outline" />
+        <Tabs activeTab={activeTab} onTabChange={handleTabChange}>
+          <TabButton id="flag-dev-server" label="Dev Server Flags" icon={ToggleOffIcon} />
+          <TabButton id="flag-sdk" label="SDK Flags" icon={ToggleOffIcon} />
+          <TabButton id="settings" label="Settings" icon={GearIcon} />
         </Tabs>
         <div
           style={{
