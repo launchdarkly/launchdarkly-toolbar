@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { LaunchDarklyToolbar } from '@launchdarkly/toolbar';
 import { AppWrapper } from '../AppWrapper';
-import { flagOverridePlugin } from '../plugins';
+import { flagOverridePlugin, eventInterceptionPlugin } from '../plugins';
 
 export function SDKMode() {
   const [position, setPosition] = useState<'left' | 'right'>('left');
@@ -15,7 +15,11 @@ export function SDKMode() {
         </p>
       </div>
 
-      <LaunchDarklyToolbar position={position} flagOverridePlugin={flagOverridePlugin} />
+      <LaunchDarklyToolbar
+        position={position}
+        flagOverridePlugin={flagOverridePlugin}
+        eventInterceptionPlugin={eventInterceptionPlugin}
+      />
     </AppWrapper>
   );
 }
