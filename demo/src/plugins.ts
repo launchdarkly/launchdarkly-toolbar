@@ -1,6 +1,5 @@
-import { FlagOverridePlugin } from '../../src/plugins/FlagOverridePlugin';
+import { FlagOverridePlugin } from '@launchdarkly/toolbar';
 
-// Plugin for flag overrides
 export const flagOverridePlugin = new FlagOverridePlugin({
   storageNamespace: 'ld-demo-overrides',
 });
