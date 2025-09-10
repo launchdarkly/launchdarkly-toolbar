@@ -104,7 +104,6 @@ function FlagSdkOverrideTabContentInner(props: FlagSdkOverrideTabContentInnerPro
     return <GenericHelpText title="Loading flags..." subtitle="Please wait while we load your feature flags" />;
   }
 
-  // Handle no flags case
   if (flagEntries.length === 0) {
     return (
       <GenericHelpText
@@ -114,7 +113,6 @@ function FlagSdkOverrideTabContentInner(props: FlagSdkOverrideTabContentInnerPro
     );
   }
 
-  // Generate help text based on current state
   const genericHelpTitle = showOverriddenOnly ? 'No overridden flags found' : 'No results found';
   const genericHelpSubtitle = showOverriddenOnly
     ? 'No overridden flags match your search'
