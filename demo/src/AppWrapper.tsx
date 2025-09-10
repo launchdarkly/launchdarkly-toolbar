@@ -4,13 +4,12 @@ import { useLDClient } from 'launchdarkly-react-client-sdk';
 
 interface AppWrapperProps {
   children: ReactNode;
-  version: 'CI' | 'Local';
   mode: 'dev-server' | 'sdk';
   position: 'left' | 'right';
   onPositionChange: (position: 'left' | 'right') => void;
 }
 
-export function AppWrapper({ children, version, mode, position, onPositionChange }: AppWrapperProps) {
+export function AppWrapper({ children, mode, position, onPositionChange }: AppWrapperProps) {
   const ldClient = useLDClient();
   const allFlags = ldClient?.allFlags() || {};
 
@@ -34,13 +33,9 @@ export function AppWrapper({ children, version, mode, position, onPositionChange
     <div className="app">
       <div className="container">
         <header className="header">
-          <h1>
-            LaunchDarkly Toolbar Demo ({version} - {mode.replace('-', ' ')} mode)
-          </h1>
+          <h1>LaunchDarkly Toolbar Demo ({mode.replace('-', ' ')} mode)</h1>
           <p>
             This demo showcases the LaunchDarkly Toolbar component with different configurations.
-            {version === 'CI' && ' Using the built/published version.'}
-            {version === 'Local' && ' Using the local workspace version.'}
             {mode === 'dev-server' && ' Testing with LaunchDarkly dev server integration.'}
             {mode === 'sdk' && ' Testing with direct LaunchDarkly React SDK integration.'}
           </p>

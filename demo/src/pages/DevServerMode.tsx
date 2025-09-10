@@ -2,17 +2,13 @@ import { useState } from 'react';
 import { LaunchDarklyToolbar } from '@launchdarkly/toolbar';
 import { AppWrapper } from '../AppWrapper';
 
-interface DevServerModeProps {
-  version: 'CI' | 'Local';
-}
-
-export function DevServerMode({ version }: DevServerModeProps) {
+export function DevServerMode() {
   const [position, setPosition] = useState<'left' | 'right'>('left');
   const [devServerUrl, setDevServerUrl] = useState('http://localhost:8765');
   const [projectKey, setProjectKey] = useState('test-project');
 
   return (
-    <AppWrapper version={version} mode="dev-server" position={position} onPositionChange={setPosition}>
+    <AppWrapper mode="dev-server" position={position} onPositionChange={setPosition}>
       <div className="config-group">
         <label htmlFor="devServerUrl">Dev Server URL:</label>
         <input

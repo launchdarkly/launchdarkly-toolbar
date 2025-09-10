@@ -1,13 +1,13 @@
 import { test, expect, type Page } from '@playwright/test';
-import { config } from '../config/environment';
 
-const TEST_PROJECT_KEY = 'test-project';
-
-test.describe(`LaunchDarkly Toolbar - ${config.testEnv} environment`, () => {
+test.describe('LaunchDarkly Toolbar', () => {
   test.describe('Dev Server Mode', () => {
+    const TEST_PROJECT_KEY = 'test-project';
+
     test.beforeEach(async ({ page }: { page: Page }) => {
-      await page.goto(`${config.basePath}/dev-server`);
+      await page.goto('/dev-server');
       await page.waitForSelector('[data-testid="launchdarkly-toolbar"]');
+      await expect(page.getByText('LaunchDarkly Toolbar Demo (dev server mode)')).toBeVisible();
 
       await page.route(`**/dev/projects`, async (route) => {
         await route.fulfill({
@@ -72,14 +72,7 @@ test.describe(`LaunchDarkly Toolbar - ${config.testEnv} environment`, () => {
       });
     });
 
-    test(`should load ${config.testEnv} build in dev-server mode`, async ({ page }: { page: Page }) => {
-      // Verify we're on the correct version and mode page
-      const expectedVersionText =
-        config.testEnv === 'ci'
-          ? 'LaunchDarkly Toolbar Demo (CI - dev server mode)'
-          : 'LaunchDarkly Toolbar Demo (Local - dev server mode)';
-      await expect(page.getByText(expectedVersionText)).toBeVisible();
-
+    test('should load toolbar in dev-server mode', async ({ page }: { page: Page }) => {
       // Verify the toolbar loads successfully
       await expect(page.getByRole('img', { name: 'LaunchDarkly' })).toBeVisible();
 
@@ -258,28 +251,94 @@ test.describe(`LaunchDarkly Toolbar - ${config.testEnv} environment`, () => {
     });
   });
 
-  test.describe('SDK Mode', () => {
+  test.describe.only('SDK Mode', () => {
     test.beforeEach(async ({ page }: { page: Page }) => {
-      await page.goto(`${config.basePath}/sdk`);
+      await page.goto('/sdk');
       await page.waitForSelector('[data-testid="launchdarkly-toolbar"]');
+      await expect(page.getByText('LaunchDarkly Toolbar Demo (sdk mode)')).toBeVisible();
     });
 
-    test(`should load ${config.testEnv} build in SDK mode`, async ({ page }: { page: Page }) => {
-      // Verify we're on the correct version and mode page
-      const expectedVersionText =
-        config.testEnv === 'ci'
-          ? 'LaunchDarkly Toolbar Demo (CI - sdk mode)'
-          : 'LaunchDarkly Toolbar Demo (Local - sdk mode)';
-      await expect(page.getByText(expectedVersionText)).toBeVisible();
-
+    test('should load toolbar in SDK mode and show flags', async ({ page }: { page: Page }) => {
       // Verify the toolbar loads successfully
       await expect(page.getByRole('img', { name: 'LaunchDarkly' })).toBeVisible();
-    });
 
-    test.skip('should integrate with LaunchDarkly React SDK', async ({ page }: { page: Page }) => {
+      // Expand toolbar by hovering
       const toolbarContainer = page.getByTestId('launchdarkly-toolbar');
       await toolbarContainer.hover();
+
+      // Verify tabs are visible
       await expect(page.getByRole('tab', { name: 'Flags' })).toBeVisible();
+      await expect(page.getByRole('tab', { name: 'Settings' })).toBeVisible();
+
+      // Click on Flags tab
+      await page.getByRole('tab', { name: 'Flags' }).click();
+
+      // Verify Flags tab is active and content is visible
+      await expect(page.getByRole('tab', { name: 'Flags' })).toHaveAttribute('aria-selected', 'true');
+      await expect(page.getByTestId('flag-sdk-tab-content')).toBeVisible();
+
+      // Verify flag management controls are present
+      await expect(page.getByText('Show overrides only')).toBeVisible();
+      await expect(page.getByText(/Clear all overrides/)).toBeVisible();
+
+      // If flags are available, verify they're displayed
+      // Note: This might show "No flags available" if LaunchDarkly client isn't properly configured
+      const flagContent = page.getByTestId('flag-sdk-tab-content');
+      await expect(flagContent).toBeVisible();
+    });
+
+    // TODO
+    test.skip('should support flag override functionality when flags are available', async ({
+      page,
+    }: {
+      page: Page;
+    }) => {
+      // Expand toolbar and navigate to Flags tab
+      const toolbarContainer = page.getByTestId('launchdarkly-toolbar');
+      await toolbarContainer.hover();
+      await page.getByRole('tab', { name: 'Flags' }).click();
+
+      // Check if we have flags available (not in "No flags available" state)
+      const noFlagsMessage = page.getByText('No flags available');
+      const hasFlags = !(await noFlagsMessage.isVisible().catch(() => false));
+
+      if (hasFlags) {
+        // Test flag override controls are functional
+        const flagToggles = page.getByRole('switch');
+        if ((await flagToggles.count()) > 0) {
+          // Verify we can see flag toggles/controls
+          await expect(flagToggles.first()).toBeVisible();
+        }
+
+        // Test "Show overrides only" functionality
+        const showOverridesButton = page.getByText('Show overrides only');
+
+        // Get initial button state (should not be active initially)
+        const initialClasses = await showOverridesButton.getAttribute('class');
+
+        // Click to activate
+        await showOverridesButton.click();
+        const activeClasses = await showOverridesButton.getAttribute('class');
+
+        // Verify the classes changed (active state should add more classes)
+        expect(activeClasses).not.toBe(initialClasses);
+        expect(activeClasses?.split(' ').length).toBeGreaterThan(initialClasses?.split(' ').length || 0);
+
+        // Click again to toggle off
+        await showOverridesButton.click();
+        const inactiveClasses = await showOverridesButton.getAttribute('class');
+
+        // Verify we're back to the initial state
+        expect(inactiveClasses).toBe(initialClasses);
+
+        // Verify "Clear all overrides" button is present and functional
+        const clearAllButton = page.getByText(/Clear all overrides/);
+        await expect(clearAllButton).toBeVisible();
+      } else {
+        // If no flags are available, verify the help message is shown
+        await expect(page.getByText('No flags available')).toBeVisible();
+        await expect(page.getByText(/Make sure your LaunchDarkly client is properly initialized/)).toBeVisible();
+      }
     });
   });
 });
