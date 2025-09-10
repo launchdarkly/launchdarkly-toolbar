@@ -368,12 +368,23 @@ body {
   padding: 12px 24px;
   border-radius: 8px;
   font-weight: 500;
-  transition: transform 0.2s ease;
+  transition: all 0.2s ease;
   margin-top: 10px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .version-link:hover {
   transform: scale(1.05);
+  background: linear-gradient(135deg, #5a67d8 0%, #6b46c1 100%);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  color: white;
+}
+
+.version-links {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  align-items: center;
 }
 
 /* Version info */
