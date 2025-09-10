@@ -408,6 +408,114 @@ body {
   overflow-y: auto;
 }
 
+/* Version selector */
+.version-selector {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 30px;
+  margin-bottom: 40px;
+}
+
+@media (max-width: 768px) {
+  .version-selector {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+}
+
+.version-card {
+  background: white;
+  padding: 30px;
+  border-radius: 12px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  border: 1px solid #e2e8f0;
+  text-align: center;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.version-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+.version-card h2 {
+  color: #2d3748;
+  margin-bottom: 15px;
+  font-size: 1.5rem;
+  font-weight: 600;
+}
+
+.version-card p {
+  color: #718096;
+  margin-bottom: 15px;
+  line-height: 1.6;
+}
+
+.version-link {
+  display: inline-block;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  text-decoration: none;
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  margin-top: 10px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.version-link:hover {
+  transform: scale(1.05);
+  background: linear-gradient(135deg, #5a67d8 0%, #6b46c1 100%);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  color: white;
+}
+
+.version-links {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  align-items: center;
+}
+
+/* Version info */
+.version-info {
+  background: #f7fafc;
+  padding: 20px;
+  border-radius: 8px;
+  border-left: 4px solid #48bb78;
+  margin-top: 20px;
+}
+
+.version-info h3 {
+  margin-top: 0;
+  color: #2d3748;
+}
+
+.version-info p {
+  margin-bottom: 10px;
+  color: #4a5568;
+}
+
+.route-links {
+  margin-top: 15px;
+  padding-top: 15px;
+  border-top: 1px solid #e2e8f0;
+}
+
+.route-links a {
+  color: #667eea;
+  text-decoration: none;
+  font-weight: 500;
+  margin: 0 5px;
+}
+
+.route-links a:hover {
+  text-decoration: underline;
+}
+
 /* Responsive design */
 @media (max-width: 768px) {
   .container {

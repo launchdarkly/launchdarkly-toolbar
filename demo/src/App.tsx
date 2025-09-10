@@ -1,8 +1,11 @@
 import { useEffect, useState } from 'react';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { asyncWithLDProvider } from 'launchdarkly-react-client-sdk';
-import { AppWrapper } from './AppWrapper';
 
 import './App.css';
+import { Home } from './pages/Home';
+import { DevServerMode } from './pages/DevServerMode';
+import { SDKMode } from './pages/SDKMode';
 import { flagOverridePlugin, eventInterceptionPlugin } from './plugins';
 
 function App() {
@@ -31,7 +34,13 @@ function App() {
 
   return (
     <LDProvider>
-      <AppWrapper />
+      <Router>
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/dev-server" element={<DevServerMode />} />
+          <Route path="/sdk" element={<SDKMode />} />
+        </Routes>
+      </Router>
     </LDProvider>
   );
 }

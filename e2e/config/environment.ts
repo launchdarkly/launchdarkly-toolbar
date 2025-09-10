@@ -1,18 +1,12 @@
 type Environment = 'ci' | 'local';
 
 type EnvironmentConfig = {
-  [key in Environment]: {
-    storyPath: string;
-  };
+  [key in Environment]: {};
 };
 
 const envConfig: EnvironmentConfig = {
-  ci: {
-    storyPath: '/?path=/story/testing-toolbar--dev-server-mode',
-  },
-  local: {
-    storyPath: '/?path=/story/ui-launchdarklytoolbar--dev-server-mode',
-  },
+  ci: {},
+  local: {},
 };
 
 const TEST_ENV = (process.env.TEST_ENV as keyof typeof envConfig) || 'ci';

@@ -30,6 +30,10 @@ runs:
       id: build
       run: pnpm build
 
+    - name: Build Demo App
+      shell: bash
+      run: pnpm demo:build
+
     - name: Run Unit Tests
       shell: bash
       run: pnpm test
