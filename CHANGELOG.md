@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.11.1-beta.1](https://github.com/launchdarkly/launchdarkly-toolbar/compare/0.11.0-beta.1...0.11.1-beta.1) (2025-09-10)
+
+
+### Bug Fixes
+
+* conditional calling of hooks due to early return in FlagSdkOverrideTabContent ([#78](https://github.com/launchdarkly/launchdarkly-toolbar/issues/78)) ([ebb412a](https://github.com/launchdarkly/launchdarkly-toolbar/commit/ebb412a2c2ed90f93452c9a6a3b3ccd3e44924a0))
+
 ## [0.11.0-beta.1](https://github.com/launchdarkly/launchdarkly-toolbar/compare/0.10.1...0.11.0-beta.1) (2025-09-10)
 
 ### Features
