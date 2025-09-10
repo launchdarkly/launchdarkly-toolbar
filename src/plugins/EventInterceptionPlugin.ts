@@ -1,6 +1,7 @@
-import type { LDClient, LDPlugin } from 'launchdarkly-js-client-sdk';
+import type { Hook, LDClient, LDPluginEnvironmentMetadata, LDPluginMetadata } from 'launchdarkly-js-client-sdk';
 import { EventEnqueueHook, EventStore } from '../hooks';
 import { EventFilter, ProcessedEvent } from '../types/events';
+import { IEventInterceptionPlugin } from '../types/plugin';
 
 /**
  * Configuration options for the EventInterceptionPlugin
@@ -15,7 +16,7 @@ export interface EventInterceptionPluginConfig {
 /**
  * Plugin dedicated to intercepting and processing LaunchDarkly events
  */
-export class EventInterceptionPlugin implements LDPlugin {
+export class EventInterceptionPlugin implements IEventInterceptionPlugin {
   private eventEnqueueHook: EventEnqueueHook;
   private eventStore: EventStore;
   private config: EventInterceptionPluginConfig;
@@ -45,13 +46,13 @@ export class EventInterceptionPlugin implements LDPlugin {
     });
   }
 
-  getMetadata() {
+  getMetadata(): LDPluginMetadata {
     return {
       name: 'EventInterceptionPlugin',
     };
   }
 
-  getHooks() {
+  getHooks(metadata: LDPluginEnvironmentMetadata): Hook[] {
     return [this.eventEnqueueHook];
   }
 

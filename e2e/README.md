@@ -127,7 +127,7 @@ Tests automatically configure:
 Tests automatically configure:
 
 - LaunchDarkly client with test credentials
-- Debug override plugin for flag manipulation
+- Flag override plugin for flag manipulation
 - Real SDK initialization and flag evaluation
 
 ## Troubleshooting

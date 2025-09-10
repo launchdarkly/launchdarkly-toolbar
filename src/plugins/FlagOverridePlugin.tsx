@@ -149,7 +149,7 @@ export class FlagOverridePlugin implements IFlagOverridePlugin {
    * Returns all currently active feature flag overrides
    * @returns Record of flag keys to their override values
    */
-  getAllOverrides(): Record<string, LDFlagSet> {
+  getAllOverrides(): LDFlagSet {
     if (!this.debugOverride) {
       console.warn('flagOverridePlugin: Debug interface not available');
       return {};

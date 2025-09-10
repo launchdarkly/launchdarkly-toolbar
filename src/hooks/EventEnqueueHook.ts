@@ -87,7 +87,7 @@ export class EventEnqueueHook implements Hook {
     const timestamp = Date.now();
     // Create a guaranteed unique ID using timestamp + counter + random
     this.idCounter = (this.idCounter + 1) % 999999; // Reset counter at 999999
-    const randomPart = Math.random().toString(36).substr(2, 6);
+    const randomPart = Math.random().toString(36).substring(2, 8);
     const id = `${context.kind}-${timestamp}-${this.idCounter.toString().padStart(6, '0')}-${randomPart}`;
 
     return {
