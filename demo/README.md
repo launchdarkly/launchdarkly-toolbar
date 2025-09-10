@@ -85,9 +85,6 @@ The demo allows you to test different configurations:
 - **Dev Server URL**: Connect to different LaunchDarkly environments (Dev Server Mode)
 - **Project Key**: Test auto-detection vs explicit project selection (Dev Server Mode)
 - **Flag Override Plugin**: Enable/disable override functionality (SDK Mode)
-  <<<<<<< HEAD
-- # **Event Plugin**: Enable/disable event interception and monitoring (SDK Mode)
-  > > > > > > > origin/main
 
 ## Development
 
@@ -104,12 +101,7 @@ This demo is part of a pnpm workspace and automatically uses the local version o
 ### SDK Mode Issues
 
 1. **No Overrides tab**: Make sure the flag override plugin is enabled in the demo configuration
-   <<<<<<< HEAD
-2. **No Events tab**: Make sure the event interception plugin is enabled in the demo configuration
-3. **Overrides not working**: Check the browser console for plugin errors
-4. # **Events not showing**: Verify the event plugin is properly configured and LaunchDarkly events are being generated
-5. **Overrides not working**: Check the browser console for plugin errors
-   > > > > > > > origin/main
+2. **Overrides not working**: Check the browser console for plugin errors
 
 ### General Issues
 
