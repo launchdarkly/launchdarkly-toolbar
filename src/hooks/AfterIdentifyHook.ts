@@ -1,5 +1,11 @@
 import { Hook } from 'launchdarkly-js-client-sdk';
-import { HookMetadata, IdentifySeriesData } from 'launchdarkly-js-sdk-common';
+import {
+  HookMetadata,
+  IdentifySeriesContext,
+  IdentifySeriesData,
+  IdentifySeriesResult,
+  LDContext,
+} from 'launchdarkly-js-sdk-common';
 import type { EventFilter, ProcessedEvent, SyntheticEventContext } from '../types/events';
 
 export type AfterIdentifyHookConfig = {
@@ -25,9 +31,9 @@ export class AfterIdentifyHook implements Hook {
   }
 
   afterIdentify(
-    hookContext: { context: object; timeout?: number },
+    hookContext: IdentifySeriesContext,
     data: IdentifySeriesData,
-    result: { status: string },
+    result: IdentifySeriesResult,
   ): IdentifySeriesData {
     try {
       // Only process successful identify operations
@@ -57,9 +63,9 @@ export class AfterIdentifyHook implements Hook {
     return data;
   }
 
-  private determineContextKind(context: any): string {
+  private determineContextKind(context: LDContext): string {
     if (context && typeof context === 'object') {
-      if (context.kind) {
+      if ('kind' in context && context.kind) {
         return context.kind;
       }
       // Legacy user context

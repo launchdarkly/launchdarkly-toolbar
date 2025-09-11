@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { AfterIdentifyHook, type AfterIdentifyHookConfig } from '../../hooks/AfterIdentifyHook';
 import type { ProcessedEvent, EventFilter } from '../../types/events';
-import type { IdentifySeriesData } from 'launchdarkly-js-sdk-common';
+import type { IdentifySeriesData, IdentifySeriesContext, IdentifySeriesResult } from 'launchdarkly-js-sdk-common';
 
 // Mock console methods to avoid noise in test output
 const consoleSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
@@ -9,9 +9,9 @@ const consoleSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
 describe('AfterIdentifyHook', () => {
   let hook: AfterIdentifyHook;
   let mockOnNewEvent: ReturnType<typeof vi.fn>;
-  let mockIdentifyContext: { context: object; timeout?: number };
+  let mockIdentifyContext: IdentifySeriesContext;
   let mockData: IdentifySeriesData;
-  let mockResult: { status: string };
+  let mockResult: IdentifySeriesResult;
 
   beforeEach(() => {
     mockOnNewEvent = vi.fn();
@@ -20,10 +20,10 @@ describe('AfterIdentifyHook', () => {
     mockIdentifyContext = {
       context: { kind: 'user', key: 'user-123', name: 'John Doe' },
       timeout: 5000,
-    };
+    } as IdentifySeriesContext;
 
-    mockData = {};
-    mockResult = { status: 'completed' };
+    mockData = {} as IdentifySeriesData;
+    mockResult = { status: 'completed' as const };
   });
 
   describe('constructor', () => {
@@ -85,7 +85,7 @@ describe('AfterIdentifyHook', () => {
     });
 
     it('should not process failed identify operations', () => {
-      const failedResult = { status: 'error' };
+      const failedResult = { status: 'error' as const };
       const result = hook.afterIdentify(mockIdentifyContext, mockData, failedResult);
 
       expect(result).toBe(mockData);

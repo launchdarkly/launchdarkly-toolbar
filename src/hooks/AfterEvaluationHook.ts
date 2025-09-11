@@ -1,5 +1,10 @@
 import { Hook } from 'launchdarkly-js-client-sdk';
-import { HookMetadata, EvaluationSeriesData } from 'launchdarkly-js-sdk-common';
+import {
+  HookMetadata,
+  EvaluationSeriesData,
+  LDEvaluationDetail,
+  EvaluationSeriesContext,
+} from 'launchdarkly-js-sdk-common';
 import type { EventFilter, ProcessedEvent, SyntheticEventContext } from '../types/events';
 
 export type AfterEvaluationHookConfig = {
@@ -25,19 +30,19 @@ export class AfterEvaluationHook implements Hook {
   }
 
   afterEvaluation(
-    hookContext: { flagKey: string; context: object; defaultValue: any },
+    hookContext: EvaluationSeriesContext,
     data: EvaluationSeriesData,
-    result: { value: any; variationIndex?: number; reason?: object },
+    detail: LDEvaluationDetail,
   ): EvaluationSeriesData {
     try {
       const syntheticContext: SyntheticEventContext = {
         kind: 'feature',
         key: hookContext.flagKey,
         context: hookContext.context,
-        value: result.value,
-        variation: result.variationIndex,
+        value: detail.value,
+        variation: detail.variationIndex,
         default: hookContext.defaultValue,
-        reason: result.reason,
+        reason: detail.reason,
         creationDate: Date.now(),
         // Note: We don't have access to version, trackEvents, or debugEventsUntilDate
         // from the afterEvaluation hook, so these will be undefined

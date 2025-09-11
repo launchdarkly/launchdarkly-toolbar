@@ -9,7 +9,9 @@ graph TB
     %% Plugin & Hook System
     subgraph "🔌 Event Interception System"
         Plugin[EventInterceptionPlugin<br/>Coordinates Event Monitoring]
-        Hook[EventEnqueueHook<br/>Captures SDK Events<br/>afterEventEnqueue]
+        TrackHook[AfterTrackHook<br/>Captures Custom Events<br/>afterTrack]
+        IdentifyHook[AfterIdentifyHook<br/>Captures Identify Events<br/>afterIdentify]
+        EvalHook[AfterEvaluationHook<br/>Captures Flag Evaluations<br/>afterEvaluation]
         Store[EventStore<br/>In-Memory Cache<br/>Max 100 Events<br/>Subscription System]
     end
 
@@ -22,13 +24,19 @@ graph TB
     %% Main Flow
     App -->|"Uses SDK for flags"| SDK
     SDK -->|"Generates events"| Events
-    Events -->|"Triggers hook"| Hook
-    Hook -->|"Processes events"| Store
+    Events -->|"Triggers hooks"| TrackHook
+    Events -->|"Triggers hooks"| IdentifyHook
+    Events -->|"Triggers hooks"| EvalHook
+    TrackHook -->|"Processes events"| Store
+    IdentifyHook -->|"Processes events"| Store
+    EvalHook -->|"Processes events"| Store
     Store -->|"Notifies changes"| Plugin
 
     %% Plugin Integration
     Plugin -->|"Registered with"| SDK
-    Plugin -->|"Provides hook"| Hook
+    Plugin -->|"Provides hooks"| TrackHook
+    Plugin -->|"Provides hooks"| IdentifyHook
+    Plugin -->|"Provides hooks"| EvalHook
     Plugin -->|"Manages store"| Store
 
     %% UI Integration
@@ -39,7 +47,9 @@ graph TB
 
     %% Real-time Updates
     Store -.->|"Real-time notifications"| EventsTab
-    Hook -.->|"Event metadata<br/>timestamps, categories"| Store
+    TrackHook -.->|"Event metadata<br/>timestamps, categories"| Store
+    IdentifyHook -.->|"Event metadata<br/>timestamps, categories"| Store
+    EvalHook -.->|"Event metadata<br/>timestamps, categories"| Store
 
     %% Styling
     classDef app fill:#61dafb,color:black
@@ -48,6 +58,6 @@ graph TB
     classDef ui fill:#a78bfa,color:black
 
     class App,Toolbar app
-    class Plugin,Hook,Store system
+    class Plugin,TrackHook,IdentifyHook,EvalHook,Store system
     class SDK,Events sdk
     class EventsTab ui

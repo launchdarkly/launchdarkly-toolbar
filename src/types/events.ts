@@ -3,7 +3,7 @@ export interface SyntheticEventContext {
   readonly key?: string;
   readonly context?: object;
   readonly creationDate: number;
-  readonly data?: object;
+  readonly data?: unknown;
   readonly metricValue?: number;
   readonly url?: string;
   readonly value?: any;

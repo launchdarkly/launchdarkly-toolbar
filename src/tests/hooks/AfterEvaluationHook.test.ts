@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { AfterEvaluationHook, type AfterEvaluationHookConfig } from '../../hooks/AfterEvaluationHook';
 import type { ProcessedEvent, EventFilter } from '../../types/events';
-import type { EvaluationSeriesData } from 'launchdarkly-js-sdk-common';
+import type { EvaluationSeriesData, EvaluationSeriesContext, LDEvaluationDetail } from 'launchdarkly-js-sdk-common';
 
 // Mock console methods to avoid noise in test output
 const consoleSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
@@ -9,9 +9,9 @@ const consoleSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
 describe('AfterEvaluationHook', () => {
   let hook: AfterEvaluationHook;
   let mockOnNewEvent: ReturnType<typeof vi.fn>;
-  let mockEvaluationContext: { flagKey: string; context: object; defaultValue: any };
+  let mockEvaluationContext: EvaluationSeriesContext;
   let mockData: EvaluationSeriesData;
-  let mockResult: { value: any; variationIndex?: number; reason?: object };
+  let mockResult: LDEvaluationDetail;
 
   beforeEach(() => {
     mockOnNewEvent = vi.fn();
