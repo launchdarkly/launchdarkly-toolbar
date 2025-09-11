@@ -31,7 +31,6 @@ export class EventInterceptionPlugin implements IEventInterceptionPlugin {
 
     this.eventStore = new EventStore();
 
-    // Shared event handler for all hooks
     const onNewEvent = (event: ProcessedEvent) => {
       if (this.config.enableLogging) {
         console.log('🎯 Event intercepted:', {
@@ -45,7 +44,6 @@ export class EventInterceptionPlugin implements IEventInterceptionPlugin {
       this.eventStore.addEvent(event);
     };
 
-    // Create all three hooks with shared configuration
     this.afterTrackHook = new AfterTrackHook({
       filter: config.filter,
       onNewEvent,
