@@ -259,7 +259,7 @@ describe('AfterIdentifyHook', () => {
 
     it('should default to user for invalid contexts', () => {
       const invalidContext = {
-        context: null,
+        context: {} as object,
       };
       hook.afterIdentify(invalidContext, mockData, mockResult);
 
