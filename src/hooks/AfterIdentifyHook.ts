@@ -1,18 +1,18 @@
 import { Hook } from 'launchdarkly-js-client-sdk';
-import { EventEnqueueContext, HookMetadata } from 'launchdarkly-js-sdk-common';
-import type { EventFilter, ProcessedEvent, EventKind, EventCategory } from '../types/events';
+import { HookMetadata, IdentifySeriesData } from 'launchdarkly-js-sdk-common';
+import type { EventFilter, ProcessedEvent, EventCategory } from '../types/events';
 import { isValidEventKind } from '../types/events';
 
-export type EventEnqueueHookConfig = {
+export type AfterIdentifyHookConfig = {
   onNewEvent?: (event: ProcessedEvent) => void;
   filter?: EventFilter;
 };
 
-export class EventEnqueueHook implements Hook {
-  private config: EventEnqueueHookConfig;
+export class AfterIdentifyHook implements Hook {
+  private config: AfterIdentifyHookConfig;
   private idCounter = 0;
 
-  constructor(config: EventEnqueueHookConfig = {}) {
+  constructor(config: AfterIdentifyHookConfig = {}) {
     this.config = {
       filter: {
         includeIdentify: true,
@@ -27,27 +27,60 @@ export class EventEnqueueHook implements Hook {
 
   getMetadata(): HookMetadata {
     return {
-      name: 'EventEnqueueHook',
+      name: 'AfterIdentifyHook',
     };
   }
 
-  afterEventEnqueue(context: EventEnqueueContext): void {
+  afterIdentify(
+    hookContext: { context: object; timeout?: number },
+    data: IdentifySeriesData,
+    result: { status: string },
+  ): IdentifySeriesData {
     try {
-      // Event filtering
-      if (!this.shouldProcessEvent(context)) {
-        return;
+      // Only process successful identify operations
+      if (result.status !== 'completed') {
+        return data;
       }
 
-      const processedEvent = this.processEvent(context);
+      // Create a synthetic EventEnqueueContext-like object from the identify parameters
+      const syntheticContext = {
+        kind: 'identify',
+        context: hookContext.context,
+        creationDate: Date.now(),
+        contextKind: this.determineContextKind(hookContext.context),
+      };
+
+      // Event filtering
+      if (!this.shouldProcessEvent(syntheticContext)) {
+        return data;
+      }
+
+      const processedEvent = this.processEvent(syntheticContext);
 
       this.config.onNewEvent?.(processedEvent);
     } catch (error) {
       // Simple error handling - just log and continue
-      console.warn('Event processing error:', error);
+      console.warn('Event processing error in AfterIdentifyHook:', error);
     }
+
+    return data;
   }
 
-  private shouldProcessEvent(context: EventEnqueueContext): boolean {
+  private determineContextKind(context: any): string {
+    if (context && typeof context === 'object') {
+      if (context.kind) {
+        return context.kind;
+      }
+      // Legacy user context
+      if (context.anonymous) {
+        return 'anonymousUser';
+      }
+      return 'user';
+    }
+    return 'user';
+  }
+
+  private shouldProcessEvent(context: any): boolean {
     const filter = this.config.filter;
     if (!filter) return true;
 
@@ -83,7 +116,7 @@ export class EventEnqueueHook implements Hook {
     }
   }
 
-  private processEvent(context: EventEnqueueContext): ProcessedEvent {
+  private processEvent(context: any): ProcessedEvent {
     const timestamp = Date.now();
     // Create a guaranteed unique ID using timestamp + counter + random
     this.idCounter = (this.idCounter + 1) % 999999; // Reset counter at 999999
@@ -92,7 +125,7 @@ export class EventEnqueueHook implements Hook {
 
     return {
       id,
-      kind: context.kind as EventKind,
+      kind: context.kind,
       key: context.key,
       timestamp,
       context,
@@ -102,7 +135,7 @@ export class EventEnqueueHook implements Hook {
     };
   }
 
-  private generateDisplayName(context: EventEnqueueContext): string {
+  private generateDisplayName(context: any): string {
     switch (context.kind) {
       case 'feature':
         return `Flag: ${context.key || 'unknown'}`;
@@ -115,7 +148,7 @@ export class EventEnqueueHook implements Hook {
     }
   }
 
-  private categorizeEvent(context: EventEnqueueContext): EventCategory {
+  private categorizeEvent(context: any): EventCategory {
     switch (context.kind) {
       case 'feature':
         return 'flag';
@@ -128,7 +161,7 @@ export class EventEnqueueHook implements Hook {
     }
   }
 
-  private extractMetadata(context: EventEnqueueContext): Record<string, unknown> {
+  private extractMetadata(context: any): Record<string, unknown> {
     const metadata: Record<string, unknown> = {};
 
     // Add relevant context metadata based on event kind

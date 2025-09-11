@@ -20,17 +20,9 @@ export function AppWrapper({ children, mode, position, onPositionChange }: AppWr
       return;
     }
 
-    // This will trigger a feature flag evaluation event
-    const flagKeys = Object.keys(allFlags);
-    if (flagKeys.length > 0) {
-      const testFlag = flagKeys[0];
-      const value = ldClient.variation(testFlag, 'default-value');
-      console.log(`🏁 Evaluated flag "${testFlag}": ${value}`);
-    } else {
-      // Create a test flag evaluation even if no flags exist
-      const value = ldClient.variation('test-flag', false);
-      console.log(`🏁 Evaluated test flag: ${value}`);
-    }
+    // Always evaluate the flag with key "test-flag-by-sub"
+    const value = ldClient.variation('test-flag-by-sub', 'default-value');
+    console.log(`🏁 Evaluated flag "test-flag-by-sub": ${value}`);
   };
 
   const testCustomEvent = () => {

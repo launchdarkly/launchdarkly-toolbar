@@ -7,6 +7,6 @@ export type { IFlagOverridePlugin, IEventInterceptionPlugin } from './types/plug
 export { FlagOverridePlugin, EventInterceptionPlugin } from './plugins';
 export type { FlagOverridePluginConfig, EventInterceptionPluginConfig } from './plugins';
 
-export { EventEnqueueHook, EventStore } from './hooks';
-export type { EventEnqueueHookConfig } from './hooks';
+export { AfterEvaluationHook, AfterIdentifyHook, AfterTrackHook, EventStore } from './hooks';
+export type { AfterEvaluationHookConfig, AfterIdentifyHookConfig, AfterTrackHookConfig } from './hooks';
 export type { ProcessedEvent, EventFilter } from './types/events';

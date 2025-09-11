@@ -2,8 +2,6 @@
  * Enhanced TypeScript types for event processing
  */
 
-import type { EventEnqueueContext } from 'launchdarkly-js-sdk-common';
-
 /**
  * Valid event kinds that can be emitted by the LaunchDarkly SDK
  */
@@ -32,7 +30,7 @@ export interface ProcessedEvent {
   readonly kind: EventKind;
   readonly key?: string;
   readonly timestamp: number;
-  readonly context: EventEnqueueContext;
+  readonly context: any; // fixme
   readonly displayName: string;
   readonly category: EventCategory;
   readonly metadata?: Readonly<Record<string, unknown>>;
