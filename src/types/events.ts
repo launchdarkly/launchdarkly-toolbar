@@ -5,14 +5,24 @@
 import type { EventEnqueueContext } from 'launchdarkly-js-sdk-common';
 
 /**
+ * Valid event kinds that can be emitted by the LaunchDarkly SDK
+ */
+const VALID_EVENT_KINDS = ['identify', 'feature', 'custom', 'debug', 'summary', 'diagnostic'] as const;
+
+/**
+ * Valid event categories used for organizing events
+ */
+const VALID_EVENT_CATEGORIES = ['flag', 'custom', 'identify', 'debug'] as const;
+
+/**
  * Strict typing for event kinds based on LaunchDarkly's event system
  */
-export type EventKind = 'identify' | 'feature' | 'custom' | 'debug' | 'summary' | 'diagnostic';
+export type EventKind = (typeof VALID_EVENT_KINDS)[number];
 
 /**
  * Event categories for UI organization
  */
-export type EventCategory = 'flag' | 'custom' | 'identify' | 'debug';
+export type EventCategory = (typeof VALID_EVENT_CATEGORIES)[number];
 
 /**
  * Enhanced processed event
@@ -49,9 +59,9 @@ export interface EventFilter {
  * Type guards for event validation
  */
 export function isValidEventKind(kind: string): kind is EventKind {
-  return ['identify', 'feature', 'custom', 'debug', 'summary', 'diagnostic'].includes(kind);
+  return VALID_EVENT_KINDS.includes(kind as EventKind);
 }
 
 export function isValidEventCategory(category: string): category is EventCategory {
-  return ['flag', 'custom', 'identify', 'debug'].includes(category);
+  return VALID_EVENT_CATEGORIES.includes(category as EventCategory);
 }

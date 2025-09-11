@@ -533,7 +533,7 @@ describe('EventEnqueueHook', () => {
         value: null,
         default: undefined,
         version: undefined,
-        variation: null,
+        variation: null as any,
         creationDate: Date.now(),
         trackEvents: undefined,
         reason: undefined,
