@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.13.0-beta.1](https://github.com/launchdarkly/launchdarkly-toolbar/compare/0.12.0-beta.1...0.13.0-beta.1) (2025-09-12)
+
+
+### Features
+
+* add event interception and monitoring capabilities with plugin architecture ([#67](https://github.com/launchdarkly/launchdarkly-toolbar/issues/67)) ([1b7ca9c](https://github.com/launchdarkly/launchdarkly-toolbar/commit/1b7ca9c62ff490429b28c6030cb4efcdfc7d89ee))
+
 ## [0.12.0-beta.1](https://github.com/launchdarkly/launchdarkly-toolbar/compare/0.11.1-beta.1...0.12.0-beta.1) (2025-09-12)
 
 
