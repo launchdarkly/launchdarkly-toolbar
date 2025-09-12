@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.12.0-beta.1](https://github.com/launchdarkly/launchdarkly-toolbar/compare/0.11.1-beta.1...0.12.0-beta.1) (2025-09-12)
+
+
+### Features
+
+* add modular exports and optimise bundle size through tree shaking ([#82](https://github.com/launchdarkly/launchdarkly-toolbar/issues/82)) ([462ce54](https://github.com/launchdarkly/launchdarkly-toolbar/commit/462ce5477eeb26a9736d708ddfc20ba8c65f051b))
+
 ## [0.11.1-beta.1](https://github.com/launchdarkly/launchdarkly-toolbar/compare/0.11.0-beta.1...0.11.1-beta.1) (2025-09-10)
 
 
