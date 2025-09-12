@@ -1,7 +1,10 @@
-import { useState } from 'react';
-import { LaunchDarklyToolbar } from '@launchdarkly/toolbar';
+import { useState, lazy, Suspense } from 'react';
 import { AppWrapper } from '../AppWrapper';
 import { flagOverridePlugin, eventInterceptionPlugin } from '../plugins';
+
+const LaunchDarklyToolbar = import.meta.env.DEV
+  ? lazy(() => import('@launchdarkly/toolbar').then((module) => ({ default: module.LaunchDarklyToolbar })))
+  : null;
 
 export function SDKMode() {
   const [position, setPosition] = useState<'left' | 'right'>('left');
@@ -13,13 +16,20 @@ export function SDKMode() {
           <strong>SDK Mode:</strong> The toolbar uses the LaunchDarkly React SDK directly with flag override
           capabilities. No dev server configuration needed.
         </p>
+        {!import.meta.env.DEV && (
+          <p style={{ color: '#666', fontStyle: 'italic' }}>Toolbar is disabled in production mode.</p>
+        )}
       </div>
 
-      <LaunchDarklyToolbar
-        position={position}
-        flagOverridePlugin={flagOverridePlugin}
-        eventInterceptionPlugin={eventInterceptionPlugin}
-      />
+      {LaunchDarklyToolbar && (
+        <Suspense fallback={<div>Loading toolbar...</div>}>
+          <LaunchDarklyToolbar
+            position={position}
+            flagOverridePlugin={flagOverridePlugin}
+            eventInterceptionPlugin={eventInterceptionPlugin}
+          />
+        </Suspense>
+      )}
     </AppWrapper>
   );
 }

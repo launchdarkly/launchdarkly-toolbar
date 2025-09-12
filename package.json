@@ -1,6 +1,6 @@
 {
   "name": "@launchdarkly/toolbar",
-  "version": "0.11.1-beta.1",
+  "version": "0.12.0-beta.1",
   "description": "A React component that provides a developer-friendly toolbar for interacting with LaunchDarkly during development",
   "keywords": [
     "launchdarkly",
@@ -23,10 +23,23 @@
   "homepage": "https://github.com/launchdarkly/launchdarkly-toolbar#readme",
   "main": "./dist/js/index.js",
   "types": "./dist/index.d.ts",
+  "sideEffects": [
+    "./dist/js/index.js",
+    "./dist/static/**/*",
+    "*.css"
+  ],
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
       "import": "./dist/js/index.js"
+    },
+    "./plugins": {
+      "types": "./dist/plugins/index.d.ts",
+      "import": "./dist/js/plugins/index.js"
+    },
+    "./plugins/FlagOverridePlugin": {
+      "types": "./dist/plugins/FlagOverridePlugin.d.ts",
+      "import": "./dist/js/plugins/FlagOverridePlugin.js"
     }
   },
   "files": [

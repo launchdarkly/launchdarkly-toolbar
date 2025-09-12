@@ -1,6 +1,9 @@
-import { useState } from 'react';
-import { LaunchDarklyToolbar } from '@launchdarkly/toolbar';
+import { useState, lazy, Suspense } from 'react';
 import { AppWrapper } from '../AppWrapper';
+
+const LaunchDarklyToolbar = import.meta.env.DEV
+  ? lazy(() => import('@launchdarkly/toolbar').then((module) => ({ default: module.LaunchDarklyToolbar })))
+  : null;
 
 export function DevServerMode() {
   const [position, setPosition] = useState<'left' | 'right'>('left');
@@ -31,7 +34,17 @@ export function DevServerMode() {
         />
       </div>
 
-      <LaunchDarklyToolbar position={position} devServerUrl={devServerUrl} projectKey={projectKey || undefined} />
+      {!import.meta.env.DEV && (
+        <div className="config-group">
+          <p style={{ color: '#666', fontStyle: 'italic' }}>Toolbar is disabled in production mode.</p>
+        </div>
+      )}
+
+      {LaunchDarklyToolbar && (
+        <Suspense fallback={<div>Loading toolbar...</div>}>
+          <LaunchDarklyToolbar position={position} devServerUrl={devServerUrl} projectKey={projectKey || undefined} />
+        </Suspense>
+      )}
     </AppWrapper>
   );
 }
