@@ -142,29 +142,6 @@ describe('LaunchDarklyToolbar - User Flows', () => {
   });
 
   describe('Error Handling and Edge Cases', () => {
-    test('SDK mode without flag override plugin shows limited functionality gracefully', async () => {
-      // GIVEN: Developer is using SDK mode but forgot to provide flag override plugin
-      render(<LaunchDarklyToolbar />);
-
-      // WHEN: They expand the toolbar to see available features
-      const toolbar = screen.getByTestId('launchdarkly-toolbar');
-      fireEvent.mouseEnter(toolbar);
-
-      // THEN: They get a clear indication of limited functionality
-      await waitFor(() => {
-        const settingsTab = screen.queryByRole('tab', { name: /settings/i });
-        return settingsTab;
-      });
-
-      // AND: Only basic settings are available (no flag management)
-      expect(screen.getByRole('tab', { name: /settings/i })).toBeInTheDocument();
-      expect(screen.queryByRole('tab', { name: /flags/i })).not.toBeInTheDocument();
-
-      // AND: The interface doesn't break or show confusing empty states
-      const tabs = screen.getAllByRole('tab');
-      expect(tabs).toHaveLength(1);
-    });
-
     test('invalid devServerUrl is handled gracefully', async () => {
       // GIVEN: Developer provides an invalid or malformed URL
       render(<LaunchDarklyToolbar devServerUrl="not-a-valid-url" projectKey="test" />);
@@ -188,7 +165,7 @@ describe('LaunchDarklyToolbar - User Flows', () => {
       expect(screen.getByRole('tab', { name: /settings/i })).toBeInTheDocument();
     });
 
-    test('empty devServerUrl is treated as SDK mode', async () => {
+    test('empty devServerUrl is treated as SDK mode with built-in plugin', async () => {
       // GIVEN: Developer accidentally passes empty string for devServerUrl
       render(<LaunchDarklyToolbar devServerUrl="" />);
 
@@ -196,24 +173,23 @@ describe('LaunchDarklyToolbar - User Flows', () => {
       const toolbar = screen.getByTestId('launchdarkly-toolbar');
       fireEvent.mouseEnter(toolbar);
 
-      // THEN: It behaves as SDK mode (not dev-server mode)
+      // THEN: It behaves as SDK mode (not dev-server mode) with built-in plugin
       await waitFor(() => {
+        const flagsTab = screen.queryByRole('tab', { name: /flags/i });
         const settingsTab = screen.queryByRole('tab', { name: /settings/i });
-        return settingsTab;
+        return flagsTab && settingsTab;
       });
 
-      // AND: Shows only SDK mode tabs (no flag override plugin = settings only)
+      // AND: Shows SDK mode tabs with built-in plugin
+      expect(screen.getByRole('tab', { name: /flags/i })).toBeInTheDocument();
       expect(screen.getByRole('tab', { name: /settings/i })).toBeInTheDocument();
 
-      // AND: Does NOT show dev-server mode tabs (flags = server-side flags)
-      expect(screen.queryByRole('tab', { name: /flags/i })).not.toBeInTheDocument();
+      // AND: Does NOT show dev-server mode behavior
+      expect(screen.queryByText('Server-Side Flags')).not.toBeInTheDocument();
 
-      // AND: Does NOT show flag-sdk tab (no flag override plugin provided)
-      expect(screen.queryByText('flag-sdk')).not.toBeInTheDocument();
-
-      // AND: Only has one tab total (settings only - typical SDK mode without plugin)
+      // AND: Has both SDK mode tabs (flags + settings)
       const tabs = screen.getAllByRole('tab');
-      expect(tabs).toHaveLength(1);
+      expect(tabs).toHaveLength(2);
     });
   });
 });
