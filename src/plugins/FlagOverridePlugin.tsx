@@ -6,7 +6,7 @@ import type {
   Hook,
   LDPluginEnvironmentMetadata,
 } from 'launchdarkly-js-client-sdk';
-import { IFlagOverridePlugin } from '../types/plugin';
+import type { IFlagOverridePlugin } from '../types/plugin';
 
 /**
  * Configuration options for the FlagOverridePlugin

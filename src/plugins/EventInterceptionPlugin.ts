@@ -1,7 +1,7 @@
 import type { Hook, LDClient, LDPluginEnvironmentMetadata, LDPluginMetadata } from 'launchdarkly-js-client-sdk';
 import { AfterTrackHook, AfterIdentifyHook, AfterEvaluationHook, EventStore } from '../hooks';
-import { EventFilter, ProcessedEvent } from '../types/events';
-import { IEventInterceptionPlugin } from '../types/plugin';
+import type { EventFilter, ProcessedEvent } from '../types/events';
+import type { IEventInterceptionPlugin } from '../types/plugin';
 
 /**
  * Configuration options for the EventInterceptionPlugin

@@ -1,5 +1,5 @@
-import { Hook } from 'launchdarkly-js-client-sdk';
-import { HookMetadata, TrackSeriesContext } from 'launchdarkly-js-sdk-common';
+import type { Hook } from 'launchdarkly-js-client-sdk';
+import type { HookMetadata, TrackSeriesContext } from 'launchdarkly-js-sdk-common';
 import type { EventFilter, ProcessedEvent, SyntheticEventContext } from '../types/events';
 
 export type AfterTrackHookConfig = {

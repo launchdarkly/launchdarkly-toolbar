@@ -1,5 +1,5 @@
 import type { LDClient, LDDebugOverride, LDFlagSet, LDFlagValue, LDPlugin } from 'launchdarkly-js-client-sdk';
-import { ProcessedEvent } from './events';
+import type { ProcessedEvent } from './events';
 
 /**
  * Interface for flag override plugins that can be used with the LaunchDarkly Toolbar

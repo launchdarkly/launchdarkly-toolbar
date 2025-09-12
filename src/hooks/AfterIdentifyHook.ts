@@ -1,5 +1,5 @@
-import { Hook } from 'launchdarkly-js-client-sdk';
-import {
+import type { Hook } from 'launchdarkly-js-client-sdk';
+import type {
   HookMetadata,
   IdentifySeriesContext,
   IdentifySeriesData,
