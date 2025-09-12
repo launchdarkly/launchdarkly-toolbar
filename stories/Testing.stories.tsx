@@ -1,6 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react';
 
 import { LaunchDarklyToolbar } from '@launchdarkly/toolbar';
+import { FlagOverridePlugin } from '../src/plugins/FlagOverridePlugin';
 
 const meta: Meta<typeof LaunchDarklyToolbar> = {
   title: 'Testing/Toolbar',
@@ -10,7 +11,7 @@ const meta: Meta<typeof LaunchDarklyToolbar> = {
     docs: {
       description: {
         component:
-          'The main LaunchDarkly toolbar component that provides feature flag management UI with real-time updates, search functionality, and project switching capabilities.',
+          'The main LaunchDarkly toolbar component that provides feature flag management UI with real-time updates, search functionality, event tracking, and flag override capabilities. Supports plugins for extended functionality.',
       },
     },
   },
@@ -32,17 +33,47 @@ const meta: Meta<typeof LaunchDarklyToolbar> = {
       control: 'text',
       description: 'URL of the LaunchDarkly dev server',
     },
+    pollIntervalInMs: {
+      control: { type: 'number', min: 1000, max: 30000, step: 1000 },
+      description: 'Polling interval in milliseconds for fetching data from dev server',
+    },
+    flagOverridePlugin: {
+      table: { disable: true },
+      description: 'Plugin for flag overrides functionality',
+    },
   },
 };
 
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-export const Default: Story = {
+export const DevServerMode: Story = {
+  args: {
+    devServerUrl: 'http://localhost:8765',
+    projectKey: 'test-project',
+    position: 'right',
+  },
   parameters: {
     docs: {
       description: {
-        story: 'Default toolbar state with auto-detected project.',
+        story:
+          'Dev-server mode connects to a LaunchDarkly development server. Shows Flags and Settings tabs. This mode is used when you have a dev server running locally.',
+      },
+    },
+  },
+};
+
+export const SdkMode: Story = {
+  args: {
+    // No devServerUrl - triggers SDK mode
+    position: 'right',
+    flagOverridePlugin: new FlagOverridePlugin(),
+  },
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'SDK mode works with an existing LaunchDarkly client in your application. Shows Local Overrides, Events, and Settings tabs. This mode is used when you have the LaunchDarkly SDK initialized in your app.',
       },
     },
   },

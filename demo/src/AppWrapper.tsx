@@ -13,6 +13,59 @@ export function AppWrapper({ children, mode, position, onPositionChange }: AppWr
   const ldClient = useLDClient();
   const allFlags = ldClient?.allFlags() || {};
 
+  // Test functions to trigger different LaunchDarkly events
+  const testFlagEvaluation = () => {
+    if (!ldClient) {
+      console.log('LD Client not available');
+      return;
+    }
+
+    // This will trigger a feature flag evaluation event
+    const flagKeys = Object.keys(allFlags);
+    if (flagKeys.length > 0) {
+      const testFlag = flagKeys[0];
+      const value = ldClient.variation(testFlag, 'default-value');
+      console.log(`🏁 Evaluated flag "${testFlag}": ${value}`);
+    } else {
+      // Create a test flag evaluation even if no flags exist
+      const value = ldClient.variation('test-flag', false);
+      console.log(`🏁 Evaluated test flag: ${value}`);
+    }
+  };
+
+  const testCustomEvent = () => {
+    if (!ldClient) {
+      console.log('LD Client not available');
+      return;
+    }
+
+    // This will trigger a custom event
+    ldClient.track(
+      'test-custom-event',
+      {
+        testData: 'Hello from demo!',
+        timestamp: new Date().toISOString(),
+      },
+      42,
+    );
+    console.log('📊 Sent custom event: test-custom-event');
+  };
+
+  const testIdentifyEvent = () => {
+    if (!ldClient) {
+      console.log('LD Client not available');
+      return;
+    }
+
+    // This will trigger an identify event
+    ldClient.identify({
+      key: 'test-user-' + Date.now(),
+      name: 'Test User',
+      email: 'test@example.com',
+    });
+    console.log('👤 Sent identify event');
+  };
+
   const formatValue = (value: unknown): string => {
     if (typeof value === 'boolean') return value ? 'true' : 'false';
     if (typeof value === 'string') return `"${value}"`;
@@ -61,6 +114,25 @@ export function AppWrapper({ children, mode, position, onPositionChange }: AppWr
           </div>
 
           <div className="demo-content">
+            <div className="event-testing">
+              <h3>Event Hook Testing</h3>
+              <p>Click these buttons to trigger different LaunchDarkly events and watch the console for hook logs:</p>
+              <div className="test-buttons">
+                <button onClick={testFlagEvaluation} className="test-button flag-button">
+                  🏁 Test Flag Evaluation
+                </button>
+                <button onClick={testCustomEvent} className="test-button custom-button">
+                  📊 Test Custom Event
+                </button>
+                <button onClick={testIdentifyEvent} className="test-button identify-button">
+                  👤 Test Identify Event
+                </button>
+              </div>
+              <div className="console-hint">
+                <strong>💡 Tip:</strong> Open your browser's developer console to see the event hook logs!
+              </div>
+            </div>
+
             <div className="flags-display">
               <h3>Current Flags ({Object.keys(allFlags).length})</h3>
               <p>

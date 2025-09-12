@@ -4,5 +4,3 @@ packages:
 
 autoInstallPeers: false
 strictPeerDependencies: true
-
-

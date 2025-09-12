@@ -106,7 +106,7 @@ if grep -q "overrides:" pnpm-workspace.yaml 2>/dev/null; then
     in_overrides && !/^[[:space:]]/ { in_overrides=0 }
     !in_overrides { print }
     ' pnpm-workspace.yaml > pnpm-workspace.yaml.tmp
-    
+
     # Replace original with cleaned version
     mv pnpm-workspace.yaml.tmp pnpm-workspace.yaml
     log_success "Workspace overrides removed from pnpm-workspace.yaml"

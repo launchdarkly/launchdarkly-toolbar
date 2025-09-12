@@ -1,0 +1,63 @@
+graph TB
+    %% Application Layer
+    subgraph "🎯 Application"
+        App[Your React App<br/>LaunchDarkly SDK Integration]
+        Toolbar[LaunchDarkly Toolbar<br/>Event Monitoring UI]
+        EventsTab[Events Tab<br/>Real-time Event Display<br/>Search & Filtering]
+    end
+
+    %% Plugin & Hook System
+    subgraph "🔌 Event Interception System"
+        Plugin[EventInterceptionPlugin<br/>Coordinates Event Monitoring]
+        TrackHook[AfterTrackHook<br/>Captures Custom Events<br/>afterTrack]
+        IdentifyHook[AfterIdentifyHook<br/>Captures Identify Events<br/>afterIdentify]
+        EvalHook[AfterEvaluationHook<br/>Captures Flag Evaluations<br/>afterEvaluation]
+        Store[EventStore<br/>In-Memory Cache<br/>Max 100 Events<br/>Subscription System]
+    end
+
+    %% LaunchDarkly SDK
+    subgraph "🚀 LaunchDarkly SDK"
+        SDK[SDK Core<br/>Event Processing<br/>Hook Registration]
+        Events[Event Types<br/>• feature evaluations<br/>• identify calls<br/>• custom events<br/>• debug info]
+    end
+
+    %% Main Flow
+    App -->|"Uses SDK for flags"| SDK
+    SDK -->|"Generates events"| Events
+    Events -->|"Triggers hooks"| TrackHook
+    Events -->|"Triggers hooks"| IdentifyHook
+    Events -->|"Triggers hooks"| EvalHook
+    TrackHook -->|"Processes events"| Store
+    IdentifyHook -->|"Processes events"| Store
+    EvalHook -->|"Processes events"| Store
+    Store -->|"Notifies changes"| Plugin
+
+    %% Plugin Integration
+    Plugin -->|"Registered with"| SDK
+    Plugin -->|"Provides hooks"| TrackHook
+    Plugin -->|"Provides hooks"| IdentifyHook
+    Plugin -->|"Provides hooks"| EvalHook
+    Plugin -->|"Manages store"| Store
+
+    %% UI Integration
+    App -->|"Renders"| Toolbar
+    Toolbar -->|"Receives plugin"| Plugin
+    Toolbar -->|"Displays events"| EventsTab
+    EventsTab -->|"Subscribes to"| Plugin
+
+    %% Real-time Updates
+    Store -.->|"Real-time notifications"| EventsTab
+    TrackHook -.->|"Event metadata<br/>timestamps, categories"| Store
+    IdentifyHook -.->|"Event metadata<br/>timestamps, categories"| Store
+    EvalHook -.->|"Event metadata<br/>timestamps, categories"| Store
+
+    %% Styling
+    classDef app fill:#61dafb,color:black
+    classDef system fill:#f7df1e,color:black
+    classDef sdk fill:#4ade80,color:black
+    classDef ui fill:#a78bfa,color:black
+
+    class App,Toolbar app
+    class Plugin,TrackHook,IdentifyHook,EvalHook,Store system
+    class SDK,Events sdk
+    class EventsTab ui

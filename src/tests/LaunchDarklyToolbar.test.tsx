@@ -57,14 +57,14 @@ describe('LaunchDarklyToolbar - User Flows', () => {
       expect(screen.getByRole('tab', { name: /flags/i })).toBeInTheDocument();
       expect(screen.getByRole('tab', { name: /settings/i })).toBeInTheDocument();
 
-      // AND: Client-side override functionality is not available (they should use the dev server)
-      expect(screen.queryByRole('tab', { name: /local overrides/i })).not.toBeInTheDocument();
+      // AND: Client-side override and events functionality is not available (they should use the dev server)
+      expect(screen.queryByRole('tab', { name: /events/i })).not.toBeInTheDocument();
     });
   });
 
   describe('SDK Mode - Client-Side Override Flow', () => {
     test('developer with flag override plugin can manage client-side flag overrides', async () => {
-      // GIVEN: Developer has a flag override plugin configured for local overrides
+      // GIVEN: Developer has both flag override and event interception plugins configured
       const mockFlagOverridePlugin = {
         getFlagSdkOverride: vi.fn().mockResolvedValue({}),
         setFlagSdkOverride: vi.fn(),
@@ -79,20 +79,35 @@ describe('LaunchDarklyToolbar - User Flows', () => {
         register: vi.fn(),
       };
 
-      // WHEN: They load the toolbar with their flag override plugin
-      render(<LaunchDarklyToolbar flagOverridePlugin={mockFlagOverridePlugin} />);
+      const mockEventInterceptionPlugin = {
+        getEvents: vi.fn().mockReturnValue([]),
+        subscribe: vi.fn().mockReturnValue(() => {}),
+        clearEvents: vi.fn(),
+        getMetadata: vi.fn(),
+        register: vi.fn(),
+      };
+
+      // WHEN: They load the toolbar with both plugins
+      render(
+        <LaunchDarklyToolbar
+          flagOverridePlugin={mockFlagOverridePlugin}
+          eventInterceptionPlugin={mockEventInterceptionPlugin}
+        />,
+      );
 
       const toolbar = screen.getByTestId('launchdarkly-toolbar');
       fireEvent.mouseEnter(toolbar);
 
-      // THEN: They can access client-side flag overrides and settings
+      // THEN: They can access client-side flag overrides, events, and settings
       await waitFor(() => {
         const flagsTab = screen.queryByRole('tab', { name: /flags/i });
+        const eventsTab = screen.queryByRole('tab', { name: /events/i });
         const settingsTab = screen.queryByRole('tab', { name: /settings/i });
-        return flagsTab && settingsTab;
+        return flagsTab && eventsTab && settingsTab;
       });
 
-      expect(screen.getByRole('tab', { name: /flags/i })).toBeInTheDocument(); // Local overrides tab
+      expect(screen.getByRole('tab', { name: /flags/i })).toBeInTheDocument(); // Local overrides tab (labeled "Flags")
+      expect(screen.getByRole('tab', { name: /events/i })).toBeInTheDocument(); // Events tab
       expect(screen.getByRole('tab', { name: /settings/i })).toBeInTheDocument();
     });
 
@@ -112,8 +127,9 @@ describe('LaunchDarklyToolbar - User Flows', () => {
 
       expect(screen.getByRole('tab', { name: /settings/i })).toBeInTheDocument();
 
-      // AND: No flag management features are available
-      expect(screen.queryByText('Toggle')).not.toBeInTheDocument();
+      // AND: No flag management or events features are available
+      expect(screen.queryByRole('tab', { name: /flags/i })).not.toBeInTheDocument();
+      expect(screen.queryByRole('tab', { name: /events/i })).not.toBeInTheDocument();
     });
   });
 
@@ -156,9 +172,10 @@ describe('LaunchDarklyToolbar - User Flows', () => {
         return settingsTab;
       });
 
-      // AND: Only basic settings are available (no flag management)
+      // AND: Only basic settings are available (no flag management or events)
       expect(screen.getByRole('tab', { name: /settings/i })).toBeInTheDocument();
       expect(screen.queryByRole('tab', { name: /flags/i })).not.toBeInTheDocument();
+      expect(screen.queryByRole('tab', { name: /events/i })).not.toBeInTheDocument();
 
       // AND: The interface doesn't break or show confusing empty states
       const tabs = screen.getAllByRole('tab');
@@ -184,8 +201,9 @@ describe('LaunchDarklyToolbar - User Flows', () => {
       });
 
       // Should still show dev-server mode tabs (the URL format doesn't affect mode detection)
-      expect(screen.getByRole('tab', { name: /flags/i })).toBeInTheDocument();
+      expect(screen.getByRole('tab', { name: /flags/i })).toBeInTheDocument(); // Server-side flags
       expect(screen.getByRole('tab', { name: /settings/i })).toBeInTheDocument();
+      expect(screen.queryByRole('tab', { name: /events/i })).not.toBeInTheDocument(); // Events is SDK-mode only
     });
 
     test('empty devServerUrl is treated as SDK mode', async () => {

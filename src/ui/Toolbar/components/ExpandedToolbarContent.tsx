@@ -6,12 +6,12 @@ import { Tabs } from '../../Tabs/Tabs';
 import { TabButton } from '../../Tabs/TabButton';
 import { TabContentRenderer } from './TabContentRenderer';
 import { ANIMATION_CONFIG, EASING } from '../constants';
-import { ActiveTabId, ToolbarMode, getTabsForMode, getDefaultActiveTab } from '../types';
+import { ActiveTabId, ToolbarMode, getTabsForMode, getDefaultActiveTab, TAB_ORDER } from '../types';
 import { useDevServerContext } from '../context/DevServerProvider';
-import type { IFlagOverridePlugin } from '../../../types/plugin';
+import type { IFlagOverridePlugin, IEventInterceptionPlugin } from '../../../types/plugin';
 
 import * as styles from '../LaunchDarklyToolbar.css';
-import { GearIcon, ToggleOffIcon } from './icons';
+import { GearIcon, SyncIcon, ToggleOffIcon } from './icons';
 import { ErrorMessage } from './ErrorMessage';
 
 interface ExpandedToolbarContentProps {
@@ -24,8 +24,9 @@ interface ExpandedToolbarContentProps {
   onClose: () => void;
   onTabChange: (tabId: string) => void;
   setSearchIsExpanded: Dispatch<SetStateAction<boolean>>;
-  flagOverridePlugin?: IFlagOverridePlugin;
   mode: ToolbarMode;
+  flagOverridePlugin?: IFlagOverridePlugin;
+  eventInterceptionPlugin?: IEventInterceptionPlugin;
 }
 
 function getHeaderLabel(currentProjectKey: string | null, sourceEnvironmentKey: string | null) {
@@ -47,8 +48,9 @@ export function ExpandedToolbarContent(props: ExpandedToolbarContentProps) {
     onClose,
     onTabChange,
     setSearchIsExpanded,
-    flagOverridePlugin,
     mode,
+    flagOverridePlugin,
+    eventInterceptionPlugin,
   } = props;
 
   const { state } = useDevServerContext();
@@ -56,8 +58,8 @@ export function ExpandedToolbarContent(props: ExpandedToolbarContentProps) {
   const headerLabel = getHeaderLabel(state.currentProjectKey, state.sourceEnvironmentKey);
   const { error } = state;
 
-  const availableTabs = getTabsForMode(mode, !!flagOverridePlugin);
-  const defaultActiveTab = getDefaultActiveTab(mode);
+  const availableTabs = getTabsForMode(mode, !!flagOverridePlugin, !!eventInterceptionPlugin);
+  const defaultActiveTab = getDefaultActiveTab(mode, !!flagOverridePlugin, !!eventInterceptionPlugin);
 
   const shouldShowError = error && mode === 'dev-server' && state.connectionStatus === 'error';
 
@@ -127,8 +129,9 @@ export function ExpandedToolbarContent(props: ExpandedToolbarContentProps) {
                     <TabContentRenderer
                       activeTab={activeTab}
                       slideDirection={slideDirection}
-                      flagOverridePlugin={flagOverridePlugin}
                       mode={mode}
+                      flagOverridePlugin={flagOverridePlugin}
+                      eventInterceptionPlugin={eventInterceptionPlugin}
                     />
                   )}
                 </AnimatePresence>
@@ -151,11 +154,20 @@ export function ExpandedToolbarContent(props: ExpandedToolbarContentProps) {
         transition={ANIMATION_CONFIG.tabsContainer}
       >
         <Tabs defaultActiveTab={defaultActiveTab} activeTab={activeTab} onTabChange={onTabChange}>
-          {availableTabs.includes('flag-sdk') && <TabButton id="flag-sdk" label="Flags" icon={ToggleOffIcon} />}
-          {availableTabs.includes('flag-dev-server') && (
-            <TabButton id="flag-dev-server" label="Flags" icon={ToggleOffIcon} />
-          )}
-          {availableTabs.includes('settings') && <TabButton id="settings" label="Settings" icon={GearIcon} />}
+          {TAB_ORDER.filter((tabId) => availableTabs.includes(tabId)).map((tabId) => {
+            switch (tabId) {
+              case 'flag-dev-server':
+                return <TabButton key={tabId} id={tabId} label="Flags" icon={ToggleOffIcon} />;
+              case 'flag-sdk':
+                return <TabButton key={tabId} id={tabId} label="Flags" icon={ToggleOffIcon} />;
+              case 'events':
+                return <TabButton key={tabId} id={tabId} label="Events" icon={SyncIcon} />;
+              case 'settings':
+                return <TabButton key={tabId} id={tabId} label="Settings" icon={GearIcon} />;
+              default:
+                return null;
+            }
+          })}
         </Tabs>
       </motion.div>
     </motion.div>

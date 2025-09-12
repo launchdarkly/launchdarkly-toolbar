@@ -27,9 +27,22 @@ function FlagSdkOverrideTabContentInner(props: FlagSdkOverrideTabContentInnerPro
   const { flagOverridePlugin } = props;
   const { searchTerm } = useSearchContext();
   const { flags, isLoading } = useFlagSdkOverrideContext();
-  const ldClient = flagOverridePlugin?.getClient();
   const [showOverriddenOnly, setShowOverriddenOnly] = useState(false);
   const parentRef = useRef<HTMLDivElement>(null);
+
+  const handleClearOverride = useCallback(
+    (flagKey: string) => {
+      if (flagOverridePlugin) {
+        flagOverridePlugin.removeOverride(flagKey);
+      }
+    },
+    [flagOverridePlugin],
+  );
+
+  // Count total overridden flags (not just filtered ones)
+  const totalOverriddenFlags = useMemo(() => {
+    return Object.values(flags).filter((flag) => flag.isOverridden).length;
+  }, [flags]);
 
   // Prepare data for virtualizer (must be done before useVirtualizer hook)
   const flagEntries = Object.entries(flags);
@@ -51,26 +64,25 @@ function FlagSdkOverrideTabContentInner(props: FlagSdkOverrideTabContentInnerPro
     overscan: VIRTUALIZATION.OVERSCAN,
   });
 
+  if (!flagOverridePlugin) {
+    return (
+      <GenericHelpText
+        title="Flag override plugin is not available"
+        subtitle="To use local flag overrides, ensure the flag override plugin is added to your LaunchDarkly client configuration."
+      />
+    );
+  }
+
+  const ldClient = flagOverridePlugin.getClient();
+
   // Override operations
   const handleSetOverride = (flagKey: string, value: any) => {
     flagOverridePlugin.setOverride(flagKey, value);
   };
 
-  const handleClearOverride = useCallback(
-    (flagKey: string) => {
-      flagOverridePlugin.removeOverride(flagKey);
-    },
-    [flagOverridePlugin],
-  );
-
   const handleClearAllOverrides = () => {
     flagOverridePlugin.clearAllOverrides();
   };
-
-  // Count total overridden flags (not just filtered ones)
-  const totalOverriddenFlags = useMemo(() => {
-    return Object.values(flags).filter((flag) => flag.isOverridden).length;
-  }, [flags]);
 
   const renderFlagControl = (flag: LocalFlag) => {
     const handleOverride = (value: any) => handleSetOverride(flag.key, value);
@@ -95,7 +107,7 @@ function FlagSdkOverrideTabContentInner(props: FlagSdkOverrideTabContentInnerPro
     return (
       <GenericHelpText
         title="LaunchDarkly client is not available"
-        subtitle="To use local flag overrides, ensure the LaunchDarkly client is initialized and available."
+        subtitle="To use local flag overrides, ensure your LaunchDarkly client is properly initialized."
       />
     );
   }

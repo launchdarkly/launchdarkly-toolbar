@@ -60,7 +60,10 @@ function App() {
       <div>
         <h1>My App</h1>
         {/* Pass the same plugin instance to the toolbar */}
-        <LaunchDarklyToolbar flagOverridePlugin={flagOverridePlugin} />
+        <LaunchDarklyToolbar
+          flagOverridePlugin={flagOverridePlugin}
+          eventInterceptionPlugin={eventInterceptionPlugin}
+        />
       </div>
     </LDProvider>
   );
@@ -84,13 +87,14 @@ function App() {
 
 ## Props
 
-| Prop                 | Type                  | Default     | Description                                                               |
-| -------------------- | --------------------- | ----------- | ------------------------------------------------------------------------- |
-| `flagOverridePlugin` | `IFlagOverridePlugin` | `undefined` | Flag override plugin for SDK Mode. Enables flag overrides and testing     |
-| `devServerUrl`       | `string` (optional)   | `undefined` | URL of your LaunchDarkly dev server. If provided, enables Dev Server Mode |
-| `position`           | `"left" \| "right"`   | `"right"`   | Position of the toolbar on screen                                         |
-| `projectKey`         | `string` (optional)   | `undefined` | Optional project key for multi-project setups (Dev Server Mode only)      |
-| `pollIntervalInMs`   | `number` (optional)   | `5000`      | Polling interval for dev server updates (Dev Server Mode only)            |
+| Prop                      | Type                       | Default     | Description                                                               |
+| ------------------------- | -------------------------- | ----------- | ------------------------------------------------------------------------- |
+| `flagOverridePlugin`      | `IFlagOverridePlugin`      | `undefined` | Flag override plugin for SDK Mode. Enables flag overrides and testing     |
+| `eventInterceptionPlugin` | `IEventInterceptionPlugin` | `undefined` | Event interception plugin for SDK Mode. Enables Events tab functionality  |
+| `devServerUrl`            | `string` (optional)        | `undefined` | URL of your LaunchDarkly dev server. If provided, enables Dev Server Mode |
+| `position`                | `"left" \| "right"`        | `"right"`   | Position of the toolbar on screen                                         |
+| `projectKey`              | `string` (optional)        | `undefined` | Optional project key for multi-project setups (Dev Server Mode only)      |
+| `pollIntervalInMs`        | `number` (optional)        | `5000`      | Polling interval for dev server updates (Dev Server Mode only)            |
 
 ## Configuration
 
@@ -103,10 +107,10 @@ The toolbar automatically determines its mode:
 
 ### Available Features by Mode
 
-| Mode                | Available Tabs      |
-| ------------------- | ------------------- |
-| **SDK Mode**        | Overrides, Settings |
-| **Dev Server Mode** | Flags, Settings     |
+| Mode                | Available Tabs                                                                                         |
+| ------------------- | ------------------------------------------------------------------------------------------------------ |
+| **SDK Mode**        | Overrides (if `flagOverridePlugin` provided), Events (if `eventInterceptionPlugin` provided), Settings |
+| **Dev Server Mode** | Flags, Settings                                                                                        |
 
 ## Setup
 
@@ -202,7 +206,7 @@ Visibility preferences are automatically saved to localStorage.
 The package includes complete TypeScript definitions. No additional `@types` packages needed.
 
 ```tsx
-import type { LaunchDarklyToolbarProps } from '@launchdarkly/toolbar';
+import type { LaunchDarklyToolbarProps, IFlagOverridePlugin, IEventInterceptionPlugin } from '@launchdarkly/toolbar';
 ```
 
 ---

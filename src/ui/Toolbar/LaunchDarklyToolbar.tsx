@@ -9,15 +9,16 @@ import { ToolbarMode, ToolbarPosition, getToolbarMode } from './types/toolbar';
 
 import * as styles from './LaunchDarklyToolbar.css';
 import { DevServerProvider } from './context';
-import type { IFlagOverridePlugin } from '../../types/plugin';
+import type { IEventInterceptionPlugin, IFlagOverridePlugin } from '../../types/plugin';
 
 export interface LdToolbarProps {
-  flagOverridePlugin?: IFlagOverridePlugin;
   mode: ToolbarMode;
+  flagOverridePlugin?: IFlagOverridePlugin;
+  eventInterceptionPlugin?: IEventInterceptionPlugin;
 }
 
 export function LdToolbar(props: LdToolbarProps) {
-  const { flagOverridePlugin, mode } = props;
+  const { mode, flagOverridePlugin, eventInterceptionPlugin } = props;
   const { searchTerm } = useSearchContext();
   const { state, handlePositionChange } = useDevServerContext();
   const toolbarState = useToolbarState();
@@ -96,6 +97,7 @@ export function LdToolbar(props: LdToolbarProps) {
             onTabChange={handleTabChange}
             setSearchIsExpanded={setSearchIsExpanded}
             flagOverridePlugin={flagOverridePlugin}
+            eventInterceptionPlugin={eventInterceptionPlugin}
             mode={mode}
           />
         )}
@@ -107,13 +109,21 @@ export function LdToolbar(props: LdToolbarProps) {
 export interface LaunchDarklyToolbarProps {
   devServerUrl?: string; // Optional - will default to http://localhost:8765
   projectKey?: string; // Optional - will auto-detect first available project if not provided
-  flagOverridePlugin?: IFlagOverridePlugin;
+  flagOverridePlugin?: IFlagOverridePlugin; // Optional - for flag override functionality
+  eventInterceptionPlugin?: IEventInterceptionPlugin; // Optional - for event tracking
   pollIntervalInMs?: number; // Optional - will default to 5000ms
   position?: ToolbarPosition; // Optional - will default to 'right'
 }
 
 export function LaunchDarklyToolbar(props: LaunchDarklyToolbarProps) {
-  const { projectKey, position, devServerUrl, pollIntervalInMs = 5000, flagOverridePlugin } = props;
+  const {
+    projectKey,
+    position,
+    devServerUrl,
+    pollIntervalInMs = 5000,
+    flagOverridePlugin,
+    eventInterceptionPlugin,
+  } = props;
   const isVisible = useToolbarVisibility();
 
   // Don't render anything if visibility check fails
@@ -133,7 +143,11 @@ export function LaunchDarklyToolbar(props: LaunchDarklyToolbarProps) {
       initialPosition={position}
     >
       <SearchProvider>
-        <LdToolbar flagOverridePlugin={flagOverridePlugin} mode={mode} />
+        <LdToolbar
+          mode={mode}
+          flagOverridePlugin={flagOverridePlugin}
+          eventInterceptionPlugin={eventInterceptionPlugin}
+        />
       </SearchProvider>
     </DevServerProvider>
   );

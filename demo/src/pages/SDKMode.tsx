@@ -1,6 +1,6 @@
 import { useState, lazy, Suspense } from 'react';
 import { AppWrapper } from '../AppWrapper';
-import { flagOverridePlugin } from '../plugins';
+import { flagOverridePlugin, eventInterceptionPlugin } from '../plugins';
 
 const LaunchDarklyToolbar = import.meta.env.DEV
   ? lazy(() => import('@launchdarkly/toolbar').then((module) => ({ default: module.LaunchDarklyToolbar })))
@@ -23,7 +23,11 @@ export function SDKMode() {
 
       {LaunchDarklyToolbar && (
         <Suspense fallback={<div>Loading toolbar...</div>}>
-          <LaunchDarklyToolbar position={position} flagOverridePlugin={flagOverridePlugin} />
+          <LaunchDarklyToolbar
+            position={position}
+            flagOverridePlugin={flagOverridePlugin}
+            eventInterceptionPlugin={eventInterceptionPlugin}
+          />
         </Suspense>
       )}
     </AppWrapper>
