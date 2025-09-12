@@ -6,7 +6,7 @@ import './App.css';
 import { Home } from './pages/Home';
 import { DevServerMode } from './pages/DevServerMode';
 import { SDKMode } from './pages/SDKMode';
-import { flagOverridePlugin } from './plugins';
+import { flagOverridePlugin } from '@launchdarkly/toolbar/plugins';
 
 function App() {
   const [LDProvider, setLDProvider] = useState<React.FC<{ children: React.ReactNode }> | null>(null);

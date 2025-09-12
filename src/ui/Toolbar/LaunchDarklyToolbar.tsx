@@ -10,6 +10,7 @@ import { ToolbarMode, ToolbarPosition, getToolbarMode } from './types/toolbar';
 import * as styles from './LaunchDarklyToolbar.css';
 import { DevServerProvider } from './context';
 import type { IFlagOverridePlugin } from '../../types/plugin';
+import { flagOverridePlugin } from '../../plugins';
 
 export interface LdToolbarProps {
   flagOverridePlugin?: IFlagOverridePlugin;
@@ -107,13 +108,12 @@ export function LdToolbar(props: LdToolbarProps) {
 export interface LaunchDarklyToolbarProps {
   devServerUrl?: string; // Optional - will default to http://localhost:8765
   projectKey?: string; // Optional - will auto-detect first available project if not provided
-  flagOverridePlugin?: IFlagOverridePlugin;
   pollIntervalInMs?: number; // Optional - will default to 5000ms
   position?: ToolbarPosition; // Optional - will default to 'right'
 }
 
 export function LaunchDarklyToolbar(props: LaunchDarklyToolbarProps) {
-  const { projectKey, position, devServerUrl, pollIntervalInMs = 5000, flagOverridePlugin } = props;
+  const { projectKey, position, devServerUrl, pollIntervalInMs = 5000 } = props;
   const isVisible = useToolbarVisibility();
 
   // Don't render anything if visibility check fails

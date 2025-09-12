@@ -80,7 +80,7 @@ describe('LaunchDarklyToolbar - User Flows', () => {
       };
 
       // WHEN: They load the toolbar with their flag override plugin
-      render(<LaunchDarklyToolbar flagOverridePlugin={mockFlagOverridePlugin} />);
+      render(<LaunchDarklyToolbar />);
 
       const toolbar = screen.getByTestId('launchdarkly-toolbar');
       fireEvent.mouseEnter(toolbar);
