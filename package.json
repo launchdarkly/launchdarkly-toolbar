@@ -37,6 +37,10 @@
       "types": "./dist/plugins/index.d.ts",
       "import": "./dist/js/plugins/index.js"
     },
+    "./plugins/FlagOverridePlugin": {
+      "types": "./dist/plugins/FlagOverridePlugin.d.ts",
+      "import": "./dist/js/plugins/FlagOverridePlugin.js"
+    },
     "./plugins/flagOverridePlugin": {
       "types": "./dist/plugins/index.d.ts",
       "import": "./dist/js/plugins/index.js"
