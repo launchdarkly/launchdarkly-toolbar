@@ -1,8 +1,20 @@
-/**
- * Enhanced TypeScript types for event processing
- */
-
-import type { EventEnqueueContext } from 'launchdarkly-js-sdk-common';
+export interface SyntheticEventContext {
+  readonly kind: EventKind;
+  readonly key?: string;
+  readonly context?: object;
+  readonly creationDate: number;
+  readonly data?: unknown;
+  readonly metricValue?: number;
+  readonly url?: string;
+  readonly value?: any;
+  readonly variation?: number | null;
+  readonly default?: any;
+  readonly reason?: object;
+  readonly version?: number;
+  readonly trackEvents?: boolean;
+  readonly debugEventsUntilDate?: number;
+  readonly contextKind?: string;
+}
 
 /**
  * Valid event kinds that can be emitted by the LaunchDarkly SDK
@@ -32,7 +44,7 @@ export interface ProcessedEvent {
   readonly kind: EventKind;
   readonly key?: string;
   readonly timestamp: number;
-  readonly context: EventEnqueueContext;
+  readonly context: SyntheticEventContext;
   readonly displayName: string;
   readonly category: EventCategory;
   readonly metadata?: Readonly<Record<string, unknown>>;
@@ -44,10 +56,6 @@ export interface ProcessedEvent {
 export interface EventFilter {
   readonly kinds?: ReadonlyArray<EventKind>;
   readonly categories?: ReadonlyArray<EventCategory>;
-  readonly includeIdentify?: boolean;
-  readonly includeFeature?: boolean;
-  readonly includeCustom?: boolean;
-  readonly excludeDebugEvents?: boolean;
   readonly flagKeys?: ReadonlyArray<string>;
   readonly timeRange?: {
     readonly start: number;

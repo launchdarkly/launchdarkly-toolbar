@@ -1,5 +1,5 @@
 import type { Hook, LDClient, LDPluginEnvironmentMetadata, LDPluginMetadata } from 'launchdarkly-js-client-sdk';
-import { EventEnqueueHook, EventStore } from '../hooks';
+import { AfterTrackHook, AfterIdentifyHook, AfterEvaluationHook, EventStore } from '../hooks';
 import { EventFilter, ProcessedEvent } from '../types/events';
 import { IEventInterceptionPlugin } from '../types/plugin';
 
@@ -17,7 +17,9 @@ export interface EventInterceptionPluginConfig {
  * Plugin dedicated to intercepting and processing LaunchDarkly events
  */
 export class EventInterceptionPlugin implements IEventInterceptionPlugin {
-  private eventEnqueueHook: EventEnqueueHook;
+  private afterTrackHook: AfterTrackHook;
+  private afterIdentifyHook: AfterIdentifyHook;
+  private afterEvaluationHook: AfterEvaluationHook;
   private eventStore: EventStore;
   private config: EventInterceptionPluginConfig;
 
@@ -29,20 +31,32 @@ export class EventInterceptionPlugin implements IEventInterceptionPlugin {
 
     this.eventStore = new EventStore();
 
-    this.eventEnqueueHook = new EventEnqueueHook({
-      filter: config.filter,
-      onNewEvent: (event: ProcessedEvent) => {
-        if (this.config.enableLogging) {
-          console.log('🎯 Event intercepted:', {
-            kind: event.kind,
-            key: event.key,
-            category: event.category,
-            displayName: event.displayName,
-          });
-        }
+    const onNewEvent = (event: ProcessedEvent) => {
+      if (this.config.enableLogging) {
+        console.log('🎯 Event intercepted:', {
+          kind: event.kind,
+          key: event.key,
+          category: event.category,
+          displayName: event.displayName,
+        });
+      }
 
-        this.eventStore.addEvent(event);
-      },
+      this.eventStore.addEvent(event);
+    };
+
+    this.afterTrackHook = new AfterTrackHook({
+      filter: config.filter,
+      onNewEvent,
+    });
+
+    this.afterIdentifyHook = new AfterIdentifyHook({
+      filter: config.filter,
+      onNewEvent,
+    });
+
+    this.afterEvaluationHook = new AfterEvaluationHook({
+      filter: config.filter,
+      onNewEvent,
     });
   }
 
@@ -52,8 +66,8 @@ export class EventInterceptionPlugin implements IEventInterceptionPlugin {
     };
   }
 
-  getHooks(metadata: LDPluginEnvironmentMetadata): Hook[] {
-    return [this.eventEnqueueHook];
+  getHooks(_metadata: LDPluginEnvironmentMetadata): Hook[] {
+    return [this.afterTrackHook, this.afterIdentifyHook, this.afterEvaluationHook];
   }
 
   register(_client: LDClient): void {}

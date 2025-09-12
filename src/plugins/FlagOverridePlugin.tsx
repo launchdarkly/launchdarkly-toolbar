@@ -41,7 +41,7 @@ export class FlagOverridePlugin implements IFlagOverridePlugin {
   /**
    * Returns the hooks for the plugin
    */
-  getHooks(metadata: LDPluginEnvironmentMetadata): Hook[] {
+  getHooks(_metadata: LDPluginEnvironmentMetadata): Hook[] {
     return [];
   }
 
