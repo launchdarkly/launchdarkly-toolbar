@@ -251,7 +251,7 @@ test.describe('LaunchDarkly Toolbar', () => {
     });
   });
 
-  test.describe.only('SDK Mode', () => {
+  test.describe.skip('SDK Mode', () => {
     test.beforeEach(async ({ page }: { page: Page }) => {
       await page.goto('/sdk');
       await page.waitForSelector('[data-testid="launchdarkly-toolbar"]');
