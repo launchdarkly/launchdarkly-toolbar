@@ -33,6 +33,11 @@ runs:
     - name: Build Demo App
       shell: bash
       run: pnpm demo:build
+      env:
+        VITE_LD_CLIENT_SIDE_ID: 67b94f6d17a8b408fa943d3c
+        VITE_LD_BASE_URL: https://app.ld.catamorphic.com
+        VITE_LD_STREAM_URL: https://stream.ld.catamorphic.com
+        VITE_LD_EVENTS_URL: https://events.ld.catamorphic.com
 
     - name: Run Unit Tests
       shell: bash

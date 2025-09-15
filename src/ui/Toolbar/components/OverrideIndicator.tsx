@@ -19,6 +19,9 @@ export function OverrideIndicator(props: OverrideIndicatorProps) {
       title={onClear ? 'Click to remove override' : 'Override active'}
       whileHover={onClear ? { scale: 1.05 } : {}}
       transition={{ duration: 0.2 }}
+      data-testid="override-indicator"
+      role={onClear ? 'button' : 'status'}
+      aria-label={onClear ? 'Remove flag override' : 'Flag override active'}
     >
       <motion.span
         className={styles.overrideDot}

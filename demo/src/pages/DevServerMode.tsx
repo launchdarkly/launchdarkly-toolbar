@@ -1,9 +1,9 @@
 import { useState, lazy, Suspense } from 'react';
 import { AppWrapper } from '../AppWrapper';
 
-const LaunchDarklyToolbar = import.meta.env.DEV
-  ? lazy(() => import('@launchdarkly/toolbar').then((module) => ({ default: module.LaunchDarklyToolbar })))
-  : null;
+const LaunchDarklyToolbar = lazy(() =>
+  import('@launchdarkly/toolbar').then((module) => ({ default: module.LaunchDarklyToolbar })),
+);
 
 export function DevServerMode() {
   const [position, setPosition] = useState<'left' | 'right'>('left');
