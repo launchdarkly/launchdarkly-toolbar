@@ -25,7 +25,7 @@ export class EventInterceptionPlugin implements IEventInterceptionPlugin {
 
   constructor(config: EventInterceptionPluginConfig = {}) {
     this.config = {
-      enableLogging: true,
+      enableLogging: false,
       ...config,
     };
 
