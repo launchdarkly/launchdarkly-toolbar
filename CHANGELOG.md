@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.13.1-beta.1](https://github.com/launchdarkly/launchdarkly-toolbar/compare/0.13.0-beta.1...0.13.1-beta.1) (2025-09-15)
+
+
+### Bug Fixes
+
+* reset key state when focus is lost to modals ([#87](https://github.com/launchdarkly/launchdarkly-toolbar/issues/87)) ([3e4a759](https://github.com/launchdarkly/launchdarkly-toolbar/commit/3e4a759db0676069e781cd87bcc79defd5518010))
+* **toolbar:** reset key state when focus is lost to modals ([3e4a759](https://github.com/launchdarkly/launchdarkly-toolbar/commit/3e4a759db0676069e781cd87bcc79defd5518010))
+
 ## [0.13.0-beta.1](https://github.com/launchdarkly/launchdarkly-toolbar/compare/0.12.0-beta.1...0.13.0-beta.1) (2025-09-12)
 
 
