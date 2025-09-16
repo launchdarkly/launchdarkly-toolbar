@@ -65,7 +65,6 @@
     "format": "prettier --write .",
     "format:ci": "prettier --check .",
     "lint": "oxlint",
-    "lint:ci": "oxlint --no-fix",
     "release": "pnpm build && npm publish",
     "storybook": "storybook dev -p 6006",
     "test:e2e:ci:ui": "TEST_ENV=ci playwright test --ui --config=./e2e/playwright.config.ts",

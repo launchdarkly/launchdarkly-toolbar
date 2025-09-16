@@ -19,7 +19,7 @@ runs:
 
     - name: Lint
       shell: bash
-      run: pnpm lint:ci
+      run: pnpm lint
 
     - name: Prettier
       shell: bash
