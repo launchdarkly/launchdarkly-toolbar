@@ -19,11 +19,11 @@ runs:
 
     - name: Lint
       shell: bash
-      run: pnpm lint
+      run: pnpm lint:ci
 
     - name: Prettier
       shell: bash
-      run: pnpm format
+      run: pnpm format:ci
 
     - name: Build Library
       shell: bash
