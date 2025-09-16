@@ -27,4 +27,4 @@ echo -e "${YELLOW}🚀 Starting demo...${NC}"
 pnpm demo:dev &
 
 echo -e "${GREEN}✅ Demo restarted!${NC}"
-echo -e "${YELLOW}🌐 Demo should be available at: http://localhost:3001${NC}"
+echo -e "${YELLOW}🌐 Demo should be available at: http://localhost:5173${NC}"
