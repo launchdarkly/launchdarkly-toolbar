@@ -113,7 +113,7 @@
     "access": "public"
   },
   "dependencies": {
-    "@launchpad-ui/components": "0.16.8",
+    "@launchpad-ui/components": "0.16.9",
     "@launchpad-ui/tokens": "0.15.0",
     "@react-aria/focus": "3.21.1",
     "@react-aria/interactions": "3.25.5",
