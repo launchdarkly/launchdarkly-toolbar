@@ -2,6 +2,7 @@ import type { Hook, LDClient, LDPluginEnvironmentMetadata, LDPluginMetadata } fr
 import { AfterTrackHook, AfterIdentifyHook, AfterEvaluationHook, EventStore } from '../hooks';
 import type { EventFilter, ProcessedEvent } from '../types/events';
 import type { IEventInterceptionPlugin } from '../types/plugin';
+import { telemetry } from '../services';
 
 /**
  * Configuration options for the EventInterceptionPlugin
@@ -66,7 +67,13 @@ export class EventInterceptionPlugin implements IEventInterceptionPlugin {
     };
   }
 
-  getHooks(_metadata: LDPluginEnvironmentMetadata): Hook[] {
+  getHooks(metadata: LDPluginEnvironmentMetadata): Hook[] {
+    try {
+      const clientSideId = metadata.clientSideId;
+      telemetry.setIdentity({ clientSideId });
+    } catch {
+      // no-op
+    }
     return [this.afterTrackHook, this.afterIdentifyHook, this.afterEvaluationHook];
   }
 

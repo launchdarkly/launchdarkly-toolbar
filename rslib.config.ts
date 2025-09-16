@@ -7,10 +7,14 @@ export default defineConfig({
     entry: {
       index: './src/index.ts',
       'plugins/index': './src/plugins/index.ts',
-      'plugins/FlagOverridePlugin': './src/plugins/FlagOverridePlugin.tsx',
     },
     include: ['./src/index.ts', './src/plugins/**/*.ts', './src/plugins/**/*.tsx'],
     exclude: ['./src/**/*.test.*'],
+    define: {
+      __PKG_VERSION__: JSON.stringify(process.env.npm_package_version || ''),
+      // Build-time toggle for telemetry (string '0' or '1'). Defaults to undefined.
+      __LD_TOOLBAR_TELEMETRY__: JSON.stringify(process.env.LD_TOOLBAR_TELEMETRY ?? ''),
+    },
   },
   lib: [
     {

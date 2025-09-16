@@ -1,5 +1,5 @@
 import { AnimatePresence, motion } from 'motion/react';
-import { useCallback } from 'react';
+import { useCallback, useEffect } from 'react';
 
 import { SearchProvider, useSearchContext } from './context';
 import { CircleLogo, ExpandedToolbarContent } from './components';
@@ -10,6 +10,9 @@ import { ToolbarMode, ToolbarPosition, getToolbarMode } from './types/toolbar';
 import * as styles from './LaunchDarklyToolbar.css';
 import { DevServerProvider } from './context';
 import type { IEventInterceptionPlugin, IFlagOverridePlugin } from '../../types/plugin';
+import { telemetry } from '../../services';
+
+declare const __PKG_VERSION__: string | undefined;
 
 export interface LdToolbarProps {
   mode: ToolbarMode;
@@ -66,6 +69,23 @@ export function LdToolbar(props: LdToolbarProps) {
     onDragEnd: handleDragEnd,
     elementRef: toolbarRef,
   });
+
+  useEffect(() => {
+    try {
+      telemetry.setContext({ position });
+    } catch {}
+  }, [position]);
+
+  useEffect(() => {
+    try {
+      if (mode === 'dev-server' && state.currentProjectKey && state.sourceEnvironmentKey) {
+        telemetry.setIdentity({
+          projectKey: state.currentProjectKey,
+          environmentKey: state.sourceEnvironmentKey,
+        });
+      }
+    } catch {}
+  }, [mode, state.currentProjectKey, state.sourceEnvironmentKey]);
 
   return (
     <motion.div
@@ -132,6 +152,20 @@ export function LaunchDarklyToolbar(props: LaunchDarklyToolbarProps) {
   }
 
   const mode = getToolbarMode(devServerUrl);
+
+  useEffect(() => {
+    try {
+      telemetry.initialize({
+        enabled: true,
+        samplingRate: 1,
+        context: { mode, toolbarVersion: typeof __PKG_VERSION__ === 'string' ? __PKG_VERSION__ : undefined },
+        identity: devServerUrl ? { projectKey } : undefined,
+      });
+      telemetry.track('toolbar_shown', { mode });
+    } catch {
+      // no-op
+    }
+  }, [mode, devServerUrl, projectKey]);
 
   return (
     <DevServerProvider

@@ -7,6 +7,7 @@ import type {
   LDPluginEnvironmentMetadata,
 } from 'launchdarkly-js-client-sdk';
 import type { IFlagOverridePlugin } from '../types/plugin';
+import { telemetry } from '../services';
 
 /**
  * Configuration options for the FlagOverridePlugin
@@ -41,7 +42,13 @@ export class FlagOverridePlugin implements IFlagOverridePlugin {
   /**
    * Returns the hooks for the plugin
    */
-  getHooks(_metadata: LDPluginEnvironmentMetadata): Hook[] {
+  getHooks(metadata: LDPluginEnvironmentMetadata): Hook[] {
+    try {
+      const clientSideId = metadata.clientSideId;
+      telemetry.setIdentity({ clientSideId });
+    } catch {
+      // no-op
+    }
     return [];
   }
 
