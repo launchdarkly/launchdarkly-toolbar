@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.13.2-beta.1](https://github.com/launchdarkly/launchdarkly-toolbar/compare/0.13.1-beta.1...0.13.2-beta.1) (2025-09-16)
+
+
+### Bug Fixes
+
+* Update default logging setting to false ([#88](https://github.com/launchdarkly/launchdarkly-toolbar/issues/88)) ([9e44601](https://github.com/launchdarkly/launchdarkly-toolbar/commit/9e446012bd902c1d98fcc91a6d1daf9989ba605c))
+
 ## [0.13.1-beta.1](https://github.com/launchdarkly/launchdarkly-toolbar/compare/0.13.0-beta.1...0.13.1-beta.1) (2025-09-15)
 
 
