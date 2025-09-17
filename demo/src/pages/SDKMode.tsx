@@ -2,9 +2,9 @@ import { useState, lazy, Suspense } from 'react';
 import { AppWrapper } from '../AppWrapper';
 import { flagOverridePlugin, eventInterceptionPlugin } from '../plugins';
 
-const LaunchDarklyToolbar = import.meta.env.DEV
-  ? lazy(() => import('@launchdarkly/toolbar').then((module) => ({ default: module.LaunchDarklyToolbar })))
-  : null;
+const LaunchDarklyToolbar = lazy(() =>
+  import('@launchdarkly/toolbar').then((module) => ({ default: module.LaunchDarklyToolbar })),
+);
 
 export function SDKMode() {
   const [position, setPosition] = useState<'left' | 'right'>('left');
