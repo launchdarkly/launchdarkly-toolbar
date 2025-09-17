@@ -9,19 +9,32 @@ const rootDir = resolve(__dirname, '..');
 const toolbarSrc = resolve(rootDir, 'src', 'index.ts');
 
 // https://vitejs.dev/config/
-export default defineConfig({
-  plugins: [react(), vanillaExtractPlugin()],
-  resolve: {
-    alias: {
-      '@launchdarkly/toolbar': toolbarSrc,
+export default defineConfig(({ command }) => {
+  const isDev = command === 'serve';
+
+  return {
+    plugins: [react(), ...vanillaExtractPlugin()],
+    resolve: {
+      alias: isDev
+        ? [
+            {
+              find: '@launchdarkly/toolbar',
+              replacement: toolbarSrc,
+            },
+          ]
+        : [],
     },
-  },
-  server: {
-    fs: {
-      allow: [rootDir],
-    },
-  },
-  optimizeDeps: {
-    exclude: ['@launchdarkly/toolbar'],
-  },
+    server: isDev
+      ? {
+          fs: {
+            allow: [rootDir],
+          },
+        }
+      : undefined,
+    optimizeDeps: isDev
+      ? {
+          exclude: ['@launchdarkly/toolbar'],
+        }
+      : undefined,
+  };
 });
