@@ -36,8 +36,8 @@ WORKSPACE_DIR="$(dirname "$BASE_DIR")"
 # Define watch directories
 JS_COMMON_SRC="$WORKSPACE_DIR/js-sdk-common/src"
 JS_CLIENT_SRC="$WORKSPACE_DIR/js-client-sdk/src"
-REACT_SDK_SRC="$WORKSPACE_DIR/react-client-sdk/src"
 TOOLBAR_SRC="$WORKSPACE_DIR/launchdarkly-toolbar/src"
+DEMO_SRC="$WORKSPACE_DIR/launchdarkly-toolbar/demo/src"
 
 # Functions
 log_with_time() {
@@ -60,17 +60,7 @@ build_js_client() {
     fi
 }
 
-build_react_client() {
-    log_with_time "${BLUE}📦 Building react-client-sdk...${NC}"
-    cd "$WORKSPACE_DIR/react-client-sdk"
-    if npm run build > /dev/null 2>&1; then
-        log_with_time "${GREEN}✅ react-client-sdk built${NC}"
-        return 0
-    else
-        log_with_time "${RED}❌ react-client-sdk build failed${NC}"
-        return 1
-    fi
-}
+
 
 build_toolbar() {
     log_with_time "${BLUE}📦 Building toolbar...${NC}"
@@ -95,26 +85,30 @@ restart_demo() {
     fi
 }
 
+is_port_active() {
+    local port="$1"
+    lsof -i ":$port" > /dev/null 2>&1
+}
+
 smart_rebuild() {
     local changed_file="$1"
 
     # Determine what needs to be rebuilt based on changed file
     case "$changed_file" in
         *"js-sdk-common/src"*)
-            log_with_time "${YELLOW}🔧 js-sdk-common changed → rebuilding entire chain${NC}"
-            build_js_client && build_react_client && build_toolbar && restart_demo
+            log_with_time "${YELLOW}🔧 js-sdk-common changed → rebuilding js-client + toolbar${NC}"
+            build_js_client && build_toolbar && restart_demo
             ;;
         *"js-client-sdk/src"*)
-            log_with_time "${YELLOW}🔧 js-client-sdk changed → rebuilding js-client + react + toolbar${NC}"
-            build_js_client && build_react_client && build_toolbar && restart_demo
-            ;;
-        *"react-client-sdk/src"*)
-            log_with_time "${YELLOW}🔧 react-client-sdk changed → rebuilding react + toolbar${NC}"
-            build_react_client && build_toolbar && restart_demo
+            log_with_time "${YELLOW}🔧 js-client-sdk changed → rebuilding js-client + toolbar${NC}"
+            build_js_client && build_toolbar && restart_demo
             ;;
         *"launchdarkly-toolbar/src"*)
             log_with_time "${YELLOW}🔧 toolbar changed → rebuilding toolbar only${NC}"
             build_toolbar && restart_demo
+            ;;
+        *"launchdarkly-toolbar/demo/src"*)
+            log_with_time "${BLUE}🌀 demo changed → handled by Vite HMR (no rebuild)${NC}"
             ;;
         *)
             log_with_time "${RED}❌ Unknown change location: $changed_file${NC}"
@@ -169,16 +163,22 @@ trap cleanup SIGINT SIGTERM
 log_with_time "${BLUE}📁 Watching directories:${NC}"
 [ -d "$JS_COMMON_SRC" ] && log_with_time "${BLUE}  👀 js-sdk-common → rebuilds entire chain${NC}" || log_with_time "${RED}  ❌ js-sdk-common (not found)${NC}"
 [ -d "$JS_CLIENT_SRC" ] && log_with_time "${BLUE}  👀 js-client-sdk → rebuilds js-client + react + toolbar${NC}" || log_with_time "${RED}  ❌ js-client-sdk (not found)${NC}"
-[ -d "$REACT_SDK_SRC" ] && log_with_time "${BLUE}  👀 react-client-sdk → rebuilds react + toolbar${NC}" || log_with_time "${RED}  ❌ react-client-sdk (not found)${NC}"
 [ -d "$TOOLBAR_SRC" ] && log_with_time "${BLUE}  👀 toolbar → rebuilds toolbar only${NC}" || log_with_time "${RED}  ❌ toolbar (not found)${NC}"
+[ -d "$DEMO_SRC" ] && log_with_time "${BLUE}  👀 demo → HMR via Vite, no rebuild${NC}" || log_with_time "${RED}  ❌ demo (not found)${NC}"
 
 log_with_time "${YELLOW}🔄 Debounce time: ${DEBOUNCE_TIME}s${NC}"
 log_with_time "${GREEN}💡 Press Ctrl+C to stop${NC}"
 log_with_time "${CYAN}Ready for changes...${NC}"
 
+# Ensure demo server is running for HMR
+if ! is_port_active 5173; then
+    log_with_time "${YELLOW}🌐 Demo server not detected on :5173, starting it...${NC}"
+    restart_demo || true
+fi
+
 # Watch for changes
 fswatch -r --event Created --event Updated --event Renamed \
-    "$JS_COMMON_SRC" "$JS_CLIENT_SRC" "$REACT_SDK_SRC" "$TOOLBAR_SRC" | while read changed_file; do
+    "$JS_COMMON_SRC" "$JS_CLIENT_SRC" "$TOOLBAR_SRC" "$DEMO_SRC" | while read changed_file; do
 
     # Skip temporary files and build artifacts
     case "$changed_file" in

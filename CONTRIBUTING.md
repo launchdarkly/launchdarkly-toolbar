@@ -104,6 +104,36 @@ pnpm storybook
 
 Open `http://localhost:6006` to view and develop components in isolation.
 
+### Cross-SDK Development (Advanced)
+
+Use this only when developing the toolbar alongside local SDK changes (`js-sdk-common` and `js-client-sdk`). For normal toolbar work, prefer the demo app directly.
+
+When to use:
+
+- You are editing `js-sdk-common` and/or `js-client-sdk` and want live updates in the demo.
+
+Commands:
+
+```bash
+# 1) Link local SDKs and set pnpm overrides in this repo
+pnpm dev:link
+
+# 2) Check health (repos, links, ports, tools)
+pnpm dev:status
+
+# 3) Start watch + demo
+pnpm dev:watch
+
+# 4) Restore registry versions when done
+pnpm dev:unlink
+```
+
+Configuration (optional):
+
+- Flags: `--js-common <dir>`, `--js-client <dir>`, `-w|--workspace <dir>`
+- Env vars: `LD_JS_COMMON_DIR`, `LD_JS_CLIENT_DIR`, `LD_WORKSPACE_DIR`
+- Precedence: flags > env > defaults
+
 ### Testing Your Changes
 
 The demo application is the best way to test your changes:
