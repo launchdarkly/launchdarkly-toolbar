@@ -23,7 +23,7 @@ runs:
 
     - name: Prettier
       shell: bash
-      run: pnpm format
+      run: pnpm format:ci
 
     - name: Build Library
       shell: bash
@@ -33,6 +33,11 @@ runs:
     - name: Build Demo App
       shell: bash
       run: pnpm demo:build
+      env:
+        VITE_LD_CLIENT_SIDE_ID: 67b94f6d17a8b408fa943d3c
+        VITE_LD_BASE_URL: https://app.ld.catamorphic.com
+        VITE_LD_STREAM_URL: https://stream.ld.catamorphic.com
+        VITE_LD_EVENTS_URL: https://events.ld.catamorphic.com
 
     - name: Run Unit Tests
       shell: bash
@@ -80,7 +85,6 @@ runs:
     - name: Run Playwright Tests
       shell: bash
       id: playwright
-      continue-on-error: true
       run: pnpm test:e2e:ci
 
     - name: Upload Playwright Artifacts
@@ -92,8 +96,3 @@ runs:
           e2e/test-results/
           e2e/playwright-report/
         retention-days: 7
-
-    - name: Fail CI if Playwright Tests Failed
-      shell: bash
-      if: steps.playwright.conclusion == 'failure'
-      run: exit 1

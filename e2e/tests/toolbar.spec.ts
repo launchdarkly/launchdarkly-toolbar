@@ -172,13 +172,14 @@ test.describe('LaunchDarkly Toolbar', () => {
       await expect(page.getByRole('tab', { name: 'Flags' })).not.toBeVisible();
       await expect(page.getByRole('img', { name: 'LaunchDarkly' })).toBeVisible();
 
-      // Method 2: Click outside to collapse (re-expand first)
-      await toolbarContainer.hover();
-      await page.getByRole('tab', { name: 'Settings' }).click();
+      // We have disabled the collapse-on-blur functionality for now
+      // // Method 2: Click outside to collapse (re-expand first)
+      // await toolbarContainer.hover();
+      // await page.getByRole('tab', { name: 'Settings' }).click();
 
-      // Click outside the toolbar area
-      await page.mouse.click(50, 50);
-      await expect(page.getByRole('tab', { name: 'Settings' })).not.toBeVisible();
+      // // Click outside the toolbar area
+      // await page.mouse.click(50, 50);
+      // await expect(page.getByRole('tab', { name: 'Settings' })).not.toBeVisible();
     });
 
     test('should maintain proper tab states when switching', async ({ page }: { page: Page }) => {
@@ -251,14 +252,14 @@ test.describe('LaunchDarkly Toolbar', () => {
     });
   });
 
-  test.describe.only('SDK Mode', () => {
+  test.describe('SDK Mode', () => {
     test.beforeEach(async ({ page }: { page: Page }) => {
       await page.goto('/sdk');
       await page.waitForSelector('[data-testid="launchdarkly-toolbar"]');
       await expect(page.getByText('LaunchDarkly Toolbar Demo (sdk mode)')).toBeVisible();
     });
 
-    test('should load toolbar in SDK mode and show flags', async ({ page }: { page: Page }) => {
+    test('should allow toggling and clearing flag overrides in SDK mode', async ({ page }: { page: Page }) => {
       // Verify the toolbar loads successfully
       await expect(page.getByRole('img', { name: 'LaunchDarkly' })).toBeVisible();
 
@@ -282,63 +283,163 @@ test.describe('LaunchDarkly Toolbar', () => {
       await expect(page.getByText(/Clear all overrides/)).toBeVisible();
 
       // If flags are available, verify they're displayed
-      // Note: This might show "No flags available" if LaunchDarkly client isn't properly configured
       const flagContent = page.getByTestId('flag-sdk-tab-content');
       await expect(flagContent).toBeVisible();
-    });
 
-    // TODO
-    test.skip('should support flag override functionality when flags are available', async ({
-      page,
-    }: {
-      page: Page;
-    }) => {
-      // Expand toolbar and navigate to Flags tab
-      const toolbarContainer = page.getByTestId('launchdarkly-toolbar');
-      await toolbarContainer.hover();
-      await page.getByRole('tab', { name: 'Flags' }).click();
+      // Verify the expected flags are present
+      await expect(page.getByText('Test Flag By Pranjal')).toBeVisible();
+      await expect(page.getByText('Test Flag By Sub')).toBeVisible();
+      await expect(page.getByText('Test Flag Json')).toBeVisible();
+      await expect(page.getByText('Test Flag Number')).toBeVisible();
+      await expect(page.getByText('Test Flag String')).toBeVisible();
 
-      // Check if we have flags available (not in "No flags available" state)
-      const noFlagsMessage = page.getByText('No flags available');
-      const hasFlags = !(await noFlagsMessage.isVisible().catch(() => false));
+      // Verify action buttons are present
+      await expect(page.getByText('Show overrides only')).toBeVisible();
+      await expect(page.getByText(/Clear all overrides/)).toBeVisible();
 
-      if (hasFlags) {
-        // Test flag override controls are functional
-        const flagToggles = page.getByRole('switch');
-        if ((await flagToggles.count()) > 0) {
-          // Verify we can see flag toggles/controls
-          await expect(flagToggles.first()).toBeVisible();
-        }
+      // Initially, no overrides should exist, so "Clear all overrides" should show (0)
+      await expect(page.getByText('Clear all overrides (0)')).toBeVisible();
 
-        // Test "Show overrides only" functionality
-        const showOverridesButton = page.getByText('Show overrides only');
+      // Test 1: Toggle a boolean flag (Test Flag By Sub - currently Off)
+      const testFlagBySubSwitch = page.getByTestId('flag-switch-test-flag-by-sub');
 
-        // Get initial button state (should not be active initially)
-        const initialClasses = await showOverridesButton.getAttribute('class');
+      // Verify initial state (should be Off/false)
+      await expect(testFlagBySubSwitch).not.toBeChecked();
 
-        // Click to activate
-        await showOverridesButton.click();
-        const activeClasses = await showOverridesButton.getAttribute('class');
+      // Toggle the switch to create an override
+      await testFlagBySubSwitch.click();
 
-        // Verify the classes changed (active state should add more classes)
-        expect(activeClasses).not.toBe(initialClasses);
-        expect(activeClasses?.split(' ').length).toBeGreaterThan(initialClasses?.split(' ').length || 0);
+      // Verify the switch is now checked
+      await expect(testFlagBySubSwitch).toBeChecked();
 
-        // Click again to toggle off
-        await showOverridesButton.click();
-        const inactiveClasses = await showOverridesButton.getAttribute('class');
+      // Verify override indicator appears
+      const testFlagBySubRow = page.getByTestId('flag-row-test-flag-by-sub');
+      await expect(testFlagBySubRow.getByTestId('override-indicator')).toBeVisible();
 
-        // Verify we're back to the initial state
-        expect(inactiveClasses).toBe(initialClasses);
+      // Verify clear all overrides count updated
+      await expect(page.getByText('Clear all overrides (1)')).toBeVisible();
 
-        // Verify "Clear all overrides" button is present and functional
-        const clearAllButton = page.getByText(/Clear all overrides/);
-        await expect(clearAllButton).toBeVisible();
-      } else {
-        // If no flags are available, verify the help message is shown
-        await expect(page.getByText('No flags available')).toBeVisible();
-        await expect(page.getByText(/Make sure your LaunchDarkly client is properly initialized/)).toBeVisible();
-      }
+      // Test 2: Edit a string flag (Test Flag String)
+      const testFlagStringEditButton = page
+        .getByTestId('flag-control-test-flag-string')
+        .getByRole('button', { name: 'Edit' });
+
+      // Click edit button to enter edit mode
+      await testFlagStringEditButton.click();
+
+      // Verify input field appears and enter new value
+      const stringInput = page.getByTestId('flag-input-test-flag-string');
+      await expect(stringInput).toBeVisible();
+      await stringInput.fill('overridden-string-value');
+
+      // Confirm the change
+      const confirmButton = page.getByRole('button', { name: 'Confirm' });
+      await confirmButton.click();
+
+      // Verify the new value is displayed
+      const testFlagStringValue = page.getByTestId('flag-value-test-flag-string');
+      await expect(testFlagStringValue).toHaveText('overridden-string-value');
+
+      // Verify override indicator appears
+      const testFlagStringRow = page.getByTestId('flag-row-test-flag-string');
+      await expect(testFlagStringRow.getByTestId('override-indicator')).toBeVisible();
+
+      // Verify clear all overrides count updated
+      await expect(page.getByText('Clear all overrides (2)')).toBeVisible();
+
+      // Test 3: Edit a number flag (Test Flag Number - currently 2)
+      const testFlagNumberEditButton = page
+        .getByTestId('flag-control-test-flag-number')
+        .getByRole('button', { name: 'Edit' });
+
+      // Click edit button
+      await testFlagNumberEditButton.click();
+
+      // Verify number input appears and enter new value
+      const numberInput = page.getByTestId('flag-input-test-flag-number');
+      await expect(numberInput).toBeVisible();
+      await numberInput.fill('42');
+
+      // Confirm the change
+      const numberConfirmButton = page.getByRole('button', { name: 'Confirm' });
+      await numberConfirmButton.click();
+
+      // Verify the new value is displayed
+      const testFlagNumberValue = page.getByTestId('flag-value-test-flag-number');
+      await expect(testFlagNumberValue).toHaveText('42');
+
+      // Verify override indicator appears
+      const testFlagNumberRow = page.getByTestId('flag-row-test-flag-number');
+      await expect(testFlagNumberRow.getByTestId('override-indicator')).toBeVisible();
+
+      // Verify clear all overrides count updated
+      await expect(page.getByText('Clear all overrides (3)')).toBeVisible();
+
+      // Test 4: Test "Show overrides only" functionality
+      const showOverridesButton = page.getByTestId('show-overrides-only-button');
+      await showOverridesButton.click();
+
+      // Verify only overridden flags are visible
+      await expect(page.getByTestId('flag-name-test-flag-by-sub')).toBeVisible(); // overridden
+      await expect(page.getByTestId('flag-name-test-flag-string')).toBeVisible(); // overridden
+      await expect(page.getByTestId('flag-name-test-flag-number')).toBeVisible(); // overridden
+
+      // Non-overridden flags should not be visible
+      await expect(page.getByTestId('flag-name-test-flag-by-pranjal')).not.toBeVisible();
+      await expect(page.getByTestId('flag-name-test-flag-json')).not.toBeVisible();
+
+      // Test 5: Clear individual override
+      const overrideIndicator = testFlagBySubRow.getByTestId('override-indicator');
+
+      // Hover to see "Remove" text
+      await overrideIndicator.hover();
+      await expect(testFlagBySubRow.getByText('Remove')).toBeVisible();
+
+      // Click to remove override
+      await overrideIndicator.click();
+
+      // Verify override is removed (flag should disappear from overrides-only view)
+      await expect(page.getByTestId('flag-name-test-flag-by-sub')).not.toBeVisible();
+
+      // Verify clear all overrides count updated
+      await expect(page.getByText('Clear all overrides (2)')).toBeVisible();
+
+      // Test 6: Turn off "Show overrides only" to see all flags again
+      await showOverridesButton.click();
+
+      // Verify all flags are visible again
+      await expect(page.getByTestId('flag-name-test-flag-by-pranjal')).toBeVisible();
+      await expect(page.getByTestId('flag-name-test-flag-by-sub')).toBeVisible();
+      await expect(page.getByTestId('flag-name-test-flag-json')).toBeVisible();
+      await expect(page.getByTestId('flag-name-test-flag-number')).toBeVisible();
+      await expect(page.getByTestId('flag-name-test-flag-string')).toBeVisible();
+
+      // Verify Test Flag By Sub no longer has override indicator
+      const resetTestFlagBySubRow = page.getByTestId('flag-row-test-flag-by-sub');
+      await expect(resetTestFlagBySubRow.getByTestId('override-indicator')).not.toBeVisible();
+
+      // Test 7: Clear all remaining overrides
+      const clearAllButton = page.getByTestId('clear-all-overrides-button');
+      await clearAllButton.click();
+
+      // Verify all overrides are cleared
+      await expect(page.getByText('Clear all overrides (0)')).toBeVisible();
+
+      // Verify no override indicators are visible
+      await expect(page.getByTestId('override-indicator')).not.toBeVisible();
+
+      // Verify flags have returned to their original values
+      const resetTestFlagStringValue = page.getByTestId('flag-value-test-flag-string');
+      await expect(resetTestFlagStringValue).not.toHaveText('overridden-string-value');
+
+      const resetTestFlagNumberValue = page.getByTestId('flag-value-test-flag-number');
+      await expect(resetTestFlagNumberValue).not.toHaveText('42');
+      await expect(resetTestFlagNumberValue).toHaveText('2'); // Original value
+
+      // Test 8: Verify "Show overrides only" shows no results when no overrides exist
+      await showOverridesButton.click();
+      await expect(page.getByText('No overridden flags found')).toBeVisible();
+      await expect(page.getByText('No overridden flags match your search')).toBeVisible();
     });
   });
 });

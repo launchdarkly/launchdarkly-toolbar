@@ -1,2 +1,4 @@
 # Lock files
 yarn.lock
+CHANGELOG.md
+pnpm-lock.yaml

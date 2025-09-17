@@ -137,6 +137,8 @@ function FlagSdkOverrideTabContentInner(props: FlagSdkOverrideTabContentInnerPro
           <button
             className={`${actionStyles.toggleButton} ${showOverriddenOnly ? actionStyles.active : ''}`}
             onClick={() => setShowOverriddenOnly((prev) => !prev)}
+            data-testid="show-overrides-only-button"
+            aria-label={showOverriddenOnly ? 'Show all flags' : 'Show only overridden flags'}
           >
             Show overrides only
           </button>
@@ -144,6 +146,8 @@ function FlagSdkOverrideTabContentInner(props: FlagSdkOverrideTabContentInnerPro
             className={actionStyles.actionButton}
             onClick={handleClearAllOverrides}
             disabled={totalOverriddenFlags === 0}
+            data-testid="clear-all-overrides-button"
+            aria-label={`Clear all ${totalOverriddenFlags} flag overrides`}
           >
             Clear all overrides ({totalOverriddenFlags})
           </button>
@@ -172,14 +176,19 @@ function FlagSdkOverrideTabContentInner(props: FlagSdkOverrideTabContentInnerPro
                         transform: `translateY(${virtualItem.start}px)`,
                         borderBottom: '1px solid var(--lp-color-gray-800)',
                       }}
+                      data-testid={`flag-row-${flagKey}`}
                     >
                       <ListItem>
                         <div className={sharedStyles.flagHeader}>
                           <span className={sharedStyles.flagName}>
-                            <span className={sharedStyles.flagNameText}>{flag.name}</span>
+                            <span className={sharedStyles.flagNameText} data-testid={`flag-name-${flagKey}`}>
+                              {flag.name}
+                            </span>
                             {flag.isOverridden && <OverrideIndicator onClear={() => handleClearOverride(flagKey)} />}
                           </span>
-                          <span className={sharedStyles.flagKey}>{flagKey}</span>
+                          <span className={sharedStyles.flagKey} data-testid={`flag-key-${flagKey}`}>
+                            {flagKey}
+                          </span>
                         </div>
 
                         <div className={sharedStyles.flagOptions}>{renderFlagControl(flag)}</div>
