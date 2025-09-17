@@ -1,0 +1,11 @@
+blank_issues_enabled: false
+contact_links:
+  - name: 📞 LaunchDarkly Support
+    url: https://support.launchdarkly.com/
+    about: For account-specific issues, billing questions, or general LaunchDarkly service support
+  - name: 📚 Documentation
+    url: https://docs.launchdarkly.com/
+    about: Official LaunchDarkly documentation and guides
+  - name: 💬 Community Discussion
+    url: https://github.com/launchdarkly/launchdarkly-toolbar/discussions
+    about: Ask questions, share ideas, or discuss the LaunchDarkly Toolbar with the community
