@@ -42,7 +42,12 @@ export function DevServerMode() {
 
       {LaunchDarklyToolbar && (
         <Suspense fallback={<div>Loading toolbar...</div>}>
-          <LaunchDarklyToolbar position={position} devServerUrl={devServerUrl} projectKey={projectKey || undefined} />
+          <LaunchDarklyToolbar
+            baseLDUrl={import.meta.env.VITE_LD_BASE_URL || 'https://app.launchdarkly.com'}
+            position={position}
+            devServerUrl={devServerUrl}
+            projectKey={projectKey || undefined}
+          />
         </Suspense>
       )}
     </AppWrapper>

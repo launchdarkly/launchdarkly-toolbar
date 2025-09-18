@@ -6,6 +6,8 @@ export const TOOLBAR_STORAGE_KEYS = {
   PROJECT: 'ld-toolbar-project',
 } as const;
 
+export const LD_BASE_URL_KEY = 'ld-base-url';
+
 export function saveToolbarPosition(position: ToolbarPosition): void {
   try {
     localStorage.setItem(TOOLBAR_STORAGE_KEYS.POSITION, position);
@@ -20,6 +22,23 @@ export function loadToolbarPosition(): ToolbarPosition | null {
     return position && TOOLBAR_POSITIONS.includes(position as ToolbarPosition) ? (position as ToolbarPosition) : null;
   } catch (error) {
     console.warn('Failed to load toolbar position from localStorage:', error);
+    return null;
+  }
+}
+
+export function saveLDBaseUrl(url: string): void {
+  try {
+    localStorage.setItem(LD_BASE_URL_KEY, url);
+  } catch (error) {
+    console.warn('Failed to save LaunchDarkly base URL to localStorage:', error);
+  }
+}
+
+export function loadLDBaseUrl(): string | null {
+  try {
+    return localStorage.getItem(LD_BASE_URL_KEY);
+  } catch (error) {
+    console.warn('Failed to load LaunchDarkly base URL from localStorage:', error);
     return null;
   }
 }

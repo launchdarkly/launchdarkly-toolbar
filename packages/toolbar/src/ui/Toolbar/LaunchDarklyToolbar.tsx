@@ -10,19 +10,23 @@ import { ToolbarMode, ToolbarPosition, getToolbarMode } from './types/toolbar';
 import * as styles from './LaunchDarklyToolbar.css';
 import { DevServerProvider } from './context';
 import type { IEventInterceptionPlugin, IFlagOverridePlugin } from '../../types/plugin';
+import { saveLDBaseUrl } from './utils/localStorage';
 
 export interface LdToolbarProps {
   mode: ToolbarMode;
+  baseLDUrl: string;
   flagOverridePlugin?: IFlagOverridePlugin;
   eventInterceptionPlugin?: IEventInterceptionPlugin;
 }
 
 export function LdToolbar(props: LdToolbarProps) {
-  const { mode, flagOverridePlugin, eventInterceptionPlugin } = props;
+  const { mode, flagOverridePlugin, eventInterceptionPlugin, baseLDUrl } = props;
   const { searchTerm } = useSearchContext();
   const { state, handlePositionChange } = useDevServerContext();
   const toolbarState = useToolbarState();
   const position = state.position;
+
+  saveLDBaseUrl(baseLDUrl);
 
   const {
     isExpanded,
@@ -107,6 +111,7 @@ export function LdToolbar(props: LdToolbarProps) {
 }
 
 export interface LaunchDarklyToolbarProps {
+  baseLDUrl?: string; // Optional - will default to https://app.launchdarkly.com
   devServerUrl?: string; // Optional - will default to http://localhost:8765
   projectKey?: string; // Optional - will auto-detect first available project if not provided
   flagOverridePlugin?: IFlagOverridePlugin; // Optional - for flag override functionality
@@ -117,6 +122,7 @@ export interface LaunchDarklyToolbarProps {
 
 export function LaunchDarklyToolbar(props: LaunchDarklyToolbarProps) {
   const {
+    baseLDUrl = 'https://app.launchdarkly.com',
     projectKey,
     position,
     devServerUrl,
@@ -145,6 +151,7 @@ export function LaunchDarklyToolbar(props: LaunchDarklyToolbarProps) {
       <SearchProvider>
         <LdToolbar
           mode={mode}
+          baseLDUrl={baseLDUrl}
           flagOverridePlugin={flagOverridePlugin}
           eventInterceptionPlugin={eventInterceptionPlugin}
         />

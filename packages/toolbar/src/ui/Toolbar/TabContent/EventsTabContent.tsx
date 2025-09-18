@@ -51,6 +51,18 @@ export function EventsTabContent(props: EventsTabContentProps) {
     }
   };
 
+  const handleAddFeatureFlag = (flagKey: string) => {
+    const baseLDUrl = localStorage.getItem('ld-base-url');
+
+    if (!baseLDUrl) {
+      console.warn('LaunchDarkly base URL not set in localStorage');
+      return;
+    }
+
+    const url = `${baseLDUrl}/flags/new?selectProject=1&jiraIssueKey=REL-9492&description=test-description`;
+    window.open(url, '_blank');
+  }
+
   const flagNotFound = (context: SyntheticEventContext): boolean => {
     if (context.reason == null) {
       return false;
@@ -66,7 +78,7 @@ export function EventsTabContent(props: EventsTabContentProps) {
         if (flagNotFound(context)) {
           return styles.eventBadgeFeatureNotFound;
         }
-        
+
         return styles.eventBadgeFeature;
       case 'identify':
         return styles.eventBadgeIdentify;
@@ -180,9 +192,7 @@ export function EventsTabContent(props: EventsTabContentProps) {
                           icon={<AddIcon />}
                           label='Add Feature Flag'
                           size='medium'
-                          onClick={() => {
-                            console.log(`Add button clicked for event: ${event.displayName}`);
-                          }}
+                          onClick={() => handleAddFeatureFlag(event.context.key || '')}
                         />
                       </div>
                     )}
