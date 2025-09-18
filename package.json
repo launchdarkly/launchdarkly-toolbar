@@ -6,7 +6,6 @@
   "type": "module",
   "scripts": {
     "build": "pnpm --filter @launchdarkly/toolbar build",
-    "build:all": "pnpm -r build",
     "demo": "pnpm --filter launchdarkly-toolbar-demo dev",
     "demo:build": "pnpm build && pnpm --filter launchdarkly-toolbar-demo build",
     "dev": "pnpm --filter @launchdarkly/toolbar dev",

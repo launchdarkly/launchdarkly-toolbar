@@ -27,7 +27,7 @@ export default defineConfig(({ command }) => {
     server: isDev
       ? {
           fs: {
-            allow: [rootDir, resolve(rootDir, 'toolbar')],
+            allow: [rootDir, resolve(rootDir, 'toolbar'), resolve(rootDir, '..', '..')],
           },
         }
       : undefined,

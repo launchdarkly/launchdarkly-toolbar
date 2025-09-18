@@ -67,7 +67,6 @@ This project uses **pnpm workspaces** to manage packages in a monorepo structure
 | Command                  | Description                                                   |
 | ------------------------ | ------------------------------------------------------------- |
 | `pnpm build`             | Build the toolbar library for production                      |
-| `pnpm build:all`         | Build all packages in the monorepo                            |
 | `pnpm dev`               | Build toolbar in watch mode for development                   |
 | `pnpm demo`              | Build toolbar and run the demo application                    |
 | `pnpm demo:build`        | Build both toolbar and demo for production                    |
