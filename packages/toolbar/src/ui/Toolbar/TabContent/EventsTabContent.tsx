@@ -14,6 +14,9 @@ import * as styles from './EventsTabContent.css';
 import * as actionStyles from '../components/ActionButtonsContainer.css';
 import { useCurrentDate, useEvents } from '../hooks';
 import type { IEventInterceptionPlugin } from '../../../types/plugin';
+import { SyntheticEventContext } from '../../../types/events';
+import { IconButton } from '../components/IconButton';
+import { AddIcon } from '../components/icons/AddIcon';
 
 interface EventsTabContentProps {
   eventInterceptionPlugin?: IEventInterceptionPlugin;
@@ -48,9 +51,22 @@ export function EventsTabContent(props: EventsTabContentProps) {
     }
   };
 
-  const getBadgeClass = (kind: string) => {
+  const flagNotFound = (context: SyntheticEventContext): boolean => {
+    if (context.reason == null) {
+      return false;
+    }
+
+    const reason = context.reason as any;
+    return reason?.kind === 'ERROR' && reason?.errorKind === 'FLAG_NOT_FOUND';
+  }
+
+  const getBadgeClass = (kind: string, context: SyntheticEventContext) => {
     switch (kind) {
       case 'feature':
+        if (flagNotFound(context)) {
+          return styles.eventBadgeFeatureNotFound;
+        }
+        
         return styles.eventBadgeFeature;
       case 'identify':
         return styles.eventBadgeIdentify;
@@ -157,7 +173,19 @@ export function EventsTabContent(props: EventsTabContentProps) {
                       <span className={styles.eventName}>{event.displayName}</span>
                       <span className={styles.eventMeta}>{formatTimeAgo(event.timestamp, currentDate)}</span>
                     </div>
-                    <div className={getBadgeClass(event.kind)}>{event.kind}</div>
+                    <div className={getBadgeClass(event.kind, event.context)}>{event.kind}</div>
+                    {event.kind === 'feature' && flagNotFound(event.context) && (
+                       <div className={styles.addButtonContainer}>
+                        <IconButton
+                          icon={<AddIcon />}
+                          label='Add Feature Flag'
+                          size='medium'
+                          onClick={() => {
+                            console.log(`Add button clicked for event: ${event.displayName}`);
+                          }}
+                        />
+                      </div>
+                    )}
                   </ListItem>
                 </div>
               );

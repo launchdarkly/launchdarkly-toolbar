@@ -262,6 +262,17 @@ body {
   border-color: #fbbf24;
 }
 
+.unknown-flag-button {
+  background-color: #96a7f2;
+  color: #3730a3;
+  border: 1px solid #5a67d8;
+}
+
+.unknown-flag-button:hover {
+  background-color: #a4b0e9;
+  border-color: #4e5cd5;
+}
+
 .console-hint {
   background: #f0fff4;
   padding: 12px;
