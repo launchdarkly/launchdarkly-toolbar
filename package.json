@@ -17,14 +17,13 @@
     "format": "prettier --write .",
     "format:ci": "prettier --check .",
     "lint": "pnpm -r lint",
-    "storybook": "storybook dev -p 6006",
-    "build:storybook": "storybook build",
+    "storybook": "pnpm --filter @launchdarkly/toolbar storybook",
+    "build:storybook": "pnpm --filter @launchdarkly/toolbar build:storybook",
     "test": "pnpm --filter @launchdarkly/toolbar test",
     "test:e2e:ci": "TEST_ENV=ci playwright test --config=./e2e/playwright.config.ts",
     "test:e2e:ci:ui": "TEST_ENV=ci playwright test --ui --config=./e2e/playwright.config.ts",
     "test:e2e:local": "TEST_ENV=local playwright test --config=./e2e/playwright.config.ts",
     "test:e2e:local:ui": "TEST_ENV=local playwright test --ui --config=./e2e/playwright.config.ts",
-    "release": "pnpm --filter @launchdarkly/toolbar build && pnpm --filter @launchdarkly/toolbar publish",
     "upgrade-launchpad": "pnpm up \"@launchpad-ui/*\" \"@internationalized/*\" react-aria \"@react-aria/*\" \"@react-types/*\" \"@react-stately/*\" react-stately react-aria-components react react-dom @types/react @types/react-dom --latest -r"
   },
   "devDependencies": {

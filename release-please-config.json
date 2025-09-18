@@ -1,12 +1,13 @@
 {
   "bootstrap-sha": "1ee8521b7ad39b7e3bdb70bd06677d4fa8df41e8",
   "packages": {
-    ".": {
+    "packages/toolbar": {
       "release-type": "node",
       "include-v-in-tag": false,
       "include-component-in-tag": false,
       "prerelease": true,
-      "prerelease-type": "beta"
+      "prerelease-type": "beta",
+      "package-name": "@launchdarkly/toolbar"
     }
   }
 }
