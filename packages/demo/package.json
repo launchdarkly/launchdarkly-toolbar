@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
+    "prebuild": "pnpm --filter @launchdarkly/toolbar build",
     "lint": "eslint .",
     "preview": "vite preview"
   },
