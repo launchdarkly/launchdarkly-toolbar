@@ -11,6 +11,8 @@ export interface EventInterceptionPluginConfig {
   filter?: EventFilter;
   /** Enable console logging for debugging */
   enableLogging?: boolean;
+  /** Maximum number of events to store. The default value is 100. */
+  eventCapacity?: number;
 }
 
 /**
@@ -26,10 +28,11 @@ export class EventInterceptionPlugin implements IEventInterceptionPlugin {
   constructor(config: EventInterceptionPluginConfig = {}) {
     this.config = {
       enableLogging: false,
+      eventCapacity: 100,
       ...config,
     };
 
-    this.eventStore = new EventStore();
+    this.eventStore = new EventStore({ maxEvents: this.config.eventCapacity });
 
     const onNewEvent = (event: ProcessedEvent) => {
       if (this.config.enableLogging) {
