@@ -2,8 +2,5 @@
     "buildCommand": "cd demo && pnpm build",
     "outputDirectory": "demo/dist",
     "installCommand": "pnpm install --frozen-lockfile",
-    "framework": "vite",
-    "env": {
-        "PNPM_FLAGS": "--shamefully-hoist"
-    }
+    "framework": "vite"
 }
