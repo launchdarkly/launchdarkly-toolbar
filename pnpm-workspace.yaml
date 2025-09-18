@@ -1,6 +1,5 @@
 packages:
-  - .
-  - demo
+  - packages/*
 
 autoInstallPeers: false
 strictPeerDependencies: true
