@@ -6,7 +6,7 @@ import { dirname, resolve } from 'node:path';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const rootDir = resolve(__dirname, '..');
-const toolbarSrc = resolve(rootDir, 'src', 'index.ts');
+const toolbarSrc = resolve(rootDir, 'toolbar', 'src', 'index.ts');
 
 // https://vitejs.dev/config/
 export default defineConfig(({ command }) => {
@@ -27,7 +27,7 @@ export default defineConfig(({ command }) => {
     server: isDev
       ? {
           fs: {
-            allow: [rootDir],
+            allow: [rootDir, resolve(rootDir, 'toolbar')],
           },
         }
       : undefined,
