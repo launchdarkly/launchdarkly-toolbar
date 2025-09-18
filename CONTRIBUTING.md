@@ -56,26 +56,28 @@ The LaunchDarkly Toolbar requires a LaunchDarkly CLI dev server to be running. F
 
 ### Workspace Setup
 
-This project uses **pnpm workspaces** to manage the main package and demo application:
+This project uses **pnpm workspaces** to manage packages in a monorepo structure:
 
-- **Root workspace** - The main toolbar package
-- **Demo workspace** - Demo application for testing and development
+- **Root** - Monorepo orchestrator (private, never published)
+- **packages/toolbar/** - The main toolbar library package (published to npm)
+- **packages/demo/** - Demo application for testing and development
 
 ### Available Scripts
 
 | Command                  | Description                                                   |
 | ------------------------ | ------------------------------------------------------------- |
-| `pnpm build`             | Build the library for production                              |
-| `pnpm dev`               | Build in watch mode for development                           |
-| `pnpm demo`              | Build and run the demo application                            |
-| `pnpm demo:dev`          | Run demo in development mode (requires separate build)        |
-| `pnpm test`              | Run unit tests                                                |
+| `pnpm build`             | Build the toolbar library for production                      |
+| `pnpm build:all`         | Build all packages in the monorepo                            |
+| `pnpm dev`               | Build toolbar in watch mode for development                   |
+| `pnpm demo`              | Build toolbar and run the demo application                    |
+| `pnpm demo:build`        | Build both toolbar and demo for production                    |
+| `pnpm test`              | Run unit tests for toolbar                                    |
 | `pnpm test:e2e:ci`       | Run E2E tests against the packaged version                    |
 | `pnpm test:e2e:ci:ui`    | Run E2E tests with Playwright UI against the packaged version |
 | `pnpm test:e2e:local`    | Run E2E tests against the local version                       |
 | `pnpm test:e2e:local:ui` | Run E2E tests with Playwright UI against the local version    |
 | `pnpm storybook`         | Run Storybook for component development                       |
-| `pnpm lint`              | Run linter                                                    |
+| `pnpm lint`              | Run linter across all packages                                |
 | `pnpm format`            | Format code with Prettier                                     |
 
 ## Running the Project
@@ -91,7 +93,7 @@ pnpm dev
 2. **In a separate terminal, run the demo:**
 
 ```bash
-pnpm demo:dev
+pnpm demo
 ```
 
 3. **Open your browser to** `http://localhost:5173`
@@ -202,25 +204,26 @@ pnpm test:e2e:local:ui
 pnpm build
 ```
 
-This creates the `dist/` folder with:
+This creates the `packages/toolbar/dist/` folder with:
 
-- **JavaScript bundle** (`dist/js/index.js`)
-- **CSS bundle** (`dist/css/index.css`) - Generated from Vanilla Extract
-- **TypeScript declarations** (`dist/index.d.ts`)
-- **Static assets** (`dist/static/`) - Fonts and other assets
+- **JavaScript bundle** (`packages/toolbar/dist/js/index.js`)
+- **TypeScript declarations** (`packages/toolbar/dist/index.d.ts`)
+- **Static assets** (`packages/toolbar/dist/static/`) - Fonts and other assets
+- **Plugin bundles** (`packages/toolbar/dist/js/plugins/`)
 
 ## Publishing
 
 ### Automated Publishing
 
+Publishing is handled automatically via GitHub Actions and release-please. The toolbar package is published from `packages/toolbar/` which contains only clean library code (no demo scripts).
+
+**Manual publishing (if needed):**
+
 ```bash
-pnpm publish
+# Build and publish the toolbar package
+pnpm --filter @launchdarkly/toolbar build
+pnpm --filter @launchdarkly/toolbar publish
 ```
-
-This command:
-
-1. Builds the project (`pnpm build`)
-2. Publishes to npm from the root directory
 
 ## Code Standards
 

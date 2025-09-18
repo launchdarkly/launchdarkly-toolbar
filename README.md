@@ -209,6 +209,37 @@ The package includes complete TypeScript definitions. No additional `@types` pac
 import type { LaunchDarklyToolbarProps, IFlagOverridePlugin, IEventInterceptionPlugin } from '@launchdarkly/toolbar';
 ```
 
+## Development & Contributing
+
+This repository uses a monorepo structure:
+
+```
+launchdarkly-toolbar/
+├── packages/
+│   ├── toolbar/          # 📦 Main library package (published to npm)
+│   └── demo/             # 🎮 Demo application
+├── README.md             # 📖 You are here
+├── CONTRIBUTING.md       # 🤝 Development guide
+└── docs/                 # 📚 Additional documentation
+```
+
+### Quick Start for Contributors
+
+```bash
+# Clone and install
+git clone https://github.com/launchdarkly/launchdarkly-toolbar.git
+cd launchdarkly-toolbar
+pnpm install
+
+# Build the library
+pnpm build
+
+# Run the demo
+pnpm demo
+```
+
+For detailed development instructions, see [CONTRIBUTING.md](CONTRIBUTING.md).
+
 ---
 
 Built with ❤️ for the LaunchDarkly developer community.
