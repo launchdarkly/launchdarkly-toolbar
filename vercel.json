@@ -5,10 +5,5 @@
     "framework": "vite",
     "env": {
         "PNPM_FLAGS": "--shamefully-hoist"
-    },
-    "functions": {
-        "demo/dist/**": {
-            "excludeFiles": "{node_modules/**,src/**}"
-        }
     }
 }
