@@ -6,6 +6,7 @@
   "scripts": {
     "build": "pnpm --filter @launchdarkly/toolbar build",
     "demo": "pnpm --filter launchdarkly-toolbar-demo dev",
+    "demo:mock": "pnpm --filter launchdarkly-toolbar-demo dev:mock",
     "demo:build": "pnpm --filter launchdarkly-toolbar-demo build",
     "dev": "pnpm --filter @launchdarkly/toolbar dev",
     "dev:link": "./scripts/setup-local-links.sh",
