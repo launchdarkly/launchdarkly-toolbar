@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.16.0-beta.1](https://github.com/launchdarkly/launchdarkly-toolbar/compare/0.15.0-beta.1...0.16.0-beta.1) (2025-09-19)
+
+
+### Features
+
+* add configurable eventCapacity to EventInterceptionPlugin ([#103](https://github.com/launchdarkly/launchdarkly-toolbar/issues/103)) ([2acc493](https://github.com/launchdarkly/launchdarkly-toolbar/commit/2acc4932e54d33385f209551c2fe326d13b4392e))
+
 ## [0.15.0-beta.1](https://github.com/launchdarkly/launchdarkly-toolbar/compare/0.14.0-beta.1...0.15.0-beta.1) (2025-09-19)
 
 
