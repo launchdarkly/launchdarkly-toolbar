@@ -9,7 +9,5 @@
       "prerelease-type": "beta",
       "package-name": "@launchdarkly/toolbar"
     }
-  },
-  "skip-github-release": false,
-  "separate-pull-requests": false
+  }
 }
