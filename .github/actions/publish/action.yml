@@ -26,14 +26,14 @@ runs:
     - name: Publish to npm (dry run)
       if: inputs.dry_run == 'true'
       shell: bash
-      run: pnpm release --dry-run --no-git-checks
+      run: pnpm --filter @launchdarkly/toolbar publish --dry-run --no-git-checks
 
     - name: Publish to npm (prerelease)
       if: inputs.dry_run == 'false' && inputs.prerelease == 'true'
       shell: bash
-      run: pnpm release --tag next --no-git-checks
+      run: pnpm --filter @launchdarkly/toolbar publish --tag next --no-git-checks
 
     - name: Publish to npm (release)
       if: inputs.dry_run == 'false' && inputs.prerelease == 'false'
       shell: bash
-      run: pnpm release --no-git-checks
+      run: pnpm --filter @launchdarkly/toolbar publish --no-git-checks

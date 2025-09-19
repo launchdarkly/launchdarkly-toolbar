@@ -46,7 +46,7 @@ This is a demo application showcasing the LaunchDarkly Toolbar component. It pro
 1. **Install dependencies** (if not already done):
 
    ```bash
-   cd demo
+   cd packages/demo
    pnpm install
    ```
 
@@ -92,7 +92,7 @@ The demo allows you to test different configurations:
 
 ## Development
 
-This demo is part of a pnpm workspace and automatically uses the local version of the LaunchDarkly Toolbar. Any changes to the main toolbar library will be reflected after rebuilding.
+This demo is part of a pnpm monorepo workspace and automatically uses the local version of the LaunchDarkly Toolbar from `packages/toolbar/`. Any changes to the toolbar library will be reflected after rebuilding the toolbar package.
 
 ## Troubleshooting
 
