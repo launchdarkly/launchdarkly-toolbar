@@ -59,7 +59,7 @@ export function EventsTabContent(props: EventsTabContentProps) {
       return;
     }
 
-    const url = `${baseLDUrl}/flags/new?selectProject=1&jiraIssueKey=REL-9492&description=test-description`;
+    const url = `${baseLDUrl}/flags/new?selectProject=1&flagKey=${flagKey}`;
     window.open(url, '_blank');
   }
 
