@@ -39,11 +39,8 @@ export function AppWrapper({ children, mode, position, onPositionChange }: AppWr
       return;
     }
 
-    ldClient.variation(
-      'test-not-found-flag',
-      false
-    )
-  }
+    ldClient.variation('test-not-found-flag', false);
+  };
 
   const testCustomEvent = () => {
     if (!ldClient) {
@@ -139,7 +136,7 @@ export function AppWrapper({ children, mode, position, onPositionChange }: AppWr
                 <button onClick={testIdentifyEvent} className="test-button identify-button">
                   👤 Test Identify Event
                 </button>
-                <button onClick={testUnknownFlagEvent} className='test-button unknown-flag-button'>
+                <button onClick={testUnknownFlagEvent} className="test-button unknown-flag-button">
                   ❓ Test Unknown Flag Event
                 </button>
               </div>

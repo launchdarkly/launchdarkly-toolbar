@@ -61,7 +61,7 @@ export function EventsTabContent(props: EventsTabContentProps) {
 
     const url = `${baseLDUrl}/flags/new?selectProject=1&flagKey=${flagKey}`;
     window.open(url, '_blank');
-  }
+  };
 
   const flagNotFound = (context: SyntheticEventContext): boolean => {
     if (context.reason == null) {
@@ -70,7 +70,7 @@ export function EventsTabContent(props: EventsTabContentProps) {
 
     const reason = context.reason as any;
     return reason?.kind === 'ERROR' && reason?.errorKind === 'FLAG_NOT_FOUND';
-  }
+  };
 
   const getBadgeClass = (kind: string, context: SyntheticEventContext) => {
     switch (kind) {
@@ -188,13 +188,13 @@ export function EventsTabContent(props: EventsTabContentProps) {
                     </div>
                     <div className={getBadgeClass(event.kind, event.context)}>{event.kind}</div>
                     {event.kind === 'feature' && flagNotFound(event.context) && (
-                       <div className={styles.addButtonContainer}>
+                      <div className={styles.addButtonContainer}>
                         <IconButton
                           data-testid="add-flag-button"
                           key={`add-flag-${event.context.key}`}
                           icon={<AddIcon />}
-                          label='Add Feature Flag'
-                          size='medium'
+                          label="Add Feature Flag"
+                          size="medium"
                           onClick={() => handleAddFeatureFlag(event.context.key || '')}
                         />
                       </div>

@@ -54,13 +54,12 @@ export const eventBadgeFeature = style([
   },
 ]);
 
-
 export const eventBadgeFeatureNotFound = style([
   eventBadge,
   {
     backgroundColor: '#fef3c7',
-    color: '#92400e'
-  }
+    color: '#92400e',
+  },
 ]);
 
 export const addButtonContainer = style({
