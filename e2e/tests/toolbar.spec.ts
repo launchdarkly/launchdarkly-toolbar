@@ -1,6 +1,5 @@
 import { expect, type Page } from '@playwright/test';
 import { test } from '../setup/global';
-import { FIXTURE_FLAGS } from '../mocks/mockFeatureFlags';
 
 test.describe('LaunchDarkly Toolbar', () => {
   test.describe('Dev Server Mode', () => {
