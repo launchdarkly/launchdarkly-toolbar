@@ -165,6 +165,7 @@ export function EventsTabContent(props: EventsTabContentProps) {
               const event = events[virtualItem.index];
               return (
                 <div
+                  data-testid="event-item"
                   key={virtualItem.key}
                   className={styles.virtualItem}
                   style={{
@@ -189,6 +190,7 @@ export function EventsTabContent(props: EventsTabContentProps) {
                     {event.kind === 'feature' && flagNotFound(event.context) && (
                        <div className={styles.addButtonContainer}>
                         <IconButton
+                          data-testid="add-flag-button"
                           key={`add-flag-${event.context.key}`}
                           icon={<AddIcon />}
                           label='Add Feature Flag'
