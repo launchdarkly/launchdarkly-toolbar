@@ -17,13 +17,15 @@ export function LocalBooleanFlagControl(props: LocalBooleanFlagControlProps) {
   const { flag, onOverride, disabled = false } = props;
 
   return (
-    <div className={sharedStyles.switchContainer}>
+    <div className={sharedStyles.switchContainer} data-testid={`flag-control-${flag.key}`}>
       <Switch
         data-theme="dark"
         isSelected={flag.currentValue}
         onChange={onOverride}
         isDisabled={disabled}
         className={sharedStyles.switch_}
+        aria-label={`Toggle ${flag.name}`}
+        data-testid={`flag-switch-${flag.key}`}
       />
     </div>
   );
@@ -61,15 +63,23 @@ export function LocalStringNumberFlagControl(props: LocalStringNumberFlagControl
   };
 
   return (
-    <div className={sharedStyles.customVariantContainer}>
+    <div className={sharedStyles.customVariantContainer} data-testid={`flag-control-${flag.key}`}>
       {!isEditing ? (
         <div className={sharedStyles.currentValueGroup}>
-          <div className={sharedStyles.currentValueText}>{String(flag.currentValue)}</div>
-          <IconButton icon={<EditIcon />} label="Edit" onClick={() => setIsEditing(true)} disabled={disabled} />
+          <div className={sharedStyles.currentValueText} data-testid={`flag-value-${flag.key}`}>
+            {String(flag.currentValue)}
+          </div>
+          <IconButton
+            icon={<EditIcon />}
+            label="Edit"
+            onClick={() => setIsEditing(true)}
+            disabled={disabled}
+            data-testid={`flag-edit-${flag.key}`}
+          />
         </div>
       ) : (
         <TextField
-          aria-label={`Enter ${flag.type} value`}
+          aria-label={`Enter ${flag.type} value for ${flag.name}`}
           className={sharedStyles.customVariantField}
           data-theme="dark"
         >
@@ -79,9 +89,20 @@ export function LocalStringNumberFlagControl(props: LocalStringNumberFlagControl
               value={tempValue}
               onChange={(e) => setTempValue(e.target.value)}
               type={flag.type === 'number' ? 'number' : 'text'}
+              data-testid={`flag-input-${flag.key}`}
             />
-            <IconButton icon={<CheckIcon />} label="Confirm" onClick={handleConfirm} />
-            <IconButton icon={<XIcon />} label="Cancel" onClick={handleCancel} />
+            <IconButton
+              icon={<CheckIcon />}
+              label="Confirm"
+              onClick={handleConfirm}
+              data-testid={`flag-confirm-${flag.key}`}
+            />
+            <IconButton
+              icon={<XIcon />}
+              label="Cancel"
+              onClick={handleCancel}
+              data-testid={`flag-cancel-${flag.key}`}
+            />
           </Group>
         </TextField>
       )}
@@ -126,14 +147,26 @@ export function LocalObjectFlagControl(props: LocalObjectFlagControlProps) {
   };
 
   return (
-    <div className={sharedStyles.customVariantContainer}>
+    <div className={sharedStyles.customVariantContainer} data-testid={`flag-control-${flag.key}`}>
       {!isEditing ? (
         <div className={sharedStyles.currentValueGroup}>
-          <div className={sharedStyles.currentValueText}>{displayValue}</div>
-          <IconButton icon={<EditIcon />} label="Edit JSON" onClick={() => setIsEditing(true)} disabled={disabled} />
+          <div className={sharedStyles.currentValueText} data-testid={`flag-value-${flag.key}`}>
+            {displayValue}
+          </div>
+          <IconButton
+            icon={<EditIcon />}
+            label="Edit JSON"
+            onClick={() => setIsEditing(true)}
+            disabled={disabled}
+            data-testid={`flag-edit-${flag.key}`}
+          />
         </div>
       ) : (
-        <TextField aria-label="Enter JSON value" className={sharedStyles.customVariantField} data-theme="dark">
+        <TextField
+          aria-label={`Enter JSON value for ${flag.name}`}
+          className={sharedStyles.customVariantField}
+          data-theme="dark"
+        >
           <Group className={sharedStyles.customVariantFieldGroup}>
             <textarea
               placeholder="Enter valid JSON"
@@ -141,10 +174,22 @@ export function LocalObjectFlagControl(props: LocalObjectFlagControlProps) {
               onChange={(e) => handleValueChange(e.target.value)}
               rows={4}
               className={parseError ? `${styles.jsonTextarea} ${styles.jsonTextareaError}` : styles.jsonTextarea}
+              data-testid={`flag-input-${flag.key}`}
+              aria-label={`JSON input for ${flag.name}`}
             />
             <div className={styles.jsonButtonGroup}>
-              <IconButton icon={<CheckIcon />} label="Confirm" onClick={handleConfirm} />
-              <IconButton icon={<XIcon />} label="Cancel" onClick={handleCancel} />
+              <IconButton
+                icon={<CheckIcon />}
+                label="Confirm"
+                onClick={handleConfirm}
+                data-testid={`flag-confirm-${flag.key}`}
+              />
+              <IconButton
+                icon={<XIcon />}
+                label="Cancel"
+                onClick={handleCancel}
+                data-testid={`flag-cancel-${flag.key}`}
+              />
             </div>
             {parseError && <div className={styles.jsonParseError}>{parseError}</div>}
           </Group>

@@ -1,5 +1,26 @@
 # Changelog
 
+## [0.15.0-beta.1](https://github.com/launchdarkly/launchdarkly-toolbar/compare/0.14.0-beta.1...0.15.0-beta.1) (2025-09-19)
+
+
+### Features
+
+* Restructure to proper monorepo layout for better maintainability ([#102](https://github.com/launchdarkly/launchdarkly-toolbar/issues/102)) ([e8d215a](https://github.com/launchdarkly/launchdarkly-toolbar/commit/e8d215af5dcca3d44c6ba62fe3dfc0d95efca08a))
+
+## [0.14.0-beta.1](https://github.com/launchdarkly/launchdarkly-toolbar/compare/0.13.3-beta.1...0.14.0-beta.1) (2025-09-17)
+
+
+### Features
+
+* add e2e test for sdk mode and improve test selectors with accessibility ([#91](https://github.com/launchdarkly/launchdarkly-toolbar/issues/91)) ([c465bea](https://github.com/launchdarkly/launchdarkly-toolbar/commit/c465bea5a253f6ab253c1def0aee184f36bc9b48))
+
+## [0.13.3-beta.1](https://github.com/launchdarkly/launchdarkly-toolbar/compare/0.13.2-beta.1...0.13.3-beta.1) (2025-09-16)
+
+
+### Bug Fixes
+
+* bump launchpad to 0.16.9 ([#96](https://github.com/launchdarkly/launchdarkly-toolbar/issues/96)) ([79a840d](https://github.com/launchdarkly/launchdarkly-toolbar/commit/79a840dce46fd7e348e3778b91f49a21350906f7))
+
 ## [0.13.2-beta.1](https://github.com/launchdarkly/launchdarkly-toolbar/compare/0.13.1-beta.1...0.13.2-beta.1) (2025-09-16)
 
 

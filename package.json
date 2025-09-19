@@ -1,83 +1,31 @@
 {
-  "name": "@launchdarkly/toolbar",
-  "version": "0.13.2-beta.1",
-  "description": "A React component that provides a developer-friendly toolbar for interacting with LaunchDarkly during development",
-  "keywords": [
-    "launchdarkly",
-    "feature-flags",
-    "react",
-    "toolbar",
-    "development",
-    "typescript"
-  ],
+  "name": "launchdarkly-toolbar-monorepo",
+  "private": true,
+  "description": "Monorepo for LaunchDarkly Toolbar and Demo App",
   "type": "module",
-  "license": "Apache-2.0",
-  "author": "Catamorphic Co.",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/launchdarkly/launchdarkly-toolbar.git"
-  },
-  "bugs": {
-    "url": "https://github.com/launchdarkly/launchdarkly-toolbar/issues"
-  },
-  "homepage": "https://github.com/launchdarkly/launchdarkly-toolbar#readme",
-  "main": "./dist/js/index.js",
-  "types": "./dist/index.d.ts",
-  "sideEffects": [
-    "./dist/js/index.js",
-    "./dist/static/**/*",
-    "*.css"
-  ],
-  "exports": {
-    ".": {
-      "types": "./dist/index.d.ts",
-      "import": "./dist/js/index.js"
-    },
-    "./plugins": {
-      "types": "./dist/plugins/index.d.ts",
-      "import": "./dist/js/plugins/index.js"
-    },
-    "./plugins/FlagOverridePlugin": {
-      "types": "./dist/plugins/FlagOverridePlugin.d.ts",
-      "import": "./dist/js/plugins/FlagOverridePlugin.js"
-    }
-  },
-  "files": [
-    "dist"
-  ],
-  "browserslist": [
-    "last 2 versions",
-    "not dead",
-    "not IE 11"
-  ],
   "scripts": {
-    "build:storybook": "storybook build",
-    "build": "rslib build && node scripts/fix-base-url.cjs",
-    "demo:build": "pnpm build && pnpm --filter launchdarkly-toolbar-demo build",
-    "demo:dev": "pnpm --filter launchdarkly-toolbar-demo dev",
-    "demo:restart": "./scripts/dev-restart.sh",
-    "demo": "pnpm build && pnpm --filter launchdarkly-toolbar-demo dev",
+    "build": "pnpm --filter @launchdarkly/toolbar build",
+    "demo": "pnpm --filter launchdarkly-toolbar-demo dev",
+    "demo:build": "pnpm --filter launchdarkly-toolbar-demo build",
+    "dev": "pnpm --filter @launchdarkly/toolbar dev",
     "dev:link": "./scripts/setup-local-links.sh",
     "dev:status": "./scripts/dev-status.sh",
     "dev:unlink": "./scripts/remove-local-links.sh",
-    "dev:watch": "./scripts/smart-watch-simple.sh",
-    "dev": "rslib build --watch",
+    "dev:watch": "./scripts/dev-watch.sh",
     "format": "prettier --write .",
-    "lint": "oxlint",
-    "release": "pnpm build && npm publish",
-    "storybook": "storybook dev -p 6006",
-    "test:e2e:ci:ui": "TEST_ENV=ci playwright test --ui --config=./e2e/playwright.config.ts",
+    "format:ci": "prettier --check .",
+    "lint": "pnpm -r lint",
+    "storybook": "pnpm --filter @launchdarkly/toolbar storybook",
+    "build:storybook": "pnpm --filter @launchdarkly/toolbar build:storybook",
+    "test": "pnpm --filter @launchdarkly/toolbar test",
     "test:e2e:ci": "TEST_ENV=ci playwright test --config=./e2e/playwright.config.ts",
-    "test:e2e:local:ui": "TEST_ENV=local playwright test --ui --config=./e2e/playwright.config.ts",
+    "test:e2e:ci:ui": "TEST_ENV=ci playwright test --ui --config=./e2e/playwright.config.ts",
     "test:e2e:local": "TEST_ENV=local playwright test --config=./e2e/playwright.config.ts",
-    "test": "vitest run",
+    "test:e2e:local:ui": "TEST_ENV=local playwright test --ui --config=./e2e/playwright.config.ts",
     "upgrade-launchpad": "pnpm up \"@launchpad-ui/*\" \"@internationalized/*\" react-aria \"@react-aria/*\" \"@react-types/*\" \"@react-stately/*\" react-stately react-aria-components react react-dom @types/react @types/react-dom --latest -r"
   },
   "devDependencies": {
     "@playwright/test": "^1.53.1",
-    "@rsbuild/core": "1.5.4",
-    "@rsbuild/plugin-react": "^1.4.0",
-    "@rslib/core": "^0.13.0",
     "@storybook/addon-docs": "^9.0.5",
     "@storybook/addon-essentials": "^9.0.0-alpha.12",
     "@storybook/addon-interactions": "^9.0.0-alpha.10",
@@ -86,48 +34,11 @@
     "@storybook/blocks": "^9.0.0-alpha.17",
     "@storybook/react": "^9.0.5",
     "@storybook/test": "^9.0.0-alpha.2",
-    "@testing-library/jest-dom": "^6.6.3",
-    "@testing-library/react": "^16.3.0",
-    "@types/node": "^24.0.4",
-    "@types/react": "^19.1.13",
-    "@vanilla-extract/vite-plugin": "^5.1.1",
     "http-server": "^14.1.1",
-    "jsdom": "^26.1.0",
-    "launchdarkly-js-client-sdk": "^3.9.0",
-    "oxlint": "^1.0.0",
     "prettier": "^3.5.3",
-    "react": "^19.1.1",
     "storybook": "^9.0.5",
     "storybook-addon-rslib": "^2.0.0",
-    "storybook-react-rsbuild": "^2.0.0",
-    "typescript": "^5.8.3",
-    "vitest": "^3.2.2",
-    "webpack": "5.101.3"
-  },
-  "peerDependencies": {
-    "launchdarkly-js-client-sdk": "^3.9.0",
-    "react": "^18.0.0 || ^19.0.0"
-  },
-  "private": false,
-  "publishConfig": {
-    "access": "public"
-  },
-  "dependencies": {
-    "@launchpad-ui/components": "0.16.8",
-    "@launchpad-ui/tokens": "0.15.0",
-    "@react-aria/focus": "3.21.1",
-    "@react-aria/interactions": "3.25.5",
-    "@react-aria/utils": "3.30.1",
-    "@react-stately/utils": "3.10.8",
-    "@react-types/shared": "3.32.0",
-    "@tanstack/react-virtual": "^3.13.12",
-    "@vanilla-extract/css": "^1.17.4",
-    "@vanilla-extract/webpack-plugin": "^2.3.22",
-    "motion": "^12.19.2",
-    "react-aria": "3.43.2",
-    "react-aria-components": "1.12.2",
-    "react-hook-form": "7.59.0",
-    "react-router": "7.5.2"
+    "storybook-react-rsbuild": "^2.0.0"
   },
   "packageManager": "pnpm@10.14.0"
 }
