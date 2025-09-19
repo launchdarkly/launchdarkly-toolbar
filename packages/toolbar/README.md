@@ -27,10 +27,11 @@ pnpm add @launchdarkly/toolbar@next
 ```tsx
 import { useEffect, useState } from 'react';
 import { asyncWithLDProvider } from 'launchdarkly-react-client-sdk';
-import { LaunchDarklyToolbar, FlagOverridePlugin } from '@launchdarkly/toolbar';
+import { LaunchDarklyToolbar, FlagOverridePlugin, EventInterceptionPlugin } from '@launchdarkly/toolbar';
 
-// Create the plugin instance
+// Create the plugin instances
 const flagOverridePlugin = new FlagOverridePlugin();
+const eventInterceptionPlugin = new EventInterceptionPlugin();
 
 function App() {
   const [LDProvider, setLDProvider] = useState(null);
@@ -41,8 +42,8 @@ function App() {
         clientSideID: 'your-client-side-id',
         context: { key: 'user-key', name: 'User Name' },
         options: {
-          // Pass the plugin to the SDK
-          plugins: [flagOverridePlugin],
+          // Pass the plugins to the SDK
+          plugins: [flagOverridePlugin, eventInterceptionPlugin],
         },
       });
       setLDProvider(() => Provider);
@@ -59,7 +60,7 @@ function App() {
     <LDProvider>
       <div>
         <h1>My App</h1>
-        {/* Pass the same plugin instance to the toolbar */}
+        {/* Pass the same plugin instances to the toolbar */}
         <LaunchDarklyToolbar
           flagOverridePlugin={flagOverridePlugin}
           eventInterceptionPlugin={eventInterceptionPlugin}
@@ -167,6 +168,31 @@ function App() {
     </LDProvider>
   );
 }
+```
+
+#### Event Interception Plugin
+
+To track and display LaunchDarkly events (flag evaluations, custom events, etc.), add the `EventInterceptionPlugin`:
+
+```tsx
+import { EventInterceptionPlugin } from '@launchdarkly/toolbar';
+
+// Create plugin with optional configuration
+const eventInterceptionPlugin = new EventInterceptionPlugin({
+  eventCapacity: 250, // Maximum events to store (default: 100)
+  enableLogging: true, // Console logging for debugging (default: false)
+});
+
+// Add to both SDK and toolbar
+const Provider = await asyncWithLDProvider({
+  // ... other config
+  options: {
+    plugins: [flagOverridePlugin, eventInterceptionPlugin],
+  },
+});
+
+// Pass to toolbar
+<LaunchDarklyToolbar flagOverridePlugin={flagOverridePlugin} eventInterceptionPlugin={eventInterceptionPlugin} />;
 ```
 
 ### Dev Server Mode
