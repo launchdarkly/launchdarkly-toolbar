@@ -1,15 +1,11 @@
 # Changelog
 
-## 1.0.0 (2025-09-19)
+## [0.15.0-beta.1](https://github.com/launchdarkly/launchdarkly-toolbar/compare/0.14.0-beta.1...0.15.0-beta.1) (2025-09-19)
 
 
-### ⚠ BREAKING CHANGES
+### Features
 
-* Major restructure to industry-standard monorepo pattern
-
-### Code Refactoring
-
-* Restructure to proper monorepo layout ([#102](https://github.com/launchdarkly/launchdarkly-toolbar/issues/102)) ([e8d215a](https://github.com/launchdarkly/launchdarkly-toolbar/commit/e8d215af5dcca3d44c6ba62fe3dfc0d95efca08a))
+* Restructure to proper monorepo layout for better maintainability ([#102](https://github.com/launchdarkly/launchdarkly-toolbar/issues/102)) ([e8d215a](https://github.com/launchdarkly/launchdarkly-toolbar/commit/e8d215af5dcca3d44c6ba62fe3dfc0d95efca08a))
 
 ## [0.14.0-beta.1](https://github.com/launchdarkly/launchdarkly-toolbar/compare/0.13.3-beta.1...0.14.0-beta.1) (2025-09-17)
 
