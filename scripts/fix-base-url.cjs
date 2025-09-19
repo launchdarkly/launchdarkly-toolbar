@@ -22,7 +22,8 @@
 const fs = require('fs');
 const path = require('path');
 
-const distFile = path.join(__dirname, '..', 'dist', 'js', 'index.js');
+// Support both old structure (root) and new structure (packages/toolbar)
+const distFile = process.argv[2] ? path.resolve(process.argv[2]) : path.join(__dirname, '..', 'dist', 'js', 'index.js');
 
 if (fs.existsSync(distFile)) {
   console.log('🔧 Fixing base URL issue in dist/js/index.js...');

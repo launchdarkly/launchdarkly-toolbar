@@ -1,5 +1,4 @@
-import { EventInterceptionPlugin } from '../../src/plugins/EventInterceptionPlugin';
-import { FlagOverridePlugin } from '../../src/plugins/FlagOverridePlugin';
+import { EventInterceptionPlugin, FlagOverridePlugin } from '@launchdarkly/toolbar';
 
 export const flagOverridePlugin = new FlagOverridePlugin({
   storageNamespace: 'ld-demo-overrides',

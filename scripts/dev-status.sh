@@ -191,13 +191,13 @@ git_summary "$WORKSPACE_DIR/launchdarkly-toolbar"
 # Link Health Check
 log_section "🔗 Local Links Status"
 check_symlink "$WORKSPACE_DIR/js-client-sdk/node_modules/launchdarkly-js-sdk-common" "js-client → js-common"
-check_symlink "$WORKSPACE_DIR/launchdarkly-toolbar/node_modules/launchdarkly-js-client-sdk" "toolbar → js-client"
+check_symlink "$WORKSPACE_DIR/launchdarkly-toolbar/packages/toolbar/node_modules/launchdarkly-js-client-sdk" "toolbar → js-client"
 
 # Build Artifacts Check
 log_section "🏗️  Build Artifacts"
 [ -f "$WORKSPACE_DIR/js-client-sdk/dist/ldclient.cjs.js" ] && echo -e "${GREEN}✅ js-client-sdk build${NC}" || echo -e "${RED}❌ js-client-sdk build${NC}"
 
-[ -f "$WORKSPACE_DIR/launchdarkly-toolbar/dist/js/index.js" ] || [ -f "$WORKSPACE_DIR/launchdarkly-toolbar/dist/index.js" ] && echo -e "${GREEN}✅ toolbar build${NC}" || echo -e "${RED}❌ toolbar build${NC}"
+[ -f "$WORKSPACE_DIR/launchdarkly-toolbar/packages/toolbar/dist/js/index.js" ] && echo -e "${GREEN}✅ toolbar build${NC}" || echo -e "${RED}❌ toolbar build${NC}"
 
 # Process Health Check
 log_section "🏃 Running Processes"

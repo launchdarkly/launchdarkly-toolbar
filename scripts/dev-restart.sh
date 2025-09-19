@@ -24,7 +24,7 @@ sleep 1
 
 # Start fresh demo
 echo -e "${YELLOW}🚀 Starting demo...${NC}"
-pnpm demo:dev &
+pnpm demo &
 
 echo -e "${GREEN}✅ Demo restarted!${NC}"
 echo -e "${YELLOW}🌐 Demo should be available at: http://localhost:5173${NC}"
