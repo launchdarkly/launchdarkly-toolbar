@@ -138,3 +138,23 @@ export const icon = style({
   height: '16px',
   fill: 'currentColor',
 });
+
+export const sdkModeStatus = style({
+  display: 'flex',
+  alignItems: 'center',
+  gap: '8px',
+  padding: '8px 12px',
+  backgroundColor: 'var(--lp-color-gray-900)',
+  borderBottom: '1px solid var(--lp-color-gray-700)',
+  fontSize: '13px',
+  color: 'var(--lp-color-gray-300)',
+  fontFamily: 'var(--lp-font-family-base)',
+});
+
+export const sdkModeIndicator = style({
+  width: '8px',
+  height: '8px',
+  borderRadius: '50%',
+  backgroundColor: 'var(--lp-color-green-500)',
+  flexShrink: 0,
+});

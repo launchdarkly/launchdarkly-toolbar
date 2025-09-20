@@ -29,6 +29,9 @@ export function Header(props: HeaderProps) {
   const showRefresh = isDevServer;
   const showConnectionStatus = isDevServer;
 
+  const isSDK = mode === 'sdk';
+  const showSDKStatus = isSDK;
+
   return (
     <>
       <div className={styles.header}>
@@ -80,6 +83,12 @@ export function Header(props: HeaderProps) {
         />
       </div>
       {showConnectionStatus && <ConnectionStatus status={connectionStatus} lastSyncTime={state.lastSyncTime} />}
+      {showSDKStatus && (
+        <div className={styles.sdkModeStatus}>
+          <div className={styles.sdkModeIndicator}></div>
+          Running in SDK mode
+        </div>
+      )}
     </>
   );
 }
