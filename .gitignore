@@ -8,6 +8,10 @@ node_modules
 dist/
 storybook-static
 
+# Bundle analysis
+rspack-stats.json
+bundle-analyzer-report.json
+
 # IDE
 .vscode/*
 !.vscode/extensions.json

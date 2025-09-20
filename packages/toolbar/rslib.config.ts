@@ -1,6 +1,7 @@
 import { pluginReact } from '@rsbuild/plugin-react';
 import { defineConfig } from '@rslib/core';
 import { VanillaExtractPlugin } from '@vanilla-extract/webpack-plugin';
+import { BundleAnalyzerPlugin } from 'webpack-bundle-analyzer';
 
 export default defineConfig({
   source: {
@@ -32,7 +33,19 @@ export default defineConfig({
   plugins: [pluginReact()],
   tools: {
     rspack: {
-      plugins: [new VanillaExtractPlugin()],
+      plugins: [
+        new VanillaExtractPlugin(),
+        ...(process.env.ANALYZE_BUNDLE === 'true'
+          ? [
+              new BundleAnalyzerPlugin({
+                analyzerMode: 'json',
+                reportFilename: 'bundle-analyzer-report.json',
+                openAnalyzer: false,
+              }),
+            ]
+          : []),
+      ],
+      stats: process.env.ANALYZE_BUNDLE === 'true' ? 'verbose' : 'normal',
     },
   },
 });

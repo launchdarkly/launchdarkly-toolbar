@@ -48,6 +48,7 @@
   ],
   "scripts": {
     "build": "rslib build && node ../../scripts/fix-base-url.cjs dist/js/index.js",
+    "build:analyze": "ANALYZE_BUNDLE=true rslib build && cp dist/bundle-analyzer-report.json ./rspack-stats.json",
     "dev": "rslib build --watch",
     "test": "vitest run",
     "lint": "oxlint",
@@ -81,7 +82,8 @@
     "@storybook/test": "^9.0.0-alpha.2",
     "typescript": "^5.8.3",
     "vitest": "^3.2.2",
-    "webpack": "5.101.3"
+    "webpack": "5.101.3",
+    "webpack-bundle-analyzer": "^4.10.2"
   },
   "peerDependencies": {
     "launchdarkly-js-client-sdk": "^3.9.0",
