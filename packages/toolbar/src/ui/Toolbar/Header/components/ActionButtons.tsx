@@ -89,7 +89,7 @@ export function ActionButtons(props: ActionButtonsProps) {
       )}
       <IconButton
         icon={<PinIcon />}
-        label={isPinned ? "Unpin toolbar" : "Pin toolbar"}
+        label={isPinned ? 'Unpin toolbar' : 'Pin toolbar'}
         onClick={onTogglePin}
         className={isPinned ? styles.pinned : styles.actionButton}
       />

@@ -19,7 +19,8 @@ export interface HeaderProps {
 }
 
 export function Header(props: HeaderProps) {
-  const { onClose, onSearch, onTogglePin, isPinned, searchTerm, searchIsExpanded, setSearchIsExpanded, label, mode } = props;
+  const { onClose, onSearch, onTogglePin, isPinned, searchTerm, searchIsExpanded, setSearchIsExpanded, label, mode } =
+    props;
 
   const { state, refresh } = useDevServerContext();
   const { connectionStatus } = state;

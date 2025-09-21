@@ -85,6 +85,8 @@ describe('ExpandedToolbarContent - User Interaction Flows', () => {
     searchIsExpanded: false,
     onSearch: vi.fn(),
     onClose: vi.fn(),
+    onTogglePin: vi.fn(),
+    isPinned: false,
     onTabChange: vi.fn(),
     setSearchIsExpanded: vi.fn(),
   };

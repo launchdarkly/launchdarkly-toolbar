@@ -173,14 +173,24 @@ test.describe('LaunchDarkly Toolbar', () => {
       await expect(page.getByRole('tab', { name: 'Flags' })).not.toBeVisible();
       await expect(page.getByRole('img', { name: 'LaunchDarkly' })).toBeVisible();
 
-      // We have disabled the collapse-on-blur functionality for now
-      // // Method 2: Click outside to collapse (re-expand first)
-      // await toolbarContainer.hover();
-      // await page.getByRole('tab', { name: 'Settings' }).click();
+      // Method 2: Test pin functionality to prevent click-outside collapse
+      // Re-expand toolbar first
+      await toolbarContainer.hover();
+      await page.getByRole('tab', { name: 'Settings' }).click();
 
-      // // Click outside the toolbar area
-      // await page.mouse.click(50, 50);
-      // await expect(page.getByRole('tab', { name: 'Settings' })).not.toBeVisible();
+      // Pin the toolbar
+      await page.getByRole('button', { name: 'Pin toolbar' }).click();
+
+      // Click outside the toolbar area - it should stay open when pinned
+      await page.mouse.click(50, 50);
+      await expect(page.getByRole('tab', { name: 'Settings' })).toBeVisible();
+
+      // Unpin the toolbar
+      await page.getByRole('button', { name: 'Unpin toolbar' }).click();
+
+      // Click outside again - it should now close
+      await page.mouse.click(50, 50);
+      await expect(page.getByRole('tab', { name: 'Settings' })).not.toBeVisible();
     });
 
     test('should maintain proper tab states when switching', async ({ page }: { page: Page }) => {
