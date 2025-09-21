@@ -10,6 +10,8 @@ export interface HeaderProps {
   searchTerm: string;
   onSearch: (searchTerm: string) => void;
   onClose: () => void;
+  onTogglePin: () => void;
+  isPinned: boolean;
   searchIsExpanded: boolean;
   setSearchIsExpanded: Dispatch<SetStateAction<boolean>>;
   label: string;
@@ -17,7 +19,7 @@ export interface HeaderProps {
 }
 
 export function Header(props: HeaderProps) {
-  const { onClose, onSearch, searchTerm, searchIsExpanded, setSearchIsExpanded, label, mode } = props;
+  const { onClose, onSearch, onTogglePin, isPinned, searchTerm, searchIsExpanded, setSearchIsExpanded, label, mode } = props;
 
   const { state, refresh } = useDevServerContext();
   const { connectionStatus } = state;
@@ -75,6 +77,8 @@ export function Header(props: HeaderProps) {
           setSearchIsExpanded={setSearchIsExpanded}
           onClose={onClose}
           onRefresh={refresh}
+          onTogglePin={onTogglePin}
+          isPinned={isPinned}
           showSearchButton={showSearch}
           showRefreshButton={showRefresh}
         />

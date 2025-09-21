@@ -16,6 +16,7 @@ export interface UseToolbarStateReturn {
   slideDirection: number;
   hasBeenExpanded: boolean;
   isDragModifierPressed: boolean;
+  isPinned: boolean;
 
   // Refs
   toolbarRef: React.RefObject<HTMLDivElement | null>;
@@ -26,6 +27,7 @@ export interface UseToolbarStateReturn {
   handleMouseLeave: () => void;
   handleClose: () => void;
   handleSearch: (newSearchTerm: string) => void;
+  handleTogglePin: () => void;
   setIsAnimating: Dispatch<SetStateAction<boolean>>;
   setSearchIsExpanded: Dispatch<SetStateAction<boolean>>;
 }
@@ -37,6 +39,7 @@ export function useToolbarState(): UseToolbarStateReturn {
   const [previousTab, setPreviousTab] = useState<ActiveTabId>();
   const [isAnimating, setIsAnimating] = useState(false);
   const [searchIsExpanded, setSearchIsExpanded] = useState<boolean>(false);
+  const [isPinned, setIsPinned] = useState(false);
 
   const hasBeenExpandedRef = useRef(false);
   const toolbarRef = useRef<HTMLDivElement | null>(null);
@@ -104,6 +107,10 @@ export function useToolbarState(): UseToolbarStateReturn {
     [setSearchTerm],
   );
 
+  const handleTogglePin = useCallback(() => {
+    setIsPinned((prev) => !prev);
+  }, []);
+
   // Update hasBeenExpanded ref when toolbar shows
   useEffect(() => {
     if (showFullToolbar) {
@@ -119,19 +126,19 @@ export function useToolbarState(): UseToolbarStateReturn {
     }
   }, [isExpanded]);
 
-  // Handle click outside to close toolbar
-  // useEffect(() => {
-  //   const handleClickOutside = (event: MouseEvent) => {
-  //     if (isExpanded && toolbarRef.current && !toolbarRef.current.contains(event.target as Node)) {
-  //       setIsExpanded(false);
-  //     }
-  //   };
+  // Handle click outside to close toolbar (only when not pinned)
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (isExpanded && !isPinned && toolbarRef.current && !toolbarRef.current.contains(event.target as Node)) {
+        setIsExpanded(false);
+      }
+    };
 
-  //   document.addEventListener('mousedown', handleClickOutside);
-  //   return () => {
-  //     document.removeEventListener('mousedown', handleClickOutside);
-  //   };
-  // }, [isExpanded]);
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [isExpanded, isPinned]);
 
   return {
     // State values
@@ -145,6 +152,7 @@ export function useToolbarState(): UseToolbarStateReturn {
     slideDirection,
     hasBeenExpanded: hasBeenExpandedRef.current,
     isDragModifierPressed,
+    isPinned,
 
     // Refs
     toolbarRef,
@@ -155,6 +163,7 @@ export function useToolbarState(): UseToolbarStateReturn {
     handleMouseLeave,
     handleClose,
     handleSearch,
+    handleTogglePin,
     setIsAnimating,
     setSearchIsExpanded,
   };
