@@ -76,7 +76,7 @@ export const addButton = style({
       backgroundColor: 'var(--lp-color-gray-600)',
     },
   },
-})
+});
 
 export const eventBadgeIdentify = style([
   eventBadge,
