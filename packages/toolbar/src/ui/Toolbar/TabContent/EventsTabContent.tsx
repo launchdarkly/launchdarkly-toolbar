@@ -17,6 +17,7 @@ import type { IEventInterceptionPlugin } from '../../../types/plugin';
 import { SyntheticEventContext } from '../../../types/events';
 import { IconButton } from '../components/IconButton';
 import { AddIcon } from '../components/icons/AddIcon';
+import { loadLDBaseUrl } from '../utils/localStorage';
 
 interface EventsTabContentProps {
   eventInterceptionPlugin?: IEventInterceptionPlugin;
@@ -52,7 +53,7 @@ export function EventsTabContent(props: EventsTabContentProps) {
   };
 
   const handleAddFeatureFlag = (flagKey: string) => {
-    const baseLDUrl = localStorage.getItem('ld-base-url');
+    const baseLDUrl = loadLDBaseUrl();
 
     if (!baseLDUrl) {
       console.warn('LaunchDarkly base URL not set in localStorage');
@@ -68,8 +69,8 @@ export function EventsTabContent(props: EventsTabContentProps) {
       return false;
     }
 
-    const reason = context.reason as any;
-    return reason?.kind === 'ERROR' && reason?.errorKind === 'FLAG_NOT_FOUND';
+    const reason = context.reason;
+    return reason.kind === 'ERROR' && reason.errorKind === 'FLAG_NOT_FOUND';
   };
 
   const getBadgeClass = (kind: string, context: SyntheticEventContext) => {
