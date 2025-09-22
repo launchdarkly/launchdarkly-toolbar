@@ -12,7 +12,7 @@ export function AddIcon({ className }: IconProps) {
       viewBox="0 0 24 24"
       xmlns="http://www.w3.org/2000/svg"
     >
-      <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z" />
+      <path d="M10 3.417a.75.75 0 0 1 .75.75V9.25h5.083a.75.75 0 0 1 0 1.5H10.75v5.083a.75.75 0 0 1-1.5 0V10.75H4.167a.75.75 0 0 1 0-1.5H9.25V4.167a.75.75 0 0 1 .75-.75" />
     </svg>
   );
 }

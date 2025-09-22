@@ -191,6 +191,7 @@ export function EventsTabContent(props: EventsTabContentProps) {
                     {event.kind === 'feature' && flagNotFound(event.context) && (
                       <div className={styles.addButtonContainer}>
                         <IconButton
+                          className={styles.addButton}
                           data-testid="add-flag-button"
                           key={`add-flag-${event.context.key}`}
                           icon={<AddIcon />}

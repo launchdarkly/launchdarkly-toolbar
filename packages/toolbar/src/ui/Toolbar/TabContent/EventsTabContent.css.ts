@@ -68,6 +68,16 @@ export const addButtonContainer = style({
   alignItems: 'center',
 });
 
+export const addButton = style({
+  display: 'block',
+  selectors: {
+    '&:hover:not(:disabled)': {
+      color: 'var(--lp-color-gray-200)',
+      backgroundColor: 'var(--lp-color-gray-600)',
+    },
+  },
+})
+
 export const eventBadgeIdentify = style([
   eventBadge,
   {
