@@ -7,7 +7,6 @@ export default defineConfig({
     entry: {
       index: './src/index.ts',
       'plugins/index': './src/plugins/index.ts',
-      'plugins/FlagOverridePlugin': './src/plugins/FlagOverridePlugin.tsx',
     },
     include: ['./src/index.ts', './src/plugins/**/*.ts', './src/plugins/**/*.tsx'],
     exclude: ['./src/**/*.test.*'],

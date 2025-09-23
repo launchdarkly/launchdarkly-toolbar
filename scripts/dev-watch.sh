@@ -36,8 +36,8 @@ WORKSPACE_DIR="$(dirname "$BASE_DIR")"
 # Define watch directories
 JS_COMMON_SRC="$WORKSPACE_DIR/js-sdk-common/src"
 JS_CLIENT_SRC="$WORKSPACE_DIR/js-client-sdk/src"
-TOOLBAR_SRC="$WORKSPACE_DIR/launchdarkly-toolbar/src"
-DEMO_SRC="$WORKSPACE_DIR/launchdarkly-toolbar/demo/src"
+TOOLBAR_SRC="$WORKSPACE_DIR/launchdarkly-toolbar/packages/toolbar/src"
+DEMO_SRC="$WORKSPACE_DIR/launchdarkly-toolbar/packages/demo/src"
 
 # Functions
 log_with_time() {
@@ -103,11 +103,10 @@ smart_rebuild() {
             log_with_time "${YELLOW}🔧 js-client-sdk changed → rebuilding js-client + toolbar${NC}"
             build_js_client && build_toolbar && restart_demo
             ;;
-        *"launchdarkly-toolbar/src"*)
-            log_with_time "${YELLOW}🔧 toolbar changed → rebuilding toolbar only${NC}"
-            build_toolbar && restart_demo
+        *"launchdarkly-toolbar/packages/toolbar/src"*)
+            log_with_time "${BLUE}🌀 toolbar changed → handled by Vite HMR (no rebuild)${NC}"
             ;;
-        *"launchdarkly-toolbar/demo/src"*)
+        *"launchdarkly-toolbar/packages/demo/src"*)
             log_with_time "${BLUE}🌀 demo changed → handled by Vite HMR (no rebuild)${NC}"
             ;;
         *)
@@ -152,7 +151,16 @@ debounced_rebuild() {
 # Cleanup function
 cleanup() {
     log_with_time "${YELLOW}🛑 Stopping watcher...${NC}"
+
+    # Kill background jobs (debounced rebuilds)
     jobs -p | xargs -r kill 2>/dev/null || true
+
+    # Kill demo server processes
+    log_with_time "${YELLOW}🛑 Stopping demo server...${NC}"
+    pkill -f "pnpm.*demo" 2>/dev/null || true
+    pkill -f "vite.*dev" 2>/dev/null || true
+
+    log_with_time "${GREEN}✅ Cleanup complete${NC}"
     exit 0
 }
 
@@ -163,7 +171,7 @@ trap cleanup SIGINT SIGTERM
 log_with_time "${BLUE}📁 Watching directories:${NC}"
 [ -d "$JS_COMMON_SRC" ] && log_with_time "${BLUE}  👀 js-sdk-common → rebuilds entire chain${NC}" || log_with_time "${RED}  ❌ js-sdk-common (not found)${NC}"
 [ -d "$JS_CLIENT_SRC" ] && log_with_time "${BLUE}  👀 js-client-sdk → rebuilds js-client + react + toolbar${NC}" || log_with_time "${RED}  ❌ js-client-sdk (not found)${NC}"
-[ -d "$TOOLBAR_SRC" ] && log_with_time "${BLUE}  👀 toolbar → rebuilds toolbar only${NC}" || log_with_time "${RED}  ❌ toolbar (not found)${NC}"
+[ -d "$TOOLBAR_SRC" ] && log_with_time "${BLUE}  👀 toolbar → HMR via Vite (no rebuild)${NC}" || log_with_time "${RED}  ❌ toolbar (not found)${NC}"
 [ -d "$DEMO_SRC" ] && log_with_time "${BLUE}  👀 demo → HMR via Vite, no rebuild${NC}" || log_with_time "${RED}  ❌ demo (not found)${NC}"
 
 log_with_time "${YELLOW}🔄 Debounce time: ${DEBOUNCE_TIME}s${NC}"

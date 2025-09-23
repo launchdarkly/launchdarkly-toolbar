@@ -1,0 +1,41 @@
+# Development files
+src/**/*.test.*
+src/**/*.stories.*
+*.test.*
+*.spec.*
+
+# Documentation
+docs/
+*.md
+!demo/README.md
+
+# Build artifacts (except dist which is needed)
+.rslib/
+storybook-static/
+playwright-report/
+test-results/
+
+# Development tools
+.storybook/
+e2e/
+stories/
+
+# Node modules (handled by Vercel)
+node_modules/
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Logs
+*.log
+npm-debug.log*
+pnpm-debug.log*
+
+# Environment files
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local

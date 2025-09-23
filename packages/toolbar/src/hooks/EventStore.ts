@@ -1,17 +1,26 @@
 import type { ProcessedEvent } from '../types/events';
 
-const MAX_EVENTS = 100;
+const DEFAULT_MAX_EVENTS = 100;
+export interface EventStoreConfig {
+  /** Maximum number of events to store */
+  maxEvents?: number;
+}
 
 export class EventStore {
   private events: ProcessedEvent[] = [];
   private listeners: Set<() => void> = new Set();
+  private maxEvents: number;
+
+  constructor(config: EventStoreConfig = {}) {
+    this.maxEvents = config.maxEvents ?? DEFAULT_MAX_EVENTS;
+  }
 
   addEvent(event: ProcessedEvent): void {
     try {
       this.events.push(event);
-      if (this.events.length > MAX_EVENTS) {
+      if (this.events.length > this.maxEvents) {
         // Remove oldest events to maintain the limit
-        this.events.splice(0, this.events.length - MAX_EVENTS);
+        this.events.splice(0, this.events.length - this.maxEvents);
       }
       this.notifyListeners();
     } catch (error) {
