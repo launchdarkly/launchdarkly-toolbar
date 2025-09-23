@@ -125,7 +125,7 @@ describe('ExpandedToolbarContent - User Interaction Flows', () => {
       // GIVEN: Developer has expanded the toolbar in dev server mode with event plugin
       render(
         <TestWrapper devServerUrl="http://localhost:8765">
-          <ExpandedToolbarContent {...defaultProps} mode="dev-server" />
+          <ExpandedToolbarContent baseUrl='http://localhost:3002' {...defaultProps} mode="dev-server" />
         </TestWrapper>,
       );
 
@@ -146,7 +146,7 @@ describe('ExpandedToolbarContent - User Interaction Flows', () => {
       // GIVEN: Developer wants to work with server-side flags
       render(
         <TestWrapper devServerUrl="http://localhost:8765">
-          <ExpandedToolbarContent {...defaultProps} activeTab="flag-dev-server" mode="dev-server" />
+          <ExpandedToolbarContent baseUrl='http://localhost:3002' {...defaultProps} activeTab="flag-dev-server" mode="dev-server" />
         </TestWrapper>,
       );
 
@@ -165,6 +165,7 @@ describe('ExpandedToolbarContent - User Interaction Flows', () => {
       render(
         <TestWrapper>
           <ExpandedToolbarContent
+            baseUrl='http://localhost:3002'
             {...defaultProps}
             mode="sdk"
             flagOverridePlugin={mockFlagOverridePlugin}
@@ -191,6 +192,7 @@ describe('ExpandedToolbarContent - User Interaction Flows', () => {
       render(
         <TestWrapper>
           <ExpandedToolbarContent
+            baseUrl='http://localhost:3002'
             {...defaultProps}
             activeTab="flag-sdk"
             mode="sdk"
@@ -212,6 +214,7 @@ describe('ExpandedToolbarContent - User Interaction Flows', () => {
       render(
         <TestWrapper>
           <ExpandedToolbarContent
+            baseUrl='http://localhost:3002'
             {...defaultProps}
             activeTab="events"
             mode="sdk"
@@ -229,7 +232,7 @@ describe('ExpandedToolbarContent - User Interaction Flows', () => {
       // GIVEN: Developer is using the toolbar without debug capabilities
       render(
         <TestWrapper>
-          <ExpandedToolbarContent {...defaultProps} mode="sdk" />
+          <ExpandedToolbarContent baseUrl='http://localhost:3002' {...defaultProps} mode="sdk" />
         </TestWrapper>,
       );
 
@@ -253,6 +256,7 @@ describe('ExpandedToolbarContent - User Interaction Flows', () => {
       render(
         <TestWrapper>
           <ExpandedToolbarContent
+            baseUrl='http://localhost:3002'
             {...defaultProps}
             mode={'invalid-mode' as any} // TypeScript bypass for testing
           />
@@ -272,7 +276,7 @@ describe('ExpandedToolbarContent - User Interaction Flows', () => {
       // GIVEN: Developer doesn't specify an active tab (edge case)
       render(
         <TestWrapper>
-          <ExpandedToolbarContent {...defaultProps} activeTab={undefined} mode="dev-server" />
+          <ExpandedToolbarContent baseUrl='http://localhost:3002' {...defaultProps} activeTab={undefined} mode="dev-server" />
         </TestWrapper>,
       );
 
