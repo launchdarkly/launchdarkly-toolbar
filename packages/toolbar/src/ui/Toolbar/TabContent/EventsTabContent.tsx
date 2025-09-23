@@ -64,19 +64,19 @@ export function EventsTabContent(props: EventsTabContentProps) {
     window.open(url, '_blank');
   };
 
-  const flagNotFound = (context: SyntheticEventContext): boolean => {
-    if (context.reason == null) {
+  const isFlagNotFound = (context: SyntheticEventContext): boolean => {
+    if (!context.reason) {
       return false;
     }
 
-    const reason = context.reason;
+    const { reason } = context;
     return reason.kind === 'ERROR' && reason.errorKind === 'FLAG_NOT_FOUND';
   };
 
   const getBadgeClass = (kind: string, context: SyntheticEventContext) => {
     switch (kind) {
       case 'feature':
-        if (flagNotFound(context)) {
+        if (isFlagNotFound(context)) {
           return styles.eventBadgeFeatureNotFound;
         }
 
@@ -188,7 +188,7 @@ export function EventsTabContent(props: EventsTabContentProps) {
                       <span className={styles.eventMeta}>{formatTimeAgo(event.timestamp, currentDate)}</span>
                     </div>
                     <div className={getBadgeClass(event.kind, event.context)}>{event.kind}</div>
-                    {event.kind === 'feature' && flagNotFound(event.context) && (
+                    {event.kind === 'feature' && isFlagNotFound(event.context) && (
                       <div className={styles.addButtonContainer}>
                         <IconButton
                           className={styles.addButton}
