@@ -17,7 +17,7 @@ import type { IEventInterceptionPlugin } from '../../../types/plugin';
 import { SyntheticEventContext } from '../../../types/events';
 import { IconButton } from '../components/IconButton';
 import { AddIcon } from '../components/icons/AddIcon';
-import { loadLDBaseUrl } from '../utils/localStorage';
+import { loadBaseUrl } from '../utils/localStorage';
 
 interface EventsTabContentProps {
   eventInterceptionPlugin?: IEventInterceptionPlugin;
@@ -53,14 +53,14 @@ export function EventsTabContent(props: EventsTabContentProps) {
   };
 
   const handleAddFeatureFlag = (flagKey: string) => {
-    const baseLDUrl = loadLDBaseUrl();
+    const baseUrl = loadBaseUrl();
 
-    if (!baseLDUrl) {
+    if (!baseUrl) {
       console.warn('LaunchDarkly base URL not set in localStorage');
       return;
     }
 
-    const url = `${baseLDUrl}/flags/new?selectProject=1&flagKey=${flagKey}`;
+    const url = `${baseUrl}/flags/new?selectProject=1&flagKey=${flagKey}`;
     window.open(url, '_blank');
   };
 

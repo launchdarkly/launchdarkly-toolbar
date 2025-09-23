@@ -25,7 +25,7 @@ export function loadToolbarPosition(): ToolbarPosition | null {
   }
 }
 
-export function saveLDBaseUrl(url: string): void {
+export function saveBaseUrl(url: string): void {
   try {
     localStorage.setItem(TOOLBAR_STORAGE_KEYS.LD_BASE_URL, url);
   } catch (error) {
@@ -33,7 +33,7 @@ export function saveLDBaseUrl(url: string): void {
   }
 }
 
-export function loadLDBaseUrl(): string | null {
+export function loadBaseUrl(): string | null {
   try {
     return localStorage.getItem(TOOLBAR_STORAGE_KEYS.LD_BASE_URL);
   } catch (error) {

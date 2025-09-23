@@ -24,7 +24,7 @@ export function SDKMode() {
       {LaunchDarklyToolbar && (
         <Suspense fallback={<div>Loading toolbar...</div>}>
           <LaunchDarklyToolbar
-            baseLDUrl={import.meta.env.VITE_LD_BASE_URL || 'https://app.launchdarkly.com'}
+            baseUrl={import.meta.env.VITE_LD_BASE_URL || 'https://app.launchdarkly.com'}
             position={position}
             flagOverridePlugin={flagOverridePlugin}
             eventInterceptionPlugin={eventInterceptionPlugin}

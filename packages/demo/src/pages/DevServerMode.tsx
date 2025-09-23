@@ -43,7 +43,7 @@ export function DevServerMode() {
       {LaunchDarklyToolbar && (
         <Suspense fallback={<div>Loading toolbar...</div>}>
           <LaunchDarklyToolbar
-            baseLDUrl={devServerUrl}
+            baseUrl={devServerUrl}
             position={position}
             devServerUrl={devServerUrl}
             projectKey={projectKey || undefined}
