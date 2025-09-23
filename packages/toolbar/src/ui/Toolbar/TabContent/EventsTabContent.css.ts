@@ -222,3 +222,7 @@ export const liveTailSubtext = style({
   color: 'var(--lp-color-gray-500)',
   textAlign: 'center',
 });
+
+export const eventListItem = style({
+  height: '100%',
+});

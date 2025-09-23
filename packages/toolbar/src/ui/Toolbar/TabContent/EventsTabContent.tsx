@@ -175,6 +175,7 @@ export function EventsTabContent(props: EventsTabContentProps) {
                   }}
                 >
                   <ListItem
+                    className={styles.eventListItem}
                     onClick={() => {
                       console.group(`📝 Event Details: [kind: ${event.kind}, displayName: ${event.displayName}]`);
                       console.table(event);
