@@ -10,7 +10,6 @@ import { ToolbarMode, ToolbarPosition, getToolbarMode } from './types/toolbar';
 import * as styles from './LaunchDarklyToolbar.css';
 import { DevServerProvider } from './context';
 import type { IEventInterceptionPlugin, IFlagOverridePlugin } from '../../types/plugin';
-import { saveBaseUrl } from './utils/localStorage';
 
 export interface LdToolbarProps {
   mode: ToolbarMode;
@@ -25,8 +24,6 @@ export function LdToolbar(props: LdToolbarProps) {
   const { state, handlePositionChange } = useDevServerContext();
   const toolbarState = useToolbarState();
   const position = state.position;
-
-  saveBaseUrl(baseUrl);
 
   const {
     isExpanded,
@@ -103,6 +100,7 @@ export function LdToolbar(props: LdToolbarProps) {
             flagOverridePlugin={flagOverridePlugin}
             eventInterceptionPlugin={eventInterceptionPlugin}
             mode={mode}
+            baseUrl={baseUrl}
           />
         )}
       </AnimatePresence>

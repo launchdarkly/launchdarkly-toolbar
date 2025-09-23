@@ -17,9 +17,9 @@ import type { IEventInterceptionPlugin } from '../../../types/plugin';
 import { SyntheticEventContext } from '../../../types/events';
 import { IconButton } from '../components/IconButton';
 import { AddIcon } from '../components/icons/AddIcon';
-import { loadBaseUrl } from '../utils/localStorage';
 
 interface EventsTabContentProps {
+  baseUrl: string;
   eventInterceptionPlugin?: IEventInterceptionPlugin;
 }
 
@@ -38,7 +38,7 @@ function formatTimeAgo(timestamp: number, currentDate: Date): string {
 }
 
 export function EventsTabContent(props: EventsTabContentProps) {
-  const { eventInterceptionPlugin } = props;
+  const { eventInterceptionPlugin, baseUrl } = props;
   const { searchTerm } = useSearchContext();
   const { events, eventStats } = useEvents(eventInterceptionPlugin, searchTerm);
   const currentDate = useCurrentDate(); // Updates every second by default
@@ -53,8 +53,6 @@ export function EventsTabContent(props: EventsTabContentProps) {
   };
 
   const handleAddFeatureFlag = (flagKey: string) => {
-    const baseUrl = loadBaseUrl();
-
     if (!baseUrl) {
       console.warn('LaunchDarkly base URL not set in localStorage');
       return;
