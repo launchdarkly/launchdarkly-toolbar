@@ -49,7 +49,7 @@ export default defineConfig({
   webServer: {
     command: process.env.CI
       ? 'pnpm --filter launchdarkly-toolbar-demo preview --port 5173 --strictPort'
-      : 'pnpm demo:dev',
+      : 'pnpm demo',
     url: 'http://localhost:5173',
     reuseExistingServer: !process.env.CI,
     timeout: 120 * 1000,
