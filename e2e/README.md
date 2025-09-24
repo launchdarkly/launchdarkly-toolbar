@@ -6,7 +6,7 @@ This directory contains end-to-end tests for the LaunchDarkly Toolbar that can t
 
 ### Environment Modes
 
-- **Local**: Tests the local workspace version (from `../src`) using `pnpm demo:dev`
+- **Local**: Tests the local workspace version (from `../src`) using `pnpm demo`
 - **CI**: Tests the built/published version (from `../dist`) using `pnpm demo:build` + Vite preview
 
 ### Integration Modes
@@ -82,7 +82,7 @@ describe('LaunchDarkly Toolbar - {environment}', () => {
 
 ### 4. Build Process
 
-- **Local**: Uses `pnpm demo:dev` (Vite development server)
+- **Local**: Uses `pnpm demo` (Vite development server)
 - **CI**: Uses `pnpm demo:build && pnpm --filter launchdarkly-toolbar-demo preview --port 5173 --strictPort` (Vite preview)
 
 ## Test Coverage
