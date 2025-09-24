@@ -38,7 +38,7 @@ This is a demo application showcasing the LaunchDarkly Toolbar component. It pro
    pnpm dev
 
    # Terminal 2: Run the demo
-   pnpm demo:dev
+   pnpm demo
    ```
 
 ### From the demo directory:
