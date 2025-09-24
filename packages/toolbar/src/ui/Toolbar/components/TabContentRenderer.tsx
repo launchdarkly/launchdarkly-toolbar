@@ -9,6 +9,7 @@ import type { IFlagOverridePlugin, IEventInterceptionPlugin } from '../../../typ
 
 interface TabContentRendererProps {
   activeTab: TabId;
+  baseUrl: string;
   slideDirection: number;
   mode: ToolbarMode;
   flagOverridePlugin?: IFlagOverridePlugin;
@@ -16,7 +17,7 @@ interface TabContentRendererProps {
 }
 
 export function TabContentRenderer(props: TabContentRendererProps) {
-  const { activeTab, slideDirection, mode, flagOverridePlugin, eventInterceptionPlugin } = props;
+  const { activeTab, slideDirection, mode, flagOverridePlugin, eventInterceptionPlugin, baseUrl } = props;
 
   const renderContent = () => {
     switch (activeTab) {
@@ -25,7 +26,7 @@ export function TabContentRenderer(props: TabContentRendererProps) {
       case 'flag-dev-server':
         return <FlagDevServerTabContent />;
       case 'events':
-        return <EventsTabContent eventInterceptionPlugin={eventInterceptionPlugin} />;
+        return <EventsTabContent baseUrl={baseUrl} eventInterceptionPlugin={eventInterceptionPlugin} />;
       case 'settings':
         return <SettingsTabContent mode={mode} />;
       default:

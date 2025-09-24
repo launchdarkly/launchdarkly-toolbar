@@ -25,6 +25,7 @@ interface ExpandedToolbarContentProps {
   onTabChange: (tabId: string) => void;
   setSearchIsExpanded: Dispatch<SetStateAction<boolean>>;
   mode: ToolbarMode;
+  baseUrl: string;
   flagOverridePlugin?: IFlagOverridePlugin;
   eventInterceptionPlugin?: IEventInterceptionPlugin;
 }
@@ -51,6 +52,7 @@ export function ExpandedToolbarContent(props: ExpandedToolbarContentProps) {
     mode,
     flagOverridePlugin,
     eventInterceptionPlugin,
+    baseUrl,
   } = props;
 
   const { state } = useDevServerContext();
@@ -128,6 +130,7 @@ export function ExpandedToolbarContent(props: ExpandedToolbarContentProps) {
                   {activeTab && (
                     <TabContentRenderer
                       activeTab={activeTab}
+                      baseUrl={baseUrl}
                       slideDirection={slideDirection}
                       mode={mode}
                       flagOverridePlugin={flagOverridePlugin}

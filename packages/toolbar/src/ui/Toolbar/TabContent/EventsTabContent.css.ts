@@ -54,6 +54,30 @@ export const eventBadgeFeature = style([
   },
 ]);
 
+export const eventBadgeFeatureNotFound = style([
+  eventBadge,
+  {
+    backgroundColor: '#fef3c7',
+    color: '#92400e',
+  },
+]);
+
+export const addButtonContainer = style({
+  marginLeft: '8px',
+  display: 'flex',
+  alignItems: 'center',
+});
+
+export const addButton = style({
+  display: 'block',
+  selectors: {
+    '&:hover:not(:disabled)': {
+      color: 'var(--lp-color-gray-200)',
+      backgroundColor: 'var(--lp-color-gray-600)',
+    },
+  },
+});
+
 export const eventBadgeIdentify = style([
   eventBadge,
   {
