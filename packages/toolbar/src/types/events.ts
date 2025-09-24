@@ -1,6 +1,6 @@
 export interface LDEvaluationReason {
-  readonly kind?: string | 'ERROR';
-  readonly errorKind?: string | 'FLAG_NOT_FOUND';
+  readonly kind?: string;
+  readonly errorKind?: string;
 }
 
 export interface SyntheticEventContext {
