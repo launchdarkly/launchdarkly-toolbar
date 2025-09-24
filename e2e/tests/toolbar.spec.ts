@@ -174,19 +174,19 @@ test.describe('LaunchDarkly Toolbar', () => {
       await expect(page.getByRole('img', { name: 'LaunchDarkly' })).toBeVisible();
 
       // Method 2: Test pin functionality to prevent click-outside collapse
-      // Re-expand toolbar first
+      // Re-expand toolbar first and go to Settings tab
       await toolbarContainer.hover();
       await page.getByRole('tab', { name: 'Settings' }).click();
 
-      // Pin the toolbar
-      await page.getByRole('button', { name: 'Pin toolbar' }).click();
+      // Pin the toolbar using the toggle in Settings
+      await page.getByLabel('Pin toolbar').click({ force: true });
 
       // Click outside the toolbar area - it should stay open when pinned
       await page.mouse.click(50, 50);
       await expect(page.getByRole('tab', { name: 'Settings' })).toBeVisible();
 
-      // Unpin the toolbar
-      await page.getByRole('button', { name: 'Unpin toolbar' }).click();
+      // Unpin the toolbar using the toggle in Settings
+      await page.getByLabel('Pin toolbar').click({ force: true });
 
       // Click outside again - it should now close
       await page.mouse.click(50, 50);
