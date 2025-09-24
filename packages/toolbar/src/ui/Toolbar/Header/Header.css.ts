@@ -138,19 +138,3 @@ export const icon = style({
   height: '16px',
   fill: 'currentColor',
 });
-
-export const pinned = style({
-  color: 'var(--lp-color-white-950) !important',
-  backgroundColor: 'var(--lp-color-gray-700) !important',
-
-  selectors: {
-    '&:hover': {
-      color: 'var(--lp-color-white-950) !important',
-      backgroundColor: 'var(--lp-color-gray-700) !important',
-    },
-    '&:hover:not(:disabled)': {
-      color: 'var(--lp-color-white-950) !important',
-      backgroundColor: 'var(--lp-color-gray-700) !important',
-    },
-  },
-});

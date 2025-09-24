@@ -1,7 +1,7 @@
 import { Dispatch, SetStateAction, useCallback, useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { IconButton } from '../../components/IconButton';
-import { SearchIcon, SyncIcon, ChevronDownIcon, PinIcon } from '../../components/icons';
+import { SearchIcon, SyncIcon, ChevronDownIcon } from '../../components/icons';
 
 import * as styles from '../Header.css';
 
@@ -10,23 +10,12 @@ interface ActionButtonsProps {
   setSearchIsExpanded: Dispatch<SetStateAction<boolean>>;
   onClose: () => void;
   onRefresh: () => void;
-  onTogglePin: () => void;
-  isPinned: boolean;
   showSearchButton: boolean;
   showRefreshButton: boolean;
 }
 
 export function ActionButtons(props: ActionButtonsProps) {
-  const {
-    searchIsExpanded,
-    setSearchIsExpanded,
-    onClose,
-    onRefresh,
-    onTogglePin,
-    isPinned,
-    showSearchButton,
-    showRefreshButton,
-  } = props;
+  const { searchIsExpanded, setSearchIsExpanded, onClose, onRefresh, showSearchButton, showRefreshButton } = props;
   const [isSpinning, setIsSpinning] = useState(false);
   const [rotationCount, setRotationCount] = useState(0);
 
@@ -87,23 +76,12 @@ export function ActionButtons(props: ActionButtonsProps) {
           className={styles.actionButton}
         />
       )}
-      <IconButton
-        icon={<PinIcon />}
-        label={isPinned ? 'Unpin toolbar' : 'Pin toolbar'}
-        onClick={onTogglePin}
-        className={isPinned ? styles.pinned : styles.actionButton}
-      />
       <div className={styles.closeButtonArea}>
         <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} transition={{ duration: 0.1 }}>
           <IconButton
             icon={<ChevronDownIcon />}
             label="Close toolbar"
-            onClick={() => {
-              if (isPinned) {
-                onTogglePin();
-              }
-              onClose();
-            }}
+            onClick={onClose}
             className={styles.actionButton}
           />
         </motion.div>

@@ -3,6 +3,7 @@ import { useState, useRef, useCallback, useMemo, useEffect, Dispatch, SetStateAc
 import { useSearchContext } from '../context/SearchProvider';
 import { TabId, ActiveTabId, TAB_ORDER } from '../types';
 import { useKeyPressed } from './useKeyPressed';
+import { saveToolbarPinned, loadToolbarPinned } from '../utils/localStorage';
 
 export interface UseToolbarStateReturn {
   // State values
@@ -39,7 +40,7 @@ export function useToolbarState(): UseToolbarStateReturn {
   const [previousTab, setPreviousTab] = useState<ActiveTabId>();
   const [isAnimating, setIsAnimating] = useState(false);
   const [searchIsExpanded, setSearchIsExpanded] = useState<boolean>(false);
-  const [isPinned, setIsPinned] = useState(false);
+  const [isPinned, setIsPinned] = useState<boolean>(() => loadToolbarPinned());
 
   const hasBeenExpandedRef = useRef(false);
   const toolbarRef = useRef<HTMLDivElement | null>(null);
@@ -98,6 +99,8 @@ export function useToolbarState(): UseToolbarStateReturn {
 
   const handleClose = useCallback(() => {
     setIsExpanded(false);
+    setIsPinned(false);
+    saveToolbarPinned(false);
   }, []);
 
   const handleSearch = useCallback(
@@ -108,7 +111,11 @@ export function useToolbarState(): UseToolbarStateReturn {
   );
 
   const handleTogglePin = useCallback(() => {
-    setIsPinned((prev) => !prev);
+    setIsPinned((prev) => {
+      const newValue = !prev;
+      saveToolbarPinned(newValue);
+      return newValue;
+    });
   }, []);
 
   // Update hasBeenExpanded ref when toolbar shows

@@ -113,8 +113,6 @@ export function ExpandedToolbarContent(props: ExpandedToolbarContentProps) {
               onSearch={onSearch}
               searchTerm={searchTerm}
               onClose={onClose}
-              onTogglePin={onTogglePin}
-              isPinned={isPinned}
               searchIsExpanded={searchIsExpanded}
               setSearchIsExpanded={setSearchIsExpanded}
               label={headerLabel}
@@ -141,6 +139,8 @@ export function ExpandedToolbarContent(props: ExpandedToolbarContentProps) {
                       mode={mode}
                       flagOverridePlugin={flagOverridePlugin}
                       eventInterceptionPlugin={eventInterceptionPlugin}
+                      isPinned={isPinned}
+                      onTogglePin={onTogglePin}
                     />
                   )}
                 </AnimatePresence>

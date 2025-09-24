@@ -14,10 +14,21 @@ interface TabContentRendererProps {
   mode: ToolbarMode;
   flagOverridePlugin?: IFlagOverridePlugin;
   eventInterceptionPlugin?: IEventInterceptionPlugin;
+  isPinned: boolean;
+  onTogglePin: () => void;
 }
 
 export function TabContentRenderer(props: TabContentRendererProps) {
-  const { activeTab, slideDirection, mode, flagOverridePlugin, eventInterceptionPlugin, baseUrl } = props;
+  const {
+    activeTab,
+    slideDirection,
+    mode,
+    flagOverridePlugin,
+    eventInterceptionPlugin,
+    baseUrl,
+    isPinned,
+    onTogglePin,
+  } = props;
 
   const renderContent = () => {
     switch (activeTab) {
@@ -28,7 +39,7 @@ export function TabContentRenderer(props: TabContentRendererProps) {
       case 'events':
         return <EventsTabContent baseUrl={baseUrl} eventInterceptionPlugin={eventInterceptionPlugin} />;
       case 'settings':
-        return <SettingsTabContent mode={mode} />;
+        return <SettingsTabContent mode={mode} isPinned={isPinned} onTogglePin={onTogglePin} />;
       default:
         return null;
     }
