@@ -3,7 +3,12 @@ import type { FC, ReactNode } from 'react';
 import { DevServerClient } from '../../../services/DevServerClient';
 import { FlagStateManager } from '../../../services/FlagStateManager';
 import { LdToolbarConfig, ToolbarState } from '../../../types/devServer';
-import { TOOLBAR_STORAGE_KEYS, loadToolbarPosition, saveToolbarPosition } from '../utils/localStorage';
+import {
+  DEFAULT_SETTINGS,
+  TOOLBAR_STORAGE_KEYS,
+  loadToolbarPosition,
+  saveToolbarPosition,
+} from '../utils/localStorage';
 import { ToolbarPosition } from '../types/toolbar';
 
 const STORAGE_KEY = TOOLBAR_STORAGE_KEYS.PROJECT;
@@ -56,7 +61,7 @@ export const DevServerProvider: FC<DevServerProviderProps> = ({ children, config
       sourceEnvironmentKey: null,
       availableProjects: [],
       currentProjectKey: null,
-      position: savedPosition || initialPosition || 'right',
+      position: savedPosition || initialPosition || DEFAULT_SETTINGS.position,
     };
   });
 
