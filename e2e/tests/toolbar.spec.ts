@@ -436,5 +436,47 @@ test.describe('LaunchDarkly Toolbar', () => {
       await expect(page.getByText('No overridden flags found')).toBeVisible();
       await expect(page.getByText('No overridden flags match your search')).toBeVisible();
     });
+
+    test.describe('Event Interception', () => {
+      test.beforeEach(async ({ page }: { page: Page }) => {
+        const toolbarContainer = page.getByTestId('launchdarkly-toolbar').first();
+        await toolbarContainer.hover();
+        await page.getByRole('tab', { name: 'Events' }).click();
+      });
+
+      test('should render Add Feature Flag button for unknown flags', async ({ page }: { page: Page }) => {
+        // Click the "Test Unknown Flag Event" button to generate an unknown flag event
+        const testUnknownFlagButton = page.getByRole('button', { name: '❓ Test Unknown Flag Event' });
+        await testUnknownFlagButton.click();
+
+        // Newest event should appear at the top of the list
+        const eventItems = page.getByTestId('event-item');
+
+        // Get flag evaluation event - should be first in the list
+        const firstEvent = eventItems.nth(0);
+        await expect(firstEvent).toBeVisible();
+        await expect(firstEvent.getByText('test-not-found-flag')).toBeVisible();
+
+        // Verify the event appears in the Events tab with an "Add Feature Flag" button
+        const addFlagButton = firstEvent.getByLabel('Add Feature Flag');
+        await expect(addFlagButton).toBeVisible();
+      });
+
+      test('should not render Add Feature Flag button for known flags', async ({ page }: { page: Page }) => {
+        // Click the "Test Flag Evaluation Event" button to generate a known flag event
+        const testFlagEvalButton = page.getByRole('button', { name: '🏁 Test Flag Evaluation' });
+        await testFlagEvalButton.click();
+
+        // Newest event should appear at the top of the list
+        const eventItems = page.getByTestId('event-item');
+
+        const firstEvent = eventItems.nth(0);
+        await expect(firstEvent).toBeVisible();
+
+        // Verify the event appears in the Events tab WITHOUT an "Add Feature Flag" button
+        const addFlagButton = firstEvent.getByLabel('Add Feature Flag');
+        await expect(addFlagButton).not.toBeVisible();
+      });
+    });
   });
 });

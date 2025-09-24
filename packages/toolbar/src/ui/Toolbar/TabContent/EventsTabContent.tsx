@@ -14,8 +14,12 @@ import * as styles from './EventsTabContent.css';
 import * as actionStyles from '../components/ActionButtonsContainer.css';
 import { useCurrentDate, useEvents } from '../hooks';
 import type { IEventInterceptionPlugin } from '../../../types/plugin';
+import { SyntheticEventContext } from '../../../types/events';
+import { IconButton } from '../components/IconButton';
+import { AddIcon } from '../components/icons/AddIcon';
 
 interface EventsTabContentProps {
+  baseUrl: string;
   eventInterceptionPlugin?: IEventInterceptionPlugin;
 }
 
@@ -34,7 +38,7 @@ function formatTimeAgo(timestamp: number, currentDate: Date): string {
 }
 
 export function EventsTabContent(props: EventsTabContentProps) {
-  const { eventInterceptionPlugin } = props;
+  const { eventInterceptionPlugin, baseUrl } = props;
   const { searchTerm } = useSearchContext();
   const { events, eventStats } = useEvents(eventInterceptionPlugin, searchTerm);
   const currentDate = useCurrentDate(); // Updates every second by default
@@ -48,9 +52,31 @@ export function EventsTabContent(props: EventsTabContentProps) {
     }
   };
 
-  const getBadgeClass = (kind: string) => {
+  const handleAddFeatureFlag = (flagKey: string) => {
+    const url = createFlagDeeplinkUrl(flagKey);
+    window.open(url, '_blank');
+  };
+
+  const createFlagDeeplinkUrl = (flagKey: string): string => {
+    return `${baseUrl}/flags/new?selectProject=1&flagKey=${flagKey}`;
+  };
+
+  const isFlagNotFound = (context: SyntheticEventContext): boolean => {
+    if (!context.reason) {
+      return false;
+    }
+
+    const { reason } = context;
+    return reason.kind === 'ERROR' && reason.errorKind === 'FLAG_NOT_FOUND';
+  };
+
+  const getBadgeClass = (kind: string, context: SyntheticEventContext) => {
     switch (kind) {
       case 'feature':
+        if (isFlagNotFound(context)) {
+          return styles.eventBadgeFeatureNotFound;
+        }
+
         return styles.eventBadgeFeature;
       case 'identify':
         return styles.eventBadgeIdentify;
@@ -137,6 +163,7 @@ export function EventsTabContent(props: EventsTabContentProps) {
               const event = events[virtualItem.index];
               return (
                 <div
+                  data-testid="event-item"
                   key={virtualItem.key}
                   className={styles.virtualItem}
                   style={{
@@ -158,7 +185,20 @@ export function EventsTabContent(props: EventsTabContentProps) {
                       <span className={styles.eventName}>{event.displayName}</span>
                       <span className={styles.eventMeta}>{formatTimeAgo(event.timestamp, currentDate)}</span>
                     </div>
-                    <div className={getBadgeClass(event.kind)}>{event.kind}</div>
+                    <div className={getBadgeClass(event.kind, event.context)}>{event.kind}</div>
+                    {event.kind === 'feature' && isFlagNotFound(event.context) && (
+                      <div className={styles.addButtonContainer}>
+                        <IconButton
+                          className={styles.addButton}
+                          data-testid="add-flag-button"
+                          key={`add-flag-${event.context.key}`}
+                          icon={<AddIcon />}
+                          label="Add Feature Flag"
+                          size="medium"
+                          onClick={() => handleAddFeatureFlag(event.context.key || '')}
+                        />
+                      </div>
+                    )}
                   </ListItem>
                 </div>
               );

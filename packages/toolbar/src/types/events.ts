@@ -1,3 +1,8 @@
+export interface LDEvaluationReason {
+  readonly kind?: string;
+  readonly errorKind?: string;
+}
+
 export interface SyntheticEventContext {
   readonly kind: EventKind;
   readonly key?: string;
@@ -9,7 +14,7 @@ export interface SyntheticEventContext {
   readonly value?: any;
   readonly variation?: number | null;
   readonly default?: any;
-  readonly reason?: object;
+  readonly reason?: LDEvaluationReason;
   readonly version?: number;
   readonly trackEvents?: boolean;
   readonly debugEventsUntilDate?: number;
