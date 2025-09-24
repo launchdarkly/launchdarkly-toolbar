@@ -2,6 +2,7 @@ import { render, screen, waitFor } from '@testing-library/react';
 import { expect, test, describe, vi, beforeEach } from 'vitest';
 
 import { DevServerProvider, useDevServerContext } from '../ui/Toolbar/context/DevServerProvider';
+import { TOOLBAR_STORAGE_KEYS } from '../ui/Toolbar/utils/localStorage';
 
 // Mock the DevServerClient and FlagStateManager
 const mockDevServerClient = {
@@ -212,7 +213,7 @@ describe('DevServerProvider - Integration Flows', () => {
   describe('Developer Preference Management Flow', () => {
     test('developer sets and persists their preferred toolbar position', async () => {
       // GIVEN: Developer has previously set their preferred position
-      localStorage.setItem('ld-toolbar-position', 'left');
+      localStorage.setItem(TOOLBAR_STORAGE_KEYS.SETTINGS, JSON.stringify({ position: 'left' }));
 
       // WHEN: They load the toolbar again (even with different config)
       render(
