@@ -178,7 +178,7 @@ function FlagSdkOverrideTabContentInner(props: FlagSdkOverrideTabContentInnerPro
                       }}
                       data-testid={`flag-row-${flagKey}`}
                     >
-                      <ListItem>
+                      <ListItem className={sharedStyles.flagListItem}>
                         <div className={sharedStyles.flagHeader}>
                           <span className={sharedStyles.flagName}>
                             <span className={sharedStyles.flagNameText} data-testid={`flag-name-${flagKey}`}>

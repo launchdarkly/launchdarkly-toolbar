@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.17.0-beta.1](https://github.com/launchdarkly/launchdarkly-toolbar/compare/0.16.0-beta.1...0.17.0-beta.1) (2025-09-23)
+
+
+### Features
+
+* reduce list item heights for flag and events tabs ([#100](https://github.com/launchdarkly/launchdarkly-toolbar/issues/100)) ([fde7c08](https://github.com/launchdarkly/launchdarkly-toolbar/commit/fde7c08880b82a5d7206519255587eeb7906b8fe))
+
 ## [0.16.0-beta.1](https://github.com/launchdarkly/launchdarkly-toolbar/compare/0.15.0-beta.1...0.16.0-beta.1) (2025-09-19)
 
 

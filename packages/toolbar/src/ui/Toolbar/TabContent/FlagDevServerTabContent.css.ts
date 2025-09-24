@@ -88,3 +88,7 @@ export const virtualItem = style({
     transition: 'background-color 0.2s ease',
   },
 });
+
+export const flagListItem = style({
+  height: '100%',
+});
