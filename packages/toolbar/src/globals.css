@@ -18,6 +18,6 @@
 
 body {
   margin: 0;
-  font-family: 'Audimat 3000', var(--lp-font-family-base);
+  font-family: var(--lp-font-family-base);
   color: var(--lp-color-text-ui-primary-base);
 }
