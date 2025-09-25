@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.19.0-beta.1](https://github.com/launchdarkly/launchdarkly-toolbar/compare/0.18.0-beta.1...0.19.0-beta.1) (2025-09-25)
+
+
+### Features
+
+* add toolbar pinning functionality  ([#111](https://github.com/launchdarkly/launchdarkly-toolbar/issues/111)) ([a912491](https://github.com/launchdarkly/launchdarkly-toolbar/commit/a9124915700599e1a76150e12f51836847c21fe5))
+
 ## [0.18.0-beta.1](https://github.com/launchdarkly/launchdarkly-toolbar/compare/0.17.0-beta.1...0.18.0-beta.1) (2025-09-24)
 
 
