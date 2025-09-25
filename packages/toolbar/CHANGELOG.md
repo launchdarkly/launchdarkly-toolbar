@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.18.0-beta.1](https://github.com/launchdarkly/launchdarkly-toolbar/compare/0.17.0-beta.1...0.18.0-beta.1) (2025-09-24)
+
+
+### Features
+
+* [REL-9492] Add create flag option for unknown feature flag evaluations ([#108](https://github.com/launchdarkly/launchdarkly-toolbar/issues/108)) ([10f0138](https://github.com/launchdarkly/launchdarkly-toolbar/commit/10f0138692d9975da8a36d765c16e8293976eef6))
+
 ## [0.17.0-beta.1](https://github.com/launchdarkly/launchdarkly-toolbar/compare/0.16.0-beta.1...0.17.0-beta.1) (2025-09-23)
 
 
