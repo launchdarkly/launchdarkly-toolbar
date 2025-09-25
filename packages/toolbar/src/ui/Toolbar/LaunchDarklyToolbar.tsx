@@ -38,6 +38,8 @@ export function LdToolbar(props: LdToolbarProps) {
     handleMouseLeave,
     handleClose,
     handleSearch,
+    handleTogglePin,
+    isPinned,
     setSearchIsExpanded,
     setIsAnimating,
     isHovered,
@@ -95,6 +97,8 @@ export function LdToolbar(props: LdToolbarProps) {
             searchIsExpanded={searchIsExpanded}
             onSearch={handleSearch}
             onClose={handleClose}
+            onTogglePin={handleTogglePin}
+            isPinned={isPinned}
             onTabChange={handleTabChange}
             setSearchIsExpanded={setSearchIsExpanded}
             flagOverridePlugin={flagOverridePlugin}

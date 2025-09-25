@@ -22,6 +22,8 @@ interface ExpandedToolbarContentProps {
   searchIsExpanded: boolean;
   onSearch: (searchTerm: string) => void;
   onClose: () => void;
+  onTogglePin: () => void;
+  isPinned: boolean;
   onTabChange: (tabId: string) => void;
   setSearchIsExpanded: Dispatch<SetStateAction<boolean>>;
   mode: ToolbarMode;
@@ -47,6 +49,8 @@ export function ExpandedToolbarContent(props: ExpandedToolbarContentProps) {
     searchIsExpanded,
     onSearch,
     onClose,
+    onTogglePin,
+    isPinned,
     onTabChange,
     setSearchIsExpanded,
     mode,
@@ -135,6 +139,8 @@ export function ExpandedToolbarContent(props: ExpandedToolbarContentProps) {
                       mode={mode}
                       flagOverridePlugin={flagOverridePlugin}
                       eventInterceptionPlugin={eventInterceptionPlugin}
+                      isPinned={isPinned}
+                      onTogglePin={onTogglePin}
                     />
                   )}
                 </AnimatePresence>

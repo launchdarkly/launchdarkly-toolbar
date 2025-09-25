@@ -1,4 +1,4 @@
-import { Button, ListBox, Popover, Select, SelectValue, ListBoxItem } from '@launchpad-ui/components';
+import { Button, ListBox, Popover, Select, SelectValue, ListBoxItem, Switch } from '@launchpad-ui/components';
 import { List } from '../../List/List';
 import { ListItem } from '../../List/ListItem';
 import { useSearchContext } from '../context/SearchProvider';
@@ -17,6 +17,7 @@ interface SettingsItem {
   isProjectSelector?: boolean;
   isPositionSelector?: boolean;
   isConnectionStatus?: boolean;
+  isPinToggle?: boolean;
   value?: string;
 }
 
@@ -122,6 +123,17 @@ interface ConnectionStatusDisplayProps {
   status: 'connected' | 'disconnected' | 'error';
 }
 
+interface PinToggleProps {
+  isPinned: boolean;
+  onTogglePin: () => void;
+}
+
+function PinToggle(props: PinToggleProps) {
+  const { isPinned, onTogglePin } = props;
+
+  return <Switch data-theme="dark" isSelected={isPinned} onChange={onTogglePin} aria-label="Pin toolbar" />;
+}
+
 function ConnectionStatusDisplay(props: ConnectionStatusDisplayProps) {
   const { status } = props;
 
@@ -146,10 +158,12 @@ function ConnectionStatusDisplay(props: ConnectionStatusDisplayProps) {
 
 interface SettingsTabContentProps {
   mode: ToolbarMode;
+  isPinned: boolean;
+  onTogglePin: () => void;
 }
 
 export function SettingsTabContent(props: SettingsTabContentProps) {
-  const { mode } = props;
+  const { mode, isPinned, onTogglePin } = props;
   const { state, switchProject, handlePositionChange } = useDevServerContext();
   const { searchTerm } = useSearchContext();
   const position = state.position;
@@ -202,6 +216,12 @@ export function SettingsTabContent(props: SettingsTabContentProps) {
               icon: 'move',
               isPositionSelector: true,
             },
+            {
+              id: 'pin',
+              name: 'Pin toolbar',
+              icon: '',
+              isPinToggle: true,
+            },
           ],
         },
       ];
@@ -216,6 +236,12 @@ export function SettingsTabContent(props: SettingsTabContentProps) {
               name: 'Position',
               icon: 'move',
               isPositionSelector: true,
+            },
+            {
+              id: 'pin',
+              name: 'Pin toolbar',
+              icon: '',
+              isPinToggle: true,
             },
           ],
         },
@@ -290,6 +316,8 @@ export function SettingsTabContent(props: SettingsTabContentProps) {
                           />
                         ) : item.isPositionSelector ? (
                           <PositionSelector currentPosition={position} onPositionChange={handlePositionSelect} />
+                        ) : item.isPinToggle ? (
+                          <PinToggle isPinned={isPinned} onTogglePin={onTogglePin} />
                         ) : (
                           <span className={styles.settingValue}>{item.value}</span>
                         )}
