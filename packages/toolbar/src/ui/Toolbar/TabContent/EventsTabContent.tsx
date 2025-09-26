@@ -3,7 +3,7 @@ import { useVirtualizer } from '@tanstack/react-virtual';
 import { motion } from 'motion/react';
 import { List } from '../../List/List';
 import { ListItem } from '../../List/ListItem';
-import { useSearchContext } from '../context';
+import { useSearchContext, useAnalytics } from '../context';
 import { GenericHelpText } from '../components/GenericHelpText';
 import { ActionButtonsContainer, DoNotTrackWarning } from '../components';
 import { ANIMATION_CONFIG, VIRTUALIZATION } from '../constants';
@@ -40,6 +40,7 @@ function formatTimeAgo(timestamp: number, currentDate: Date): string {
 export function EventsTabContent(props: EventsTabContentProps) {
   const { eventInterceptionPlugin, baseUrl } = props;
   const { searchTerm } = useSearchContext();
+  const analytics = useAnalytics();
   const { events, eventStats } = useEvents(eventInterceptionPlugin, searchTerm);
   const currentDate = useCurrentDate(); // Updates every second by default
   const parentRef = useRef<HTMLDivElement>(null);
@@ -54,6 +55,10 @@ export function EventsTabContent(props: EventsTabContentProps) {
 
   const handleAddFeatureFlag = (flagKey: string) => {
     const url = createFlagDeeplinkUrl(flagKey);
+
+    // Track deeplink creation analytics
+    analytics.trackDeeplinkCreation(flagKey, baseUrl);
+
     window.open(url, '_blank');
   };
 

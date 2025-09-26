@@ -1,7 +1,7 @@
 import { AnimatePresence, motion } from 'motion/react';
 import { useCallback } from 'react';
 
-import { SearchProvider, useSearchContext } from './context';
+import { SearchProvider, useSearchContext, AnalyticsProvider, useAnalytics } from './context';
 import { CircleLogo, ExpandedToolbarContent } from './components';
 import { useToolbarAnimations, useToolbarVisibility, useToolbarDrag, useToolbarState } from './hooks';
 import { useDevServerContext } from './context';
@@ -24,6 +24,7 @@ export function LdToolbar(props: LdToolbarProps) {
   const { state, handlePositionChange } = useDevServerContext();
   const toolbarState = useToolbarState();
   const position = state.position;
+  const analytics = useAnalytics();
 
   const {
     isExpanded,
@@ -59,9 +60,15 @@ export function LdToolbar(props: LdToolbarProps) {
     (clientX: number) => {
       const screenWidth = window.innerWidth;
       const newPosition: ToolbarPosition = clientX < screenWidth / 2 ? 'left' : 'right';
+
+      // Track position change
+      if (newPosition !== position) {
+        analytics.trackPositionChange(position, newPosition);
+      }
+
       handlePositionChange(newPosition);
     },
-    [handlePositionChange],
+    [handlePositionChange, position, analytics],
   );
 
   const { handleMouseDown } = useToolbarDrag({
@@ -150,14 +157,16 @@ export function LaunchDarklyToolbar(props: LaunchDarklyToolbarProps) {
       }}
       initialPosition={position}
     >
-      <SearchProvider>
-        <LdToolbar
-          mode={mode}
-          baseUrl={baseUrl}
-          flagOverridePlugin={flagOverridePlugin}
-          eventInterceptionPlugin={eventInterceptionPlugin}
-        />
-      </SearchProvider>
+      <AnalyticsProvider flagOverridePlugin={flagOverridePlugin}>
+        <SearchProvider>
+          <LdToolbar
+            mode={mode}
+            baseUrl={baseUrl}
+            flagOverridePlugin={flagOverridePlugin}
+            eventInterceptionPlugin={eventInterceptionPlugin}
+          />
+        </SearchProvider>
+      </AnalyticsProvider>
     </DevServerProvider>
   );
 }

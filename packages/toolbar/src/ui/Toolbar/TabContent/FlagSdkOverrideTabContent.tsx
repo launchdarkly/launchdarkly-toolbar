@@ -2,7 +2,7 @@ import { useRef, useState, useMemo, useCallback } from 'react';
 import { useVirtualizer } from '@tanstack/react-virtual';
 import { List } from '../../List/List';
 import { ListItem } from '../../List/ListItem';
-import { useSearchContext } from '../context';
+import { useSearchContext, useAnalytics } from '../context';
 import { FlagSdkOverrideProvider, useFlagSdkOverrideContext } from '../context';
 import { GenericHelpText } from '../components/GenericHelpText';
 import {
@@ -26,6 +26,7 @@ interface FlagSdkOverrideTabContentInnerProps {
 function FlagSdkOverrideTabContentInner(props: FlagSdkOverrideTabContentInnerProps) {
   const { flagOverridePlugin } = props;
   const { searchTerm } = useSearchContext();
+  const analytics = useAnalytics();
   const { flags, isLoading } = useFlagSdkOverrideContext();
   const [showOverriddenOnly, setShowOverriddenOnly] = useState(false);
   const parentRef = useRef<HTMLDivElement>(null);
@@ -34,9 +35,10 @@ function FlagSdkOverrideTabContentInner(props: FlagSdkOverrideTabContentInnerPro
     (flagKey: string) => {
       if (flagOverridePlugin) {
         flagOverridePlugin.removeOverride(flagKey);
+        analytics.trackFlagOverride(flagKey, null, 'remove');
       }
     },
-    [flagOverridePlugin],
+    [flagOverridePlugin, analytics],
   );
 
   // Count total overridden flags (not just filtered ones)
@@ -78,10 +80,15 @@ function FlagSdkOverrideTabContentInner(props: FlagSdkOverrideTabContentInnerPro
   // Override operations
   const handleSetOverride = (flagKey: string, value: any) => {
     flagOverridePlugin.setOverride(flagKey, value);
+    analytics.trackFlagOverride(flagKey, value, 'set');
   };
 
   const handleClearAllOverrides = () => {
+    const currentOverrides = flagOverridePlugin.getAllOverrides();
+    const overrideCount = Object.keys(currentOverrides).length;
+
     flagOverridePlugin.clearAllOverrides();
+    analytics.trackFlagOverride('*', { count: overrideCount }, 'clear_all');
   };
 
   const renderFlagControl = (flag: LocalFlag) => {
