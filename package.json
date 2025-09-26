@@ -8,6 +8,7 @@
     "demo": "pnpm --filter launchdarkly-toolbar-demo dev",
     "demo:mock": "pnpm --filter launchdarkly-toolbar-demo dev:mock",
     "demo:build": "pnpm --filter launchdarkly-toolbar-demo build",
+    "demo:build:mock": "pnpm --filter launchdarkly-toolbar-demo build:mock",
     "dev": "pnpm --filter @launchdarkly/toolbar dev",
     "dev:link": "./scripts/setup-local-links.sh",
     "dev:status": "./scripts/dev-status.sh",
