@@ -7,7 +7,9 @@
     "dev": "vite",
     "dev:mock": "VITE_USE_MOCK_FLAGS=true vite",
     "build": "tsc -b && vite build",
+    "build:mock": "VITE_USE_MOCK_FLAGS=true tsc -b && VITE_USE_MOCK_FLAGS=true vite build",
     "prebuild": "pnpm --filter @launchdarkly/toolbar build",
+    "prebuild:mock": "pnpm --filter @launchdarkly/toolbar build",
     "lint": "eslint .",
     "preview": "vite preview"
   },

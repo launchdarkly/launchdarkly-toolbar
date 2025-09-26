@@ -1,5 +1,5 @@
 {
-  "buildCommand": "pnpm demo:build",
+  "buildCommand": "pnpm demo:build:mock",
   "outputDirectory": "packages/demo/dist",
   "installCommand": "pnpm install --frozen-lockfile",
   "framework": "vite"
