@@ -6,7 +6,7 @@ export function LogoSection() {
   return (
     <div className={styles.leftSection}>
       <LaunchDarklyIcon className={styles.logo} />
-      <span className={styles.headerTitle}>Developers</span>
+      <span className={styles.headerTitle}>LaunchDarkly</span>
     </div>
   );
 }
