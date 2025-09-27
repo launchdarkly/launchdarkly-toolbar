@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.20.0-beta.1](https://github.com/launchdarkly/launchdarkly-toolbar/compare/0.19.0-beta.1...0.20.0-beta.1) (2025-09-27)
+
+
+### Features
+
+* use ld logo instead of text in header ([#122](https://github.com/launchdarkly/launchdarkly-toolbar/issues/122)) ([ee59f8e](https://github.com/launchdarkly/launchdarkly-toolbar/commit/ee59f8eb1741aee65aea9ef6e2f6d5ed36355413))
+
 ## [0.19.0-beta.1](https://github.com/launchdarkly/launchdarkly-toolbar/compare/0.18.0-beta.1...0.19.0-beta.1) (2025-09-25)
 
 
