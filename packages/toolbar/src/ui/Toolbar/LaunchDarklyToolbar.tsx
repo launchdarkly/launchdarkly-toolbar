@@ -1,5 +1,5 @@
 import { AnimatePresence, motion } from 'motion/react';
-import { useCallback } from 'react';
+import { useCallback, useEffect, useRef } from 'react';
 
 import { SearchProvider, useSearchContext } from './context';
 import { CircleLogo, ExpandedToolbarContent } from './components';
@@ -27,6 +27,8 @@ export function LdToolbar(props: LdToolbarProps) {
   const defaultActiveTab = getDefaultActiveTab(mode, !!flagOverridePlugin, !!eventInterceptionPlugin);
 
   const toolbarState = useToolbarState({ defaultActiveTab });
+  const circleButtonRef = useRef<HTMLButtonElement>(null);
+
   const {
     activeTab,
     slideDirection,
@@ -43,9 +45,24 @@ export function LdToolbar(props: LdToolbarProps) {
     setIsAnimating,
   } = toolbarState;
 
+  // Focus management for expand/collapse
+  const focusExpandedToolbar = useCallback(() => {
+    if (toolbarRef.current) {
+      toolbarRef.current.focus();
+    }
+  }, [toolbarRef]);
+
+  const focusCollapsedToolbar = useCallback(() => {
+    if (circleButtonRef.current) {
+      circleButtonRef.current.focus();
+    }
+  }, [circleButtonRef]);
+
   const { containerAnimations, animationConfig, handleAnimationStart, handleAnimationComplete } = useToolbarAnimations({
     isExpanded,
     setIsAnimating,
+    onExpandComplete: focusExpandedToolbar,
+    onCollapseComplete: focusCollapsedToolbar,
   });
 
   const isDragEnabled = !isExpanded;
@@ -83,10 +100,13 @@ export function LdToolbar(props: LdToolbarProps) {
       onAnimationComplete={handleAnimationComplete}
       data-testid="launchdarkly-toolbar"
       role="toolbar"
-      aria-label="LaunchDarkly Developer Toolbar"
+      aria-label={isExpanded ? 'LaunchDarkly developer toolbar (expanded)' : 'LaunchDarkly developer toolbar'}
+      tabIndex={0}
     >
       <AnimatePresence>
-        {!isExpanded && <CircleLogo onClick={handleCircleClickWithDragCheck} onMouseDown={handleMouseDown} />}
+        {!isExpanded && (
+          <CircleLogo ref={circleButtonRef} onClick={handleCircleClickWithDragCheck} onMouseDown={handleMouseDown} />
+        )}
       </AnimatePresence>
       <AnimatePresence>
         {isExpanded && (
@@ -109,6 +129,11 @@ export function LdToolbar(props: LdToolbarProps) {
           />
         )}
       </AnimatePresence>
+
+      {/* Screen reader announcements÷ */}
+      <div aria-live="polite" aria-atomic="true" className={styles.screenReaderOnly}>
+        {isExpanded ? 'LaunchDarkly toolbar expanded' : 'LaunchDarkly toolbar collapsed'}
+      </div>
     </motion.div>
   );
 }

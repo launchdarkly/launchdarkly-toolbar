@@ -5,6 +5,8 @@ import { ANIMATION_CONFIG, DIMENSIONS, SHADOWS } from '../constants';
 export interface UseToolbarAnimationsProps {
   isExpanded: boolean;
   setIsAnimating: Dispatch<SetStateAction<boolean>>;
+  onExpandComplete?: () => void;
+  onCollapseComplete?: () => void;
 }
 
 type AnimationConfig = typeof ANIMATION_CONFIG.containerExpand | typeof ANIMATION_CONFIG.containerCollapse;
@@ -23,7 +25,7 @@ export interface UseToolbarAnimationsReturn {
 }
 
 export function useToolbarAnimations(props: UseToolbarAnimationsProps): UseToolbarAnimationsReturn {
-  const { isExpanded, setIsAnimating } = props;
+  const { isExpanded, setIsAnimating, onExpandComplete, onCollapseComplete } = props;
   const previousIsExpanded = useRef(isExpanded);
 
   const containerAnimations = useMemo(
@@ -67,7 +69,12 @@ export function useToolbarAnimations(props: UseToolbarAnimationsProps): UseToolb
 
   const handleAnimationComplete = useCallback(() => {
     setIsAnimating(false);
-  }, [setIsAnimating]);
+    if (isExpanded && onExpandComplete) {
+      onExpandComplete();
+    } else if (!isExpanded && onCollapseComplete) {
+      onCollapseComplete();
+    }
+  }, [setIsAnimating, isExpanded, onExpandComplete, onCollapseComplete]);
 
   return {
     containerAnimations,
