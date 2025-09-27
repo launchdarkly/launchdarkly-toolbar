@@ -21,7 +21,7 @@ export const leftSection = style({
 });
 
 export const logo = style({
-  width: '25px',
+  width: '154px',
   height: 'auto',
   objectFit: 'contain',
   filter: 'brightness(0) invert(1)',
