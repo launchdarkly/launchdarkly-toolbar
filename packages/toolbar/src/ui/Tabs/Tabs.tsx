@@ -42,10 +42,13 @@ export const Tabs = React.forwardRef<HTMLDivElement, TabsProps>(function Tabs(pr
     }
   }, []);
 
-  // Update immediately and also after a short delay to handle animations
+  // Update indicator position when active tab changes
   useEffect(() => {
     updateIndicatorPosition();
-    const timeoutId = setTimeout(updateIndicatorPosition, 200);
+
+    // Update indicator position after a short delay to handle container animations
+    const timeoutId = setTimeout(updateIndicatorPosition, 250);
+
     return () => clearTimeout(timeoutId);
   }, [currentActiveTab, updateIndicatorPosition]);
 

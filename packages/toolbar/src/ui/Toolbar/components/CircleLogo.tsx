@@ -6,16 +6,19 @@ import { LaunchDarklyIcon } from './icons/LaunchDarklyIcon';
 import * as styles from '../LaunchDarklyToolbar.css';
 
 interface CircleLogoProps {
-  hasBeenExpanded: boolean;
+  onClick: () => void;
+  onMouseDown: (event: React.MouseEvent) => void;
 }
 
 export function CircleLogo(props: CircleLogoProps) {
-  const { hasBeenExpanded } = props;
+  const { onClick, onMouseDown } = props;
 
   return (
     <motion.div
       key="circle-logo"
       className={styles.circleContent}
+      onClick={onClick}
+      onMouseDown={onMouseDown}
       initial={{
         opacity: 0,
         x: '-50%',
@@ -41,7 +44,7 @@ export function CircleLogo(props: CircleLogoProps) {
         ...ANIMATION_CONFIG.circleLogo,
         opacity: {
           ...ANIMATION_CONFIG.circleLogo.opacity,
-          delay: hasBeenExpanded ? 0.3 : 0,
+          delay: 0,
         },
       }}
     >
