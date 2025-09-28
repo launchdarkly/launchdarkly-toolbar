@@ -28,6 +28,7 @@ export function LdToolbar(props: LdToolbarProps) {
 
   const toolbarState = useToolbarState({ defaultActiveTab });
   const circleButtonRef = useRef<HTMLButtonElement>(null);
+  const expandedContentRef = useRef<HTMLDivElement>(null);
 
   const {
     activeTab,
@@ -47,10 +48,10 @@ export function LdToolbar(props: LdToolbarProps) {
 
   // Focus management for expand/collapse
   const focusExpandedToolbar = useCallback(() => {
-    if (toolbarRef.current) {
-      toolbarRef.current.focus();
+    if (expandedContentRef.current) {
+      expandedContentRef.current.focus();
     }
-  }, [toolbarRef]);
+  }, [expandedContentRef]);
 
   const focusCollapsedToolbar = useCallback(() => {
     if (circleButtonRef.current) {
@@ -98,10 +99,18 @@ export function LdToolbar(props: LdToolbarProps) {
       transition={animationConfig}
       onAnimationStart={handleAnimationStart}
       onAnimationComplete={handleAnimationComplete}
+      onKeyDown={(e) => {
+        if (!isExpanded) {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            handleCircleClickWithDragCheck();
+          }
+        }
+      }}
       data-testid="launchdarkly-toolbar"
-      role="toolbar"
-      aria-label={isExpanded ? 'LaunchDarkly developer toolbar (expanded)' : 'LaunchDarkly developer toolbar'}
-      tabIndex={0}
+      role={isExpanded ? 'toolbar' : 'button'}
+      aria-label={isExpanded ? 'LaunchDarkly developer toolbar (expanded)' : 'Open LaunchDarkly toolbar'}
+      tabIndex={isExpanded ? -1 : 0}
     >
       <AnimatePresence>
         {!isExpanded && (
@@ -111,6 +120,7 @@ export function LdToolbar(props: LdToolbarProps) {
       <AnimatePresence>
         {isExpanded && (
           <ExpandedToolbarContent
+            ref={expandedContentRef}
             activeTab={activeTab}
             slideDirection={slideDirection}
             searchTerm={searchTerm}
