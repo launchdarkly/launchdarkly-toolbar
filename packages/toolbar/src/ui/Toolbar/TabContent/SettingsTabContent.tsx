@@ -3,6 +3,7 @@ import { List } from '../../List/List';
 import { ListItem } from '../../List/ListItem';
 import { useSearchContext } from '../context/SearchProvider';
 import { useDevServerContext } from '../context/DevServerProvider';
+import { useAnalytics } from '../context/AnalyticsProvider';
 import { StatusDot } from '../components/StatusDot';
 import { GenericHelpText } from '../components/GenericHelpText';
 import { ChevronDownIcon } from '../components/icons';
@@ -130,8 +131,15 @@ interface PinToggleProps {
 
 function PinToggle(props: PinToggleProps) {
   const { isPinned, onTogglePin } = props;
+  const analytics = useAnalytics();
 
-  return <Switch data-theme="dark" isSelected={isPinned} onChange={onTogglePin} aria-label="Pin toolbar" />;
+  const handleToggle = (isSelected: boolean) => {
+    // Track pin/unpin action
+    analytics.trackPinToggle(isSelected ? 'pin' : 'unpin');
+    onTogglePin();
+  };
+
+  return <Switch data-theme="dark" isSelected={isPinned} onChange={handleToggle} aria-label="Pin toolbar" />;
 }
 
 function ConnectionStatusDisplay(props: ConnectionStatusDisplayProps) {
@@ -166,6 +174,7 @@ export function SettingsTabContent(props: SettingsTabContentProps) {
   const { mode, isPinned, onTogglePin } = props;
   const { state, switchProject, handlePositionChange } = useDevServerContext();
   const { searchTerm } = useSearchContext();
+  const analytics = useAnalytics();
   const position = state.position;
 
   const handleProjectSwitch = async (projectKey: string) => {
@@ -177,6 +186,8 @@ export function SettingsTabContent(props: SettingsTabContentProps) {
   };
 
   const handlePositionSelect = (newPosition: ToolbarPosition) => {
+    // Track position change
+    analytics.trackPositionChange(position, newPosition);
     handlePositionChange(newPosition);
   };
 

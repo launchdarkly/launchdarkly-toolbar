@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useMemo } from 'react';
+import { createContext, useContext, useEffect, useMemo, useRef } from 'react';
 import type { IFlagOverridePlugin } from '../../../types/plugin';
 import { ToolbarAnalytics } from '../../../utils/analytics';
 
@@ -15,10 +15,14 @@ interface AnalyticsProviderProps {
 
 export function AnalyticsProvider({ children, flagOverridePlugin }: AnalyticsProviderProps) {
   const analytics = useMemo(() => new ToolbarAnalytics(flagOverridePlugin), [flagOverridePlugin]);
+  const hasInitialized = useRef(false);
 
-  // Track initialization once
+  // Track initialization once (prevent duplicates during development)
   useEffect(() => {
-    analytics.trackInitialization();
+    if (!hasInitialized.current) {
+      analytics.trackInitialization();
+      hasInitialized.current = true;
+    }
   }, [analytics]);
 
   const value = useMemo(() => ({ analytics }), [analytics]);
