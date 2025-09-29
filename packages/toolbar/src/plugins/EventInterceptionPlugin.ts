@@ -35,6 +35,11 @@ export class EventInterceptionPlugin implements IEventInterceptionPlugin {
     this.eventStore = new EventStore({ maxEvents: this.config.eventCapacity });
 
     const onNewEvent = (event: ProcessedEvent) => {
+      const isToolbarEvent = this.isToolbarEvent(event);
+      if (isToolbarEvent) {
+        return;
+      }
+
       if (this.config.enableLogging) {
         console.log('🎯 Event intercepted:', {
           kind: event.kind,
@@ -61,6 +66,10 @@ export class EventInterceptionPlugin implements IEventInterceptionPlugin {
       filter: config.filter,
       onNewEvent,
     });
+  }
+
+  isToolbarEvent(event: ProcessedEvent): boolean {
+    return event.key?.startsWith('ld.toolbar') ?? false;
   }
 
   getMetadata(): LDPluginMetadata {
