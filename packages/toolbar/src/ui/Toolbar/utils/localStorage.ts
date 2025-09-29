@@ -12,7 +12,7 @@ export interface ToolbarSettings {
 }
 
 export const DEFAULT_SETTINGS: ToolbarSettings = {
-  position: 'right',
+  position: 'bottom-right',
   pinned: false,
 };
 
@@ -48,7 +48,10 @@ export function loadToolbarPosition(): ToolbarPosition | null {
     }
 
     const parsed = JSON.parse(stored) as Partial<ToolbarSettings>;
-    return parsed.position && TOOLBAR_POSITIONS.includes(parsed.position) ? parsed.position : null;
+    if (!parsed.position) {
+      return null;
+    }
+    return TOOLBAR_POSITIONS.includes(parsed.position) ? parsed.position : null;
   } catch (error) {
     console.warn('Failed to load toolbar position from localStorage:', error);
     return null;

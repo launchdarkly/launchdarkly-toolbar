@@ -2,7 +2,6 @@ import { style } from '@vanilla-extract/css';
 
 export const toolbarContainer = style({
   position: 'fixed',
-  bottom: 20,
   zIndex: 1000,
   backgroundColor: 'var(--lp-color-gray-900)',
   border: '1px solid var(--lp-color-gray-700)',
@@ -13,14 +12,28 @@ export const toolbarContainer = style({
   justifyContent: 'center',
 });
 
-export const positionRight = style({
+export const positionBottomRight = style({
   right: 20,
+  bottom: 20,
   transformOrigin: 'bottom right',
 });
 
-export const positionLeft = style({
+export const positionBottomLeft = style({
   left: 20,
+  bottom: 20,
   transformOrigin: 'bottom left',
+});
+
+export const positionTopRight = style({
+  right: 20,
+  top: 20,
+  transformOrigin: 'top right',
+});
+
+export const positionTopLeft = style({
+  left: 20,
+  top: 20,
+  transformOrigin: 'top left',
 });
 
 export const toolbarCircle = style({
@@ -63,7 +76,7 @@ export const toolbarContent = style({
 export const contentArea = style({
   backgroundColor: 'var(--lp-color-gray-900)',
   overflow: 'hidden',
-  borderRadius: '12px 12px 0 0',
+  borderRadius: '12px',
 });
 
 export const scrollableContent = style({
@@ -75,7 +88,7 @@ export const tabsContainer = style({
   alignItems: 'center',
   padding: '8px 8px',
   backgroundColor: 'var(--lp-color-gray-900)',
-  borderRadius: '0 0 12px 12px',
+  borderRadius: '12px',
 });
 
 export const tabsContainerChild = style({

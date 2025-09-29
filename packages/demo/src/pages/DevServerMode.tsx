@@ -1,12 +1,13 @@
 import { useState, lazy, Suspense } from 'react';
 import { AppWrapper } from '../AppWrapper';
+import type { ToolbarPosition } from '@launchdarkly/toolbar';
 
 const LaunchDarklyToolbar = lazy(() =>
   import('@launchdarkly/toolbar').then((module) => ({ default: module.LaunchDarklyToolbar })),
 );
 
 export function DevServerMode() {
-  const [position, setPosition] = useState<'left' | 'right'>('left');
+  const [position, setPosition] = useState<ToolbarPosition>('bottom-right');
   const [devServerUrl, setDevServerUrl] = useState('http://localhost:8765');
   const [projectKey, setProjectKey] = useState('test-project');
 

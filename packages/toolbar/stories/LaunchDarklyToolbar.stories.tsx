@@ -17,7 +17,7 @@ const meta: Meta<typeof LaunchDarklyToolbar> = {
     },
   },
   args: {
-    position: 'right',
+    position: 'bottom-right',
     flagOverridePlugin: new FlagOverridePlugin(),
     eventInterceptionPlugin: new EventInterceptionPlugin(),
   },
@@ -28,8 +28,8 @@ const meta: Meta<typeof LaunchDarklyToolbar> = {
     },
     position: {
       control: { type: 'radio' },
-      options: ['left', 'right'],
-      description: 'Position of the toolbar on screen',
+      options: ['bottom-left', 'bottom-right', 'top-left', 'top-right'],
+      description: 'Position of the toolbar on screen (default: bottom-right)',
     },
     devServerUrl: {
       control: 'text',
@@ -56,12 +56,12 @@ type Story = StoryObj<typeof meta>;
 // Default States
 export const Default: Story = {
   args: {
-    position: 'right',
+    position: 'bottom-right',
   },
   parameters: {
     docs: {
       description: {
-        story: 'Default toolbar state with auto-detected project and right positioning.',
+        story: 'Default toolbar state with auto-detected project and bottom-right positioning.',
       },
     },
   },
@@ -71,7 +71,7 @@ export const DevServerMode: Story = {
   args: {
     devServerUrl: 'http://localhost:8765',
     projectKey: 'test-project',
-    position: 'right',
+    position: 'bottom-right',
   },
   parameters: {
     docs: {
@@ -86,7 +86,7 @@ export const DevServerMode: Story = {
 export const SdkMode: Story = {
   args: {
     // No devServerUrl - triggers SDK mode
-    position: 'right',
+    position: 'bottom-right',
     flagOverridePlugin: new FlagOverridePlugin(),
     eventInterceptionPlugin: new EventInterceptionPlugin(),
   },

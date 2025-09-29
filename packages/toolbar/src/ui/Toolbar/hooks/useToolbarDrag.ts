@@ -9,7 +9,7 @@ interface Position {
 
 interface UseToolbarDragOptions {
   enabled: boolean;
-  onDragEnd: (clientX: number) => void;
+  onDragEnd: (clientX: number, clientY: number) => void;
   elementRef: React.RefObject<HTMLDivElement | null>;
 }
 
@@ -95,7 +95,7 @@ export function useToolbarDrag({ enabled, onDragEnd, elementRef }: UseToolbarDra
 
         // Only call onDragEnd if we actually dragged (moved beyond threshold)
         if (draggedRef.current) {
-          onDragEnd(upEvent.clientX);
+          onDragEnd(upEvent.clientX, upEvent.clientY);
         }
 
         // Keep drag state for a brief moment to let click handler check it

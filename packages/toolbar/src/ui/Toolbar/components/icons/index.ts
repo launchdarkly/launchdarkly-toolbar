@@ -1,5 +1,6 @@
 export { SearchIcon } from './SearchIcon';
 export { ChevronDownIcon } from './ChevronDownIcon';
+export { ChevronUpIcon } from './ChevronUpIcon';
 export { EditIcon } from './EditIcon';
 export { SyncIcon } from './SyncIcon';
 export { ArrowUndoIcon } from './ArrowUndoIcon';

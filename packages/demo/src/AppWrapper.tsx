@@ -1,12 +1,13 @@
 import type { ReactNode } from 'react';
 import './App.css';
 import { useLDClient } from 'launchdarkly-react-client-sdk';
+import type { ToolbarPosition } from '@launchdarkly/toolbar';
 
 interface AppWrapperProps {
   children: ReactNode;
   mode: 'dev-server' | 'sdk';
-  position: 'left' | 'right';
-  onPositionChange: (position: 'left' | 'right') => void;
+  position: ToolbarPosition;
+  onPositionChange: (position: ToolbarPosition) => void;
 }
 
 export function AppWrapper({ children, mode, position, onPositionChange }: AppWrapperProps) {
@@ -112,10 +113,12 @@ export function AppWrapper({ children, mode, position, onPositionChange }: AppWr
               <select
                 id="position"
                 value={position}
-                onChange={(e) => onPositionChange(e.target.value as 'left' | 'right')}
+                onChange={(e) => onPositionChange(e.target.value as ToolbarPosition)}
               >
-                <option value="right">Right</option>
-                <option value="left">Left</option>
+                <option value="bottom-right">Bottom Right</option>
+                <option value="bottom-left">Bottom Left</option>
+                <option value="top-right">Top Right</option>
+                <option value="top-left">Top Left</option>
               </select>
             </div>
 

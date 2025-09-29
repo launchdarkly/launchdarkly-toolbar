@@ -76,5 +76,5 @@ export interface FeatureFlag {
   environment?: string;
 }
 
-export const TOOLBAR_POSITIONS = ['left', 'right'] as const;
+export const TOOLBAR_POSITIONS = ['bottom-left', 'bottom-right', 'top-left', 'top-right'] as const;
 export type ToolbarPosition = (typeof TOOLBAR_POSITIONS)[number];

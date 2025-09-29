@@ -3,6 +3,7 @@ import { expect, test, describe, vi, beforeEach } from 'vitest';
 
 import { ExpandedToolbarContent } from '../ui/Toolbar/components/ExpandedToolbarContent';
 import { DevServerProvider } from '../ui/Toolbar/context/DevServerProvider';
+import { ToolbarUIProvider } from '../ui/Toolbar/context/ToolbarUIProvider';
 import { SearchProvider } from '../ui/Toolbar/context/SearchProvider';
 import { IFlagOverridePlugin, IEventInterceptionPlugin } from '../types/plugin';
 
@@ -57,11 +58,11 @@ vi.mock('../ui/Toolbar/TabContent/SettingsTabContent', () => ({
 function TestWrapper({
   children,
   devServerUrl,
-  initialPosition = 'right',
+  initialPosition = 'bottom-right',
 }: {
   children: React.ReactNode;
   devServerUrl?: string;
-  initialPosition?: 'left' | 'right';
+  initialPosition?: 'bottom-left' | 'bottom-right' | 'top-left' | 'top-right';
 }) {
   return (
     <DevServerProvider
@@ -69,9 +70,10 @@ function TestWrapper({
         devServerUrl,
         pollIntervalInMs: 5000,
       }}
-      initialPosition={initialPosition}
     >
-      <SearchProvider>{children}</SearchProvider>
+      <ToolbarUIProvider initialPosition={initialPosition}>
+        <SearchProvider>{children}</SearchProvider>
+      </ToolbarUIProvider>
     </DevServerProvider>
   );
 }

@@ -1,13 +1,14 @@
 import { useState, lazy, Suspense } from 'react';
 import { AppWrapper } from '../AppWrapper';
 import { flagOverridePlugin, eventInterceptionPlugin } from '../plugins';
+import type { ToolbarPosition } from '@launchdarkly/toolbar';
 
 const LaunchDarklyToolbar = lazy(() =>
   import('@launchdarkly/toolbar').then((module) => ({ default: module.LaunchDarklyToolbar })),
 );
 
 export function SDKMode() {
-  const [position, setPosition] = useState<'left' | 'right'>('left');
+  const [position, setPosition] = useState<ToolbarPosition>('bottom-right');
 
   return (
     <AppWrapper mode="sdk" position={position} onPositionChange={setPosition}>
