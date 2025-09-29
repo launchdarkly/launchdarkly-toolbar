@@ -5,29 +5,43 @@ export const EASING = {
 } as const;
 
 export const ANIMATION_CONFIG = {
-  // Main toolbar container animations
+  // Main toolbar container animations - expanding (smooth)
+  containerExpand: {
+    width: { duration: 0.25, ease: EASING.smooth },
+    height: { duration: 0.25, ease: EASING.smooth },
+    borderRadius: { duration: 0.2, ease: EASING.smooth },
+    boxShadow: { duration: 0.2, ease: 'easeInOut' as const },
+  },
+  // Main toolbar container animations - collapsing (bounce)
+  containerCollapse: {
+    width: { duration: 0.35, ease: EASING.elastic },
+    height: { duration: 0.35, ease: EASING.elastic },
+    borderRadius: { duration: 0.25, ease: EASING.smooth },
+    boxShadow: { duration: 0.25, ease: 'easeInOut' as const },
+  },
+  // Backward compatibility - default to expand
   container: {
-    width: { duration: 0.5, ease: EASING.bounce },
-    height: { duration: 0.5, ease: EASING.bounce },
-    borderRadius: { duration: 0.4, ease: EASING.smooth },
-    boxShadow: { duration: 0.3, ease: 'easeInOut' as const },
+    width: { duration: 0.25, ease: EASING.smooth },
+    height: { duration: 0.25, ease: EASING.smooth },
+    borderRadius: { duration: 0.2, ease: EASING.smooth },
+    boxShadow: { duration: 0.2, ease: 'easeInOut' as const },
   },
   // Circle logo animations
   circleLogo: {
-    opacity: { duration: 0.25, ease: 'easeOut' as const },
-    scale: { duration: 0.3, ease: EASING.smooth },
-    rotate: { duration: 0.3, ease: EASING.smooth },
+    opacity: { duration: 0.15, ease: 'easeOut' as const },
+    scale: { duration: 0.2, ease: EASING.smooth },
+    rotate: { duration: 0.2, ease: EASING.smooth },
   },
   // Toolbar content animations
   toolbarContent: {
-    opacity: { duration: 0.4, ease: EASING.smooth },
-    y: { duration: 0.5, ease: EASING.bounce },
-    scale: { duration: 0.5, ease: EASING.bounce },
+    opacity: { duration: 0.2, ease: EASING.smooth },
+    y: { duration: 0.25, ease: EASING.smooth },
+    scale: { duration: 0.25, ease: EASING.smooth },
   },
   // Content area animations
   contentArea: {
-    opacity: { duration: 0.4, ease: 'easeInOut' as const },
-    maxHeight: { duration: 0.5, ease: EASING.elastic },
+    opacity: { duration: 0.2, ease: 'easeInOut' as const, delay: 0.1 },
+    y: { duration: 0.25, ease: EASING.smooth, delay: 0.1 },
   },
   // Tab content transitions
   tabContent: {
@@ -36,9 +50,9 @@ export const ANIMATION_CONFIG = {
   },
   // Tabs container animations
   tabsContainer: {
-    opacity: { duration: 0.5, ease: EASING.bounce },
-    y: { duration: 0.5, ease: EASING.bounce },
-    delay: 0.3,
+    opacity: { duration: 0.2, ease: EASING.smooth },
+    y: { duration: 0.2, ease: EASING.smooth },
+    delay: 0.05,
   },
   // Event list animations
   eventList: {
@@ -58,7 +72,7 @@ export const ANIMATION_CONFIG = {
 } as const;
 
 export const DIMENSIONS = {
-  collapsed: { width: 60, height: 60, borderRadius: 30 },
+  collapsed: { width: 48, height: 48, borderRadius: 24 },
   expanded: { width: 400, borderRadius: 12 },
   scale: { expanded: 1.02, collapsed: 1 },
   slideDistance: 30,
@@ -68,4 +82,10 @@ export const SHADOWS = {
   expanded: '0 12px 48px rgba(0, 0, 0, 0.5)',
   hoveredCollapsed: '0 8px 40px rgba(0, 0, 0, 0.4)',
   collapsed: '0 4px 16px rgba(0, 0, 0, 0.3)',
+} as const;
+
+// Drag and interaction constants
+export const DRAG_CONSTANTS = {
+  THRESHOLD_PIXELS: 3, // Minimum pixels to move before considering it a drag
+  CLICK_RESET_DELAY_MS: 50, // Delay before resetting drag state to allow click detection
 } as const;

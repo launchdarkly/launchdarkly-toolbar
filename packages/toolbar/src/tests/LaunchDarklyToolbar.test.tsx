@@ -1,4 +1,4 @@
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor, waitForElementToBeRemoved } from '@testing-library/react';
 import { expect, test, describe, vi, beforeEach } from 'vitest';
 
 import { LaunchDarklyToolbar } from '../ui/Toolbar/LaunchDarklyToolbar';
@@ -42,9 +42,9 @@ describe('LaunchDarklyToolbar - User Flows', () => {
       // GIVEN: Developer has a LaunchDarkly dev server running
       render(<LaunchDarklyToolbar devServerUrl="http://localhost:8765" projectKey="my-project" />);
 
-      // WHEN: Developer hovers over the toolbar to explore available features
-      const toolbar = screen.getByTestId('launchdarkly-toolbar');
-      fireEvent.mouseEnter(toolbar);
+      // WHEN: Developer clicks the toolbar to explore available features
+      const logo = screen.getByRole('img', { name: /launchdarkly/i });
+      fireEvent.click(logo);
 
       // THEN: They can see server-side flag management and settings tabs
       await waitFor(() => {
@@ -95,8 +95,8 @@ describe('LaunchDarklyToolbar - User Flows', () => {
         />,
       );
 
-      const toolbar = screen.getByTestId('launchdarkly-toolbar');
-      fireEvent.mouseEnter(toolbar);
+      const logo = screen.getByRole('img', { name: /launchdarkly/i });
+      fireEvent.click(logo);
 
       // THEN: They can access client-side flag overrides, events, and settings
       await waitFor(() => {
@@ -115,9 +115,9 @@ describe('LaunchDarklyToolbar - User Flows', () => {
       // GIVEN: Developer is using the toolbar without any flag override plugins
       render(<LaunchDarklyToolbar />);
 
-      // WHEN: They hover over the toolbar
-      const toolbar = screen.getByTestId('launchdarkly-toolbar');
-      fireEvent.mouseEnter(toolbar);
+      // WHEN: They click the toolbar logo
+      const logo = screen.getByRole('img', { name: /launchdarkly/i });
+      fireEvent.click(logo);
 
       // THEN: They only see settings (no flag management capabilities)
       await waitFor(() => {
@@ -157,14 +157,52 @@ describe('LaunchDarklyToolbar - User Flows', () => {
     });
   });
 
+  test('preserves selected tab when toolbar is collapsed and expanded', async () => {
+    // GIVEN: Developer has the toolbar expanded with default tab (flag-dev-server for dev-server mode)
+    render(<LaunchDarklyToolbar devServerUrl="http://localhost:8765" />);
+
+    const logo = screen.getByRole('img', { name: /launchdarkly/i });
+    fireEvent.click(logo);
+
+    // Wait until tabs are present
+    expect(await screen.findByRole('tab', { name: /flags/i })).toBeInTheDocument();
+    expect(await screen.findByRole('tab', { name: /settings/i })).toBeInTheDocument();
+
+    // Wait for expand animations to complete so tab changes aren't ignored
+    await new Promise((resolve) => setTimeout(resolve, 350));
+
+    // WHEN: They select the settings tab (different from default)
+    const settingsTab = screen.getByRole('tab', { name: /settings/i });
+    fireEvent.click(settingsTab);
+
+    // Verify settings tab is now selected
+    expect(screen.getByRole('tab', { name: /settings/i })).toHaveAttribute('aria-selected', 'true');
+
+    // AND: They collapse the toolbar by clicking outside (if not pinned)
+    fireEvent.mouseDown(document.body);
+
+    // Wait for collapse (settings tab removed)
+    await waitForElementToBeRemoved(() => screen.queryByRole('tab', { name: /settings/i }));
+
+    // AND: They expand it again (re-query the logo since the DOM was re-rendered)
+    const logoAfterCollapse = screen.getByRole('img', { name: /launchdarkly/i });
+    fireEvent.click(logoAfterCollapse);
+
+    // Wait until settings tab returns
+    expect(await screen.findByRole('tab', { name: /settings/i })).toBeInTheDocument();
+
+    // THEN: The settings tab should still be selected (preserved, not reverted to default)
+    expect(screen.getByRole('tab', { name: /settings/i })).toHaveAttribute('aria-selected', 'true');
+  });
+
   describe('Error Handling and Edge Cases', () => {
     test('SDK mode without flag override plugin shows limited functionality gracefully', async () => {
       // GIVEN: Developer is using SDK mode but forgot to provide flag override plugin
       render(<LaunchDarklyToolbar />);
 
       // WHEN: They expand the toolbar to see available features
-      const toolbar = screen.getByTestId('launchdarkly-toolbar');
-      fireEvent.mouseEnter(toolbar);
+      const logo = screen.getByRole('img', { name: /launchdarkly/i });
+      fireEvent.click(logo);
 
       // THEN: They get a clear indication of limited functionality
       await waitFor(() => {
@@ -193,7 +231,8 @@ describe('LaunchDarklyToolbar - User Flows', () => {
       expect(toolbar).toBeInTheDocument();
 
       // AND: Mode detection still works correctly despite invalid URL
-      fireEvent.mouseEnter(toolbar);
+      const logo = screen.getByRole('img', { name: /launchdarkly/i });
+      fireEvent.click(logo);
 
       await waitFor(() => {
         const settingsTab = screen.queryByRole('tab', { name: /settings/i });
@@ -211,8 +250,8 @@ describe('LaunchDarklyToolbar - User Flows', () => {
       render(<LaunchDarklyToolbar devServerUrl="" />);
 
       // WHEN: The toolbar renders
-      const toolbar = screen.getByTestId('launchdarkly-toolbar');
-      fireEvent.mouseEnter(toolbar);
+      const logo = screen.getByRole('img', { name: /launchdarkly/i });
+      fireEvent.click(logo);
 
       // THEN: It behaves as SDK mode (not dev-server mode)
       await waitFor(() => {
