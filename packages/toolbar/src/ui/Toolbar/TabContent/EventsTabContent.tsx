@@ -14,7 +14,7 @@ import * as styles from './EventsTabContent.css';
 import * as actionStyles from '../components/ActionButtonsContainer.css';
 import { useCurrentDate, useEvents } from '../hooks';
 import type { IEventInterceptionPlugin } from '../../../types/plugin';
-import { SyntheticEventContext } from '../../../types/events';
+import { ProcessedEvent, SyntheticEventContext } from '../../../types/events';
 import { IconButton } from '../components/IconButton';
 import { AddIcon } from '../components/icons/AddIcon';
 
@@ -52,6 +52,13 @@ export function EventsTabContent(props: EventsTabContentProps) {
       eventInterceptionPlugin.clearEvents();
     }
   };
+
+  const handleEventClick = (event: ProcessedEvent) => {
+    analytics.trackEventClick(event?.key ?? event.displayName);
+    console.group(`📝 Event Details: [kind: ${event.kind}, displayName: ${event.displayName}]`);
+    console.table(event);
+    console.groupEnd();
+  }
 
   const handleAddFeatureFlag = (flagKey: string) => {
     const url = createFlagDeeplinkUrl(flagKey);
@@ -180,11 +187,7 @@ export function EventsTabContent(props: EventsTabContentProps) {
                 >
                   <ListItem
                     className={styles.eventListItem}
-                    onClick={() => {
-                      console.group(`📝 Event Details: [kind: ${event.kind}, displayName: ${event.displayName}]`);
-                      console.table(event);
-                      console.groupEnd();
-                    }}
+                    onClick={() => handleEventClick(event)}
                   >
                     <div className={styles.eventInfo}>
                       <span className={styles.eventName}>{event.displayName}</span>

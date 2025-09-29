@@ -111,4 +111,13 @@ export class ToolbarAnalytics {
       enabled,
     });
   }
+
+  /**
+   * Track Event clicks
+   */
+  trackEventClick(eventName: string): void {
+    this.track('ld.toolbar.event.click', {
+      eventName,
+    });
+  }
 }
