@@ -4,6 +4,7 @@ import { expect, test, describe, vi, beforeEach } from 'vitest';
 import { ExpandedToolbarContent } from '../ui/Toolbar/components/ExpandedToolbarContent';
 import { DevServerProvider } from '../ui/Toolbar/context/DevServerProvider';
 import { SearchProvider } from '../ui/Toolbar/context/SearchProvider';
+import { AnalyticsProvider } from '../ui/Toolbar/context/AnalyticsProvider';
 import { IFlagOverridePlugin, IEventInterceptionPlugin } from '../types/plugin';
 
 // Mock the DevServerClient and FlagStateManager
@@ -71,7 +72,9 @@ function TestWrapper({
       }}
       initialPosition={initialPosition}
     >
-      <SearchProvider>{children}</SearchProvider>
+      <AnalyticsProvider>
+        <SearchProvider>{children}</SearchProvider>
+      </AnalyticsProvider>
     </DevServerProvider>
   );
 }
