@@ -58,7 +58,7 @@ export function EventsTabContent(props: EventsTabContentProps) {
     console.group(`📝 Event Details: [kind: ${event.kind}, displayName: ${event.displayName}]`);
     console.table(event);
     console.groupEnd();
-  }
+  };
 
   const handleAddFeatureFlag = (flagKey: string) => {
     const url = createFlagDeeplinkUrl(flagKey);
@@ -185,10 +185,7 @@ export function EventsTabContent(props: EventsTabContentProps) {
                     cursor: 'pointer',
                   }}
                 >
-                  <ListItem
-                    className={styles.eventListItem}
-                    onClick={() => handleEventClick(event)}
-                  >
+                  <ListItem className={styles.eventListItem} onClick={() => handleEventClick(event)}>
                     <div className={styles.eventInfo}>
                       <span className={styles.eventName}>{event.displayName}</span>
                       <span className={styles.eventMeta}>{formatTimeAgo(event.timestamp, currentDate)}</span>

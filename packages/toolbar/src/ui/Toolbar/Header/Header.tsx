@@ -34,7 +34,7 @@ export function Header(props: HeaderProps) {
   const handleSearch = (term: string) => {
     onSearch(term);
     analytics.trackSearch(term);
-  }
+  };
 
   return (
     <>

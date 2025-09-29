@@ -49,7 +49,7 @@ function FlagSdkOverrideTabContentInner(props: FlagSdkOverrideTabContentInnerPro
   const showOverridesOnlyChanged = (enabled: boolean) => {
     setShowOverriddenOnly(enabled);
     analytics.trackShowOverridesOnlyClick(enabled);
-  }
+  };
 
   // Prepare data for virtualizer (must be done before useVirtualizer hook)
   const flagEntries = Object.entries(flags);
