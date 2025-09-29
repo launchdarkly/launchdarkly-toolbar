@@ -3,16 +3,16 @@ import type { LDClient } from 'launchdarkly-js-client-sdk';
 export const ANALYTICS_EVENT_PREFIX = 'ld.toolbar';
 
 const EVENTS = {
-  INITIALIZED: `${ANALYTICS_EVENT_PREFIX}.initialized`,
-  POSITION_CHANGED: `${ANALYTICS_EVENT_PREFIX}.position.changed`,
-  PIN_TOGGLED: `${ANALYTICS_EVENT_PREFIX}.pin.toggled`,
-  TAB_CHANGED: `${ANALYTICS_EVENT_PREFIX}.tab.changed`,
-  SEARCH: `${ANALYTICS_EVENT_PREFIX}.search`,
-  TOGGLE: `${ANALYTICS_EVENT_PREFIX}.toggle`,
-  TOGGLE_FLAG: `${ANALYTICS_EVENT_PREFIX}.toggle.flag`,
-  DEEPLINK_CREATE_FLAG: `${ANALYTICS_EVENT_PREFIX}.deeplink.create_flag`,
-  SHOW_OVERRIDES_ONLY: `${ANALYTICS_EVENT_PREFIX}.show_overrides_only`,
-  EVENT_CLICK: `${ANALYTICS_EVENT_PREFIX}.event.click`,
+  INITIALIZED: 'initialized',
+  POSITION_CHANGED: 'position.changed',
+  PIN_TOGGLED: 'pin.toggled',
+  TAB_CHANGED: 'tab.changed',
+  SEARCH: 'search',
+  TOGGLE: 'toggle',
+  TOGGLE_FLAG: 'toggle.flag',
+  OPEN_FLAG_DEEPLINK: 'open.flag.deeplink',
+  SHOW_OVERRIDES_ONLY: 'show.overrides.only',
+  EVENT_CLICK: 'event.click',
 } as const;
 
 /**
@@ -31,15 +31,17 @@ export class ToolbarAnalytics {
    * Internal method to send tracking events
    */
   private track(eventName: string, properties: Record<string, unknown>): void {
+    const fullEventName = `${ANALYTICS_EVENT_PREFIX}.${eventName}`;
+
     if (!this.ldClient) {
-      console.debug('ToolbarAnalytics: LDClient not available, skipping track event:', eventName);
+      console.debug('ToolbarAnalytics: LDClient not available, skipping track event:', fullEventName);
       return;
     }
 
     try {
-      this.ldClient.track(eventName, properties);
+      this.ldClient.track(fullEventName, properties);
     } catch (error) {
-      console.error('ToolbarAnalytics: Failed to track event:', eventName, error);
+      console.error('ToolbarAnalytics: Failed to track event:', fullEventName, error);
     }
   }
 
@@ -120,7 +122,7 @@ export class ToolbarAnalytics {
    * Track opening a flag deeplink
    */
   trackOpenFlagDeeplink(flagKey: string, baseUrl: string): void {
-    this.track(EVENTS.DEEPLINK_CREATE_FLAG, {
+    this.track(EVENTS.OPEN_FLAG_DEEPLINK, {
       flagKey,
       baseUrl,
     });
