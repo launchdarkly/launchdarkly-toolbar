@@ -139,7 +139,7 @@ function PinToggle(props: PinToggleProps) {
     onTogglePin();
   };
 
-  return <Switch data-theme="dark" isSelected={isPinned} onChange={handleToggle} aria-label="Pin toolbar" />;
+  return <Switch className={styles.switch_} data-theme="dark" isSelected={isPinned} onChange={handleToggle} aria-label="Pin toolbar" />;
 }
 
 function ConnectionStatusDisplay(props: ConnectionStatusDisplayProps) {
