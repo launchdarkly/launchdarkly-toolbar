@@ -1,5 +1,4 @@
 import type { LDClient } from 'launchdarkly-js-client-sdk';
-import type { IFlagOverridePlugin } from '../types/plugin';
 
 /**
  * Analytics utility for tracking toolbar usage events
@@ -9,8 +8,8 @@ export class ToolbarAnalytics {
   // Timer id for debouncing search tracking
   private searchDebounceTimer: ReturnType<typeof setTimeout> | null = null;
 
-  constructor(flagOverridePlugin?: IFlagOverridePlugin) {
-    this.ldClient = flagOverridePlugin?.getClient() || null;
+  constructor(ldClient?: LDClient | null) {
+    this.ldClient = ldClient || null;
   }
 
   /**
@@ -110,7 +109,7 @@ export class ToolbarAnalytics {
       baseUrl,
     });
   }
-  
+
   /**
    * Track 'Show overrides only' clicks
    */

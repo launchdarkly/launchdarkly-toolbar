@@ -158,7 +158,7 @@ export function LaunchDarklyToolbar(props: LaunchDarklyToolbarProps) {
       }}
       initialPosition={position}
     >
-      <AnalyticsProvider flagOverridePlugin={flagOverridePlugin}>
+      <AnalyticsProvider ldClient={flagOverridePlugin?.getClient()}>
         <SearchProvider>
           <LdToolbar
             mode={mode}

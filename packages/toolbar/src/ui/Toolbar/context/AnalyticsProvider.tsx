@@ -1,5 +1,5 @@
 import { createContext, useContext, useEffect, useMemo, useRef } from 'react';
-import type { IFlagOverridePlugin } from '../../../types/plugin';
+import type { LDClient } from 'launchdarkly-js-client-sdk';
 import { ToolbarAnalytics } from '../../../utils/analytics';
 
 interface AnalyticsContextValue {
@@ -10,11 +10,11 @@ const AnalyticsContext = createContext<AnalyticsContextValue | null>(null);
 
 interface AnalyticsProviderProps {
   children: React.ReactNode;
-  flagOverridePlugin?: IFlagOverridePlugin;
+  ldClient?: LDClient | null;
 }
 
-export function AnalyticsProvider({ children, flagOverridePlugin }: AnalyticsProviderProps) {
-  const analytics = useMemo(() => new ToolbarAnalytics(flagOverridePlugin), [flagOverridePlugin]);
+export function AnalyticsProvider({ children, ldClient }: AnalyticsProviderProps) {
+  const analytics = useMemo(() => new ToolbarAnalytics(ldClient), [ldClient]);
   const hasInitialized = useRef(false);
 
   // Track initialization once (prevent duplicates during development)
@@ -25,9 +25,7 @@ export function AnalyticsProvider({ children, flagOverridePlugin }: AnalyticsPro
     }
   }, [analytics]);
 
-  const value = useMemo(() => ({ analytics }), [analytics]);
-
-  return <AnalyticsContext.Provider value={value}>{children}</AnalyticsContext.Provider>;
+  return <AnalyticsContext.Provider value={{ analytics }}>{children}</AnalyticsContext.Provider>;
 }
 
 export function useAnalytics(): ToolbarAnalytics {
