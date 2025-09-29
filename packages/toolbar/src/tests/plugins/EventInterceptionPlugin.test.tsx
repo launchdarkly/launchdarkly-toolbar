@@ -1,5 +1,6 @@
 import { describe, test, expect, vi, beforeEach } from 'vitest';
 import { EventInterceptionPlugin } from '../../plugins';
+import { ANALYTICS_EVENT_PREFIX } from '../../utils/analytics';
 
 describe('EventInterceptionPlugin', () => {
   let plugin: EventInterceptionPlugin;
@@ -10,14 +11,14 @@ describe('EventInterceptionPlugin', () => {
     plugin.clearEvents();
   });
 
-  test("does not add 'ld.toolbar' events to the event store", () => {
+  test(`does not add ${ANALYTICS_EVENT_PREFIX} events to the event store`, () => {
     const hooks = plugin.getHooks({} as any);
 
     const afterTrack = hooks.find((h) => (h as any).getMetadata?.()?.name === 'AfterTrackHook') as any;
 
     // Simulate a custom (track) event with a toolbar-prefixed key
     afterTrack.afterTrack({
-      key: 'ld.toolbar.customEvent',
+      key: `${ANALYTICS_EVENT_PREFIX}.customEvent`,
       context: { key: 'user-1' },
       data: { some: 'data' },
       metricValue: undefined,

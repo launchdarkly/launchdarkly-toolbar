@@ -1,5 +1,20 @@
 import type { LDClient } from 'launchdarkly-js-client-sdk';
 
+export const ANALYTICS_EVENT_PREFIX = 'ld.toolbar';
+
+const EVENTS = {
+  INITIALIZED: `${ANALYTICS_EVENT_PREFIX}.initialized`,
+  POSITION_CHANGED: `${ANALYTICS_EVENT_PREFIX}.position.changed`,
+  PIN_TOGGLED: `${ANALYTICS_EVENT_PREFIX}.pin.toggled`,
+  TAB_CHANGED: `${ANALYTICS_EVENT_PREFIX}.tab.changed`,
+  SEARCH: `${ANALYTICS_EVENT_PREFIX}.search`,
+  TOGGLE: `${ANALYTICS_EVENT_PREFIX}.toggle`,
+  TOGGLE_FLAG: `${ANALYTICS_EVENT_PREFIX}.toggle.flag`,
+  DEEPLINK_CREATE_FLAG: `${ANALYTICS_EVENT_PREFIX}.deeplink.create_flag`,
+  SHOW_OVERRIDES_ONLY: `${ANALYTICS_EVENT_PREFIX}.show_overrides_only`,
+  EVENT_CLICK: `${ANALYTICS_EVENT_PREFIX}.event.click`,
+} as const;
+
 /**
  * Analytics utility for tracking toolbar usage events
  */
@@ -32,14 +47,14 @@ export class ToolbarAnalytics {
    * Track toolbar initialization
    */
   trackInitialization(): void {
-    this.track('ld.toolbar.initialized', {});
+    this.track(EVENTS.INITIALIZED, {});
   }
 
   /**
    * Track toolbar position changes
    */
   trackPositionChange(oldPosition: string, newPosition: string): void {
-    this.track('ld.toolbar.position.changed', {
+    this.track(EVENTS.POSITION_CHANGED, {
       oldPosition,
       newPosition,
     });
@@ -49,7 +64,7 @@ export class ToolbarAnalytics {
    * Track toolbar pin/unpin actions
    */
   trackPinToggle(action: 'pin' | 'unpin'): void {
-    this.track('ld.toolbar.pin.toggled', {
+    this.track(EVENTS.PIN_TOGGLED, {
       action,
     });
   }
@@ -58,7 +73,7 @@ export class ToolbarAnalytics {
    * Track toolbar tab navigation
    */
   trackTabChange(fromTab: string | null, toTab: string): void {
-    this.track('ld.toolbar.tab.changed', {
+    this.track(EVENTS.TAB_CHANGED, {
       fromTab,
       toTab,
     });
@@ -75,7 +90,7 @@ export class ToolbarAnalytics {
 
     this.searchDebounceTimer = setTimeout(() => {
       if (!query) return;
-      this.track('ld.toolbar.search', { query });
+      this.track(EVENTS.SEARCH, { query });
       this.searchDebounceTimer = null;
     }, 1000);
   }
@@ -84,7 +99,7 @@ export class ToolbarAnalytics {
    * Track toolbar expand/collapse events
    */
   trackToolbarToggle(action: 'expand' | 'collapse', trigger: 'close_button' | 'click_outside' | 'tab_toggle'): void {
-    this.track('ld.toolbar.toggle', {
+    this.track(EVENTS.TOGGLE, {
       action,
       trigger,
     });
@@ -93,7 +108,7 @@ export class ToolbarAnalytics {
    * Track flag override events
    */
   trackFlagOverride(flagKey: string, value: unknown, action: 'set' | 'remove' | 'clear_all'): void {
-    this.track('ld.toolbar.toggle.flag', {
+    this.track(EVENTS.TOGGLE_FLAG, {
       flagKey,
       value: action === 'remove' ? null : value,
       action,
@@ -101,10 +116,10 @@ export class ToolbarAnalytics {
   }
 
   /**
-   * Track deeplink creation for missing flags
+   * Track opening a flag deeplink
    */
-  trackDeeplinkCreation(flagKey: string, baseUrl: string): void {
-    this.track('ld.toolbar.deeplink.create_flag', {
+  trackOpenFlagDeeplink(flagKey: string, baseUrl: string): void {
+    this.track(EVENTS.DEEPLINK_CREATE_FLAG, {
       flagKey,
       baseUrl,
     });
@@ -114,7 +129,7 @@ export class ToolbarAnalytics {
    * Track 'Show overrides only' clicks
    */
   trackShowOverridesOnlyClick(enabled: boolean): void {
-    this.track('ld.toolbar.show_overrides_only', {
+    this.track(EVENTS.SHOW_OVERRIDES_ONLY, {
       enabled,
     });
   }
@@ -123,7 +138,7 @@ export class ToolbarAnalytics {
    * Track Event clicks
    */
   trackEventClick(eventName: string): void {
-    this.track('ld.toolbar.event.click', {
+    this.track(EVENTS.EVENT_CLICK, {
       eventName,
     });
   }

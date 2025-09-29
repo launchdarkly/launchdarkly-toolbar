@@ -63,8 +63,8 @@ export function EventsTabContent(props: EventsTabContentProps) {
   const handleAddFeatureFlag = (flagKey: string) => {
     const url = createFlagDeeplinkUrl(flagKey);
 
-    // Track deeplink creation analytics
-    analytics.trackDeeplinkCreation(flagKey, baseUrl);
+    // Track deeplink opening
+    analytics.trackOpenFlagDeeplink(flagKey, baseUrl);
 
     window.open(url, '_blank');
   };

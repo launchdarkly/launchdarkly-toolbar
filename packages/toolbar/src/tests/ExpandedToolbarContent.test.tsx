@@ -117,6 +117,7 @@ describe('ExpandedToolbarContent - User Interaction Flows', () => {
     clearEvents: vi.fn(),
     getMetadata: vi.fn(),
     register: vi.fn(),
+    getClient: vi.fn(),
   });
 
   beforeEach(() => {

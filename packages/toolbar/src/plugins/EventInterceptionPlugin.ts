@@ -2,6 +2,7 @@ import type { Hook, LDClient, LDPluginEnvironmentMetadata, LDPluginMetadata } fr
 import { AfterTrackHook, AfterIdentifyHook, AfterEvaluationHook, EventStore } from '../hooks';
 import type { EventFilter, ProcessedEvent } from '../types/events';
 import type { IEventInterceptionPlugin } from '../types/plugin';
+import { ANALYTICS_EVENT_PREFIX } from '../utils/analytics';
 
 /**
  * Configuration options for the EventInterceptionPlugin
@@ -24,6 +25,7 @@ export class EventInterceptionPlugin implements IEventInterceptionPlugin {
   private afterEvaluationHook: AfterEvaluationHook;
   private eventStore: EventStore;
   private config: EventInterceptionPluginConfig;
+  private ldClient: LDClient | null = null;
 
   constructor(config: EventInterceptionPluginConfig = {}) {
     this.config = {
@@ -69,7 +71,7 @@ export class EventInterceptionPlugin implements IEventInterceptionPlugin {
   }
 
   isToolbarEvent(event: ProcessedEvent): boolean {
-    return event.key?.startsWith('ld.toolbar') ?? false;
+    return event.key?.startsWith(ANALYTICS_EVENT_PREFIX) ?? false;
   }
 
   getMetadata(): LDPluginMetadata {
@@ -82,7 +84,13 @@ export class EventInterceptionPlugin implements IEventInterceptionPlugin {
     return [this.afterTrackHook, this.afterIdentifyHook, this.afterEvaluationHook];
   }
 
-  register(_client: LDClient): void {}
+  register(ldClient: LDClient): void {
+    this.ldClient = ldClient;
+  }
+
+  getClient(): LDClient | null {
+    return this.ldClient;
+  }
 
   getEvents(): ProcessedEvent[] {
     return this.eventStore.getEvents();
