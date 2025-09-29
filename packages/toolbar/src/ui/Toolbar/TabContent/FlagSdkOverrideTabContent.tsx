@@ -46,6 +46,11 @@ function FlagSdkOverrideTabContentInner(props: FlagSdkOverrideTabContentInnerPro
     return Object.values(flags).filter((flag) => flag.isOverridden).length;
   }, [flags]);
 
+  const showOverridesOnlyChanged = (enabled: boolean) => {
+    setShowOverriddenOnly(enabled);
+    analytics.trackShowOverridesOnlyClick(enabled);
+  }
+
   // Prepare data for virtualizer (must be done before useVirtualizer hook)
   const flagEntries = Object.entries(flags);
   const filteredFlags = flagEntries.filter(([flagKey, flag]) => {
@@ -143,7 +148,7 @@ function FlagSdkOverrideTabContentInner(props: FlagSdkOverrideTabContentInnerPro
         <ActionButtonsContainer>
           <button
             className={`${actionStyles.toggleButton} ${showOverriddenOnly ? actionStyles.active : ''}`}
-            onClick={() => setShowOverriddenOnly((prev) => !prev)}
+            onClick={() => showOverridesOnlyChanged(!showOverriddenOnly)}
             data-testid="show-overrides-only-button"
             aria-label={showOverriddenOnly ? 'Show all flags' : 'Show only overridden flags'}
           >

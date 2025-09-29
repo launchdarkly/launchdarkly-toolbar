@@ -102,4 +102,13 @@ export class ToolbarAnalytics {
       baseUrl,
     });
   }
+  
+  /**
+   * Track 'Show overrides only' clicks
+   */
+  trackShowOverridesOnlyClick(enabled: boolean): void {
+    this.track('ld.toolbar.show_overrides_only', {
+      enabled,
+    });
+  }
 }
