@@ -80,9 +80,8 @@ test.describe('LaunchDarkly Toolbar', () => {
       // Verify the configuration panel is present
       await expect(page.getByRole('heading', { name: 'Configuration' })).toBeVisible();
 
-      // Expand toolbar to verify it works
-      const toolbarContainer = page.getByTestId('launchdarkly-toolbar');
-      await toolbarContainer.hover();
+      // Expand toolbar to verify it works (click to expand)
+      await page.getByRole('img', { name: 'LaunchDarkly' }).click();
       await expect(page.getByRole('tab', { name: 'Flags' })).toBeVisible();
     });
 
@@ -93,10 +92,8 @@ test.describe('LaunchDarkly Toolbar', () => {
       // Toolbar starts collapsed - no navigation visible
       await expect(page.getByRole('tab')).not.toBeVisible();
 
-      // User hovers over the toolbar to discover functionality
-      const toolbarContainer = page.getByTestId('launchdarkly-toolbar');
-      await toolbarContainer.hover();
-
+      // User clicks the logo to expand the toolbar
+      await page.getByRole('img', { name: 'LaunchDarkly' }).click();
       // Toolbar expands showing available tabs
       await expect(page.getByRole('tab', { name: 'Flags' })).toBeVisible();
       await expect(page.getByRole('tab', { name: 'Settings' })).toBeVisible();
@@ -107,15 +104,11 @@ test.describe('LaunchDarkly Toolbar', () => {
 
     test('should support complete flag management workflow', async ({ page }: { page: Page }) => {
       // Expand toolbar
-      const toolbarContainer = page.getByTestId('launchdarkly-toolbar').first();
-      await toolbarContainer.hover();
-
-      // Navigate to Flags tab
-      await page.getByRole('tab', { name: 'Flags' }).click();
+      await page.getByRole('img', { name: 'LaunchDarkly' }).click();
 
       // Verify Flags tab is active and content is visible
       await expect(page.getByRole('tab', { name: 'Flags' })).toHaveAttribute('aria-selected', 'true');
-      await expect(page.getByTestId('flag-dev-server-tab-content')).toBeVisible();
+      await page.waitForSelector('[data-testid="flag-dev-server-tab-content"]', { state: 'visible' });
       await expect(page.getByText('test-flag-1')).toBeVisible();
 
       // User can see and interact with flag toggles
@@ -129,9 +122,9 @@ test.describe('LaunchDarkly Toolbar', () => {
 
     test('should allow users to navigate between different sections', async ({ page }: { page: Page }) => {
       // Expand toolbar and start with Flags
-      const toolbarContainer = page.getByTestId('launchdarkly-toolbar').first();
-      await toolbarContainer.hover();
-      await page.getByRole('tab', { name: 'Flags' }).click();
+      await page.getByRole('img', { name: 'LaunchDarkly' }).click();
+      // Flags is default, assert selected before navigating
+      await expect(page.getByRole('tab', { name: 'Flags' })).toHaveAttribute('aria-selected', 'true');
 
       // Navigate to Settings tab
       await page.getByRole('tab', { name: 'Settings' }).click();
@@ -146,15 +139,14 @@ test.describe('LaunchDarkly Toolbar', () => {
 
     test('should show search button and flag content', async ({ page }: { page: Page }) => {
       // Expand toolbar and go to Flags tab
-      const toolbarContainer = page.getByTestId('launchdarkly-toolbar').first();
-      await toolbarContainer.hover();
-      await page.getByRole('tab', { name: 'Flags' }).click();
+      await page.getByRole('img', { name: 'LaunchDarkly' }).click();
+      await expect(page.getByRole('tab', { name: 'Flags' })).toHaveAttribute('aria-selected', 'true');
 
       // Verify search functionality is available
-      await expect(page.getByRole('button', { name: 'Search' })).toBeVisible();
+      await expect(page.getByRole('button', { name: /search/i })).toBeVisible();
 
       // Verify flag content is displayed
-      await expect(page.getByTestId('flag-dev-server-tab-content')).toBeVisible();
+      await page.waitForSelector('[data-testid="flag-dev-server-tab-content"]', { state: 'visible' });
       await expect(page.getByText('test-flag-1')).toBeVisible();
 
       // Verify flag toggles are functional
@@ -164,9 +156,8 @@ test.describe('LaunchDarkly Toolbar', () => {
 
     test('should provide intuitive ways to close and collapse the toolbar', async ({ page }: { page: Page }) => {
       // Expand toolbar
-      const toolbarContainer = page.getByTestId('launchdarkly-toolbar').first();
-      await toolbarContainer.hover();
-      await page.getByRole('tab', { name: 'Flags' }).click();
+      await page.getByRole('img', { name: 'LaunchDarkly' }).click();
+      await expect(page.getByRole('tab', { name: 'Flags' })).toHaveAttribute('aria-selected', 'true');
 
       // Method 1: Use the close button
       await page.getByRole('button', { name: 'Close toolbar' }).click();
@@ -175,7 +166,7 @@ test.describe('LaunchDarkly Toolbar', () => {
 
       // Method 2: Test pin functionality to prevent click-outside collapse
       // Re-expand toolbar first and go to Settings tab
-      await toolbarContainer.hover();
+      await page.getByRole('img', { name: 'LaunchDarkly' }).click();
       await page.getByRole('tab', { name: 'Settings' }).click();
 
       // Pin the toolbar using the toggle in Settings
@@ -194,10 +185,8 @@ test.describe('LaunchDarkly Toolbar', () => {
     });
 
     test('should maintain proper tab states when switching', async ({ page }: { page: Page }) => {
-      const toolbarContainer = page.getByTestId('launchdarkly-toolbar').first();
-
       // Expand and select Settings tab
-      await toolbarContainer.hover();
+      await page.getByRole('img', { name: 'LaunchDarkly' }).click();
       await page.getByRole('tab', { name: 'Settings' }).click();
       await expect(page.getByRole('tab', { name: 'Settings' })).toHaveAttribute('aria-selected', 'true');
 
@@ -207,24 +196,6 @@ test.describe('LaunchDarkly Toolbar', () => {
       await expect(page.getByRole('tab', { name: 'Settings' })).toHaveAttribute('aria-selected', 'false');
       await expect(page.getByTestId('flag-dev-server-tab-content')).toBeVisible();
       await expect(page.getByText('test-flag-1')).toBeVisible();
-    });
-
-    test('should be responsive to mouse movement patterns', async ({ page }: { page: Page }) => {
-      const toolbarContainer = page.getByTestId('launchdarkly-toolbar').first();
-
-      // Hover to expand
-      await toolbarContainer.hover();
-      await expect(page.getByRole('tab', { name: 'Flags' })).toBeVisible();
-
-      // Move mouse away from toolbar to a safe area
-      await page.mouse.move(300, 300);
-
-      // Wait for potential collapse (toolbar should remain expanded when tabs are visible)
-      await page.waitForTimeout(500);
-
-      // Hover again to ensure toolbar still works
-      await toolbarContainer.hover();
-      await expect(page.getByRole('tab', { name: 'Flags' })).toBeVisible();
     });
 
     test('should automatically recover from connection failures', async ({ page }: { page: Page }) => {
@@ -243,9 +214,7 @@ test.describe('LaunchDarkly Toolbar', () => {
       await page.waitForSelector('[data-testid="launchdarkly-toolbar"]');
 
       // Expand the toolbar to see the error state
-      const toolbarContainer = page.getByTestId('launchdarkly-toolbar');
-      await toolbarContainer.hover();
-      await page.getByRole('tab', { name: 'Flags' }).click();
+      await page.getByRole('img', { name: 'LaunchDarkly' }).click();
 
       // Verify we're in an error state initially
       await expect(page.getByText(/Error connecting to dev server/i)).toBeVisible();
@@ -274,16 +243,12 @@ test.describe('LaunchDarkly Toolbar', () => {
       // Verify the toolbar loads successfully
       await expect(page.getByRole('img', { name: 'LaunchDarkly' })).toBeVisible();
 
-      // Expand toolbar by hovering
-      const toolbarContainer = page.getByTestId('launchdarkly-toolbar');
-      await toolbarContainer.hover();
+      // Expand toolbar by clicking logo
+      await page.getByRole('img', { name: 'LaunchDarkly' }).click();
 
       // Verify tabs are visible
       await expect(page.getByRole('tab', { name: 'Flags' })).toBeVisible();
       await expect(page.getByRole('tab', { name: 'Settings' })).toBeVisible();
-
-      // Click on Flags tab
-      await page.getByRole('tab', { name: 'Flags' }).click();
 
       // Verify Flags tab is active and content is visible
       await expect(page.getByRole('tab', { name: 'Flags' })).toHaveAttribute('aria-selected', 'true');
@@ -449,8 +414,7 @@ test.describe('LaunchDarkly Toolbar', () => {
 
     test.describe('Event Interception', () => {
       test.beforeEach(async ({ page }: { page: Page }) => {
-        const toolbarContainer = page.getByTestId('launchdarkly-toolbar').first();
-        await toolbarContainer.hover();
+        await page.getByRole('img', { name: 'LaunchDarkly' }).click();
         await page.getByRole('tab', { name: 'Events' }).click();
       });
 

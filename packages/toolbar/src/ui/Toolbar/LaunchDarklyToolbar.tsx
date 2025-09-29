@@ -5,7 +5,7 @@ import { SearchProvider, useSearchContext, AnalyticsProvider, useAnalytics } fro
 import { CircleLogo, ExpandedToolbarContent } from './components';
 import { useToolbarAnimations, useToolbarVisibility, useToolbarDrag, useToolbarState } from './hooks';
 import { useDevServerContext } from './context';
-import { ToolbarMode, ToolbarPosition, getToolbarMode } from './types/toolbar';
+import { ToolbarMode, ToolbarPosition, getToolbarMode, getDefaultActiveTab } from './types/toolbar';
 
 import * as styles from './LaunchDarklyToolbar.css';
 import { DevServerProvider } from './context';
@@ -22,39 +22,34 @@ export function LdToolbar(props: LdToolbarProps) {
   const { mode, flagOverridePlugin, eventInterceptionPlugin, baseUrl } = props;
   const { searchTerm } = useSearchContext();
   const { state, handlePositionChange } = useDevServerContext();
-  const toolbarState = useToolbarState();
   const position = state.position;
   const analytics = useAnalytics();
 
+  const defaultActiveTab = getDefaultActiveTab(mode, !!flagOverridePlugin, !!eventInterceptionPlugin);
+
+  const toolbarState = useToolbarState({ defaultActiveTab });
   const {
-    isExpanded,
     activeTab,
     slideDirection,
     searchIsExpanded,
-    showFullToolbar,
-    hasBeenExpanded,
+    isExpanded,
     toolbarRef,
     handleTabChange,
-    handleMouseEnter,
-    handleMouseLeave,
     handleClose,
     handleSearch,
     handleTogglePin,
+    handleCircleClick,
     isPinned,
     setSearchIsExpanded,
     setIsAnimating,
-    isHovered,
-    isDragModifierPressed,
   } = toolbarState;
 
-  const toolbarAnimations = useToolbarAnimations({
-    showFullToolbar,
-    isHovered,
+  const { containerAnimations, animationConfig, handleAnimationStart, handleAnimationComplete } = useToolbarAnimations({
+    isExpanded,
     setIsAnimating,
   });
-  const { containerAnimations, animationConfig, handleAnimationStart, handleAnimationComplete } = toolbarAnimations;
 
-  const isDragEnabled = !showFullToolbar && isHovered && isDragModifierPressed;
+  const isDragEnabled = !isExpanded;
 
   const handleDragEnd = useCallback(
     (clientX: number) => {
@@ -71,19 +66,23 @@ export function LdToolbar(props: LdToolbarProps) {
     [handlePositionChange, position, analytics],
   );
 
-  const { handleMouseDown } = useToolbarDrag({
+  const { handleMouseDown, isDragging } = useToolbarDrag({
     enabled: isDragEnabled,
     onDragEnd: handleDragEnd,
     elementRef: toolbarRef,
   });
 
+  // Prevent clicks from expanding toolbar if user was dragging
+  const handleCircleClickWithDragCheck = useCallback(() => {
+    if (!isDragging()) {
+      handleCircleClick();
+    }
+  }, [handleCircleClick, isDragging]);
+
   return (
     <motion.div
       ref={toolbarRef}
-      className={`${styles.toolbarContainer} ${position === 'left' ? styles.positionLeft : styles.positionRight} ${showFullToolbar ? styles.toolbarExpanded : styles.toolbarCircle}`}
-      onMouseEnter={handleMouseEnter}
-      onMouseLeave={handleMouseLeave}
-      onMouseDown={handleMouseDown}
+      className={`${styles.toolbarContainer} ${position === 'left' ? styles.positionLeft : styles.positionRight} ${isExpanded ? styles.toolbarExpanded : styles.toolbarCircle}`}
       initial={false}
       animate={containerAnimations}
       transition={animationConfig}
@@ -93,11 +92,12 @@ export function LdToolbar(props: LdToolbarProps) {
       role="toolbar"
       aria-label="LaunchDarkly Developer Toolbar"
     >
-      <AnimatePresence>{!showFullToolbar && <CircleLogo hasBeenExpanded={hasBeenExpanded} />}</AnimatePresence>
       <AnimatePresence>
-        {showFullToolbar && (
+        {!isExpanded && <CircleLogo onClick={handleCircleClickWithDragCheck} onMouseDown={handleMouseDown} />}
+      </AnimatePresence>
+      <AnimatePresence>
+        {isExpanded && (
           <ExpandedToolbarContent
-            isExpanded={isExpanded}
             activeTab={activeTab}
             slideDirection={slideDirection}
             searchTerm={searchTerm}
@@ -112,6 +112,7 @@ export function LdToolbar(props: LdToolbarProps) {
             eventInterceptionPlugin={eventInterceptionPlugin}
             mode={mode}
             baseUrl={baseUrl}
+            defaultActiveTab={defaultActiveTab}
           />
         )}
       </AnimatePresence>

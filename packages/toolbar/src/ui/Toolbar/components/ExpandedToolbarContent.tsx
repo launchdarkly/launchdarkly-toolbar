@@ -6,7 +6,7 @@ import { Tabs } from '../../Tabs/Tabs';
 import { TabButton } from '../../Tabs/TabButton';
 import { TabContentRenderer } from './TabContentRenderer';
 import { ANIMATION_CONFIG, EASING } from '../constants';
-import { ActiveTabId, ToolbarMode, getTabsForMode, getDefaultActiveTab, TAB_ORDER } from '../types';
+import { ActiveTabId, ToolbarMode, getTabsForMode, TAB_ORDER } from '../types';
 import { useDevServerContext } from '../context/DevServerProvider';
 import type { IFlagOverridePlugin, IEventInterceptionPlugin } from '../../../types/plugin';
 
@@ -15,7 +15,6 @@ import { GearIcon, SyncIcon, ToggleOffIcon } from './icons';
 import { ErrorMessage } from './ErrorMessage';
 
 interface ExpandedToolbarContentProps {
-  isExpanded: boolean;
   activeTab: ActiveTabId;
   slideDirection: number;
   searchTerm: string;
@@ -28,6 +27,7 @@ interface ExpandedToolbarContentProps {
   setSearchIsExpanded: Dispatch<SetStateAction<boolean>>;
   mode: ToolbarMode;
   baseUrl: string;
+  defaultActiveTab: ActiveTabId;
   flagOverridePlugin?: IFlagOverridePlugin;
   eventInterceptionPlugin?: IEventInterceptionPlugin;
 }
@@ -42,7 +42,6 @@ function getHeaderLabel(currentProjectKey: string | null, sourceEnvironmentKey: 
 
 export function ExpandedToolbarContent(props: ExpandedToolbarContentProps) {
   const {
-    isExpanded,
     activeTab,
     slideDirection,
     searchTerm,
@@ -57,6 +56,7 @@ export function ExpandedToolbarContent(props: ExpandedToolbarContentProps) {
     flagOverridePlugin,
     eventInterceptionPlugin,
     baseUrl,
+    defaultActiveTab,
   } = props;
 
   const { state } = useDevServerContext();
@@ -65,7 +65,6 @@ export function ExpandedToolbarContent(props: ExpandedToolbarContentProps) {
   const { error } = state;
 
   const availableTabs = getTabsForMode(mode, !!flagOverridePlugin, !!eventInterceptionPlugin);
-  const defaultActiveTab = getDefaultActiveTab(mode, !!flagOverridePlugin, !!eventInterceptionPlugin);
 
   const shouldShowError = error && mode === 'dev-server' && state.connectionStatus === 'error';
 
@@ -91,64 +90,60 @@ export function ExpandedToolbarContent(props: ExpandedToolbarContentProps) {
       transition={ANIMATION_CONFIG.toolbarContent}
     >
       {/* Expandable content area */}
-      <AnimatePresence>
-        {isExpanded && (
+      <motion.div
+        className={styles.contentArea}
+        initial={{
+          opacity: 0,
+          y: -10,
+        }}
+        animate={{
+          opacity: 1,
+          y: 0,
+        }}
+        exit={{
+          opacity: 0,
+          y: -10,
+        }}
+        transition={ANIMATION_CONFIG.contentArea}
+      >
+        <Header
+          onSearch={onSearch}
+          searchTerm={searchTerm}
+          onClose={onClose}
+          searchIsExpanded={searchIsExpanded}
+          setSearchIsExpanded={setSearchIsExpanded}
+          label={headerLabel}
+          mode={mode}
+        />
+        {shouldShowError && <ErrorMessage error={error} />}
+        {!shouldShowError && (
           <motion.div
-            className={styles.contentArea}
-            initial={{
-              opacity: 0,
-              maxHeight: 0,
+            className={styles.scrollableContent}
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{
+              duration: 0.25,
+              ease: EASING.smooth,
+              delay: 0.05,
             }}
-            animate={{
-              opacity: 1,
-              maxHeight: 600,
-            }}
-            exit={{
-              opacity: 0,
-              maxHeight: 0,
-            }}
-            transition={ANIMATION_CONFIG.contentArea}
           >
-            <Header
-              onSearch={onSearch}
-              searchTerm={searchTerm}
-              onClose={onClose}
-              searchIsExpanded={searchIsExpanded}
-              setSearchIsExpanded={setSearchIsExpanded}
-              label={headerLabel}
-              mode={mode}
-            />
-            {shouldShowError && <ErrorMessage error={error} />}
-            {!shouldShowError && (
-              <motion.div
-                className={styles.scrollableContent}
-                initial={{ opacity: 0, y: -10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{
-                  duration: 0.3,
-                  ease: EASING.elastic,
-                  delay: 0.1,
-                }}
-              >
-                <AnimatePresence mode="wait">
-                  {activeTab && (
-                    <TabContentRenderer
-                      activeTab={activeTab}
-                      baseUrl={baseUrl}
-                      slideDirection={slideDirection}
-                      mode={mode}
-                      flagOverridePlugin={flagOverridePlugin}
-                      eventInterceptionPlugin={eventInterceptionPlugin}
-                      isPinned={isPinned}
-                      onTogglePin={onTogglePin}
-                    />
-                  )}
-                </AnimatePresence>
-              </motion.div>
-            )}
+            <AnimatePresence mode="wait">
+              {activeTab && (
+                <TabContentRenderer
+                  activeTab={activeTab}
+                  baseUrl={baseUrl}
+                  slideDirection={slideDirection}
+                  mode={mode}
+                  flagOverridePlugin={flagOverridePlugin}
+                  eventInterceptionPlugin={eventInterceptionPlugin}
+                  isPinned={isPinned}
+                  onTogglePin={onTogglePin}
+                />
+              )}
+            </AnimatePresence>
           </motion.div>
         )}
-      </AnimatePresence>
+      </motion.div>
 
       <motion.div
         className={styles.tabsContainer}

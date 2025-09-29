@@ -3,21 +3,21 @@ import { useState, useRef, useCallback, useMemo, useEffect, Dispatch, SetStateAc
 import { useSearchContext } from '../context/SearchProvider';
 import { useAnalytics } from '../context/AnalyticsProvider';
 import { TabId, ActiveTabId, TAB_ORDER } from '../types';
-import { useKeyPressed } from './useKeyPressed';
 import { saveToolbarPinned, loadToolbarPinned } from '../utils/localStorage';
+
+export interface UseToolbarStateProps {
+  defaultActiveTab: ActiveTabId;
+}
 
 export interface UseToolbarStateReturn {
   // State values
   isExpanded: boolean;
-  isHovered: boolean;
   activeTab: ActiveTabId;
   previousTab: ActiveTabId;
   isAnimating: boolean;
   searchIsExpanded: boolean;
-  showFullToolbar: boolean;
   slideDirection: number;
   hasBeenExpanded: boolean;
-  isDragModifierPressed: boolean;
   isPinned: boolean;
 
   // Refs
@@ -25,38 +25,29 @@ export interface UseToolbarStateReturn {
 
   // Handlers
   handleTabChange: (tabId: string) => void;
-  handleMouseEnter: () => void;
-  handleMouseLeave: () => void;
   handleClose: () => void;
   handleSearch: (newSearchTerm: string) => void;
   handleTogglePin: () => void;
+  handleCircleClick: () => void;
   setIsAnimating: Dispatch<SetStateAction<boolean>>;
   setSearchIsExpanded: Dispatch<SetStateAction<boolean>>;
 }
 
-export function useToolbarState(): UseToolbarStateReturn {
-  const [isExpanded, setIsExpanded] = useState(false);
-  const [isHovered, setIsHovered] = useState(false);
-  const [activeTab, setActiveTab] = useState<ActiveTabId>();
-  const [previousTab, setPreviousTab] = useState<ActiveTabId>();
-  const [isAnimating, setIsAnimating] = useState(false);
-  const [searchIsExpanded, setSearchIsExpanded] = useState<boolean>(false);
-  const [isPinned, setIsPinned] = useState<boolean>(() => loadToolbarPinned());
-
-  const hasBeenExpandedRef = useRef(false);
-  const toolbarRef = useRef<HTMLDivElement | null>(null);
-
-  const isMetaPressed = useKeyPressed('Meta');
-  const isControlPressed = useKeyPressed('Control');
-  const isDragModifierPressed = isMetaPressed || isControlPressed;
-
+export function useToolbarState(props: UseToolbarStateProps): UseToolbarStateReturn {
+  const { defaultActiveTab } = props;
   const { setSearchTerm } = useSearchContext();
   const analytics = useAnalytics();
 
-  const showFullToolbar = useMemo(
-    () => isExpanded || (isHovered && !isExpanded && !isDragModifierPressed),
-    [isExpanded, isHovered, isDragModifierPressed],
-  );
+  const [isExpanded, setIsExpanded] = useState(false);
+  const [activeTab, setActiveTab] = useState<ActiveTabId>();
+  const [previousTab, setPreviousTab] = useState<ActiveTabId>();
+  const [isAnimating, setIsAnimating] = useState(false);
+  const [searchIsExpanded, setSearchIsExpanded] = useState(false);
+  const [isPinned, setIsPinned] = useState(() => loadToolbarPinned());
+
+  // Refs
+  const hasBeenExpandedRef = useRef(false);
+  const toolbarRef = useRef<HTMLDivElement | null>(null);
 
   const slideDirection = useMemo(() => {
     if (!activeTab || !previousTab) return 1; // Default direction when no tab is selected
@@ -96,14 +87,6 @@ export function useToolbarState(): UseToolbarStateReturn {
     [activeTab, isExpanded, setSearchTerm, isAnimating, analytics],
   );
 
-  const handleMouseEnter = useCallback(() => {
-    setIsHovered(true);
-  }, []);
-
-  const handleMouseLeave = useCallback(() => {
-    setIsHovered(false);
-  }, []);
-
   const handleClose = useCallback(() => {
     // Track toolbar collapse from close button
     analytics.trackToolbarToggle('collapse', 'close_button');
@@ -128,18 +111,20 @@ export function useToolbarState(): UseToolbarStateReturn {
     });
   }, []);
 
+  const handleCircleClick = useCallback(() => {
+    if (!isExpanded) {
+      // Only set default tab if no tab is currently selected
+      if (!activeTab) {
+        setActiveTab(defaultActiveTab);
+      }
+      setIsExpanded(true);
+    }
+  }, [isExpanded, activeTab, defaultActiveTab]);
+
   // Update hasBeenExpanded ref when toolbar shows
   useEffect(() => {
-    if (showFullToolbar) {
+    if (isExpanded) {
       hasBeenExpandedRef.current = true;
-    }
-  }, [showFullToolbar]);
-
-  // Reset active tab to undefined when toolbar is closed
-  useEffect(() => {
-    if (!isExpanded) {
-      setActiveTab(undefined);
-      setPreviousTab(undefined);
     }
   }, [isExpanded]);
 
@@ -162,15 +147,12 @@ export function useToolbarState(): UseToolbarStateReturn {
   return {
     // State values
     isExpanded,
-    isHovered,
     activeTab,
     previousTab,
     isAnimating,
     searchIsExpanded,
-    showFullToolbar,
     slideDirection,
     hasBeenExpanded: hasBeenExpandedRef.current,
-    isDragModifierPressed,
     isPinned,
 
     // Refs
@@ -178,11 +160,10 @@ export function useToolbarState(): UseToolbarStateReturn {
 
     // Handlers
     handleTabChange,
-    handleMouseEnter,
-    handleMouseLeave,
     handleClose,
     handleSearch,
     handleTogglePin,
+    handleCircleClick,
     setIsAnimating,
     setSearchIsExpanded,
   };

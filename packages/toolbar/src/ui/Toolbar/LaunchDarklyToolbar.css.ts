@@ -38,16 +38,16 @@ export const circleContent = style({
   position: 'absolute',
   top: '50%',
   left: '50%',
-  width: 60,
-  height: 60,
+  width: 48,
+  height: 48,
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'center',
 });
 
 export const circleLogo = style({
-  width: 34,
-  height: 34,
+  width: 28,
+  height: 28,
   objectFit: 'contain',
   filter: 'brightness(0) invert(1)',
   flexShrink: 0,

@@ -89,6 +89,7 @@ describe('ExpandedToolbarContent - User Interaction Flows', () => {
     isPinned: false,
     onTabChange: vi.fn(),
     setSearchIsExpanded: vi.fn(),
+    defaultActiveTab: 'settings' as const,
   };
 
   const createMockFlagOverridePlugin = (): IFlagOverridePlugin & {
