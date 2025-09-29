@@ -53,10 +53,11 @@ export class ToolbarAnalytics {
   /**
    * Track toolbar position changes
    */
-  trackPositionChange(oldPosition: string, newPosition: string): void {
+  trackPositionChange(oldPosition: string, newPosition: string, source: 'drag' | 'settings'): void {
     this.track(EVENTS.POSITION_CHANGED, {
       oldPosition,
       newPosition,
+      source,
     });
   }
 

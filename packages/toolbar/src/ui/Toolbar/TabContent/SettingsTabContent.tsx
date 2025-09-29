@@ -195,7 +195,7 @@ export function SettingsTabContent(props: SettingsTabContentProps) {
 
   const handlePositionSelect = (newPosition: ToolbarPosition) => {
     // Track position change
-    analytics.trackPositionChange(position, newPosition);
+    analytics.trackPositionChange(position, newPosition, 'settings');
     handlePositionChange(newPosition);
   };
 

@@ -58,7 +58,7 @@ export function LdToolbar(props: LdToolbarProps) {
 
       // Track position change
       if (newPosition !== position) {
-        analytics.trackPositionChange(position, newPosition);
+        analytics.trackPositionChange(position, newPosition, 'drag');
       }
 
       handlePositionChange(newPosition);
