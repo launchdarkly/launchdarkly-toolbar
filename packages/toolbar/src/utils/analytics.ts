@@ -6,6 +6,8 @@ import type { IFlagOverridePlugin } from '../types/plugin';
  */
 export class ToolbarAnalytics {
   private ldClient: LDClient | null = null;
+  // Timer id for debouncing search tracking
+  private searchDebounceTimer: ReturnType<typeof setTimeout> | null = null;
 
   constructor(flagOverridePlugin?: IFlagOverridePlugin) {
     this.ldClient = flagOverridePlugin?.getClient() || null;
@@ -66,11 +68,17 @@ export class ToolbarAnalytics {
   /**
    * Track search usage
    */
-  trackSearch(query: string, resultsCount: number): void {
-    this.track('ld.toolbar.search', {
-      query,
-      resultsCount,
-    });
+  trackSearch(query: string): void {
+    // Debounce search tracking so rapid consecutive searches are coalesced.
+    if (this.searchDebounceTimer) {
+      clearTimeout(this.searchDebounceTimer);
+    }
+
+    this.searchDebounceTimer = setTimeout(() => {
+      if (!query) return;
+      this.track('ld.toolbar.search', { query });
+      this.searchDebounceTimer = null;
+    }, 1000);
   }
 
   /**

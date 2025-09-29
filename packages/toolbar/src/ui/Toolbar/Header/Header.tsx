@@ -5,6 +5,7 @@ import { LogoSection, EnvironmentLabel, SearchSection, ActionButtons } from './c
 import { useDevServerContext } from '../context/DevServerProvider';
 import { ConnectionStatus } from '../components';
 import { ToolbarMode } from '../types/toolbar';
+import { useAnalytics } from '../context';
 
 export interface HeaderProps {
   searchTerm: string;
@@ -22,12 +23,18 @@ export function Header(props: HeaderProps) {
   const { state, refresh } = useDevServerContext();
   const { connectionStatus } = state;
   const isConnected = connectionStatus === 'connected';
+  const analytics = useAnalytics();
 
   const isDevServer = mode === 'dev-server';
   const showEnvironment = isDevServer && isConnected;
   const showSearch = isDevServer ? isConnected : true;
   const showRefresh = isDevServer;
   const showConnectionStatus = isDevServer;
+
+  const handleSearch = (term: string) => {
+    onSearch(term);
+    analytics.trackSearch(term);
+  }
 
   return (
     <>
@@ -61,7 +68,7 @@ export function Header(props: HeaderProps) {
                 >
                   <SearchSection
                     searchTerm={searchTerm}
-                    onSearch={onSearch}
+                    onSearch={handleSearch}
                     setSearchIsExpanded={setSearchIsExpanded}
                   />
                 </motion.div>
