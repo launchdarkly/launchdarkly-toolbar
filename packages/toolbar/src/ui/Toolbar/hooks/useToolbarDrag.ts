@@ -84,30 +84,25 @@ export function useToolbarDrag({ enabled, onDragEnd, elementRef }: UseToolbarDra
         }
       };
 
-      const handleDragComplete = () => {
+      const handleDragComplete = (upEvent: MouseEvent) => {
         // Clean up event listeners
         document.removeEventListener('mousemove', updateElementPosition);
         document.removeEventListener('mouseup', handleDragComplete);
         document.removeEventListener('selectstart', preventDefault);
 
-        const rect = elementRef.current?.getBoundingClientRect();
-        const centerX = rect ? rect.left + rect.width / 2 : startPosition.x;
-        const centerY = rect ? rect.top + rect.height / 2 : startPosition.y;
+        // Reset element to original position (CSS will handle final positioning)
+        resetElementStyles();
 
         // Only call onDragEnd if we actually dragged (moved beyond threshold)
-        onDragEnd(centerX, centerY);
+        if (draggedRef.current) {
+          onDragEnd(upEvent.clientX, upEvent.clientY);
+        }
 
-        // Wait for React to update the DOM with the new position before resetting styles
-        requestAnimationFrame(() => {
-          // Reset element to original position (CSS will handle final positioning)
-          resetElementStyles();
-
-          // Keep drag state for a brief moment to let click handler check it
-          // This prevents the click event from firing immediately after a drag
-          setTimeout(() => {
-            draggedRef.current = false;
-          }, DRAG_CONSTANTS.CLICK_RESET_DELAY_MS);
-        });
+        // Keep drag state for a brief moment to let click handler check it
+        // This prevents the click event from firing immediately after a drag
+        setTimeout(() => {
+          draggedRef.current = false;
+        }, DRAG_CONSTANTS.CLICK_RESET_DELAY_MS);
       };
 
       // Set up document-level event listeners for drag tracking
