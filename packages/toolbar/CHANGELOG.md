@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.20.0-beta.1](https://github.com/launchdarkly/launchdarkly-toolbar/compare/0.19.0-beta.1...0.20.0-beta.1) (2025-09-29)
+
+
+### Features
+
+* toolbar click-to-expand; smoother collapse bounce; drag threshold; tests updated ([#124](https://github.com/launchdarkly/launchdarkly-toolbar/issues/124)) ([3a6cf50](https://github.com/launchdarkly/launchdarkly-toolbar/commit/3a6cf50a060833095fb4c00a469ac7f595bce19e))
+* use ld logo instead of text in header ([#122](https://github.com/launchdarkly/launchdarkly-toolbar/issues/122)) ([ee59f8e](https://github.com/launchdarkly/launchdarkly-toolbar/commit/ee59f8eb1741aee65aea9ef6e2f6d5ed36355413))
+
 ## [0.19.0-beta.1](https://github.com/launchdarkly/launchdarkly-toolbar/compare/0.18.0-beta.1...0.19.0-beta.1) (2025-09-25)
 
 
