@@ -30,6 +30,7 @@ interface ExpandedToolbarContentProps {
   defaultActiveTab: ActiveTabId;
   flagOverridePlugin?: IFlagOverridePlugin;
   eventInterceptionPlugin?: IEventInterceptionPlugin;
+  onHeaderMouseDown?: (event: React.MouseEvent) => void;
 }
 
 function getHeaderLabel(currentProjectKey: string | null, sourceEnvironmentKey: string | null) {
@@ -57,6 +58,7 @@ export const ExpandedToolbarContent = React.forwardRef<HTMLDivElement, ExpandedT
     eventInterceptionPlugin,
     baseUrl,
     defaultActiveTab,
+    onHeaderMouseDown,
   } = props;
 
   const { state } = useDevServerContext();
@@ -118,6 +120,7 @@ export const ExpandedToolbarContent = React.forwardRef<HTMLDivElement, ExpandedT
           setSearchIsExpanded={setSearchIsExpanded}
           label={headerLabel}
           mode={mode}
+          onMouseDown={onHeaderMouseDown}
         />
         {shouldShowError && <ErrorMessage error={error} />}
         {!shouldShowError && (

@@ -15,10 +15,11 @@ export interface HeaderProps {
   setSearchIsExpanded: Dispatch<SetStateAction<boolean>>;
   label: string;
   mode: ToolbarMode;
+  onMouseDown?: (event: React.MouseEvent) => void;
 }
 
 export function Header(props: HeaderProps) {
-  const { onClose, onSearch, searchTerm, searchIsExpanded, setSearchIsExpanded, label, mode } = props;
+  const { onClose, onSearch, searchTerm, searchIsExpanded, setSearchIsExpanded, label, mode, onMouseDown } = props;
 
   const { state, refresh } = useDevServerContext();
   const { connectionStatus } = state;
@@ -39,7 +40,7 @@ export function Header(props: HeaderProps) {
   return (
     <>
       <div className={styles.header}>
-        <LogoSection />
+        <LogoSection onMouseDown={onMouseDown} />
 
         <div className={styles.centerSection}>
           {(showEnvironment || showSearch) && (

@@ -1,5 +1,5 @@
 import { AnimatePresence, motion } from 'motion/react';
-import { useCallback, useEffect, useRef } from 'react';
+import { useCallback, useRef } from 'react';
 
 import { SearchProvider, useSearchContext, AnalyticsProvider, useAnalytics } from './context';
 import { CircleLogo, ExpandedToolbarContent } from './components';
@@ -59,15 +59,6 @@ export function LdToolbar(props: LdToolbarProps) {
     }
   }, [circleButtonRef]);
 
-  const { containerAnimations, animationConfig, handleAnimationStart, handleAnimationComplete } = useToolbarAnimations({
-    isExpanded,
-    setIsAnimating,
-    onExpandComplete: focusExpandedToolbar,
-    onCollapseComplete: focusCollapsedToolbar,
-  });
-
-  const isDragEnabled = !isExpanded;
-
   const handleDragEnd = useCallback(
     (clientX: number, clientY: number) => {
       const screenWidth = window.innerWidth;
@@ -95,9 +86,16 @@ export function LdToolbar(props: LdToolbarProps) {
   );
 
   const { handleMouseDown, isDragging } = useToolbarDrag({
-    enabled: isDragEnabled,
+    enabled: true,
     onDragEnd: handleDragEnd,
     elementRef: toolbarRef,
+  });
+
+  const { containerAnimations, animationConfig, handleAnimationStart, handleAnimationComplete } = useToolbarAnimations({
+    isExpanded,
+    setIsAnimating,
+    onExpandComplete: focusExpandedToolbar,
+    onCollapseComplete: focusCollapsedToolbar,
   });
 
   // Prevent clicks from expanding toolbar if user was dragging
@@ -164,6 +162,7 @@ export function LdToolbar(props: LdToolbarProps) {
             mode={mode}
             baseUrl={baseUrl}
             defaultActiveTab={defaultActiveTab}
+            onHeaderMouseDown={handleMouseDown}
           />
         )}
       </AnimatePresence>
