@@ -1,5 +1,5 @@
 import { motion } from 'motion/react';
-import { forwardRef } from 'react';
+import { forwardRef, type MouseEvent } from 'react';
 
 import { ANIMATION_CONFIG } from '../constants';
 import { LaunchDarklyIcon } from './icons/LaunchDarklyIcon';
@@ -8,7 +8,7 @@ import * as styles from '../LaunchDarklyToolbar.css';
 
 interface CircleLogoProps {
   onClick: () => void;
-  onMouseDown: (event: React.MouseEvent) => void;
+  onMouseDown: (event: MouseEvent) => void;
 }
 
 export const CircleLogo = forwardRef<HTMLButtonElement, CircleLogoProps>((props, ref) => {
