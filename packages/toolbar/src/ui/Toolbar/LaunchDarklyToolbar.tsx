@@ -100,16 +100,17 @@ export function LdToolbar(props: LdToolbarProps) {
       onAnimationStart={handleAnimationStart}
       onAnimationComplete={handleAnimationComplete}
       onKeyDown={(e) => {
-        if (!isExpanded) {
-          if (e.key === 'Enter' || e.key === ' ') {
-            e.preventDefault();
-            handleCircleClickWithDragCheck();
-          }
+        if (isExpanded) {
+          return;
+        }
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          handleCircleClickWithDragCheck();
         }
       }}
       data-testid="launchdarkly-toolbar"
       role={isExpanded ? 'toolbar' : 'button'}
-      aria-label={isExpanded ? 'LaunchDarkly developer toolbar (expanded)' : 'Open LaunchDarkly toolbar'}
+      aria-label={isExpanded ? 'LaunchDarkly toolbar' : 'Open LaunchDarkly toolbar'}
       tabIndex={isExpanded ? -1 : 0}
     >
       <AnimatePresence>
@@ -139,11 +140,6 @@ export function LdToolbar(props: LdToolbarProps) {
           />
         )}
       </AnimatePresence>
-
-      {/* Screen reader announcements÷ */}
-      <div aria-live="polite" aria-atomic="true" className={styles.screenReaderOnly}>
-        {isExpanded ? 'LaunchDarkly toolbar expanded' : 'LaunchDarkly toolbar collapsed'}
-      </div>
     </motion.div>
   );
 }
