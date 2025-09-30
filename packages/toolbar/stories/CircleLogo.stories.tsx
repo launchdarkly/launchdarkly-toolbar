@@ -11,7 +11,7 @@ const meta: Meta<typeof CircleLogo> = {
     docs: {
       description: {
         component:
-          'The CircleLogo component is the collapsed state of the LaunchDarkly toolbar. It displays as a circular button with the LaunchDarkly icon and includes hover animations. The component has a dark background (gray-900) with a border and contains the LaunchDarkly icon in white.',
+          'The CircleLogo component is the collapsed state of the LaunchDarkly toolbar. It displays as a circular button with the LaunchDarkly icon and includes hover animations.',
       },
     },
   },
