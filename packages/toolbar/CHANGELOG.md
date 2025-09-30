@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.22.1-beta.1](https://github.com/launchdarkly/launchdarkly-toolbar/compare/0.22.0-beta.1...0.22.1-beta.1) (2025-09-30)
+
+
+### Bug Fixes
+
+* Update CircleLogo component styles and event types ([#135](https://github.com/launchdarkly/launchdarkly-toolbar/issues/135)) ([6cb56c7](https://github.com/launchdarkly/launchdarkly-toolbar/commit/6cb56c7bbb91986be67a7a892e5e78ec41a337b3))
+* z index configuration for dropdowns ([#137](https://github.com/launchdarkly/launchdarkly-toolbar/issues/137)) ([d62a575](https://github.com/launchdarkly/launchdarkly-toolbar/commit/d62a57541075380fa633c1deb022f0c6f9698b61))
+
 ## [0.22.0-beta.1](https://github.com/launchdarkly/launchdarkly-toolbar/compare/0.21.0-beta.1...0.22.0-beta.1) (2025-09-30)
 
 
