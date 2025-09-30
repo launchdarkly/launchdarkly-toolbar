@@ -66,18 +66,18 @@ function TestWrapper({
   initialPosition?: 'bottom-left' | 'bottom-right' | 'top-left' | 'top-right';
 }) {
   return (
-    <DevServerProvider
-      config={{
-        devServerUrl,
-        pollIntervalInMs: 5000,
-      }}
-    >
-      <ToolbarUIProvider initialPosition={initialPosition}>
+    <ToolbarUIProvider initialPosition={initialPosition}>
+      <DevServerProvider
+        config={{
+          devServerUrl,
+          pollIntervalInMs: 5000,
+        }}
+      >
         <AnalyticsProvider>
           <SearchProvider>{children}</SearchProvider>
         </AnalyticsProvider>
-      </ToolbarUIProvider>
-    </DevServerProvider>
+      </DevServerProvider>
+    </ToolbarUIProvider>
   );
 }
 

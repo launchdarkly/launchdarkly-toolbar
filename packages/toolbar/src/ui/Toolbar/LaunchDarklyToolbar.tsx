@@ -170,14 +170,14 @@ export function LaunchDarklyToolbar(props: LaunchDarklyToolbarProps) {
   const mode = getToolbarMode(devServerUrl);
 
   return (
-    <DevServerProvider
-      config={{
-        projectKey,
-        devServerUrl,
-        pollIntervalInMs,
-      }}
-    >
-      <ToolbarUIProvider initialPosition={position}>
+    <ToolbarUIProvider initialPosition={position}>
+      <DevServerProvider
+        config={{
+          projectKey,
+          devServerUrl,
+          pollIntervalInMs,
+        }}
+      >
         <AnalyticsProvider ldClient={flagOverridePlugin?.getClient() ?? eventInterceptionPlugin?.getClient()}>
           <SearchProvider>
             <LdToolbar
@@ -188,7 +188,7 @@ export function LaunchDarklyToolbar(props: LaunchDarklyToolbarProps) {
             />
           </SearchProvider>
         </AnalyticsProvider>
-      </ToolbarUIProvider>
-    </DevServerProvider>
+      </DevServerProvider>
+    </ToolbarUIProvider>
   );
 }
