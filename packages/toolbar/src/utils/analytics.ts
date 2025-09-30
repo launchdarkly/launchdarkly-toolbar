@@ -1,4 +1,5 @@
 import type { LDClient } from 'launchdarkly-js-client-sdk';
+import { isDoNotTrackEnabled } from './browser';
 
 export const ANALYTICS_EVENT_PREFIX = 'ld.toolbar';
 
@@ -35,6 +36,10 @@ export class ToolbarAnalytics {
 
     if (!this.ldClient) {
       console.debug('ToolbarAnalytics: LDClient not available, skipping track event:', fullEventName);
+      return;
+    }
+
+    if (isDoNotTrackEnabled()) {
       return;
     }
 
