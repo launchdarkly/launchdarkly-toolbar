@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.21.0-beta.1](https://github.com/launchdarkly/launchdarkly-toolbar/compare/0.20.0-beta.1...0.21.0-beta.1) (2025-09-30)
+
+
+### Features
+
+* Add support for all corner toolbar positions ([#128](https://github.com/launchdarkly/launchdarkly-toolbar/issues/128)) ([05c9037](https://github.com/launchdarkly/launchdarkly-toolbar/commit/05c9037a6df94a312ce7ed761b603c2d16868857))
+* setup telemetry for toolbar ([#126](https://github.com/launchdarkly/launchdarkly-toolbar/issues/126)) ([74ead85](https://github.com/launchdarkly/launchdarkly-toolbar/commit/74ead85e956fffeb6c1cdcd658cc5697f807b75b))
+
 ## [0.20.0-beta.1](https://github.com/launchdarkly/launchdarkly-toolbar/compare/0.19.0-beta.1...0.20.0-beta.1) (2025-09-29)
 
 
