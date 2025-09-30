@@ -2,7 +2,7 @@ import { style } from '@vanilla-extract/css';
 
 export const toolbarContainer = style({
   position: 'fixed',
-  zIndex: 1000,
+  zIndex: 9999,
   backgroundColor: 'var(--lp-color-gray-900)',
   border: '1px solid var(--lp-color-gray-700)',
   overflow: 'hidden',
