@@ -27,7 +27,7 @@ export interface ToolbarUIProviderProps {
 
 export const ToolbarUIProvider: FC<ToolbarUIProviderProps> = ({ children, initialPosition }) => {
   const initialValidPosition =
-    initialPosition && (TOOLBAR_POSITIONS as readonly string[]).includes(initialPosition) ? initialPosition : undefined;
+    initialPosition && TOOLBAR_POSITIONS.includes(initialPosition) ? initialPosition : undefined;
 
   const [position, setPosition] = useState<ToolbarPosition>(
     () => loadToolbarPosition() || initialValidPosition || DEFAULT_SETTINGS.position,
