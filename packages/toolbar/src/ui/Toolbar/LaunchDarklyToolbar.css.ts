@@ -1,5 +1,5 @@
 import { style } from '@vanilla-extract/css';
-import { Z_INDEX } from '../../constants/zIndex';
+import { Z_INDEX } from '../constants/zIndex';
 
 export const toolbarContainer = style({
   position: 'fixed',
