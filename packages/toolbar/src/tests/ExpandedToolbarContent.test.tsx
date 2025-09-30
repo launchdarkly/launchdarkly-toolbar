@@ -3,6 +3,7 @@ import { expect, test, describe, vi, beforeEach } from 'vitest';
 
 import { ExpandedToolbarContent } from '../ui/Toolbar/components/ExpandedToolbarContent';
 import { DevServerProvider } from '../ui/Toolbar/context/DevServerProvider';
+import { ToolbarUIProvider } from '../ui/Toolbar/context/ToolbarUIProvider';
 import { SearchProvider } from '../ui/Toolbar/context/SearchProvider';
 import { AnalyticsProvider } from '../ui/Toolbar/context/AnalyticsProvider';
 import { IFlagOverridePlugin, IEventInterceptionPlugin } from '../types/plugin';
@@ -58,24 +59,25 @@ vi.mock('../ui/Toolbar/TabContent/SettingsTabContent', () => ({
 function TestWrapper({
   children,
   devServerUrl,
-  initialPosition = 'right',
+  initialPosition = 'bottom-right',
 }: {
   children: React.ReactNode;
   devServerUrl?: string;
-  initialPosition?: 'left' | 'right';
+  initialPosition?: 'bottom-left' | 'bottom-right' | 'top-left' | 'top-right';
 }) {
   return (
-    <DevServerProvider
-      config={{
-        devServerUrl,
-        pollIntervalInMs: 5000,
-      }}
-      initialPosition={initialPosition}
-    >
-      <AnalyticsProvider>
-        <SearchProvider>{children}</SearchProvider>
-      </AnalyticsProvider>
-    </DevServerProvider>
+    <ToolbarUIProvider initialPosition={initialPosition}>
+      <DevServerProvider
+        config={{
+          devServerUrl,
+          pollIntervalInMs: 5000,
+        }}
+      >
+        <AnalyticsProvider>
+          <SearchProvider>{children}</SearchProvider>
+        </AnalyticsProvider>
+      </DevServerProvider>
+    </ToolbarUIProvider>
   );
 }
 

@@ -1,7 +1,8 @@
 import { Dispatch, SetStateAction, useCallback, useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { IconButton } from '../../components/IconButton';
-import { SearchIcon, SyncIcon, ChevronDownIcon } from '../../components/icons';
+import { SearchIcon, SyncIcon, ChevronDownIcon, ChevronUpIcon } from '../../components/icons';
+import { useToolbarUIContext } from '../../context/ToolbarUIProvider';
 
 import * as styles from '../Header.css';
 
@@ -18,6 +19,8 @@ export function ActionButtons(props: ActionButtonsProps) {
   const { searchIsExpanded, setSearchIsExpanded, onClose, onRefresh, showSearchButton, showRefreshButton } = props;
   const [isSpinning, setIsSpinning] = useState(false);
   const [rotationCount, setRotationCount] = useState(0);
+  const { position } = useToolbarUIContext();
+  const isTop = position.startsWith('top-');
 
   const handleRefreshClick = useCallback(() => {
     // Prevent multiple clicks while already spinning
@@ -79,7 +82,7 @@ export function ActionButtons(props: ActionButtonsProps) {
       <div className={styles.closeButtonArea}>
         <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} transition={{ duration: 0.1 }}>
           <IconButton
-            icon={<ChevronDownIcon />}
+            icon={isTop ? <ChevronUpIcon /> : <ChevronDownIcon />}
             label="Close toolbar"
             onClick={onClose}
             className={styles.actionButton}

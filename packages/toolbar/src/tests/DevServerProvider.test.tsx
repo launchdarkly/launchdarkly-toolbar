@@ -2,7 +2,6 @@ import { render, screen, waitFor } from '@testing-library/react';
 import { expect, test, describe, vi, beforeEach } from 'vitest';
 
 import { DevServerProvider, useDevServerContext } from '../ui/Toolbar/context/DevServerProvider';
-import { TOOLBAR_STORAGE_KEYS } from '../ui/Toolbar/utils/localStorage';
 
 // Mock the DevServerClient and FlagStateManager
 const mockDevServerClient = {
@@ -43,7 +42,6 @@ function TestConsumer() {
   return (
     <div>
       <div data-testid="connection-status">{state.connectionStatus}</div>
-      <div data-testid="position">{state.position}</div>
       <div data-testid="current-project">{state.currentProjectKey || 'none'}</div>
       <div data-testid="source-environment">{state.sourceEnvironmentKey || 'none'}</div>
       <div data-testid="is-loading">{state.isLoading.toString()}</div>
@@ -67,7 +65,6 @@ describe('DevServerProvider - Integration Flows', () => {
             devServerUrl: 'http://localhost:8765',
             pollIntervalInMs: 5000,
           }}
-          initialPosition="right"
         >
           <TestConsumer />
         </DevServerProvider>,
@@ -106,7 +103,6 @@ describe('DevServerProvider - Integration Flows', () => {
             projectKey: 'explicit-project',
             pollIntervalInMs: 5000,
           }}
-          initialPosition="right"
         >
           <TestConsumer />
         </DevServerProvider>,
@@ -132,7 +128,6 @@ describe('DevServerProvider - Integration Flows', () => {
             devServerUrl: 'http://localhost:8765',
             pollIntervalInMs: 5000,
           }}
-          initialPosition="right"
         >
           <TestConsumer />
         </DevServerProvider>,
@@ -159,7 +154,6 @@ describe('DevServerProvider - Integration Flows', () => {
             devServerUrl: 'http://localhost:8765',
             pollIntervalInMs: 5000,
           }}
-          initialPosition="right"
         >
           <TestConsumer />
         </DevServerProvider>,
@@ -185,7 +179,6 @@ describe('DevServerProvider - Integration Flows', () => {
           config={{
             pollIntervalInMs: 5000,
           }}
-          initialPosition="left"
         >
           <TestConsumer />
         </DevServerProvider>,
@@ -203,43 +196,9 @@ describe('DevServerProvider - Integration Flows', () => {
       expect(screen.getByTestId('current-project')).toHaveTextContent('none');
       expect(screen.getByTestId('source-environment')).toHaveTextContent('none');
       expect(screen.getByTestId('error')).toHaveTextContent('none');
-      expect(screen.getByTestId('position')).toHaveTextContent('left');
 
       // AND: Doesn't attempt to make server connections
       expect(mockDevServerClient.getAvailableProjects).not.toHaveBeenCalled();
-    });
-  });
-
-  describe('Developer Preference Management Flow', () => {
-    test('developer sets and persists their preferred toolbar position', async () => {
-      // GIVEN: Developer has previously set their preferred position
-      localStorage.setItem(TOOLBAR_STORAGE_KEYS.SETTINGS, JSON.stringify({ position: 'left' }));
-
-      // WHEN: They load the toolbar again (even with different config)
-      render(
-        <DevServerProvider
-          config={{ pollIntervalInMs: 5000 }}
-          initialPosition="right" // This should be overridden by localStorage
-        >
-          <TestConsumer />
-        </DevServerProvider>,
-      );
-
-      // THEN: Their preference is respected
-      expect(screen.getByTestId('position')).toHaveTextContent('left');
-    });
-
-    test('developer gets sensible defaults when no preferences are set', () => {
-      // GIVEN: Developer hasn't configured any preferences
-      render(
-        <DevServerProvider config={{ pollIntervalInMs: 5000 }}>
-          <TestConsumer />
-        </DevServerProvider>,
-      );
-
-      // WHEN: The toolbar loads
-      // THEN: It uses sensible defaults (right position)
-      expect(screen.getByTestId('position')).toHaveTextContent('right');
     });
   });
 });

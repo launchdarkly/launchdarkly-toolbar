@@ -137,13 +137,13 @@ describe('LaunchDarklyToolbar - User Flows', () => {
   describe('Toolbar Positioning Flow', () => {
     test('developer can use toolbar in their preferred screen position', () => {
       // GIVEN: Developer prefers toolbar on the left side of screen
-      render(<LaunchDarklyToolbar position="left" />);
+      render(<LaunchDarklyToolbar position="bottom-left" />);
 
       // WHEN: The toolbar renders
       const toolbar = screen.getByTestId('launchdarkly-toolbar');
 
       // THEN: It appears positioned on the left side
-      expect(toolbar.className).toMatch(/positionLeft/);
+      expect(toolbar.className).toMatch(/positionBottomLeft/);
     });
 
     test('toolbar defaults to right position when no preference specified', () => {
@@ -154,7 +154,7 @@ describe('LaunchDarklyToolbar - User Flows', () => {
       const toolbar = screen.getByTestId('launchdarkly-toolbar');
 
       // THEN: It defaults to the right side
-      expect(toolbar.className).toMatch(/positionRight/);
+      expect(toolbar.className).toMatch(/positionBottomRight/);
     });
   });
 

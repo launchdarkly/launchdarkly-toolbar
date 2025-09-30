@@ -3,13 +3,7 @@ import type { FC, ReactNode } from 'react';
 import { DevServerClient } from '../../../services/DevServerClient';
 import { FlagStateManager } from '../../../services/FlagStateManager';
 import { LdToolbarConfig, ToolbarState } from '../../../types/devServer';
-import {
-  DEFAULT_SETTINGS,
-  TOOLBAR_STORAGE_KEYS,
-  loadToolbarPosition,
-  saveToolbarPosition,
-} from '../utils/localStorage';
-import { ToolbarPosition } from '../types/toolbar';
+import { TOOLBAR_STORAGE_KEYS } from '../utils/localStorage';
 
 const STORAGE_KEY = TOOLBAR_STORAGE_KEYS.PROJECT;
 
@@ -17,14 +11,12 @@ interface DevServerContextValue {
   state: ToolbarState & {
     availableProjects: string[];
     currentProjectKey: string | null;
-    position: ToolbarPosition;
   };
   setOverride: (flagKey: string, value: any) => Promise<void>;
   clearOverride: (flagKey: string) => Promise<void>;
   clearAllOverrides: () => Promise<void>;
   refresh: () => Promise<void>;
   switchProject: (projectKey: string) => Promise<void>;
-  handlePositionChange: (position: ToolbarPosition) => void;
 }
 
 const DevServerContext = createContext<DevServerContextValue | null>(null);
@@ -40,18 +32,15 @@ export const useDevServerContext = () => {
 export interface DevServerProviderProps {
   children: ReactNode;
   config: LdToolbarConfig;
-  initialPosition?: ToolbarPosition;
 }
 
-export const DevServerProvider: FC<DevServerProviderProps> = ({ children, config, initialPosition }) => {
+export const DevServerProvider: FC<DevServerProviderProps> = ({ children, config }) => {
   const [toolbarState, setToolbarState] = useState<
     ToolbarState & {
       availableProjects: string[];
       currentProjectKey: string | null;
-      position: ToolbarPosition;
     }
   >(() => {
-    const savedPosition = loadToolbarPosition();
     return {
       flags: {},
       connectionStatus: 'disconnected',
@@ -61,7 +50,6 @@ export const DevServerProvider: FC<DevServerProviderProps> = ({ children, config
       sourceEnvironmentKey: null,
       availableProjects: [],
       currentProjectKey: null,
-      position: savedPosition || initialPosition || DEFAULT_SETTINGS.position,
     };
   });
 
@@ -421,14 +409,6 @@ export const DevServerProvider: FC<DevServerProviderProps> = ({ children, config
     [devServerClient, flagStateManager, toolbarState.availableProjects],
   );
 
-  const handlePositionChange = useCallback((newPosition: ToolbarPosition) => {
-    setToolbarState((prev) => ({
-      ...prev,
-      position: newPosition,
-    }));
-    saveToolbarPosition(newPosition);
-  }, []);
-
   const value = useMemo(
     () => ({
       state: toolbarState,
@@ -437,9 +417,8 @@ export const DevServerProvider: FC<DevServerProviderProps> = ({ children, config
       clearAllOverrides,
       refresh,
       switchProject,
-      handlePositionChange,
     }),
-    [toolbarState, setOverride, clearOverride, clearAllOverrides, refresh, switchProject, handlePositionChange],
+    [toolbarState, setOverride, clearOverride, clearAllOverrides, refresh, switchProject],
   );
 
   return <DevServerContext.Provider value={value}>{children}</DevServerContext.Provider>;

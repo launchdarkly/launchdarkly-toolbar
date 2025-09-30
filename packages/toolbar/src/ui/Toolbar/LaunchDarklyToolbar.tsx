@@ -4,7 +4,7 @@ import { useCallback } from 'react';
 import { SearchProvider, useSearchContext, AnalyticsProvider, useAnalytics } from './context';
 import { CircleLogo, ExpandedToolbarContent } from './components';
 import { useToolbarAnimations, useToolbarVisibility, useToolbarDrag, useToolbarState } from './hooks';
-import { useDevServerContext } from './context';
+import { ToolbarUIProvider, useToolbarUIContext } from './context';
 import { ToolbarMode, ToolbarPosition, getToolbarMode, getDefaultActiveTab } from './types/toolbar';
 
 import * as styles from './LaunchDarklyToolbar.css';
@@ -21,8 +21,7 @@ export interface LdToolbarProps {
 export function LdToolbar(props: LdToolbarProps) {
   const { mode, flagOverridePlugin, eventInterceptionPlugin, baseUrl } = props;
   const { searchTerm } = useSearchContext();
-  const { state, handlePositionChange } = useDevServerContext();
-  const position = state.position;
+  const { position, handlePositionChange } = useToolbarUIContext();
   const analytics = useAnalytics();
 
   const defaultActiveTab = getDefaultActiveTab(mode, !!flagOverridePlugin, !!eventInterceptionPlugin);
@@ -52,9 +51,20 @@ export function LdToolbar(props: LdToolbarProps) {
   const isDragEnabled = !isExpanded;
 
   const handleDragEnd = useCallback(
-    (clientX: number) => {
+    (clientX: number, clientY: number) => {
       const screenWidth = window.innerWidth;
-      const newPosition: ToolbarPosition = clientX < screenWidth / 2 ? 'left' : 'right';
+      const screenHeight = window.innerHeight;
+
+      const isLeft = clientX < screenWidth / 2;
+      const isTop = clientY < screenHeight / 2;
+
+      const newPosition: ToolbarPosition = isTop
+        ? isLeft
+          ? 'top-left'
+          : 'top-right'
+        : isLeft
+          ? 'bottom-left'
+          : 'bottom-right';
 
       // Track position change
       if (newPosition !== position) {
@@ -79,10 +89,20 @@ export function LdToolbar(props: LdToolbarProps) {
     }
   }, [handleCircleClick, isDragging]);
 
+  // Map ToolbarPosition to css class for consistent mapping
+  const positionClassMap: Record<ToolbarPosition, string> = {
+    'bottom-left': styles.positionBottomLeft,
+    'bottom-right': styles.positionBottomRight,
+    'top-left': styles.positionTopLeft,
+    'top-right': styles.positionTopRight,
+  };
+
   return (
     <motion.div
       ref={toolbarRef}
-      className={`${styles.toolbarContainer} ${position === 'left' ? styles.positionLeft : styles.positionRight} ${isExpanded ? styles.toolbarExpanded : styles.toolbarCircle}`}
+      className={`${styles.toolbarContainer} ${positionClassMap[position]} ${
+        isExpanded ? styles.toolbarExpanded : styles.toolbarCircle
+      }`}
       initial={false}
       animate={containerAnimations}
       transition={animationConfig}
@@ -127,7 +147,7 @@ export interface LaunchDarklyToolbarProps {
   flagOverridePlugin?: IFlagOverridePlugin; // Optional - for flag override functionality
   eventInterceptionPlugin?: IEventInterceptionPlugin; // Optional - for event tracking
   pollIntervalInMs?: number; // Optional - will default to 5000ms
-  position?: ToolbarPosition; // Optional - will default to 'right'
+  position?: ToolbarPosition; // Optional - will default to 'bottom-right'
 }
 
 export function LaunchDarklyToolbar(props: LaunchDarklyToolbarProps) {
@@ -150,24 +170,25 @@ export function LaunchDarklyToolbar(props: LaunchDarklyToolbarProps) {
   const mode = getToolbarMode(devServerUrl);
 
   return (
-    <DevServerProvider
-      config={{
-        projectKey,
-        devServerUrl,
-        pollIntervalInMs,
-      }}
-      initialPosition={position}
-    >
-      <AnalyticsProvider ldClient={flagOverridePlugin?.getClient() ?? eventInterceptionPlugin?.getClient()}>
-        <SearchProvider>
-          <LdToolbar
-            mode={mode}
-            baseUrl={baseUrl}
-            flagOverridePlugin={flagOverridePlugin}
-            eventInterceptionPlugin={eventInterceptionPlugin}
-          />
-        </SearchProvider>
-      </AnalyticsProvider>
-    </DevServerProvider>
+    <ToolbarUIProvider initialPosition={position}>
+      <DevServerProvider
+        config={{
+          projectKey,
+          devServerUrl,
+          pollIntervalInMs,
+        }}
+      >
+        <AnalyticsProvider ldClient={flagOverridePlugin?.getClient() ?? eventInterceptionPlugin?.getClient()}>
+          <SearchProvider>
+            <LdToolbar
+              mode={mode}
+              baseUrl={baseUrl}
+              flagOverridePlugin={flagOverridePlugin}
+              eventInterceptionPlugin={eventInterceptionPlugin}
+            />
+          </SearchProvider>
+        </AnalyticsProvider>
+      </DevServerProvider>
+    </ToolbarUIProvider>
   );
 }

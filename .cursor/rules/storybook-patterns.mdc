@@ -3,16 +3,19 @@ description:
 globs: *.stories.tsx
 alwaysApply: false
 ---
+
 # Storybook Patterns for LaunchDarkly Toolbar
 
 ## Story File Organization
 
 ### File Naming
+
 - Story files: `ComponentName.stories.tsx`
 - Place in `stories/` directory at project root
 - Match component names exactly: `LaunchDarklyToolbar.stories.tsx`
 
 ### Story Structure
+
 Use CSF3 (Component Story Format 3) with proper typing:
 
 ```typescript
@@ -32,13 +35,13 @@ type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {
   args: {
-    position: 'right',
+    position: 'bottom-right',
   },
 };
 
 export const LeftPositioned: Story = {
   args: {
-    position: 'left',
+    position: 'bottom-left',
   },
 };
 ```
@@ -46,11 +49,13 @@ export const LeftPositioned: Story = {
 ## Story Categories
 
 ### UI Component Stories
+
 - Main toolbar components go under `UI/` category
 - Sub-components under `UI/ComponentName/` subcategories
 - Use hierarchical naming: `UI/Toolbar/Header`
 
 ### State Variations
+
 Create stories for different component states:
 
 ```typescript
@@ -79,6 +84,7 @@ export const DifferentTabs: Story = {
 ## Animation Stories
 
 ### Animation States
+
 For animated components, show key animation states:
 
 ```typescript
@@ -107,6 +113,7 @@ export const HoverState: Story = {
 ## Provider Wrapping
 
 ### Context Providers
+
 Wrap stories with necessary providers:
 
 ```typescript
@@ -122,6 +129,7 @@ export const WithContext: Story = {
 ```
 
 ### Multiple Providers
+
 For components requiring multiple contexts:
 
 ```typescript
@@ -141,6 +149,7 @@ export const FullContext: Story = {
 ## Documentation Standards
 
 ### Story Descriptions
+
 Add clear descriptions for complex stories:
 
 ```typescript
@@ -157,6 +166,7 @@ export const ComplexInteraction: Story = {
 ```
 
 ### Component Documentation
+
 Include component-level documentation:
 
 ```typescript
@@ -176,6 +186,7 @@ const meta: Meta<typeof Component> = {
 ## Controls and Args
 
 ### Prop Controls
+
 Configure appropriate controls for component props:
 
 ```typescript
@@ -184,7 +195,7 @@ const meta: Meta<typeof Component> = {
   argTypes: {
     position: {
       control: { type: 'radio' },
-      options: ['left', 'right'],
+      options: ['bottom-left', 'bottom-right', 'top-left', 'top-right'],
       description: 'Position of the toolbar on screen',
     },
     isExpanded: {
@@ -196,6 +207,7 @@ const meta: Meta<typeof Component> = {
 ```
 
 ### Disabled Controls
+
 Disable controls for computed or internal props:
 
 ```typescript
@@ -212,6 +224,7 @@ argTypes: {
 ## Interaction Testing
 
 ### Play Functions
+
 Use play functions for interactive stories:
 
 ```typescript
@@ -240,6 +253,7 @@ export const UserFlow: Story = {
 ## Layout and Styling
 
 ### Layout Parameters
+
 Set appropriate layout for different component types:
 
 ```typescript
@@ -260,6 +274,7 @@ parameters: {
 ```
 
 ### Background Variations
+
 Test components on different backgrounds:
 
 ```typescript
@@ -275,6 +290,7 @@ export const OnDarkBackground: Story = {
 ## Responsive Stories
 
 ### Viewport Testing
+
 Create stories for different screen sizes:
 
 ```typescript
@@ -298,11 +314,13 @@ export const Desktop: Story = {
 ## Best Practices
 
 ### Story Naming
+
 - Use descriptive names that explain the scenario
 - Group related stories with consistent prefixes
 - Use present tense: "Shows expanded state" not "Will show expanded state"
 
 ### Accessibility Testing
+
 Include accessibility-focused stories:
 
 ```typescript
@@ -321,6 +339,7 @@ export const KeyboardNavigation: Story = {
 ```
 
 ### Performance Stories
+
 For animation-heavy components, include performance considerations:
 
 ```typescript

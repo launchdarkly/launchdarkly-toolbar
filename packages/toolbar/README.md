@@ -88,14 +88,14 @@ function App() {
 
 ## Props
 
-| Prop                      | Type                       | Default     | Description                                                               |
-| ------------------------- | -------------------------- | ----------- | ------------------------------------------------------------------------- |
-| `flagOverridePlugin`      | `IFlagOverridePlugin`      | `undefined` | Flag override plugin for SDK Mode. Enables flag overrides and testing     |
-| `eventInterceptionPlugin` | `IEventInterceptionPlugin` | `undefined` | Event interception plugin for SDK Mode. Enables Events tab functionality  |
-| `devServerUrl`            | `string` (optional)        | `undefined` | URL of your LaunchDarkly dev server. If provided, enables Dev Server Mode |
-| `position`                | `"left" \| "right"`        | `"right"`   | Position of the toolbar on screen                                         |
-| `projectKey`              | `string` (optional)        | `undefined` | Optional project key for multi-project setups (Dev Server Mode only)      |
-| `pollIntervalInMs`        | `number` (optional)        | `5000`      | Polling interval for dev server updates (Dev Server Mode only)            |
+| Prop                      | Type                                                           | Default          | Description                                                               |
+| ------------------------- | -------------------------------------------------------------- | ---------------- | ------------------------------------------------------------------------- |
+| `flagOverridePlugin`      | `IFlagOverridePlugin`                                          | `undefined`      | Flag override plugin for SDK Mode. Enables flag overrides and testing     |
+| `eventInterceptionPlugin` | `IEventInterceptionPlugin`                                     | `undefined`      | Event interception plugin for SDK Mode. Enables Events tab functionality  |
+| `devServerUrl`            | `string` (optional)                                            | `undefined`      | URL of your LaunchDarkly dev server. If provided, enables Dev Server Mode |
+| `position`                | `"bottom-left" \| "bottom-right" \| "top-left" \| "top-right"` | `"bottom-right"` | Corner position of the toolbar                                            |
+| `projectKey`              | `string` (optional)                                            | `undefined`      | Optional project key for multi-project setups (Dev Server Mode only)      |
+| `pollIntervalInMs`        | `number` (optional)                                            | `5000`           | Polling interval for dev server updates (Dev Server Mode only)            |
 
 ## Configuration
 

@@ -3,6 +3,7 @@ import { List } from '../../List/List';
 import { ListItem } from '../../List/ListItem';
 import { useSearchContext } from '../context/SearchProvider';
 import { useDevServerContext } from '../context/DevServerProvider';
+import { useToolbarUIContext } from '../context/ToolbarUIProvider';
 import { useAnalytics } from '../context/AnalyticsProvider';
 import { StatusDot } from '../components/StatusDot';
 import { GenericHelpText } from '../components/GenericHelpText';
@@ -82,7 +83,11 @@ function PositionSelector(props: PositionSelectorProps) {
   const { currentPosition, onPositionChange } = props;
 
   function getPositionsDisplayName(position: ToolbarPosition): string {
-    return position.charAt(0).toUpperCase() + position.slice(1);
+    // Convert kebab-case corner names to Title Case
+    return position
+      .split('-')
+      .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+      .join(' ');
   }
 
   const handlePositionSelect = (key: React.Key | null) => {
@@ -180,10 +185,10 @@ interface SettingsTabContentProps {
 
 export function SettingsTabContent(props: SettingsTabContentProps) {
   const { mode, isPinned, onTogglePin } = props;
-  const { state, switchProject, handlePositionChange } = useDevServerContext();
+  const { state, switchProject } = useDevServerContext();
+  const { position, handlePositionChange } = useToolbarUIContext();
   const { searchTerm } = useSearchContext();
   const analytics = useAnalytics();
-  const position = state.position;
 
   const handleProjectSwitch = async (projectKey: string) => {
     try {
