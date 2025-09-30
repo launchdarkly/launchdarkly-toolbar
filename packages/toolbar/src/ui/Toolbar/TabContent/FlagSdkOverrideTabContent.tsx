@@ -2,7 +2,7 @@ import { useRef, useState, useMemo, useCallback } from 'react';
 import { useVirtualizer } from '@tanstack/react-virtual';
 import { List } from '../../List/List';
 import { ListItem } from '../../List/ListItem';
-import { useSearchContext } from '../context';
+import { useSearchContext, useAnalytics } from '../context';
 import { FlagSdkOverrideProvider, useFlagSdkOverrideContext } from '../context';
 import { GenericHelpText } from '../components/GenericHelpText';
 import {
@@ -26,6 +26,7 @@ interface FlagSdkOverrideTabContentInnerProps {
 function FlagSdkOverrideTabContentInner(props: FlagSdkOverrideTabContentInnerProps) {
   const { flagOverridePlugin } = props;
   const { searchTerm } = useSearchContext();
+  const analytics = useAnalytics();
   const { flags, isLoading } = useFlagSdkOverrideContext();
   const [showOverriddenOnly, setShowOverriddenOnly] = useState(false);
   const parentRef = useRef<HTMLDivElement>(null);
@@ -34,15 +35,21 @@ function FlagSdkOverrideTabContentInner(props: FlagSdkOverrideTabContentInnerPro
     (flagKey: string) => {
       if (flagOverridePlugin) {
         flagOverridePlugin.removeOverride(flagKey);
+        analytics.trackFlagOverride(flagKey, null, 'remove');
       }
     },
-    [flagOverridePlugin],
+    [flagOverridePlugin, analytics],
   );
 
   // Count total overridden flags (not just filtered ones)
   const totalOverriddenFlags = useMemo(() => {
     return Object.values(flags).filter((flag) => flag.isOverridden).length;
   }, [flags]);
+
+  const showOverridesOnlyChanged = (enabled: boolean) => {
+    setShowOverriddenOnly(enabled);
+    analytics.trackShowOverridesOnlyClick(enabled);
+  };
 
   // Prepare data for virtualizer (must be done before useVirtualizer hook)
   const flagEntries = Object.entries(flags);
@@ -78,10 +85,15 @@ function FlagSdkOverrideTabContentInner(props: FlagSdkOverrideTabContentInnerPro
   // Override operations
   const handleSetOverride = (flagKey: string, value: any) => {
     flagOverridePlugin.setOverride(flagKey, value);
+    analytics.trackFlagOverride(flagKey, value, 'set');
   };
 
   const handleClearAllOverrides = () => {
+    const currentOverrides = flagOverridePlugin.getAllOverrides();
+    const overrideCount = Object.keys(currentOverrides).length;
+
     flagOverridePlugin.clearAllOverrides();
+    analytics.trackFlagOverride('*', { count: overrideCount }, 'clear_all');
   };
 
   const renderFlagControl = (flag: LocalFlag) => {
@@ -136,7 +148,7 @@ function FlagSdkOverrideTabContentInner(props: FlagSdkOverrideTabContentInnerPro
         <ActionButtonsContainer>
           <button
             className={`${actionStyles.toggleButton} ${showOverriddenOnly ? actionStyles.active : ''}`}
-            onClick={() => setShowOverriddenOnly((prev) => !prev)}
+            onClick={() => showOverridesOnlyChanged(!showOverriddenOnly)}
             data-testid="show-overrides-only-button"
             aria-label={showOverriddenOnly ? 'Show all flags' : 'Show only overridden flags'}
           >

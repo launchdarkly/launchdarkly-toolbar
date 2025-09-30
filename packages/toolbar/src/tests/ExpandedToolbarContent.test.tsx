@@ -5,6 +5,7 @@ import { ExpandedToolbarContent } from '../ui/Toolbar/components/ExpandedToolbar
 import { DevServerProvider } from '../ui/Toolbar/context/DevServerProvider';
 import { ToolbarUIProvider } from '../ui/Toolbar/context/ToolbarUIProvider';
 import { SearchProvider } from '../ui/Toolbar/context/SearchProvider';
+import { AnalyticsProvider } from '../ui/Toolbar/context/AnalyticsProvider';
 import { IFlagOverridePlugin, IEventInterceptionPlugin } from '../types/plugin';
 
 // Mock the DevServerClient and FlagStateManager
@@ -72,7 +73,9 @@ function TestWrapper({
       }}
     >
       <ToolbarUIProvider initialPosition={initialPosition}>
-        <SearchProvider>{children}</SearchProvider>
+        <AnalyticsProvider>
+          <SearchProvider>{children}</SearchProvider>
+        </AnalyticsProvider>
       </ToolbarUIProvider>
     </DevServerProvider>
   );
@@ -119,6 +122,7 @@ describe('ExpandedToolbarContent - User Interaction Flows', () => {
     clearEvents: vi.fn(),
     getMetadata: vi.fn(),
     register: vi.fn(),
+    getClient: vi.fn(),
   });
 
   beforeEach(() => {

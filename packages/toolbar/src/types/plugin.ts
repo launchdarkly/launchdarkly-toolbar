@@ -57,4 +57,10 @@ export interface IEventInterceptionPlugin extends LDPlugin {
    * Clears all events from the event store
    */
   clearEvents(): void;
+
+  /**
+   * Returns the LaunchDarkly client instance
+   * @returns The LaunchDarkly client with allFlags method
+   */
+  getClient(): LDClient | null;
 }
