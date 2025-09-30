@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.22.0-beta.1](https://github.com/launchdarkly/launchdarkly-toolbar/compare/0.21.0-beta.1...0.22.0-beta.1) (2025-09-30)
+
+
+### Features
+
+* allow dragging toolbar when expanded ([#133](https://github.com/launchdarkly/launchdarkly-toolbar/issues/133)) ([1fd998f](https://github.com/launchdarkly/launchdarkly-toolbar/commit/1fd998fce3a0350876334f45f759226e45eeccb8))
+
+
+### Bug Fixes
+
+* Update zIndex value for LaunchDarklyToolbar to higher value ([#132](https://github.com/launchdarkly/launchdarkly-toolbar/issues/132)) ([5115b61](https://github.com/launchdarkly/launchdarkly-toolbar/commit/5115b614a058d61076adce96ccd7825b9f1de99f))
+
 ## [0.21.0-beta.1](https://github.com/launchdarkly/launchdarkly-toolbar/compare/0.20.0-beta.1...0.21.0-beta.1) (2025-09-30)
 
 
