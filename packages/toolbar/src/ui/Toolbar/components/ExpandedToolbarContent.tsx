@@ -1,4 +1,4 @@
-import { Dispatch, SetStateAction } from 'react';
+import React, { Dispatch, SetStateAction } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 
 import { Header } from '../Header/Header';
@@ -40,7 +40,7 @@ function getHeaderLabel(currentProjectKey: string | null, sourceEnvironmentKey: 
   return label;
 }
 
-export function ExpandedToolbarContent(props: ExpandedToolbarContentProps) {
+export const ExpandedToolbarContent = React.forwardRef<HTMLDivElement, ExpandedToolbarContentProps>((props, ref) => {
   const {
     activeTab,
     slideDirection,
@@ -70,8 +70,12 @@ export function ExpandedToolbarContent(props: ExpandedToolbarContentProps) {
 
   return (
     <motion.div
+      ref={ref}
       key="toolbar-content"
       className={styles.toolbarContent}
+      tabIndex={0}
+      role="group"
+      aria-label="LaunchDarkly developer toolbar content"
       initial={{
         opacity: 0,
         y: 10,
@@ -176,4 +180,4 @@ export function ExpandedToolbarContent(props: ExpandedToolbarContentProps) {
       </motion.div>
     </motion.div>
   );
-}
+});

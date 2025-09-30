@@ -1,5 +1,5 @@
 import { AnimatePresence, motion } from 'motion/react';
-import { useCallback } from 'react';
+import { useCallback, useEffect, useRef } from 'react';
 
 import { SearchProvider, useSearchContext, AnalyticsProvider, useAnalytics } from './context';
 import { CircleLogo, ExpandedToolbarContent } from './components';
@@ -27,6 +27,9 @@ export function LdToolbar(props: LdToolbarProps) {
   const defaultActiveTab = getDefaultActiveTab(mode, !!flagOverridePlugin, !!eventInterceptionPlugin);
 
   const toolbarState = useToolbarState({ defaultActiveTab });
+  const circleButtonRef = useRef<HTMLButtonElement>(null);
+  const expandedContentRef = useRef<HTMLDivElement>(null);
+
   const {
     activeTab,
     slideDirection,
@@ -43,9 +46,24 @@ export function LdToolbar(props: LdToolbarProps) {
     setIsAnimating,
   } = toolbarState;
 
+  // Focus management for expand/collapse
+  const focusExpandedToolbar = useCallback(() => {
+    if (expandedContentRef.current) {
+      expandedContentRef.current.focus();
+    }
+  }, [expandedContentRef]);
+
+  const focusCollapsedToolbar = useCallback(() => {
+    if (circleButtonRef.current) {
+      circleButtonRef.current.focus();
+    }
+  }, [circleButtonRef]);
+
   const { containerAnimations, animationConfig, handleAnimationStart, handleAnimationComplete } = useToolbarAnimations({
     isExpanded,
     setIsAnimating,
+    onExpandComplete: focusExpandedToolbar,
+    onCollapseComplete: focusCollapsedToolbar,
   });
 
   const isDragEnabled = !isExpanded;
@@ -108,16 +126,29 @@ export function LdToolbar(props: LdToolbarProps) {
       transition={animationConfig}
       onAnimationStart={handleAnimationStart}
       onAnimationComplete={handleAnimationComplete}
+      onKeyDown={(e) => {
+        if (isExpanded) {
+          return;
+        }
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          handleCircleClickWithDragCheck();
+        }
+      }}
       data-testid="launchdarkly-toolbar"
-      role="toolbar"
-      aria-label="LaunchDarkly Developer Toolbar"
+      role={isExpanded ? 'toolbar' : 'button'}
+      aria-label={isExpanded ? 'LaunchDarkly toolbar' : 'Open LaunchDarkly toolbar'}
+      tabIndex={isExpanded ? -1 : 0}
     >
       <AnimatePresence>
-        {!isExpanded && <CircleLogo onClick={handleCircleClickWithDragCheck} onMouseDown={handleMouseDown} />}
+        {!isExpanded && (
+          <CircleLogo ref={circleButtonRef} onClick={handleCircleClickWithDragCheck} onMouseDown={handleMouseDown} />
+        )}
       </AnimatePresence>
       <AnimatePresence>
         {isExpanded && (
           <ExpandedToolbarContent
+            ref={expandedContentRef}
             activeTab={activeTab}
             slideDirection={slideDirection}
             searchTerm={searchTerm}
