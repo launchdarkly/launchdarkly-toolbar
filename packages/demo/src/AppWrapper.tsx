@@ -1,7 +1,8 @@
-import type { ReactNode } from 'react';
+import { useState, type ReactNode } from 'react';
 import './App.css';
 import { useLDClient } from 'launchdarkly-react-client-sdk';
 import type { ToolbarPosition } from '@launchdarkly/toolbar';
+import { FocusScope } from 'react-aria';
 
 interface AppWrapperProps {
   children: ReactNode;
@@ -13,6 +14,7 @@ interface AppWrapperProps {
 export function AppWrapper({ children, mode, position, onPositionChange }: AppWrapperProps) {
   const ldClient = useLDClient();
   const allFlags = ldClient?.allFlags() || {};
+  const [open, setOpen] = useState<boolean>(false);
 
   // Test functions to trigger different LaunchDarkly events
   const testFlagEvaluation = () => {
@@ -147,6 +149,20 @@ export function AppWrapper({ children, mode, position, onPositionChange }: AppWr
                 <strong>💡 Tip:</strong> Open your browser's developer console to see the event hook logs!
               </div>
             </div>
+
+            <>
+              <button onClick={() => setOpen(true)}>Open</button>
+              {open &&
+                (
+                  <FocusScope contain restoreFocus autoFocus>
+                    <label htmlFor="first-input">First Input</label>
+                    <input id="first-input" />
+                    <label htmlFor="second-input">Second Input</label>
+                    <input id="second-input" />
+                    <button onClick={() => setOpen(false)}>Close</button>
+                  </FocusScope>
+                )}
+            </>
 
             <div className="flags-display">
               <h3>Current Flags ({Object.keys(allFlags).length})</h3>
