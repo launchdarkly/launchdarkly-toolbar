@@ -20,6 +20,11 @@ export const settingsGroupTitle = style({
   letterSpacing: '0.5px',
 });
 
+export const switch_ = style({
+  fontSize: '12px',
+  backgroundColor: 'var(--lp-color-gray-900)',
+});
+
 export const settingInfo = style({
   flex: 1,
   display: 'flex',

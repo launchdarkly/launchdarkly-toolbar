@@ -1,6 +1,7 @@
 import { useState, useRef, useCallback, useMemo, useEffect, Dispatch, SetStateAction } from 'react';
 
 import { useSearchContext } from '../context/SearchProvider';
+import { useAnalytics } from '../context/AnalyticsProvider';
 import { TabId, ActiveTabId, TAB_ORDER } from '../types';
 import { saveToolbarPinned, loadToolbarPinned } from '../utils/localStorage';
 
@@ -35,6 +36,7 @@ export interface UseToolbarStateReturn {
 export function useToolbarState(props: UseToolbarStateProps): UseToolbarStateReturn {
   const { defaultActiveTab } = props;
   const { setSearchTerm } = useSearchContext();
+  const analytics = useAnalytics();
 
   const [isExpanded, setIsExpanded] = useState(false);
   const [activeTab, setActiveTab] = useState<ActiveTabId>();
@@ -66,9 +68,14 @@ export function useToolbarState(props: UseToolbarStateProps): UseToolbarStateRet
 
       // If clicking the currently active tab, toggle the toolbar
       if (newTabId === activeTab && isExpanded) {
+        // Track toolbar collapse from tab toggle
+        analytics.trackToolbarToggle('collapse', 'tab_toggle');
         setIsExpanded(false);
         return;
       }
+
+      // Track tab change analytics
+      analytics.trackTabChange(activeTab || null, newTabId);
 
       setPreviousTab(activeTab);
       setActiveTab(newTabId);
@@ -77,14 +84,17 @@ export function useToolbarState(props: UseToolbarStateProps): UseToolbarStateRet
         setIsExpanded(true);
       }
     },
-    [activeTab, isExpanded, setSearchTerm, isAnimating],
+    [activeTab, isExpanded, setSearchTerm, isAnimating, analytics],
   );
 
   const handleClose = useCallback(() => {
+    // Track toolbar collapse from close button
+    analytics.trackToolbarToggle('collapse', 'close_button');
+
     setIsExpanded(false);
     setIsPinned(false);
     saveToolbarPinned(false);
-  }, []);
+  }, [analytics]);
 
   const handleSearch = useCallback(
     (newSearchTerm: string) => {
@@ -122,6 +132,8 @@ export function useToolbarState(props: UseToolbarStateProps): UseToolbarStateRet
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (isExpanded && !isPinned && toolbarRef.current && !toolbarRef.current.contains(event.target as Node)) {
+        // Track toolbar collapse from click outside
+        analytics.trackToolbarToggle('collapse', 'click_outside');
         setIsExpanded(false);
       }
     };
@@ -130,7 +142,7 @@ export function useToolbarState(props: UseToolbarStateProps): UseToolbarStateRet
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
     };
-  }, [isExpanded, isPinned]);
+  }, [isExpanded, isPinned, analytics]);
 
   return {
     // State values

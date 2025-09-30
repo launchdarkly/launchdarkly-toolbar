@@ -1,7 +1,7 @@
 import { AnimatePresence, motion } from 'motion/react';
 import { useCallback } from 'react';
 
-import { SearchProvider, useSearchContext } from './context';
+import { SearchProvider, useSearchContext, AnalyticsProvider, useAnalytics } from './context';
 import { CircleLogo, ExpandedToolbarContent } from './components';
 import { useToolbarAnimations, useToolbarVisibility, useToolbarDrag, useToolbarState } from './hooks';
 import { useDevServerContext } from './context';
@@ -22,7 +22,8 @@ export function LdToolbar(props: LdToolbarProps) {
   const { mode, flagOverridePlugin, eventInterceptionPlugin, baseUrl } = props;
   const { searchTerm } = useSearchContext();
   const { state, handlePositionChange } = useDevServerContext();
-  const { position } = state;
+  const position = state.position;
+  const analytics = useAnalytics();
 
   const defaultActiveTab = getDefaultActiveTab(mode, !!flagOverridePlugin, !!eventInterceptionPlugin);
 
@@ -54,9 +55,15 @@ export function LdToolbar(props: LdToolbarProps) {
     (clientX: number) => {
       const screenWidth = window.innerWidth;
       const newPosition: ToolbarPosition = clientX < screenWidth / 2 ? 'left' : 'right';
+
+      // Track position change
+      if (newPosition !== position) {
+        analytics.trackPositionChange(position, newPosition, 'drag');
+      }
+
       handlePositionChange(newPosition);
     },
-    [handlePositionChange],
+    [handlePositionChange, position, analytics],
   );
 
   const { handleMouseDown, isDragging } = useToolbarDrag({
@@ -151,14 +158,16 @@ export function LaunchDarklyToolbar(props: LaunchDarklyToolbarProps) {
       }}
       initialPosition={position}
     >
-      <SearchProvider>
-        <LdToolbar
-          mode={mode}
-          baseUrl={baseUrl}
-          flagOverridePlugin={flagOverridePlugin}
-          eventInterceptionPlugin={eventInterceptionPlugin}
-        />
-      </SearchProvider>
+      <AnalyticsProvider ldClient={flagOverridePlugin?.getClient() ?? eventInterceptionPlugin?.getClient()}>
+        <SearchProvider>
+          <LdToolbar
+            mode={mode}
+            baseUrl={baseUrl}
+            flagOverridePlugin={flagOverridePlugin}
+            eventInterceptionPlugin={eventInterceptionPlugin}
+          />
+        </SearchProvider>
+      </AnalyticsProvider>
     </DevServerProvider>
   );
 }

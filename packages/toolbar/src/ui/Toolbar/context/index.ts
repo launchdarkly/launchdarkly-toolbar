@@ -6,3 +6,4 @@ export {
   type LocalFlag,
   type FlagSdkOverrideContextType,
 } from './FlagSdkOverrideProvider';
+export { AnalyticsProvider, useAnalytics } from './AnalyticsProvider';

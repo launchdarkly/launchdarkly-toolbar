@@ -85,6 +85,7 @@ describe('LaunchDarklyToolbar - User Flows', () => {
         clearEvents: vi.fn(),
         getMetadata: vi.fn(),
         register: vi.fn(),
+        getClient: vi.fn(),
       };
 
       // WHEN: They load the toolbar with both plugins
