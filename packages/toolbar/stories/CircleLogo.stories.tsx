@@ -1,6 +1,5 @@
 import React from 'react';
 import type { Meta, StoryObj } from '@storybook/react';
-import { motion } from 'motion/react';
 import { CircleLogo } from '../src/ui/Toolbar/components/CircleLogo';
 
 const meta: Meta<typeof CircleLogo> = {
