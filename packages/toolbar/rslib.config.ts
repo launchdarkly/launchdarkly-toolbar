@@ -19,7 +19,7 @@ export default defineConfig({
     },
   ],
   output: {
-    injectStyles: true,
+    emitCss: true,
     target: 'web',
     distPath: {
       root: 'dist',
