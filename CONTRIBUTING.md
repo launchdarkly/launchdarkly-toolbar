@@ -18,7 +18,7 @@ Thank you for your interest in contributing to the LaunchDarkly Toolbar! This gu
 
 ### Prerequisites
 
-- **Node.js** 18+ and **pnpm** 9+
+- **Node.js** 18+ and **pnpm** 10+
 
 ### Initial Setup
 
@@ -48,9 +48,14 @@ pnpm test
 pnpm demo
 ```
 
-## LaunchDarkly Dev Server Setup
+## Toolbar Integration Modes
 
-The LaunchDarkly Toolbar requires a LaunchDarkly CLI dev server to be running. For detailed setup instructions, see [DEV_SERVER_SETUP.md](docs/DEV_SERVER_SETUP.md).
+The LaunchDarkly Toolbar supports two integration modes:
+
+- **SDK Mode** (recommended): Integrates directly with your LaunchDarkly React SDK for local flag overrides and testing
+- **Dev Server Mode**: Connects to a LaunchDarkly CLI dev server for flag browsing and real-time updates
+
+For Dev Server Mode setup instructions, see [DEV_SERVER_SETUP.md](docs/DEV_SERVER_SETUP.md).
 
 ## Development Workflow
 
@@ -69,15 +74,24 @@ This project uses **pnpm workspaces** to manage packages in a monorepo structure
 | `pnpm build`             | Build the toolbar library for production                      |
 | `pnpm dev`               | Build toolbar in watch mode for development                   |
 | `pnpm demo`              | Build toolbar and run the demo application                    |
+| `pnpm demo:mock`         | Run demo application with mock flags enabled                  |
 | `pnpm demo:build`        | Build both toolbar and demo for production                    |
+| `pnpm demo:build:mock`   | Build demo for production with mock flags enabled             |
 | `pnpm test`              | Run unit tests for toolbar                                    |
 | `pnpm test:e2e:ci`       | Run E2E tests against the packaged version                    |
 | `pnpm test:e2e:ci:ui`    | Run E2E tests with Playwright UI against the packaged version |
 | `pnpm test:e2e:local`    | Run E2E tests against the local version                       |
 | `pnpm test:e2e:local:ui` | Run E2E tests with Playwright UI against the local version    |
 | `pnpm storybook`         | Run Storybook for component development                       |
+| `pnpm build:storybook`   | Build Storybook for production                                |
 | `pnpm lint`              | Run linter across all packages                                |
 | `pnpm format`            | Format code with Prettier                                     |
+| `pnpm format:ci`         | Check code formatting in CI                                   |
+| `pnpm dev:link`          | Link local SDKs and set pnpm overrides (advanced)             |
+| `pnpm dev:status`        | Check health of repos, links, ports, tools (advanced)         |
+| `pnpm dev:unlink`        | Restore registry versions when done (advanced)                |
+| `pnpm dev:watch`         | Start watch + demo (advanced)                                 |
+| `pnpm upgrade-launchpad` | Upgrade LaunchPad UI dependencies                             |
 
 ## Running the Project
 
@@ -104,6 +118,20 @@ pnpm storybook
 ```
 
 Open `http://localhost:6006` to view and develop components in isolation.
+
+### Mock Mode Development
+
+For development without a real LaunchDarkly connection:
+
+```bash
+# Run demo with mock flags
+pnpm demo:mock
+
+# Build demo with mock flags for production
+pnpm demo:build:mock
+```
+
+This is useful when you want to test the toolbar functionality without setting up a LaunchDarkly environment or dev server.
 
 ### Cross-SDK Development (Advanced)
 
@@ -143,6 +171,12 @@ The demo application is the best way to test your changes:
 2. The build watch mode will automatically rebuild
 3. Refresh the demo page to see your changes
 4. Use the demo's configuration panel to test different scenarios
+5. Test both **SDK Mode** and **Dev Server Mode** to ensure compatibility
+
+**Testing Both Modes:**
+
+- **SDK Mode**: Test flag overrides, event interception, and real-time updates
+- **Dev Server Mode**: Test dev server connection, flag browsing, and CLI integration
 
 ## Testing
 
@@ -165,10 +199,17 @@ pnpm test --coverage
 
 ### End-to-End Tests
 
-We use **Playwright** for E2E testing with different environments:
+We use **Playwright** for E2E testing with different environments and integration modes:
+
+**Test Environments:**
 
 - **CI environment** (`test:e2e:ci`): Uses the packaged version. Run `pnpm build` first to ensure you have the latest changes
 - **Local environment** (`test:e2e:local`): Uses the local version, no build step needed
+
+**Integration Modes Tested:**
+
+- **SDK Mode**: Tests toolbar with React SDK integration, flag overrides, and event interception
+- **Dev Server Mode**: Tests toolbar with LaunchDarkly CLI dev server integration
 
 ```bash
 # Run E2E tests against the packaged version
@@ -187,6 +228,7 @@ pnpm test:e2e:local:ui
 
 **E2E test files location:** `e2e/tests/`
 **E2E config location:** `e2e/config/environment.ts`
+**Detailed E2E documentation:** See [e2e/README.md](e2e/README.md) for comprehensive testing setup and architecture details
 
 ### Writing Tests
 
