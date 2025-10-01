@@ -13,7 +13,7 @@ import type { IFlagOverridePlugin, IEventInterceptionPlugin } from '../../../typ
 import * as styles from '../LaunchDarklyToolbar.css';
 import { GearIcon, SyncIcon, ToggleOffIcon } from './icons';
 import { ErrorMessage } from './ErrorMessage';
-import { FocusScope } from 'react-aria';
+import { FocusScope } from '@react-aria/focus';
 
 interface ExpandedToolbarContentProps {
   activeTab: ActiveTabId;
