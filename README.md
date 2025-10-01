@@ -30,10 +30,10 @@ pnpm install
 pnpm build
 
 # Run demo in development mode
-pnpm --filter demo dev
+pnpm demo
 
 # Run toolbar in watch mode
-pnpm --filter toolbar dev
+pnpm dev
 ```
 
 ### Testing
@@ -42,17 +42,24 @@ pnpm --filter toolbar dev
 # Run unit tests
 pnpm test
 
-# Run e2e tests
-pnpm test:e2e
+# Run e2e tests (local)
+pnpm test:e2e:local
+
+# Run e2e tests (CI)
+pnpm test:e2e:ci
 ```
 
 ### Scripts
 
-- `pnpm dev` - Start development servers
-- `pnpm build` - Build all packages
+- `pnpm dev` - Build toolbar in watch mode
+- `pnpm demo` - Run demo application
+- `pnpm demo:mock` - Run demo with mock flags
+- `pnpm build` - Build toolbar for production
 - `pnpm test` - Run unit tests
-- `pnpm test:e2e` - Run end-to-end tests
+- `pnpm test:e2e:local` - Run E2E tests (local)
+- `pnpm test:e2e:ci` - Run E2E tests (CI)
 - `pnpm lint` - Run linting
+- `pnpm format` - Format code with Prettier
 - `pnpm storybook` - Start Storybook
 
 ## Contributing
