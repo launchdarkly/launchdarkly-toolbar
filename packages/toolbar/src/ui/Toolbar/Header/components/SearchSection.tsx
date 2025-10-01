@@ -22,6 +22,16 @@ export function SearchSection(props: SearchSectionProps) {
     }
   };
 
+  const handleClear = () => {
+    if (searchTerm.trim()) {
+      // If there's text, just clear it (keep search expanded)
+      onSearch('');
+    } else {
+      // If no text, collapse the search
+      setSearchIsExpanded(false);
+    }
+  };
+
   return (
     <motion.div
       className={styles.searchFieldWrapper}
@@ -40,7 +50,7 @@ export function SearchSection(props: SearchSectionProps) {
               onSearch(e.target.value);
             }}
           />
-          <IconButton icon={<CancelCircleIcon />} label="Clear" onClick={() => onSearch('')} size="medium" />
+          <IconButton icon={<CancelCircleIcon />} label="Clear" onClick={handleClear} size="medium" />
         </Group>
       </SearchField>
     </motion.div>
