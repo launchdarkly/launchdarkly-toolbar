@@ -16,6 +16,7 @@ import { IconButton } from './IconButton';
 import { EnhancedFlag } from '../../../types/devServer';
 import { deepEqual } from '../../../utils';
 
+import * as popoverStyles from '../components/Popover.css';
 import * as styles from './FlagControls.css';
 
 interface BooleanFlagControlProps {
@@ -69,7 +70,7 @@ export function MultivariateFlagControl(props: MultivariateFlagControlProps) {
         <SelectValue className={styles.selectedValue} />
         <ChevronDownIcon className={styles.icon} />
       </Button>
-      <Popover data-theme="dark">
+      <Popover data-theme="dark" className={popoverStyles.popover}>
         <ListBox>
           {flag.availableVariations.map((variation) => (
             <ListBoxItem id={variation._id} key={variation._id}>

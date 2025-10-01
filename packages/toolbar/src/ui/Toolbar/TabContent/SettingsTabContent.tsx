@@ -11,6 +11,7 @@ import { ChevronDownIcon } from '../components/icons';
 import { TOOLBAR_POSITIONS, type ToolbarPosition, type ToolbarMode } from '../types/toolbar';
 
 import * as styles from './SettingsTab.css';
+import * as popoverStyles from '../components/Popover.css';
 
 interface SettingsItem {
   id: string;
@@ -61,7 +62,7 @@ function ProjectSelector(props: ProjectSelectorProps) {
         <SelectValue />
         <ChevronDownIcon className={styles.icon} />
       </Button>
-      <Popover data-theme="dark">
+      <Popover data-theme="dark" className={popoverStyles.popover}>
         <ListBox>
           {availableProjects.map((projectKey) => (
             <ListBoxItem id={projectKey} key={projectKey}>
@@ -112,7 +113,7 @@ function PositionSelector(props: PositionSelectorProps) {
         <SelectValue />
         <ChevronDownIcon className={styles.icon} />
       </Button>
-      <Popover data-theme="dark">
+      <Popover data-theme="dark" className={popoverStyles.popover}>
         <ListBox>
           {TOOLBAR_POSITIONS.map((position) => (
             <ListBoxItem id={position} key={position}>

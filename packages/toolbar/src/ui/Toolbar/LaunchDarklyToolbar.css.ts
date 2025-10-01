@@ -1,8 +1,9 @@
 import { style } from '@vanilla-extract/css';
+import { Z_INDEX } from '../constants/zIndex';
 
 export const toolbarContainer = style({
   position: 'fixed',
-  zIndex: 2147400100,
+  zIndex: Z_INDEX.TOOLBAR,
   backgroundColor: 'var(--lp-color-gray-900)',
   border: '1px solid var(--lp-color-gray-700)',
   overflow: 'hidden',
