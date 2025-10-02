@@ -38,8 +38,9 @@ export function SearchSection(props: SearchSectionProps) {
       initial={{ scale: 0.9, opacity: 0, x: -20 }}
       animate={{ scale: 1, opacity: 1, x: 0 }}
       transition={{ duration: 0.25, ease: [0.25, 0.46, 0.45, 0.94], delay: 0.15 }}
+      onBlur={handleBlur}
     >
-      <SearchField aria-label="Search" data-theme="dark" onBlur={handleBlur} className={styles.searchField}>
+      <SearchField aria-label="Search" data-theme="dark" className={styles.searchField}>
         <Group className={styles.searchGroup}>
           <Input
             // oxlint-disable-next-line no-autofocus
