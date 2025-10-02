@@ -1,6 +1,6 @@
 # LaunchDarkly toolbar
 
-The LaunchDarkly toolbar is a React component that provides a developer-friendly tool for interacting with LaunchDarkly during development.
+The LaunchDarkly toolbar is a React component that provides a developer-friendly mechanism for interacting with LaunchDarkly during development.
 
 ## Packages
 
