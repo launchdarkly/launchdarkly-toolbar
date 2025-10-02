@@ -22,6 +22,9 @@ export const iconButton = style({
       color: 'var(--lp-color-gray-200)',
       backgroundColor: 'var(--lp-color-gray-800)',
     },
+    '&:focus': {
+      outline: 'none',
+    },
   },
 });
 

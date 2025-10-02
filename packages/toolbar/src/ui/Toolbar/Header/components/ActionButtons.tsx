@@ -40,7 +40,7 @@ export function ActionButtons(props: ActionButtonsProps) {
   return (
     <div className={styles.rightSection}>
       {showSearchButton && (
-        <AnimatePresence>
+        <AnimatePresence mode="wait">
           {!searchIsExpanded && (
             <motion.div
               key="search-button"
@@ -48,7 +48,7 @@ export function ActionButtons(props: ActionButtonsProps) {
               initial={{ opacity: 0, scale: 0.8, x: 10 }}
               animate={{ opacity: 1, scale: 1, x: 0 }}
               exit={{ opacity: 0, scale: 0.8, x: 10 }}
-              transition={{ duration: 0.2, ease: 'easeInOut' }}
+              transition={{ duration: 0.15, ease: 'easeOut' }}
             >
               <IconButton
                 icon={<SearchIcon />}

@@ -104,7 +104,7 @@ export const searchField = style({
 });
 
 export const searchGroup = style({
-  paddingRight: '0',
+  paddingRight: '0px !important',
   display: 'flex',
   alignItems: 'center',
   gap: '8px',
