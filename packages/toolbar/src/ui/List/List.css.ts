@@ -18,5 +18,10 @@ export const listItem = style({
     '&:last-child': {
       borderBottom: 'none',
     },
+    '&:focus-within': {
+      backgroundColor: 'var(--lp-color-gray-850)',
+      outline: '2px solid var(--lp-color-blue-500)',
+      outlineOffset: '-2px',
+    },
   },
 });

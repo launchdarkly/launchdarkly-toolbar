@@ -25,6 +25,10 @@ export const iconButton = style({
     '&:focus': {
       outline: 'none',
     },
+    '&:focus-visible': {
+      outline: '2px solid var(--lp-color-blue-500)',
+      outlineOffset: '2px',
+    },
   },
 });
 
