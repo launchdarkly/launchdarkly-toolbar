@@ -7,3 +7,4 @@ export { LaunchDarklyIcon } from './icons/LaunchDarklyIcon';
 export { StatusDot } from './StatusDot';
 export { TabContentRenderer } from './TabContentRenderer';
 export { ErrorMessage } from './ErrorMessage';
+export { PinButton } from './PinButton';

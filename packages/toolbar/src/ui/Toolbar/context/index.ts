@@ -8,3 +8,4 @@ export {
   type FlagSdkOverrideContextType,
 } from './FlagSdkOverrideProvider';
 export { AnalyticsProvider, useAnalytics } from './AnalyticsProvider';
+export { PinnedFlagsProvider, usePinnedFlags } from './PinnedFlagsProvider';

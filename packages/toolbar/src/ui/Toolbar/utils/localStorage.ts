@@ -4,6 +4,7 @@ export const TOOLBAR_STORAGE_KEYS = {
   SETTINGS: 'ld-toolbar-settings',
   DISABLED: 'ld-toolbar-disabled',
   PROJECT: 'ld-toolbar-project',
+  PINNED_FLAGS: 'ld-toolbar-pinned-flags',
 } as const;
 
 export interface ToolbarSettings {
@@ -74,5 +75,25 @@ export function loadToolbarPinned(): boolean {
   } catch (error) {
     console.warn('Failed to load toolbar pinned state from localStorage:', error);
     return false;
+  }
+}
+
+export function loadPinnedFlags(): Set<string> {
+  try {
+    const stored = localStorage.getItem(TOOLBAR_STORAGE_KEYS.PINNED_FLAGS);
+    if (stored) {
+      return new Set(JSON.parse(stored));
+    }
+  } catch (error) {
+    console.error('Failed to load pinned flags from localStorage:', error);
+  }
+  return new Set();
+}
+
+export function savePinnedFlags(flags: Set<string>): void {
+  try {
+    localStorage.setItem(TOOLBAR_STORAGE_KEYS.PINNED_FLAGS, JSON.stringify(Array.from(flags)));
+  } catch (error) {
+    console.error('Failed to save pinned flags to localStorage:', error);
   }
 }
