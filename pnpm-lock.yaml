@@ -164,13 +164,13 @@ importers:
         version: 7.5.2(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
     devDependencies:
       '@rsbuild/core':
-        specifier: 1.5.13
+        specifier: ^1.5.13
         version: 1.5.13
       '@rsbuild/plugin-react':
         specifier: ^1.4.1
         version: 1.4.1(@rsbuild/core@1.5.13)
       '@rslib/core':
-        specifier: 0.15.0
+        specifier: ^0.15.0
         version: 0.15.0(typescript@5.8.3)
       '@storybook/addon-docs':
         specifier: ^9.0.5
