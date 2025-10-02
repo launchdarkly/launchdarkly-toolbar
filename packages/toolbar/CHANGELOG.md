@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.22.2-beta.1](https://github.com/launchdarkly/launchdarkly-toolbar/compare/0.22.1-beta.1...0.22.2-beta.1) (2025-10-02)
+
+
+### Bug Fixes
+
+* search animation stutter and improve UX polish ([#142](https://github.com/launchdarkly/launchdarkly-toolbar/issues/142)) ([b1618d8](https://github.com/launchdarkly/launchdarkly-toolbar/commit/b1618d8f6bc229384639dee27f74d2c405d1b062))
+
 ## [0.22.1-beta.1](https://github.com/launchdarkly/launchdarkly-toolbar/compare/0.22.0-beta.1...0.22.1-beta.1) (2025-09-30)
 
 

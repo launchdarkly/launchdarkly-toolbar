@@ -35,9 +35,9 @@ export function SearchSection(props: SearchSectionProps) {
   return (
     <motion.div
       className={styles.searchFieldWrapper}
-      initial={{ scale: 0.95 }}
-      animate={{ scale: 1 }}
-      transition={{ duration: 0.2, ease: 'easeOut' }}
+      initial={{ scale: 0.9, opacity: 0, x: -20 }}
+      animate={{ scale: 1, opacity: 1, x: 0 }}
+      transition={{ duration: 0.25, ease: [0.25, 0.46, 0.45, 0.94], delay: 0.15 }}
     >
       <SearchField aria-label="Search" data-theme="dark" onBlur={handleBlur} className={styles.searchField}>
         <Group className={styles.searchGroup}>
