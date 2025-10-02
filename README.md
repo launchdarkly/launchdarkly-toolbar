@@ -1,26 +1,30 @@
-# LaunchDarkly Toolbar
+# LaunchDarkly toolbar
 
-A React component that provides a developer-friendly toolbar for interacting with LaunchDarkly during development.
+The LaunchDarkly toolbar is a React component that provides a developer-friendly tool for interacting with LaunchDarkly during development.
 
 ## Packages
 
 This is a monorepo containing the following packages:
 
-- **[@launchdarkly/toolbar](./packages/toolbar/)** - The main toolbar component package
-- **[demo](./packages/demo/)** - Demo application showcasing the toolbar
+- **[@launchdarkly/toolbar](./packages/toolbar/)**: The main toolbar component package
+- **[demo](./packages/demo/)**: Demo application showcasing the toolbar
 
-## Quick Start
+## Quickstart
 
-For usage instructions and API documentation, see the [toolbar package README](./packages/toolbar/README.md).
+For usage instructions and API documentation, read the [toolbar package README](./packages/toolbar/README.md) and the [LaunchDarkly documentation](https://launchdarkly.com/docs/home/getting-started/dev-toolbar).
 
 ## Development
 
 ### Prerequisites
 
+Before you set up the toolbar, you must have the following prerequisites:
+
 - Node.js 18+
 - pnpm
 
-### Setup
+### Set up
+
+To set up the toolbar:
 
 ```bash
 # Install dependencies
@@ -38,6 +42,8 @@ pnpm dev
 
 ### Testing
 
+To test the toolbar:
+
 ```bash
 # Run unit tests
 pnpm test
@@ -51,20 +57,22 @@ pnpm test:e2e:ci
 
 ### Scripts
 
-- `pnpm dev` - Build toolbar in watch mode
-- `pnpm demo` - Run demo application
-- `pnpm demo:mock` - Run demo with mock flags
-- `pnpm build` - Build toolbar for production
-- `pnpm test` - Run unit tests
-- `pnpm test:e2e:local` - Run E2E tests (local)
-- `pnpm test:e2e:ci` - Run E2E tests (CI)
-- `pnpm lint` - Run linting
-- `pnpm format` - Format code with Prettier
-- `pnpm storybook` - Start Storybook
+The following scripts are available:
+
+- `pnpm dev`: Build toolbar in watch mode
+- `pnpm demo`: Run demo application
+- `pnpm demo:mock`: Run demo with mock flags
+- `pnpm build`: Build toolbar for production
+- `pnpm test`: Run unit tests
+- `pnpm test:e2e:local`; Run E2E tests (local)
+- `pnpm test:e2e:ci`: Run E2E tests (CI)
+- `pnpm lint`: Run linting
+- `pnpm format`: Format code with Prettier
+- `pnpm storybook`: Start Storybook
 
 ## Contributing
 
-See [CONTRIBUTING.md](./CONTRIBUTING.md) for development guidelines and contribution instructions.
+To learn about development guidelines and contribution instructions, read [CONTRIBUTING.md](./CONTRIBUTING.md).
 
 ## License
 
