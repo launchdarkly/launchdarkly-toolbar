@@ -15,6 +15,7 @@
   },
   "dependencies": {
     "@launchdarkly/toolbar": "workspace:*",
+    "@launchdarkly/toolbar-iframe": "workspace:*",
     "launchdarkly-js-client-sdk": "^3.8.1",
     "launchdarkly-react-client-sdk": "^3.8.1",
     "msw": "^2.11.2",

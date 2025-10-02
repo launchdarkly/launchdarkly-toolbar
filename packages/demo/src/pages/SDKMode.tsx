@@ -1,14 +1,30 @@
-import { useState, lazy, Suspense } from 'react';
+import { useState, Suspense, useEffect } from 'react';
 import { AppWrapper } from '../AppWrapper';
 import { flagOverridePlugin, eventInterceptionPlugin } from '../plugins';
-import type { ToolbarPosition } from '@launchdarkly/toolbar';
+import type { LaunchDarklyToolbarProps, ToolbarPosition } from '@launchdarkly/toolbar';
+import mountToolbar from '@launchdarkly/toolbar-iframe';
 
-const LaunchDarklyToolbar = lazy(() =>
-  import('@launchdarkly/toolbar').then((module) => ({ default: module.LaunchDarklyToolbar })),
-);
+function toolbarIframe(options: LaunchDarklyToolbarProps) {
+  
+  return (
+    mountToolbar(options)
+  )
+}
 
 export function SDKMode() {
   const [position, setPosition] = useState<ToolbarPosition>('bottom-right');
+
+  const options: LaunchDarklyToolbarProps = {
+    baseUrl: import.meta.env.VITE_LD_BASE_URL,
+    position: position,
+    flagOverridePlugin: flagOverridePlugin,
+    eventInterceptionPlugin: eventInterceptionPlugin
+  };
+
+  useEffect(() => {
+    const iframe = mountToolbar(options);
+    document.body.appendChild(iframe);
+  }, [])
 
   return (
     <AppWrapper mode="sdk" position={position} onPositionChange={setPosition}>
@@ -22,16 +38,8 @@ export function SDKMode() {
         )}
       </div>
 
-      {LaunchDarklyToolbar && (
-        <Suspense fallback={<div>Loading toolbar...</div>}>
-          <LaunchDarklyToolbar
-            baseUrl={import.meta.env.VITE_LD_BASE_URL}
-            position={position}
-            flagOverridePlugin={flagOverridePlugin}
-            eventInterceptionPlugin={eventInterceptionPlugin}
-          />
-        </Suspense>
-      )}
-    </AppWrapper>
+      <Suspense fallback={<div>Loading toolbar...</div>}>
+      </Suspense>
+    </AppWrapper> 
   );
 }

@@ -1,0 +1,22 @@
+{
+  "name": "@launchdarkly/toolbar-iframe",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {},
+  "dependencies": {
+    "@launchdarkly/toolbar": "workspace:*"
+  },
+  "exports": {
+    ".": {
+      "import": "./main.ts"
+    }
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.30.1",
+    "eslint": "^9.30.1",
+    "typescript": "~5.8.3",
+    "typescript-eslint": "^8.35.1"
+  },
+  "main": "main.ts"
+}

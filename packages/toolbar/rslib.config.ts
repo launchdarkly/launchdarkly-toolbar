@@ -31,6 +31,14 @@ export default defineConfig({
   },
   plugins: [pluginReact()],
   tools: {
+    styleLoader: {
+      insert: 'head',
+    },
+    cssLoader: {
+      modules: {
+        exportOnlyLocals: true,
+      }
+    },
     rspack: {
       plugins: [new VanillaExtractPlugin()],
     },
