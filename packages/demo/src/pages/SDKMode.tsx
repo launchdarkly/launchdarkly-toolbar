@@ -4,13 +4,6 @@ import { flagOverridePlugin, eventInterceptionPlugin } from '../plugins';
 import type { LaunchDarklyToolbarProps, ToolbarPosition } from '@launchdarkly/toolbar';
 import mountToolbar from '@launchdarkly/toolbar-iframe';
 
-function toolbarIframe(options: LaunchDarklyToolbarProps) {
-  
-  return (
-    mountToolbar(options)
-  )
-}
-
 export function SDKMode() {
   const [position, setPosition] = useState<ToolbarPosition>('bottom-right');
 
