@@ -83,7 +83,7 @@ export const circleLogo = style({
 export const toolbarContent = style({
   width: '100%',
   display: 'flex',
-  flexDirection: 'column',
+  flexDirection: 'column-reverse',
 });
 
 export const contentArea = style({
