@@ -1,0 +1,38 @@
+{
+  "name": "launchdarkly-toolbar-demo-nextjs",
+  "private": true,
+  "version": "0.0.0",
+  "scripts": {
+    "dev": "next dev",
+    "dev:mock": "NEXT_PUBLIC_USE_MOCK_FLAGS=true next dev",
+    "build": "next build",
+    "build:mock": "NEXT_PUBLIC_USE_MOCK_FLAGS=true next build",
+    "prebuild": "pnpm --filter @launchdarkly/toolbar build",
+    "prebuild:mock": "pnpm --filter @launchdarkly/toolbar build",
+    "start": "next start",
+    "lint": "next lint",
+    "type-check": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@launchdarkly/toolbar": "workspace:*",
+    "launchdarkly-js-client-sdk": "^3.8.1",
+    "launchdarkly-react-client-sdk": "^3.8.1",
+    "msw": "^2.11.2",
+    "next": "^15.1.8",
+    "react": "^19.1.1",
+    "react-dom": "^19.1.1"
+  },
+  "devDependencies": {
+    "@types/node": "^24.2.1",
+    "@types/react": "^19.1.13",
+    "@types/react-dom": "^19.1.9",
+    "eslint": "^9.30.1",
+    "eslint-config-next": "^15.1.8",
+    "typescript": "~5.8.3"
+  },
+  "msw": {
+    "workerDirectory": [
+      "public"
+    ]
+  }
+}
