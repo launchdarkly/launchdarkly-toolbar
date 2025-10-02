@@ -7,14 +7,12 @@
     "dev:mock": "NEXT_PUBLIC_USE_MOCK_FLAGS=true next dev",
     "build": "next build",
     "build:mock": "NEXT_PUBLIC_USE_MOCK_FLAGS=true next build",
-    "prebuild": "pnpm --filter @launchdarkly/toolbar build",
-    "prebuild:mock": "pnpm --filter @launchdarkly/toolbar build",
     "start": "next start",
     "lint": "next lint",
     "type-check": "tsc --noEmit"
   },
   "dependencies": {
-    "@launchdarkly/toolbar": "workspace:*",
+    "@launchdarkly/toolbar": "0.22.2-beta.1",
     "launchdarkly-js-client-sdk": "^3.8.1",
     "launchdarkly-react-client-sdk": "^3.8.1",
     "msw": "^2.11.2",

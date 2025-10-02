@@ -1,11 +1,10 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
-  transpilePackages: ['@launchdarkly/toolbar'],
   experimental: {
     esmExternals: true,
   },
-  webpack: (config, { isServer }) => {
+  webpack: (config) => {
     // Handle ESM modules properly
     config.resolve.extensionAlias = {
       '.js': ['.js', '.ts', '.tsx'],

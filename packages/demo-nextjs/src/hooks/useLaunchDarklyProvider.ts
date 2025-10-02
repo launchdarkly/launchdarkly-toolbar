@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { asyncWithLDProvider } from 'launchdarkly-react-client-sdk';
 import { DEMO_CONFIG, demoLog } from '../config/demo';
 import { startMockWorker, stopMockWorker } from '../mocks';
-import { flagOverridePlugin } from '../plugins';
+import { flagOverridePlugin, eventInterceptionPlugin } from '../plugins';
 
 export interface UseLaunchDarklyProviderReturn {
   LDProvider: React.FC<{ children: React.ReactNode }> | null;
@@ -34,7 +34,7 @@ export function useLaunchDarklyProvider(): UseLaunchDarklyProviderReturn {
             baseUrl: process.env.NEXT_PUBLIC_LD_BASE_URL,
             streamUrl: process.env.NEXT_PUBLIC_LD_STREAM_URL,
             eventsUrl: process.env.NEXT_PUBLIC_LD_EVENTS_URL,
-            plugins: [flagOverridePlugin],
+            plugins: [flagOverridePlugin, eventInterceptionPlugin],
           },
         });
 

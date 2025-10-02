@@ -5,7 +5,7 @@ import { AppWrapper } from '../../components/AppWrapper';
 import { useLaunchDarklyProvider } from '../../hooks/useLaunchDarklyProvider';
 import { LoadingScreen } from '../../components/LoadingScreen';
 import { MockModeIndicator } from '../../components/MockModeIndicator';
-import { flagOverridePlugin } from '../../plugins';
+import { flagOverridePlugin, eventInterceptionPlugin } from '../../plugins';
 import type { ToolbarPosition } from '@launchdarkly/toolbar';
 
 const LaunchDarklyToolbar = lazy(() =>
@@ -30,9 +30,6 @@ export default function SDKMode() {
             <strong>SDK Mode:</strong> The toolbar uses the LaunchDarkly React SDK directly with flag override
             capabilities. No dev server configuration needed.
           </p>
-          <p style={{ color: '#666', fontSize: '14px', fontStyle: 'italic' }}>
-            Note: Event interception plugin is temporarily disabled for Next.js compatibility.
-          </p>
           {process.env.NODE_ENV === 'production' && (
             <p style={{ color: '#666', fontStyle: 'italic' }}>Toolbar is disabled in production mode.</p>
           )}
@@ -44,6 +41,7 @@ export default function SDKMode() {
               baseUrl={process.env.NEXT_PUBLIC_LD_BASE_URL}
               position={position}
               flagOverridePlugin={flagOverridePlugin}
+              eventInterceptionPlugin={eventInterceptionPlugin}
             />
           </Suspense>
         )}

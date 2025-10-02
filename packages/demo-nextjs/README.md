@@ -118,7 +118,7 @@ This demo showcases how the LaunchDarkly Toolbar works with Next.js:
 
 ## Development
 
-This demo is part of a pnpm monorepo workspace and automatically uses the local version of the LaunchDarkly Toolbar from `packages/toolbar/`. Any changes to the toolbar library will be reflected after rebuilding the toolbar package.
+This demo uses the latest beta version of the LaunchDarkly Toolbar from npm (`@launchdarkly/toolbar@0.22.2-beta.1`). This ensures you're testing with the most recent published version of the toolbar.
 
 ## Troubleshooting
 
