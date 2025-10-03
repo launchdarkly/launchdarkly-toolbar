@@ -18,9 +18,9 @@ export const listItem = style({
     '&:last-child': {
       borderBottom: 'none',
     },
-    '&:focus-within': {
+    '&:focus-within:has(*:focus-visible)': {
       backgroundColor: 'var(--lp-color-gray-850)',
-      outline: '2px solid var(--lp-color-blue-500)',
+      outline: '2px solid var(--lp-color-shadow-interactive-focus)',
       outlineOffset: '-2px',
     },
   },

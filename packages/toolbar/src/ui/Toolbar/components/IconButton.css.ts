@@ -26,8 +26,8 @@ export const iconButton = style({
       outline: 'none',
     },
     '&:focus-visible': {
-      outline: '2px solid var(--lp-color-blue-500)',
-      outlineOffset: '2px',
+      outline: '2px solid var(--lp-color-shadow-interactive-focus)',
+      outlineOffset: '-2px',
     },
   },
 });

@@ -61,10 +61,12 @@ export const circleContent = style({
   border: '1px solid var(--lp-color-gray-700)',
   borderRadius: '50%',
   cursor: 'pointer',
-  outline: 'none',
+  ':focus': {
+    outline: 'none',
+  },
   ':focus-visible': {
-    outline: '2px solid var(--lp-color-blue-500)',
-    outlineOffset: '2px',
+    outline: '2px solid var(--lp-color-shadow-interactive-focus)',
+    outlineOffset: '-2px',
   },
   ':hover': {
     backgroundColor: 'var(--lp-color-gray-800)',
@@ -84,6 +86,13 @@ export const toolbarContent = style({
   width: '100%',
   display: 'flex',
   flexDirection: 'column-reverse',
+  ':focus': {
+    outline: 'none',
+  },
+  ':focus-visible': {
+    outline: '2px solid var(--lp-color-shadow-interactive-focus)',
+    outlineOffset: '-2px',
+  },
 });
 
 export const contentArea = style({

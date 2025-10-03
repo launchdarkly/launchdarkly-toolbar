@@ -71,13 +71,6 @@ export const searchButtonArea = style({
   alignItems: 'center',
   justifyContent: 'center',
   borderRadius: '4px',
-
-  selectors: {
-    '&:focus-within': {
-      outline: '2px solid var(--lp-color-blue-500)',
-      outlineOffset: '2px',
-    },
-  },
 });
 
 export const closeButtonArea = style({
@@ -85,13 +78,6 @@ export const closeButtonArea = style({
   alignItems: 'center',
   justifyContent: 'center',
   borderRadius: '4px',
-
-  selectors: {
-    '&:focus-within': {
-      outline: '2px solid var(--lp-color-blue-500)',
-      outlineOffset: '2px',
-    },
-  },
 });
 
 export const actionButton = style({
@@ -108,14 +94,6 @@ export const actionButton = style({
   ':hover': {
     color: 'var(--lp-color-gray-200)',
     backgroundColor: 'var(--lp-color-gray-800)',
-  },
-
-  ':focus': {
-    outline: 'none',
-  },
-
-  ':focus-visible': {
-    outline: 'none',
   },
 });
 

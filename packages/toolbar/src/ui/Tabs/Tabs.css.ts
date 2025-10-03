@@ -55,6 +55,15 @@ export const tab = style({
     color: 'var(--lp-color-gray-600)',
     cursor: 'not-allowed',
   },
+
+  ':focus': {
+    outline: 'none',
+  },
+
+  ':focus-visible': {
+    outline: '2px solid var(--lp-color-shadow-interactive-focus)',
+    outlineOffset: '-2px',
+  },
 });
 
 // Active tab modifier
