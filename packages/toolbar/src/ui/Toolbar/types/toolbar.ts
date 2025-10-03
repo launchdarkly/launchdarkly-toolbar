@@ -6,7 +6,7 @@ export const TAB_ORDER: readonly TabId[] = ['flag-sdk', 'flag-dev-server', 'even
 
 export type ToolbarMode = 'dev-server' | 'sdk';
 
-export const DEV_SERVER_TABS: readonly TabId[] = ['flag-dev-server', 'settings'] as const;
+export const DEV_SERVER_TABS: readonly TabId[] = ['flag-dev-server', 'events', 'settings'] as const;
 export const SDK_MODE_TABS: readonly TabId[] = ['flag-sdk', 'events', 'settings'] as const;
 
 export function getToolbarMode(devServerUrl?: string): ToolbarMode {
@@ -21,6 +21,10 @@ export function getTabsForMode(
   if (mode === 'dev-server') {
     // Dev-server mode: always show flag-dev-server, conditionally show events
     const tabs: TabId[] = ['flag-dev-server'];
+
+    if (hasEventInterceptionPlugin) {
+      tabs.push('events');
+    }
 
     tabs.push('settings');
     return tabs as readonly TabId[];

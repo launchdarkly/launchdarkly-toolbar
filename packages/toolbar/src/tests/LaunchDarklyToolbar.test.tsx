@@ -57,7 +57,7 @@ describe('LaunchDarklyToolbar - User Flows', () => {
       expect(screen.getByRole('tab', { name: /flags/i })).toBeInTheDocument();
       expect(screen.getByRole('tab', { name: /settings/i })).toBeInTheDocument();
 
-      // AND: Client-side override and events functionality is not available (they should use the dev server)
+      // AND: Events functionality is not available without event interception plugin
       expect(screen.queryByRole('tab', { name: /events/i })).not.toBeInTheDocument();
     });
   });
