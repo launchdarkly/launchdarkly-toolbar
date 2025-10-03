@@ -19,7 +19,7 @@ export default async function lazyLoadToolbar(signal: AbortSignal, url: string):
 
   const toolbarModule = getWindow().LaunchDarklyToolbar;
   if (!toolbarModule) {
-    throw new Error(`Unable to detect SentryToolbar global from ${url}`);
+    throw new Error(`Unable to detect LaunchDarklyToolbar global from ${url}`);
   }
 
   return toolbarModule;
@@ -50,6 +50,6 @@ async function lazyLoad(signal: AbortSignal, url: string): Promise<void> {
     await waitForLoad;
   } catch (error) {
     console.log(error);
-    throw new Error(`Could not load Sentry DevToolbar bundle from ${url}`);
+    throw new Error(`Could not load LaunchDarkly developer toolbar bundle from ${url}`);
   }
 }

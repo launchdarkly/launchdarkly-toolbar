@@ -1,0 +1,17 @@
+{
+  "compilerOptions": {
+    "target": "es2022",
+    "useDefineForClassFields": true,
+    "lib": ["ES2022", "DOM", "DOM.Iterable"],
+    "module": "ESNext",
+    "skipLibCheck": true,
+    "moduleResolution": "bundler",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "jsx": "react-jsx",
+    "strict": true,
+    "types": ["vitest", "@testing-library/jest-dom"]
+  },
+  "include": ["packages/toolbar-core/.storybook/*", "src/**/*.ts", "src/**/*.tsx", "templates/**/*.ts", "templates/**/*.tsx", "packages/toolbar-core/src/css.d.ts", "packages/toolbar-core/src/index.ts"],
+  "exclude": [],
+}

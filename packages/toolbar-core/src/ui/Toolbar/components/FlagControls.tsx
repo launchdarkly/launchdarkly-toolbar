@@ -16,7 +16,7 @@ import { IconButton } from './IconButton';
 import { EnhancedFlag } from '../../../types/devServer';
 import { deepEqual } from '../../../utils';
 
-import * as popoverStyles from '../components/Popover.css';
+import * as popoverStyles from './Popover.css';
 import * as styles from './FlagControls.css';
 
 interface BooleanFlagControlProps {
