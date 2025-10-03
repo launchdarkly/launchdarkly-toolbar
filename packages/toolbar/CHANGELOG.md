@@ -1,5 +1,21 @@
 # Changelog
 
+## [0.23.0-beta.1](https://github.com/launchdarkly/launchdarkly-toolbar/compare/0.22.2-beta.1...0.23.0-beta.1) (2025-10-03)
+
+
+### Features
+
+* [REL-9746] add FocusScope around expanded toolbar ([#138](https://github.com/launchdarkly/launchdarkly-toolbar/issues/138)) ([76fc359](https://github.com/launchdarkly/launchdarkly-toolbar/commit/76fc35956bdcd564d7947723f3ae6f9e4c8eac7a))
+* Enable events tab in dev-server mode ([#153](https://github.com/launchdarkly/launchdarkly-toolbar/issues/153)) ([bfb8d2f](https://github.com/launchdarkly/launchdarkly-toolbar/commit/bfb8d2f164c5fc14a098f639f2f623029cc739e4))
+* improve toolbar drag behavior with momentum and smooth animations ([2e8f4dd](https://github.com/launchdarkly/launchdarkly-toolbar/commit/2e8f4dd4a23a4f5623aaa399540983105ba737d7))
+* **REL-9867:** improve toolbar drag behavior with momentum and smooth animations ([#152](https://github.com/launchdarkly/launchdarkly-toolbar/issues/152)) ([2e8f4dd](https://github.com/launchdarkly/launchdarkly-toolbar/commit/2e8f4dd4a23a4f5623aaa399540983105ba737d7))
+
+
+### Bug Fixes
+
+* [REL-9795] move blur handler up so it can close properly after search clear ([#148](https://github.com/launchdarkly/launchdarkly-toolbar/issues/148)) ([9a1530b](https://github.com/launchdarkly/launchdarkly-toolbar/commit/9a1530b9842384d3ed7cdf74b37d620fe3ae3db0))
+* move blur handler up so it can close properly after search clear ([9a1530b](https://github.com/launchdarkly/launchdarkly-toolbar/commit/9a1530b9842384d3ed7cdf74b37d620fe3ae3db0))
+
 ## [0.22.2-beta.1](https://github.com/launchdarkly/launchdarkly-toolbar/compare/0.22.1-beta.1...0.22.2-beta.1) (2025-10-02)
 
 
