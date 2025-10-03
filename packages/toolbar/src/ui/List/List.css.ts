@@ -18,7 +18,12 @@ export const listItem = style({
     '&:last-child': {
       borderBottom: 'none',
     },
-    '&:focus-within:has(*:focus-visible)': {
+    '&:focus-visible': {
+      backgroundColor: 'var(--lp-color-gray-850)',
+      outline: '2px solid var(--lp-color-shadow-interactive-focus)',
+      outlineOffset: '-2px',
+    },
+    '&:focus-within:has(button:focus-visible, label:focus-visible, label[data-focus-visible])': {
       backgroundColor: 'var(--lp-color-gray-850)',
       outline: '2px solid var(--lp-color-shadow-interactive-focus)',
       outlineOffset: '-2px',
