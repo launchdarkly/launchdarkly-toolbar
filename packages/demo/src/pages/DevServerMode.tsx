@@ -1,5 +1,6 @@
 import { useState, lazy, Suspense } from 'react';
 import { AppWrapper } from '../AppWrapper';
+import { eventInterceptionPlugin } from '../plugins';
 import type { ToolbarPosition } from '@launchdarkly/toolbar';
 
 const LaunchDarklyToolbar = lazy(() =>
@@ -43,7 +44,12 @@ export function DevServerMode() {
 
       {LaunchDarklyToolbar && (
         <Suspense fallback={<div>Loading toolbar...</div>}>
-          <LaunchDarklyToolbar position={position} devServerUrl={devServerUrl} projectKey={projectKey || undefined} />
+          <LaunchDarklyToolbar
+            position={position}
+            devServerUrl={devServerUrl}
+            projectKey={projectKey || undefined}
+            eventInterceptionPlugin={eventInterceptionPlugin}
+          />
         </Suspense>
       )}
     </AppWrapper>

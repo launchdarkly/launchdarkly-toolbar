@@ -127,7 +127,7 @@ export function FlagDevServerTabContent() {
                         borderBottom: '1px solid var(--lp-color-gray-800)',
                       }}
                     >
-                      <ListItem>
+                      <ListItem className={styles.flagListItem}>
                         <div className={styles.flagHeader}>
                           <span className={styles.flagName}>
                             <span className={styles.flagNameText}>{flag.name}</span>

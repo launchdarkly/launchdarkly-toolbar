@@ -61,10 +61,10 @@ test.describe('LaunchDarkly Toolbar - Dev Server Mode', () => {
       // Expand toolbar
       await page.getByRole('img', { name: 'LaunchDarkly' }).click();
 
-      // Verify dev server mode tabs are available (no Events tab)
+      // Verify dev server mode tabs are available (including Events tab)
       await expect(page.getByRole('tab', { name: 'Flags' })).toBeVisible();
+      await expect(page.getByRole('tab', { name: 'Events' })).toBeVisible();
       await expect(page.getByRole('tab', { name: 'Settings' })).toBeVisible();
-      await expect(page.getByRole('tab', { name: 'Events' })).not.toBeVisible(); // Dev server mode specific
 
       // Verify Flags tab shows dev server content
       await expect(page.getByTestId('flag-dev-server-tab-content')).toBeVisible();
@@ -120,6 +120,22 @@ test.describe('LaunchDarkly Toolbar - Dev Server Mode', () => {
 
       // 3. Verify flag management buttons are present
       await expect(page.getByText('Remove all overrides (0)')).toBeVisible();
+    });
+  });
+
+  test.describe('Event Interception and Management Workflow', () => {
+    test('should display events tab and capture evaluation events', async ({ page }: { page: Page }) => {
+      // Expand toolbar
+      await page.getByRole('img', { name: 'LaunchDarkly' }).click();
+
+      // Navigate to Events tab
+      await page.getByRole('tab', { name: 'Events' }).click();
+
+      // Verify events tab content is visible
+      await expect(page.getByTestId('events-tab-content')).toBeVisible();
+
+      // Verify clear events button is present
+      await expect(page.getByRole('button', { name: /Clear all events/i })).toBeVisible();
     });
   });
 

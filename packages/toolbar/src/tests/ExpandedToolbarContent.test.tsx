@@ -168,6 +168,31 @@ describe('ExpandedToolbarContent - User Interaction Flows', () => {
       // THEN: They see the server-side flag management interface
       expect(screen.getByTestId('flag-dev-server-tab-content')).toBeInTheDocument();
     });
+
+    test('developer with event interception plugin can access events tab in dev-server mode', () => {
+      // GIVEN: Developer has expanded the toolbar in dev server mode WITH event plugin
+      const mockEventPlugin = createMockEventInterceptionPlugin();
+      render(
+        <TestWrapper devServerUrl="http://localhost:8765">
+          <ExpandedToolbarContent
+            baseUrl="http://localhost:3002"
+            {...defaultProps}
+            mode="dev-server"
+            eventInterceptionPlugin={mockEventPlugin}
+          />
+        </TestWrapper>,
+      );
+
+      // WHEN: They look at the available tabs
+      // THEN: They see the events tab alongside server-side flags
+      expect(screen.getByRole('tab', { name: /flags/i })).toBeInTheDocument();
+      expect(screen.getByRole('tab', { name: /events/i })).toBeInTheDocument();
+      expect(screen.getByRole('tab', { name: /settings/i })).toBeInTheDocument();
+
+      // AND: The events tab is available for event monitoring in dev-server mode
+      const tabs = screen.getAllByRole('tab');
+      expect(tabs).toHaveLength(3); // flags, events, settings
+    });
   });
 
   describe('SDK Mode - Client-Side Override Flow', () => {
