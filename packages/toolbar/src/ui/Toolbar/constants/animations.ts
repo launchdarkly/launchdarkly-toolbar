@@ -74,7 +74,7 @@ export const ANIMATION_CONFIG = {
 export const DIMENSIONS = {
   collapsed: { width: 48, height: 48, borderRadius: 24 },
   expanded: { width: 400, borderRadius: 12 },
-  scale: { expanded: 1.02, collapsed: 1 },
+  scale: { expanded: 1, collapsed: 1 },
   slideDistance: 30,
 } as const;
 
