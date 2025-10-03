@@ -1,7 +1,7 @@
 import type { ReactNode } from 'react';
 import './App.css';
 import { useLDClient } from 'launchdarkly-react-client-sdk';
-import type { ToolbarPosition } from '@launchdarkly/toolbar';
+import type { ToolbarPosition } from '@launchdarkly/toolbar-types';
 
 interface AppWrapperProps {
   children: ReactNode;

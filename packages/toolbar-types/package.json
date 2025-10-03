@@ -1,0 +1,24 @@
+{
+  "name": "@launchdarkly/toolbar-types",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.cts",
+      "import": "./dist//index.cjs"
+    }
+  },
+  "scripts": {
+    "build": "tsup src/index.ts --dts",
+    "dev": "vite",
+    "lint": "eslint ."
+  },
+  "dependencies": {
+    "launchdarkly-js-client-sdk": "^3.9.0"
+  },
+  "devDependencies": {
+    "typescript": "~5.8.3",
+    "tsup": "^8.5.0"
+  }
+}
