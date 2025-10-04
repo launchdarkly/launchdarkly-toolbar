@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.23.1-beta.1](https://github.com/launchdarkly/launchdarkly-toolbar/compare/0.23.0-beta.1...0.23.1-beta.1) (2025-10-04)
+
+
+### Bug Fixes
+
+* [REL-9865] toolbar keyboard navigation improvements ([#150](https://github.com/launchdarkly/launchdarkly-toolbar/issues/150)) ([774523f](https://github.com/launchdarkly/launchdarkly-toolbar/commit/774523ff4f16fabd76a3dc93f8b640c0c658d002))
+
 ## [0.23.0-beta.1](https://github.com/launchdarkly/launchdarkly-toolbar/compare/0.22.2-beta.1...0.23.0-beta.1) (2025-10-03)
 
 
