@@ -2,7 +2,8 @@
  * Do not edit directly, this file was auto-generated.
  */
 
-:root, [data-theme] {
+:root,
+[data-theme] {
   --lp-color-gray-0: rgb(247, 249, 251);
   --lp-color-gray-50: rgb(236, 239, 242);
   --lp-color-gray-100: rgb(216, 221, 227);

@@ -14,7 +14,9 @@
   --lp-duration-350: 350ms;
   --lp-duration-400: 400ms;
   --lp-duration-500: 500ms;
-  --lp-font-family-base: Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, Helvetica, Arial, sans-serif;
+  --lp-font-family-base:
+    Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, Helvetica, Arial,
+    sans-serif;
   --lp-font-family-monospace: SFMono-Regular, Consolas, 'Liberation Mono', Menlo, Courier, monospace;
   --lp-font-family-display: 'Audimat\ 3000 Regulier';
   --lp-font-size-800: 3.75rem;
@@ -103,14 +105,44 @@
   --lp-line-height-300: var(--lp-size-24);
   --lp-line-height-400: var(--lp-size-28);
   --lp-line-height-500: var(--lp-size-72);
-  --lp-gradient-yellow-cyan: linear-gradient(127deg, var(--lp-color-brand-yellow-base) -38.66%, var(--lp-color-brand-cyan-base) 83.73%);
-  --lp-gradient-yellow-pink: linear-gradient(148deg, var(--lp-color-brand-yellow-base) 13.5%, var(--lp-color-brand-pink-base) 90.96%);
-  --lp-gradient-yellow-blue-pale: linear-gradient(0deg, var(--lp-color-white-50) 0%, var(--lp-color-white-50) 100%), linear-gradient(151deg, var(--lp-color-brand-yellow-light) 5.75%, var(--lp-color-brand-blue-light) 90%);
-  --lp-gradient-cyan-blue: linear-gradient(136deg, var(--lp-color-brand-cyan-base) 22.68%, var(--lp-color-brand-blue-base) 127.6%);
-  --lp-gradient-cyan-purple: linear-gradient(323deg, var(--lp-color-brand-purple-base) -11.93%, var(--lp-color-brand-cyan-base) 125.4%);
-  --lp-gradient-purple-blue: linear-gradient(131deg, var(--lp-color-brand-purple-base) -15.82%, var(--lp-color-brand-blue-base) 118.85%);
-  --lp-gradient-purple-pink: linear-gradient(326deg, var(--lp-color-brand-purple-base) -9.86%, var(--lp-color-brand-pink-base) 112.59%);
-  --lp-gradient-blue-bg-primary: linear-gradient(40deg, var(--lp-color-brand-blue-light) -30.41%, var(--lp-color-bg-ui-primary) 51.41%);
+  --lp-gradient-yellow-cyan: linear-gradient(
+    127deg,
+    var(--lp-color-brand-yellow-base) -38.66%,
+    var(--lp-color-brand-cyan-base) 83.73%
+  );
+  --lp-gradient-yellow-pink: linear-gradient(
+    148deg,
+    var(--lp-color-brand-yellow-base) 13.5%,
+    var(--lp-color-brand-pink-base) 90.96%
+  );
+  --lp-gradient-yellow-blue-pale:
+    linear-gradient(0deg, var(--lp-color-white-50) 0%, var(--lp-color-white-50) 100%),
+    linear-gradient(151deg, var(--lp-color-brand-yellow-light) 5.75%, var(--lp-color-brand-blue-light) 90%);
+  --lp-gradient-cyan-blue: linear-gradient(
+    136deg,
+    var(--lp-color-brand-cyan-base) 22.68%,
+    var(--lp-color-brand-blue-base) 127.6%
+  );
+  --lp-gradient-cyan-purple: linear-gradient(
+    323deg,
+    var(--lp-color-brand-purple-base) -11.93%,
+    var(--lp-color-brand-cyan-base) 125.4%
+  );
+  --lp-gradient-purple-blue: linear-gradient(
+    131deg,
+    var(--lp-color-brand-purple-base) -15.82%,
+    var(--lp-color-brand-blue-base) 118.85%
+  );
+  --lp-gradient-purple-pink: linear-gradient(
+    326deg,
+    var(--lp-color-brand-purple-base) -9.86%,
+    var(--lp-color-brand-pink-base) 112.59%
+  );
+  --lp-gradient-blue-bg-primary: linear-gradient(
+    40deg,
+    var(--lp-color-brand-blue-light) -30.41%,
+    var(--lp-color-bg-ui-primary) 51.41%
+  );
   --lp-spacing-100: var(--lp-size-0);
   --lp-spacing-200: var(--lp-size-4);
   --lp-spacing-300: var(--lp-size-8);
@@ -120,33 +152,60 @@
   --lp-spacing-700: var(--lp-size-24);
   --lp-spacing-800: var(--lp-size-28);
   --lp-spacing-900: var(--lp-size-32);
-  --lp-text-heading-1-medium: var(--lp-font-weight-medium) var(--lp-font-size-400)/var(--lp-line-height-400) var(--lp-font-family-base);
-  --lp-text-heading-1-semibold: var(--lp-font-weight-semibold) var(--lp-font-size-400)/var(--lp-line-height-400) var(--lp-font-family-base);
-  --lp-text-heading-1-extrabold: var(--lp-font-weight-extrabold) var(--lp-font-size-400)/var(--lp-line-height-400) var(--lp-font-family-base);
-  --lp-text-heading-2-medium: var(--lp-font-weight-medium) var(--lp-font-size-300)/var(--lp-line-height-300) var(--lp-font-family-base);
-  --lp-text-heading-2-semibold: var(--lp-font-weight-semibold) var(--lp-font-size-300)/var(--lp-line-height-300) var(--lp-font-family-base);
-  --lp-text-heading-2-extrabold: var(--lp-font-weight-extrabold) var(--lp-font-size-300)/var(--lp-line-height-300) var(--lp-font-family-base);
-  --lp-text-heading-3-medium: var(--lp-font-weight-medium) var(--lp-font-size-200)/var(--lp-line-height-200) var(--lp-font-family-base);
-  --lp-text-heading-3-semibold: var(--lp-font-weight-semibold) var(--lp-font-size-200)/var(--lp-line-height-200) var(--lp-font-family-base);
-  --lp-text-heading-3-extrabold: var(--lp-font-weight-extrabold) var(--lp-font-size-200)/var(--lp-line-height-200) var(--lp-font-family-base);
-  --lp-text-body-1-regular: var(--lp-font-weight-regular) var(--lp-font-size-300)/var(--lp-line-height-300) var(--lp-font-family-base);
-  --lp-text-body-1-semibold: var(--lp-font-weight-semibold) var(--lp-font-size-300)/var(--lp-line-height-300) var(--lp-font-family-base);
-  --lp-text-body-1-extrabold: var(--lp-font-weight-extrabold) var(--lp-font-size-300)/var(--lp-line-height-300) var(--lp-font-family-base);
-  --lp-text-body-2-regular: var(--lp-font-weight-regular) var(--lp-font-size-200)/var(--lp-line-height-200) var(--lp-font-family-base);
-  --lp-text-body-2-semibold: var(--lp-font-weight-semibold) var(--lp-font-size-200)/var(--lp-line-height-200) var(--lp-font-family-base);
-  --lp-text-body-2-extrabold: var(--lp-font-weight-extrabold) var(--lp-font-size-200)/var(--lp-line-height-200) var(--lp-font-family-base);
-  --lp-text-small-1-regular: var(--lp-font-weight-regular) var(--lp-font-size-100)/var(--lp-line-height-100) var(--lp-font-family-base);
-  --lp-text-small-1-medium: var(--lp-font-weight-medium) var(--lp-font-size-100)/var(--lp-line-height-100) var(--lp-font-family-base);
-  --lp-text-small-1-semibold: var(--lp-font-weight-semibold) var(--lp-font-size-100)/var(--lp-line-height-100) var(--lp-font-family-base);
-  --lp-text-label-1-regular: var(--lp-font-weight-regular) var(--lp-font-size-200)/var(--lp-line-height-200) var(--lp-font-family-base);
-  --lp-text-label-1-medium: var(--lp-font-weight-medium) var(--lp-font-size-200)/var(--lp-line-height-200) var(--lp-font-family-base);
-  --lp-text-label-1-semibold: var(--lp-font-weight-semibold) var(--lp-font-size-200)/var(--lp-line-height-200) var(--lp-font-family-base);
-  --lp-text-label-2-regular: var(--lp-font-weight-regular) var(--lp-font-size-100)/var(--lp-line-height-100) var(--lp-font-family-base);
-  --lp-text-label-2-medium: var(--lp-font-weight-medium) var(--lp-font-size-100)/var(--lp-line-height-100) var(--lp-font-family-base);
-  --lp-text-label-2-semibold: var(--lp-font-weight-semibold) var(--lp-font-size-100)/var(--lp-line-height-100) var(--lp-font-family-base);
-  --lp-text-code-1-regular: var(--lp-font-weight-regular) var(--lp-font-size-200)/var(--lp-line-height-200) var(--lp-font-family-monospace);
-  --lp-text-code-2-regular: var(--lp-font-weight-regular) var(--lp-font-size-100)/var(--lp-line-height-100) var(--lp-font-family-monospace);
-  --lp-text-display-1: var(--lp-font-weight-regular) var(--lp-font-size-800)/var(--lp-line-height-500) var(--lp-font-family-display);
+  --lp-text-heading-1-medium: var(--lp-font-weight-medium) var(--lp-font-size-400) / var(--lp-line-height-400)
+    var(--lp-font-family-base);
+  --lp-text-heading-1-semibold: var(--lp-font-weight-semibold) var(--lp-font-size-400) / var(--lp-line-height-400)
+    var(--lp-font-family-base);
+  --lp-text-heading-1-extrabold: var(--lp-font-weight-extrabold) var(--lp-font-size-400) / var(--lp-line-height-400)
+    var(--lp-font-family-base);
+  --lp-text-heading-2-medium: var(--lp-font-weight-medium) var(--lp-font-size-300) / var(--lp-line-height-300)
+    var(--lp-font-family-base);
+  --lp-text-heading-2-semibold: var(--lp-font-weight-semibold) var(--lp-font-size-300) / var(--lp-line-height-300)
+    var(--lp-font-family-base);
+  --lp-text-heading-2-extrabold: var(--lp-font-weight-extrabold) var(--lp-font-size-300) / var(--lp-line-height-300)
+    var(--lp-font-family-base);
+  --lp-text-heading-3-medium: var(--lp-font-weight-medium) var(--lp-font-size-200) / var(--lp-line-height-200)
+    var(--lp-font-family-base);
+  --lp-text-heading-3-semibold: var(--lp-font-weight-semibold) var(--lp-font-size-200) / var(--lp-line-height-200)
+    var(--lp-font-family-base);
+  --lp-text-heading-3-extrabold: var(--lp-font-weight-extrabold) var(--lp-font-size-200) / var(--lp-line-height-200)
+    var(--lp-font-family-base);
+  --lp-text-body-1-regular: var(--lp-font-weight-regular) var(--lp-font-size-300) / var(--lp-line-height-300)
+    var(--lp-font-family-base);
+  --lp-text-body-1-semibold: var(--lp-font-weight-semibold) var(--lp-font-size-300) / var(--lp-line-height-300)
+    var(--lp-font-family-base);
+  --lp-text-body-1-extrabold: var(--lp-font-weight-extrabold) var(--lp-font-size-300) / var(--lp-line-height-300)
+    var(--lp-font-family-base);
+  --lp-text-body-2-regular: var(--lp-font-weight-regular) var(--lp-font-size-200) / var(--lp-line-height-200)
+    var(--lp-font-family-base);
+  --lp-text-body-2-semibold: var(--lp-font-weight-semibold) var(--lp-font-size-200) / var(--lp-line-height-200)
+    var(--lp-font-family-base);
+  --lp-text-body-2-extrabold: var(--lp-font-weight-extrabold) var(--lp-font-size-200) / var(--lp-line-height-200)
+    var(--lp-font-family-base);
+  --lp-text-small-1-regular: var(--lp-font-weight-regular) var(--lp-font-size-100) / var(--lp-line-height-100)
+    var(--lp-font-family-base);
+  --lp-text-small-1-medium: var(--lp-font-weight-medium) var(--lp-font-size-100) / var(--lp-line-height-100)
+    var(--lp-font-family-base);
+  --lp-text-small-1-semibold: var(--lp-font-weight-semibold) var(--lp-font-size-100) / var(--lp-line-height-100)
+    var(--lp-font-family-base);
+  --lp-text-label-1-regular: var(--lp-font-weight-regular) var(--lp-font-size-200) / var(--lp-line-height-200)
+    var(--lp-font-family-base);
+  --lp-text-label-1-medium: var(--lp-font-weight-medium) var(--lp-font-size-200) / var(--lp-line-height-200)
+    var(--lp-font-family-base);
+  --lp-text-label-1-semibold: var(--lp-font-weight-semibold) var(--lp-font-size-200) / var(--lp-line-height-200)
+    var(--lp-font-family-base);
+  --lp-text-label-2-regular: var(--lp-font-weight-regular) var(--lp-font-size-100) / var(--lp-line-height-100)
+    var(--lp-font-family-base);
+  --lp-text-label-2-medium: var(--lp-font-weight-medium) var(--lp-font-size-100) / var(--lp-line-height-100)
+    var(--lp-font-family-base);
+  --lp-text-label-2-semibold: var(--lp-font-weight-semibold) var(--lp-font-size-100) / var(--lp-line-height-100)
+    var(--lp-font-family-base);
+  --lp-text-code-1-regular: var(--lp-font-weight-regular) var(--lp-font-size-200) / var(--lp-line-height-200)
+    var(--lp-font-family-monospace);
+  --lp-text-code-2-regular: var(--lp-font-weight-regular) var(--lp-font-size-100) / var(--lp-line-height-100)
+    var(--lp-font-family-monospace);
+  --lp-text-display-1: var(--lp-font-weight-regular) var(--lp-font-size-800) / var(--lp-line-height-500)
+    var(--lp-font-family-display);
   --lp-viewport-mobile: var(--lp-size-0);
   --lp-viewport-wide: var(--lp-size-1200);
 }
