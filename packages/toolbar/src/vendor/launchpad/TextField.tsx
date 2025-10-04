@@ -1,0 +1,37 @@
+import type { Ref } from 'react';
+import type { TextFieldProps as AriaTextFieldProps, ContextValue } from 'react-aria-components';
+
+import { cva } from 'class-variance-authority';
+import { createContext } from 'react';
+import { TextField as AriaTextField, composeRenderProps, GroupContext, Provider } from 'react-aria-components';
+
+import styles from './styles/TextField.module.css';
+import { useLPContextProps } from './utils';
+
+const textFieldStyles = cva(styles.field);
+
+interface TextFieldProps extends AriaTextFieldProps {
+  ref?: Ref<HTMLDivElement>;
+}
+
+const TextFieldContext = createContext<ContextValue<TextFieldProps, HTMLDivElement>>(null);
+
+const TextField = ({ ref, ...props }: TextFieldProps) => {
+  [props, ref] = useLPContextProps(props, ref, TextFieldContext);
+  return (
+    <AriaTextField
+      {...props}
+      ref={ref}
+      className={composeRenderProps(props.className, (className, renderProps) =>
+        textFieldStyles({ ...renderProps, className }),
+      )}
+    >
+      {composeRenderProps(props.children, (children, { isInvalid, isDisabled }) => (
+        <Provider values={[[GroupContext, { isInvalid, isDisabled }]]}>{children}</Provider>
+      ))}
+    </AriaTextField>
+  );
+};
+
+export { TextField, TextFieldContext, textFieldStyles };
+export type { TextFieldProps };

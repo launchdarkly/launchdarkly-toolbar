@@ -1,6 +1,6 @@
 import { Dispatch, SetStateAction } from 'react';
 import { motion } from 'motion/react';
-import { Group, Input, SearchField } from '@launchpad-ui/components';
+import { Group, Input, SearchField } from '../../../../vendor/launchpad';
 import { IconButton } from '../../components/IconButton';
 import { CancelCircleIcon } from '../../components/icons';
 
