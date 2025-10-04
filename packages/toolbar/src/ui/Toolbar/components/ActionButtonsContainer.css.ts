@@ -44,6 +44,15 @@ export const actionButton = style({
     cursor: 'not-allowed',
   },
 
+  ':focus': {
+    outline: 'none',
+  },
+
+  ':focus-visible': {
+    outline: '2px solid var(--lp-color-shadow-interactive-focus)',
+    outlineOffset: '-2px',
+  },
+
   selectors: {
     '&:hover:not(:disabled)': {
       background: 'var(--lp-color-gray-700)',
@@ -68,6 +77,15 @@ export const toggleButton = style({
   ':disabled': {
     opacity: 0.5,
     cursor: 'not-allowed',
+  },
+
+  ':focus': {
+    outline: 'none',
+  },
+
+  ':focus-visible': {
+    outline: '2px solid var(--lp-color-shadow-interactive-focus)',
+    outlineOffset: '-2px',
   },
 
   selectors: {

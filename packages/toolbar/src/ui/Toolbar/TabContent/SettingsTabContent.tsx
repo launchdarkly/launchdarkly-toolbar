@@ -315,7 +315,7 @@ export function SettingsTabContent(props: SettingsTabContentProps) {
                 .map((item) => {
                   if (item.isConnectionStatus) {
                     return (
-                      <ListItem key={item.id} onClick={undefined}>
+                      <ListItem key={item.id}>
                         <div className={styles.settingInfo}>
                           <div className={styles.settingDetails}>
                             <span className={styles.settingName}>{item.name}</span>
@@ -327,7 +327,7 @@ export function SettingsTabContent(props: SettingsTabContentProps) {
                   }
 
                   return (
-                    <ListItem key={item.id} onClick={undefined}>
+                    <ListItem key={item.id}>
                       <div className={styles.settingInfo}>
                         <div className={styles.settingDetails}>
                           <span className={styles.settingName}>{item.name}</span>

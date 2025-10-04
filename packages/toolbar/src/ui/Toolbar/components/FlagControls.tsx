@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import {
   Button,
   ListBox,
@@ -92,7 +92,16 @@ interface StringNumberFlagControlProps {
 export function StringNumberFlagControl(props: StringNumberFlagControlProps) {
   const { flag, onOverride, disabled = false } = props;
   const [isEditing, setIsEditing] = useState(false);
-  const [tempValue, setTempValue] = useState(String(flag.currentValue));
+  const currentValue = String(flag.currentValue);
+  const [tempValue, setTempValue] = useState(currentValue);
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (isEditing && inputRef.current) {
+      inputRef.current?.focus();
+      inputRef.current?.select();
+    }
+  }, [isEditing]);
 
   const handleConfirm = () => {
     const finalValue = flag.type === 'number' ? parseFloat(tempValue) : tempValue;
@@ -101,21 +110,26 @@ export function StringNumberFlagControl(props: StringNumberFlagControlProps) {
   };
 
   const handleCancel = () => {
-    setTempValue(String(flag.currentValue));
     setIsEditing(false);
+  };
+
+  const handleEdit = () => {
+    setTempValue(currentValue);
+    setIsEditing(true);
   };
 
   return (
     <div className={styles.customVariantContainer}>
       {!isEditing ? (
         <div className={styles.currentValueGroup}>
-          <div className={styles.currentValueText}>{String(flag.currentValue)}</div>
-          <IconButton icon={<EditIcon />} label="Edit" onClick={() => setIsEditing(true)} disabled={disabled} />
+          <div className={styles.currentValueText}>{currentValue}</div>
+          <IconButton icon={<EditIcon />} label="Edit" onClick={handleEdit} disabled={disabled} />
         </div>
       ) : (
         <TextField aria-label={`Enter ${flag.type} value`} className={styles.customVariantField} data-theme="dark">
           <Group className={styles.customVariantFieldGroup}>
             <Input
+              ref={inputRef}
               placeholder={`Enter ${flag.type} value`}
               value={tempValue}
               onChange={(e) => setTempValue(e.target.value)}
