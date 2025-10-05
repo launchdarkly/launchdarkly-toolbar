@@ -14,6 +14,9 @@ const EVENTS = {
   OPEN_FLAG_DEEPLINK: 'open.flag.deeplink',
   SHOW_OVERRIDES_ONLY: 'show.overrides.only',
   EVENT_CLICK: 'event.click',
+  FLAG_PINNED: 'flag.pinned',
+  FLAG_UNPINNED: 'flag.unpinned',
+  FLAGS_CLEARED: 'flags.cleared',
 } as const;
 
 /**
@@ -148,6 +151,33 @@ export class ToolbarAnalytics {
   trackEventClick(eventName: string): void {
     this.track(EVENTS.EVENT_CLICK, {
       eventName,
+    });
+  }
+
+  /**
+   * Track flag pin action
+   */
+  trackFlagPinned(flagKey: string): void {
+    this.track(EVENTS.FLAG_PINNED, {
+      flagKey,
+    });
+  }
+
+  /**
+   * Track flag unpin action
+   */
+  trackFlagUnpinned(flagKey: string): void {
+    this.track(EVENTS.FLAG_UNPINNED, {
+      flagKey,
+    });
+  }
+
+  /**
+   * Track clearing all pinned flags
+   */
+  trackClearAllPins(count: number): void {
+    this.track(EVENTS.FLAGS_CLEARED, {
+      count,
     });
   }
 }

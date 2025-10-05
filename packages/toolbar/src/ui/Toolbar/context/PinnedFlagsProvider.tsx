@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import { loadPinnedFlags, savePinnedFlags } from '../utils/localStorage';
+import { useAnalytics } from './AnalyticsProvider';
 
 interface PinnedFlagsContextValue {
   pinnedFlags: Set<string>;
@@ -16,23 +17,32 @@ interface PinnedFlagsProviderProps {
 
 export function PinnedFlagsProvider({ children }: PinnedFlagsProviderProps) {
   const [pinnedFlags, setPinnedFlags] = useState<Set<string>>(() => loadPinnedFlags());
+  const analytics = useAnalytics();
 
   // Persist to localStorage whenever pinnedFlags changes
   useEffect(() => {
     savePinnedFlags(pinnedFlags);
   }, [pinnedFlags]);
 
-  const togglePin = useCallback((flagKey: string) => {
-    setPinnedFlags((prev) => {
-      const next = new Set(prev);
-      if (next.has(flagKey)) {
-        next.delete(flagKey);
-      } else {
-        next.add(flagKey);
-      }
-      return next;
-    });
-  }, []);
+  const togglePin = useCallback(
+    (flagKey: string) => {
+      setPinnedFlags((prev) => {
+        const next = new Set(prev);
+        const wasPinned = next.has(flagKey);
+
+        if (wasPinned) {
+          next.delete(flagKey);
+          analytics.trackFlagUnpinned(flagKey);
+        } else {
+          next.add(flagKey);
+          analytics.trackFlagPinned(flagKey);
+        }
+
+        return next;
+      });
+    },
+    [analytics],
+  );
 
   const isPinned = useCallback(
     (flagKey: string) => {
@@ -42,8 +52,14 @@ export function PinnedFlagsProvider({ children }: PinnedFlagsProviderProps) {
   );
 
   const clearAllPins = useCallback(() => {
-    setPinnedFlags(new Set());
-  }, []);
+    setPinnedFlags((prev) => {
+      const count = prev.size;
+      if (count > 0) {
+        analytics.trackClearAllPins(count);
+      }
+      return new Set();
+    });
+  }, [analytics]);
 
   const value: PinnedFlagsContextValue = {
     pinnedFlags,
