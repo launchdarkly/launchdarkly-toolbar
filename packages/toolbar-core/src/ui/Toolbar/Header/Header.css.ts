@@ -70,12 +70,14 @@ export const searchButtonArea = style({
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'center',
+  borderRadius: '4px',
 });
 
 export const closeButtonArea = style({
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'center',
+  borderRadius: '4px',
 });
 
 export const actionButton = style({

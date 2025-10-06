@@ -5,7 +5,7 @@ Thank you for your interest in contributing to the LaunchDarkly Toolbar! This gu
 ## Table of Contents
 
 - [Development Setup](#development-setup)
-- [LaunchDarkly Dev Server Setup](#launchdarkly-dev-server-setup)
+- [Toolbar Integration Modes](#toolbar-integration-modes)
 - [Development Workflow](#development-workflow)
 - [Running the Project](#running-the-project)
 - [Testing](#testing)

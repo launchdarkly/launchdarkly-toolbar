@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useRef, useEffect } from 'react';
 import { Switch, TextField, Group, Input } from '@launchpad-ui/components';
 import { EditIcon, CheckIcon, XIcon } from './icons';
 import { IconButton } from './IconButton';
@@ -40,7 +40,16 @@ interface LocalStringNumberFlagControlProps {
 export function LocalStringNumberFlagControl(props: LocalStringNumberFlagControlProps) {
   const { flag, onOverride, disabled = false } = props;
   const [isEditing, setIsEditing] = useState(false);
-  const [tempValue, setTempValue] = useState(String(flag.currentValue));
+  const currentValue = String(flag.currentValue);
+  const [tempValue, setTempValue] = useState(currentValue);
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (isEditing && inputRef.current) {
+      inputRef.current?.focus();
+      inputRef.current?.select();
+    }
+  }, [isEditing]);
 
   const handleConfirm = () => {
     let finalValue: string | number;
@@ -58,8 +67,12 @@ export function LocalStringNumberFlagControl(props: LocalStringNumberFlagControl
   };
 
   const handleCancel = () => {
-    setTempValue(String(flag.currentValue));
     setIsEditing(false);
+  };
+
+  const handleEdit = () => {
+    setTempValue(currentValue);
+    setIsEditing(true);
   };
 
   return (
@@ -67,12 +80,12 @@ export function LocalStringNumberFlagControl(props: LocalStringNumberFlagControl
       {!isEditing ? (
         <div className={sharedStyles.currentValueGroup}>
           <div className={sharedStyles.currentValueText} data-testid={`flag-value-${flag.key}`}>
-            {String(flag.currentValue)}
+            {currentValue}
           </div>
           <IconButton
             icon={<EditIcon />}
             label="Edit"
-            onClick={() => setIsEditing(true)}
+            onClick={handleEdit}
             disabled={disabled}
             data-testid={`flag-edit-${flag.key}`}
           />
@@ -85,6 +98,7 @@ export function LocalStringNumberFlagControl(props: LocalStringNumberFlagControl
         >
           <Group className={sharedStyles.customVariantFieldGroup}>
             <Input
+              ref={inputRef}
               placeholder={`Enter ${flag.type} value`}
               value={tempValue}
               onChange={(e) => setTempValue(e.target.value)}
@@ -119,10 +133,19 @@ interface LocalObjectFlagControlProps {
 export function LocalObjectFlagControl(props: LocalObjectFlagControlProps) {
   const { flag, onOverride, disabled = false } = props;
   const [isEditing, setIsEditing] = useState(false);
-  const [tempValue, setTempValue] = useState(() => JSON.stringify(flag.currentValue, null, 2));
+  const currentValue = JSON.stringify(flag.currentValue, null, 2);
+  const [tempValue, setTempValue] = useState(currentValue);
   const [parseError, setParseError] = useState<string | null>(null);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   const displayValue = useMemo(() => JSON.stringify(flag.currentValue), [flag.currentValue]);
+
+  useEffect(() => {
+    if (isEditing && textareaRef.current) {
+      textareaRef.current?.focus();
+      textareaRef.current?.select();
+    }
+  }, [isEditing]);
 
   const handleConfirm = () => {
     try {
@@ -136,7 +159,6 @@ export function LocalObjectFlagControl(props: LocalObjectFlagControlProps) {
   };
 
   const handleCancel = () => {
-    setTempValue(JSON.stringify(flag.currentValue, null, 2));
     setIsEditing(false);
     setParseError(null);
   };
@@ -144,6 +166,11 @@ export function LocalObjectFlagControl(props: LocalObjectFlagControlProps) {
   const handleValueChange = (value: string) => {
     setTempValue(value);
     setParseError(null); // Clear error when user types
+  };
+
+  const handleEdit = () => {
+    setTempValue(currentValue);
+    setIsEditing(true);
   };
 
   return (
@@ -156,7 +183,7 @@ export function LocalObjectFlagControl(props: LocalObjectFlagControlProps) {
           <IconButton
             icon={<EditIcon />}
             label="Edit JSON"
-            onClick={() => setIsEditing(true)}
+            onClick={handleEdit}
             disabled={disabled}
             data-testid={`flag-edit-${flag.key}`}
           />
@@ -169,6 +196,7 @@ export function LocalObjectFlagControl(props: LocalObjectFlagControlProps) {
         >
           <Group className={sharedStyles.customVariantFieldGroup}>
             <textarea
+              ref={textareaRef}
               placeholder="Enter valid JSON"
               value={tempValue}
               onChange={(e) => handleValueChange(e.target.value)}

@@ -97,6 +97,36 @@ export const ExpandedToolbarContent = React.forwardRef<HTMLDivElement, ExpandedT
         }}
         transition={ANIMATION_CONFIG.toolbarContent}
       >
+        <motion.div
+          className={styles.tabsContainer}
+          initial={{
+            opacity: 0,
+            y: 10,
+          }}
+          animate={{
+            opacity: 1,
+            y: 0,
+          }}
+          transition={ANIMATION_CONFIG.tabsContainer}
+        >
+          <Tabs defaultActiveTab={defaultActiveTab} activeTab={activeTab} onTabChange={onTabChange}>
+            {TAB_ORDER.filter((tabId) => availableTabs.includes(tabId)).map((tabId) => {
+              switch (tabId) {
+                case 'flag-dev-server':
+                  return <TabButton key={tabId} id={tabId} label="Flags" icon={ToggleOffIcon} />;
+                case 'flag-sdk':
+                  return <TabButton key={tabId} id={tabId} label="Flags" icon={ToggleOffIcon} />;
+                case 'events':
+                  return <TabButton key={tabId} id={tabId} label="Events" icon={SyncIcon} />;
+                case 'settings':
+                  return <TabButton key={tabId} id={tabId} label="Settings" icon={GearIcon} />;
+                default:
+                  return null;
+              }
+            })}
+          </Tabs>
+        </motion.div>
+
         {/* Expandable content area */}
         <motion.div
           className={styles.contentArea}
@@ -152,36 +182,6 @@ export const ExpandedToolbarContent = React.forwardRef<HTMLDivElement, ExpandedT
               </AnimatePresence>
             </motion.div>
           )}
-        </motion.div>
-
-        <motion.div
-          className={styles.tabsContainer}
-          initial={{
-            opacity: 0,
-            y: 10,
-          }}
-          animate={{
-            opacity: 1,
-            y: 0,
-          }}
-          transition={ANIMATION_CONFIG.tabsContainer}
-        >
-          <Tabs defaultActiveTab={defaultActiveTab} activeTab={activeTab} onTabChange={onTabChange}>
-            {TAB_ORDER.filter((tabId) => availableTabs.includes(tabId)).map((tabId) => {
-              switch (tabId) {
-                case 'flag-dev-server':
-                  return <TabButton key={tabId} id={tabId} label="Flags" icon={ToggleOffIcon} />;
-                case 'flag-sdk':
-                  return <TabButton key={tabId} id={tabId} label="Flags" icon={ToggleOffIcon} />;
-                case 'events':
-                  return <TabButton key={tabId} id={tabId} label="Events" icon={SyncIcon} />;
-                case 'settings':
-                  return <TabButton key={tabId} id={tabId} label="Settings" icon={GearIcon} />;
-                default:
-                  return null;
-              }
-            })}
-          </Tabs>
         </motion.div>
       </motion.div>
     </FocusScope>

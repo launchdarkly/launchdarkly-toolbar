@@ -60,12 +60,14 @@ export function LdToolbar(props: LdToolbarProps) {
   }, [circleButtonRef]);
 
   const handleDragEnd = useCallback(
-    (clientX: number, clientY: number) => {
+    (centerX: number, centerY: number) => {
       const screenWidth = window.innerWidth;
       const screenHeight = window.innerHeight;
 
-      const isLeft = clientX < screenWidth / 2;
-      const isTop = clientY < screenHeight / 2;
+      // centerX and centerY now represent the center of the toolbar content
+      // (calculated in useToolbarDrag before resetting styles)
+      const isLeft = centerX < screenWidth / 2;
+      const isTop = centerY < screenHeight / 2;
 
       const newPosition: ToolbarPosition = isTop
         ? isLeft
@@ -80,6 +82,7 @@ export function LdToolbar(props: LdToolbarProps) {
         analytics.trackPositionChange(position, newPosition, 'drag');
       }
 
+      // Update position immediately
       handlePositionChange(newPosition);
     },
     [handlePositionChange, position, analytics],

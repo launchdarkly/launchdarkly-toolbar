@@ -10,12 +10,20 @@ export function OverrideIndicator(props: OverrideIndicatorProps) {
   const { onClear } = props;
   const [isHovered, setIsHovered] = useState(false);
 
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (onClear && (e.key === 'Enter' || e.key === ' ')) {
+      onClear();
+    }
+  };
+
   return (
     <motion.span
       className={`${styles.overrideIndicator} ${onClear ? styles.interactive : ''}`}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
       onClick={onClear}
+      onKeyDown={handleKeyDown}
+      tabIndex={onClear ? 0 : undefined}
       title={onClear ? 'Click to remove override' : 'Override active'}
       whileHover={onClear ? { scale: 1.05 } : {}}
       transition={{ duration: 0.2 }}
