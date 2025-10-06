@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.24.0-beta.1](https://github.com/launchdarkly/launchdarkly-toolbar/compare/0.23.1-beta.1...0.24.0-beta.1) (2025-10-06)
+
+
+### Features
+
+* Remove LaunchPad UI dependency and inline components ([#155](https://github.com/launchdarkly/launchdarkly-toolbar/issues/155)) ([8af81cd](https://github.com/launchdarkly/launchdarkly-toolbar/commit/8af81cda85cf0aeea99125f6193f3bb29352ff4e))
+
 ## [0.23.1-beta.1](https://github.com/launchdarkly/launchdarkly-toolbar/compare/0.23.0-beta.1...0.23.1-beta.1) (2025-10-04)
 
 
