@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import {  useState} from 'react';
 import { AppWrapper } from '../AppWrapper';
 import { flagOverridePlugin, eventInterceptionPlugin } from '../plugins';
 import type { ToolbarPosition } from '@launchdarkly/toolbar-types';
@@ -10,10 +10,9 @@ export function SDKMode() {
   useLaunchDarklyToolbar({ cdn: 'http://localhost:8080/toolbar.min.js', enabled: true, initProps: {
     flagOverridePlugin,
     eventInterceptionPlugin,
+    mountPoint: document.body,
+    position: 'bottom-right'
   } });
-
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  console.log((window as any).LaunchDarklyToolbar)
   
   return (
     <AppWrapper mode="sdk" position={position} onPositionChange={setPosition}>

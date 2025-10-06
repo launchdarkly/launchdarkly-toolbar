@@ -45,6 +45,9 @@
     "test": "vitest run",
     "lint": "oxlint"
   },
+  "dependencies": {
+    "@launchdarkly/toolbar-types": "workspace:*"
+  },
   "devDependencies": {
     "@types/react": "^19.1.13",
     "launchdarkly-js-client-sdk": "^3.9.0",

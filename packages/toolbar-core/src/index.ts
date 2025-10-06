@@ -1,13 +1,12 @@
-import './globals.css';
+import { InitializationConfig } from "@launchdarkly/toolbar-types";
+import mount from "./mount";
+import hydrateConfig from "./utils/hydrateConfig";
 
-export { LaunchDarklyToolbar } from './ui/Toolbar/LaunchDarklyToolbar';
-export type { LaunchDarklyToolbarProps } from './ui/Toolbar/LaunchDarklyToolbar';
-export type { ToolbarPosition } from './ui/Toolbar/types/toolbar';
+export type Cleanup = () => void;
 
-export type { IFlagOverridePlugin, IEventInterceptionPlugin } from './types/plugin';
-export { FlagOverridePlugin, EventInterceptionPlugin } from './plugins';
-export type { FlagOverridePluginConfig, EventInterceptionPluginConfig } from './plugins';
+export function init(config: InitializationConfig): Cleanup {
+  const { mountPoint } = config;
+  const root = typeof mountPoint === 'function' ? mountPoint() : mountPoint;
 
-export { AfterEvaluationHook, AfterIdentifyHook, AfterTrackHook, EventStore } from './hooks';
-export type { AfterEvaluationHookConfig, AfterIdentifyHookConfig, AfterTrackHookConfig } from './hooks';
-export type { ProcessedEvent, EventFilter } from './types/events';
+  return mount(root ?? document.body, hydrateConfig(config));
+}
