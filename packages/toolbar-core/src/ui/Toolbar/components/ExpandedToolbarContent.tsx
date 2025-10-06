@@ -8,12 +8,12 @@ import { TabContentRenderer } from './TabContentRenderer';
 import { ANIMATION_CONFIG, EASING } from '../constants';
 import { ActiveTabId, ToolbarMode, getTabsForMode, TAB_ORDER } from '../types';
 import { useDevServerContext } from '../context/DevServerProvider';
-import type { IFlagOverridePlugin, IEventInterceptionPlugin } from '../../../types/plugin';
 
 import * as styles from '../LaunchDarklyToolbar.css';
 import { GearIcon, SyncIcon, ToggleOffIcon } from './icons';
 import { ErrorMessage } from './ErrorMessage';
 import { FocusScope } from '@react-aria/focus';
+import { IEventInterceptionPlugin, IFlagOverridePlugin } from '@launchdarkly/toolbar-types';
 
 interface ExpandedToolbarContentProps {
   activeTab: ActiveTabId;

@@ -2,7 +2,7 @@ import { render, screen, act } from '@testing-library/react';
 import { expect, test, describe, vi, beforeEach } from 'vitest';
 
 import { FlagSdkOverrideProvider, useFlagSdkOverrideContext } from '../ui/Toolbar/context/FlagSdkOverrideProvider';
-import type { IFlagOverridePlugin } from '../types/plugin';
+import { IFlagOverridePlugin } from '@launchdarkly/toolbar-types';
 
 // Test component that uses the context
 function TestConsumer() {

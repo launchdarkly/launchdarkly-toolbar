@@ -5,7 +5,7 @@ import { EventsTabContent } from '../TabContent/EventsTabContent';
 import { SettingsTabContent } from '../TabContent/SettingsTabContent';
 import { ANIMATION_CONFIG, DIMENSIONS } from '../constants';
 import { TabId, ToolbarMode } from '../types';
-import type { IFlagOverridePlugin, IEventInterceptionPlugin } from '../../../types/plugin';
+import { IEventInterceptionPlugin, IFlagOverridePlugin } from '@launchdarkly/toolbar-types';
 
 interface TabContentRendererProps {
   activeTab: TabId;

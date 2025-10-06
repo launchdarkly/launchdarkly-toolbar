@@ -1,5 +1,5 @@
+import { IFlagOverridePlugin } from '@launchdarkly/toolbar-types';
 import { createContext, useContext, useState, useEffect, useCallback } from 'react';
-import type { IFlagOverridePlugin } from '../../../types/plugin';
 
 interface LocalFlag {
   key: string;

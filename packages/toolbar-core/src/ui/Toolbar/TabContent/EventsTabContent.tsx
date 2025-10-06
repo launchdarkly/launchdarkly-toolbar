@@ -13,10 +13,9 @@ import * as styles from './EventsTabContent.css';
 
 import * as actionStyles from '../components/ActionButtonsContainer.css';
 import { useCurrentDate, useEvents } from '../hooks';
-import type { IEventInterceptionPlugin } from '../../../types/plugin';
-import { ProcessedEvent, SyntheticEventContext } from '../../../types/events';
 import { IconButton } from '../components/IconButton';
 import { AddIcon } from '../components/icons/AddIcon';
+import { IEventInterceptionPlugin, ProcessedEvent, SyntheticEventContext } from '@launchdarkly/toolbar-types';
 
 interface EventsTabContentProps {
   baseUrl: string;

@@ -1,4 +1,4 @@
-import type { ProcessedEvent } from '../events';
+import type { ProcessedEvent } from "../events";
 
 const DEFAULT_MAX_EVENTS = 100;
 export interface EventStoreConfig {

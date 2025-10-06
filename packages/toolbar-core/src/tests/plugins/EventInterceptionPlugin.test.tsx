@@ -1,6 +1,6 @@
 import { describe, test, expect, vi, beforeEach } from 'vitest';
-import { EventInterceptionPlugin } from '../../plugins';
 import { ANALYTICS_EVENT_PREFIX } from '../../utils/analytics';
+import { EventInterceptionPlugin } from '@launchdarkly/toolbar-types';
 
 describe('EventInterceptionPlugin', () => {
   let plugin: EventInterceptionPlugin;

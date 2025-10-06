@@ -12,6 +12,6 @@
     "strict": true,
     "types": ["vitest", "@testing-library/jest-dom"]
   },
-  "include": ["packages/toolbar-core/.storybook/*", "src/**/*.ts", "src/**/*.tsx", "templates/**/*.ts", "templates/**/*.tsx", "packages/toolbar-core/src/css.d.ts", "packages/toolbar-core/src/index.ts"],
+  "include": ["packages/toolbar-core/.storybook/*", "src/**/*.ts", "src/**/*.tsx", "templates/**/*.ts", "templates/**/*.tsx", "packages/toolbar-core/src/css.d.ts", "packages/toolbar-core/src/index.ts", "../toolbar-types/src/types/hooks/AfterEvaluationHook.ts", "../toolbar-types/src/types/hooks/AfterIdentifyHook.ts", "../toolbar-types/src/types/hooks/AfterTrackHook.ts", "../toolbar-types/src/types/hooks/EventStore.ts", "../toolbar-types/src/types/hooks/index.ts"],
   "exclude": [],
 }

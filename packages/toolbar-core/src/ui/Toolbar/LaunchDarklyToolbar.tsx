@@ -9,7 +9,7 @@ import { ToolbarMode, ToolbarPosition, getToolbarMode, getDefaultActiveTab } fro
 
 import * as styles from './LaunchDarklyToolbar.css';
 import { DevServerProvider } from './context';
-import type { IEventInterceptionPlugin, IFlagOverridePlugin } from '../../types/plugin';
+import { IEventInterceptionPlugin, IFlagOverridePlugin } from '@launchdarkly/toolbar-types';
 
 export interface LdToolbarProps {
   mode: ToolbarMode;

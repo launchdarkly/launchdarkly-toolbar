@@ -13,11 +13,11 @@ import {
 import { OverrideIndicator } from '../components/OverrideIndicator';
 import { ActionButtonsContainer } from '../components';
 import { VIRTUALIZATION } from '../constants';
-import type { IFlagOverridePlugin } from '../../../types/plugin';
 import type { LocalFlag } from '../context';
 
 import * as sharedStyles from './FlagDevServerTabContent.css';
 import * as actionStyles from '../components/ActionButtonsContainer.css';
+import { IFlagOverridePlugin } from '@launchdarkly/toolbar-types';
 
 interface FlagSdkOverrideTabContentInnerProps {
   flagOverridePlugin: IFlagOverridePlugin;

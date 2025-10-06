@@ -1,6 +1,5 @@
+import { IEventInterceptionPlugin, ProcessedEvent } from '@launchdarkly/toolbar-types';
 import { useState, useEffect, useMemo } from 'react';
-import type { ProcessedEvent } from '../../../types/events';
-import { IEventInterceptionPlugin } from '../../../types/plugin';
 
 interface EventStats {
   totalEvents: number;

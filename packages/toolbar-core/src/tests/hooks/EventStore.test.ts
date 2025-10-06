@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { EventStore } from '../../hooks/EventStore';
-import type { ProcessedEvent } from '../../types/events';
+import { EventStore } from '../../../../toolbar-types/src/types/hooks/EventStore';
+import { ProcessedEvent } from '@launchdarkly/toolbar-types';
 
 // Mock console methods to avoid noise in test output
 const consoleSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});

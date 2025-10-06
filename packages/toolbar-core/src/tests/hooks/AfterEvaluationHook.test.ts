@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { AfterEvaluationHook, type AfterEvaluationHookConfig } from '../../hooks/AfterEvaluationHook';
-import type { ProcessedEvent, EventFilter } from '../../types/events';
+import { AfterEvaluationHook, type AfterEvaluationHookConfig } from '../../../../toolbar-types/src/types/hooks/AfterEvaluationHook';
 import type { EvaluationSeriesData, EvaluationSeriesContext, LDEvaluationDetail } from 'launchdarkly-js-sdk-common';
+import { EventFilter, ProcessedEvent } from '@launchdarkly/toolbar-types';
 
 // Mock console methods to avoid noise in test output
 const consoleSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});

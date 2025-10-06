@@ -6,7 +6,7 @@ import { DevServerProvider } from '../ui/Toolbar/context/DevServerProvider';
 import { ToolbarUIProvider } from '../ui/Toolbar/context/ToolbarUIProvider';
 import { SearchProvider } from '../ui/Toolbar/context/SearchProvider';
 import { AnalyticsProvider } from '../ui/Toolbar/context/AnalyticsProvider';
-import { IFlagOverridePlugin, IEventInterceptionPlugin } from '../types/plugin';
+import { IEventInterceptionPlugin, IFlagOverridePlugin } from '@launchdarkly/toolbar-types';
 
 // Mock the DevServerClient and FlagStateManager
 vi.mock('../services/DevServerClient', () => ({

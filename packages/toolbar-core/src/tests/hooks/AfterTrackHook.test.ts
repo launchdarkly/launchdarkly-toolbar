@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { AfterTrackHook, type AfterTrackHookConfig } from '../../hooks/AfterTrackHook';
-import type { ProcessedEvent, EventFilter } from '../../types/events';
+import { AfterTrackHook, type AfterTrackHookConfig } from '../../../../toolbar-types/src/types/hooks/AfterTrackHook';
+import { EventFilter, ProcessedEvent } from '@launchdarkly/toolbar-types';
 
 // Mock console methods to avoid noise in test output
 const consoleSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});

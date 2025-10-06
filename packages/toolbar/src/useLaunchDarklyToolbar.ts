@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 import lazyLoadToolbar from './lazyLoadToolbar';
 import type { LaunchDarklyToolbar } from './types';
@@ -27,11 +27,12 @@ type Args =
     };
 
 export default function useLaunchDarklyToolbar({cdn, enabled, initProps, version}: Args) {
+  const [initialized, setInitialized] = useState(false);
   const initPropsRef = useRef<null | InitProps>(null);
   const url = cdn ?? versionToCdn(version);
 
   useEffect(() => {
-    if (enabled === false) {
+    if (enabled === false || initialized === true) {
       return;
     }
 
@@ -41,7 +42,7 @@ export default function useLaunchDarklyToolbar({cdn, enabled, initProps, version
   }, [enabled, initProps]);
 
   useEffect(() => {
-    if (enabled === false || initPropsRef.current === null) {
+    if (enabled === false || initPropsRef.current === null || initialized === true) {
       return;
     }
 
@@ -58,6 +59,8 @@ export default function useLaunchDarklyToolbar({cdn, enabled, initProps, version
         typeof initPropsRef.current === 'function' ? initPropsRef.current(importedToolbar) : initPropsRef.current
       );
     });
+
+    setInitialized(true);
 
     return () => {
       controller.abort();
