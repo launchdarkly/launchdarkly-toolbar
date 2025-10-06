@@ -1,4 +1,4 @@
-import { useRef, useState, useMemo, useCallback } from 'react';
+import { useRef, useState, useMemo, useCallback, useEffect } from 'react';
 import { useVirtualizer } from '@tanstack/react-virtual';
 import { List } from '../../List/List';
 import { ListItem } from '../../List/ListItem';
@@ -19,12 +19,18 @@ export function FlagDevServerTabContent() {
   const { searchTerm } = useSearchContext();
   const { state, setOverride, clearOverride, clearAllOverrides } = useDevServerContext();
   const { flags } = state;
-  const { isPinned, togglePin } = usePinnedFlags();
+  const { isPinned, togglePin, cleanupDeletedFlags } = usePinnedFlags();
 
   const [showOverriddenOnly, setShowOverriddenOnly] = useState(false);
   const parentRef = useRef<HTMLDivElement>(null);
 
   const flagEntries = Object.entries(flags);
+
+  // Cleanup deleted flags whenever flags change
+  useEffect(() => {
+    const currentFlagKeys = new Set(Object.keys(flags));
+    cleanupDeletedFlags(currentFlagKeys);
+  }, [flags, cleanupDeletedFlags]);
 
   // Separate pinned and unpinned flags
   const { pinnedFlags, unpinnedFlags } = useMemo(() => {

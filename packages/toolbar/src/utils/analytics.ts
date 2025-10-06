@@ -17,6 +17,7 @@ const EVENTS = {
   FLAG_PINNED: 'flag.pinned',
   FLAG_UNPINNED: 'flag.unpinned',
   FLAGS_CLEARED: 'flags.cleared',
+  FLAGS_CLEANED: 'flags.cleaned',
 } as const;
 
 /**
@@ -177,6 +178,16 @@ export class ToolbarAnalytics {
    */
   trackClearAllPins(count: number): void {
     this.track(EVENTS.FLAGS_CLEARED, {
+      count,
+    });
+  }
+
+  /**
+   * Track automatic cleanup of deleted flags
+   */
+  trackCleanupDeletedFlags(flagKeys: string[], count: number): void {
+    this.track(EVENTS.FLAGS_CLEANED, {
+      flagKeys,
       count,
     });
   }

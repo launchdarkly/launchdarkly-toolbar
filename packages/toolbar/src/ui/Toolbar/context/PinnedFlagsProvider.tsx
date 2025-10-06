@@ -7,6 +7,7 @@ interface PinnedFlagsContextValue {
   togglePin: (flagKey: string) => void;
   isPinned: (flagKey: string) => boolean;
   clearAllPins: () => void;
+  cleanupDeletedFlags: (currentFlagKeys: Set<string>) => void;
 }
 
 const PinnedFlagsContext = createContext<PinnedFlagsContextValue | undefined>(undefined);
@@ -61,11 +62,46 @@ export function PinnedFlagsProvider({ children }: PinnedFlagsProviderProps) {
     });
   }, [analytics]);
 
+  const cleanupDeletedFlags = useCallback(
+    (currentFlagKeys: Set<string>) => {
+      setPinnedFlags((prev) => {
+        const deletedFlags: string[] = [];
+
+        // Find pinned flags that no longer exist
+        prev.forEach((flagKey) => {
+          if (!currentFlagKeys.has(flagKey)) {
+            deletedFlags.push(flagKey);
+          }
+        });
+
+        // If no flags need cleanup, return the same set to avoid re-renders
+        if (deletedFlags.length === 0) {
+          return prev;
+        }
+
+        // Create new set without deleted flags
+        const next = new Set<string>();
+        prev.forEach((flagKey) => {
+          if (currentFlagKeys.has(flagKey)) {
+            next.add(flagKey);
+          }
+        });
+
+        // Track cleanup event
+        analytics.trackCleanupDeletedFlags(deletedFlags, deletedFlags.length);
+
+        return next;
+      });
+    },
+    [analytics],
+  );
+
   const value: PinnedFlagsContextValue = {
     pinnedFlags,
     togglePin,
     isPinned,
     clearAllPins,
+    cleanupDeletedFlags,
   };
 
   return <PinnedFlagsContext.Provider value={value}>{children}</PinnedFlagsContext.Provider>;
