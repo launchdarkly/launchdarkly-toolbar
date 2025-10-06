@@ -117,12 +117,6 @@ importers:
 
   packages/toolbar:
     dependencies:
-      '@launchpad-ui/components':
-        specifier: 0.16.9
-        version: 0.16.9(@react-aria/focus@3.21.1(react-dom@19.1.1(react@19.1.1))(react@19.1.1))(@react-aria/interactions@3.25.5(react-dom@19.1.1(react@19.1.1))(react@19.1.1))(@react-aria/utils@3.30.1(react-dom@19.1.1(react@19.1.1))(react@19.1.1))(@react-stately/utils@3.10.8(react@19.1.1))(@react-types/shared@3.32.0(react@19.1.1))(react-aria-components@1.12.2(react-dom@19.1.1(react@19.1.1))(react@19.1.1))(react-aria@3.43.2(react-dom@19.1.1(react@19.1.1))(react@19.1.1))(react-dom@19.1.1(react@19.1.1))(react-hook-form@7.59.0(react@19.1.1))(react-router@7.5.2(react-dom@19.1.1(react@19.1.1))(react@19.1.1))(react-stately@3.41.0(react@19.1.1))(react@19.1.1)
-      '@launchpad-ui/tokens':
-        specifier: 0.15.0
-        version: 0.15.0
       '@react-aria/focus':
         specifier: 3.21.1
         version: 3.21.1(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
@@ -147,6 +141,9 @@ importers:
       '@vanilla-extract/webpack-plugin':
         specifier: ^2.3.22
         version: 2.3.22(webpack@5.101.3)
+      class-variance-authority:
+        specifier: ^0.7.1
+        version: 0.7.1
       motion:
         specifier: ^12.19.2
         version: 12.23.19(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
@@ -792,31 +789,6 @@ packages:
     engines: {node: '>=10.0'}
     peerDependencies:
       tslib: '2'
-
-  '@launchpad-ui/components@0.16.9':
-    resolution: {integrity: sha512-iCeItS5QV4GGDY6cyG8mMKTocOaI+p2EUMZoPmYdSQDAi4f0nT2jivf0ecHgHFLMh8GCTz3vWcL+DDPtmDPsTA==}
-    peerDependencies:
-      '@react-aria/focus': 3.21.1
-      '@react-aria/interactions': 3.25.5
-      '@react-aria/utils': 3.30.1
-      '@react-stately/utils': 3.10.8
-      '@react-types/shared': 3.32.0
-      react: 19.1.1
-      react-aria: 3.43.2
-      react-aria-components: 1.12.2
-      react-dom: 19.1.1
-      react-hook-form: 7.59.0
-      react-router: 7.5.2
-      react-stately: 3.41.0
-
-  '@launchpad-ui/icons@0.24.4':
-    resolution: {integrity: sha512-tTqVTZ0bqYq4bhBbSMFiUp2CXqJUgnVWMji9363098ZdY/tAbJBAo+2YAeo17Hd+m5Rma8uv76/pFjaQ5rj5uQ==}
-    peerDependencies:
-      react: 19.1.1
-      react-dom: 19.1.1
-
-  '@launchpad-ui/tokens@0.15.0':
-    resolution: {integrity: sha512-aHNfkPcJc1M/Ld2Iqq6g7Kr0eBozmAzTcHNWnzQfrNhIxpWR/9z5tR4syT1STLzEUTSWU81t+qxgW7MbVJnBgQ==}
 
   '@mdx-js/react@3.1.1':
     resolution: {integrity: sha512-f++rKLQgUVYDAtECQ6fn/is15GkEH9+nZPM3MS0RcxVqoTfawHvDlSCH7JbMhAM6uJ32v3eXLvLmLvjGu7PTQw==}
@@ -2342,8 +2314,8 @@ packages:
   cjs-module-lexer@1.4.3:
     resolution: {integrity: sha512-9z8TZaGM1pfswYeXrUpzPrkx8UnWYdhJclsiYMm6x/w5+nN+8Tf/LnAgfLGQCm59qAOxU8WwHEq2vNwF6i4j+Q==}
 
-  class-variance-authority@0.7.0:
-    resolution: {integrity: sha512-jFI8IQw4hczaL4ALINxqLEXQbWcNjoSkloa4IaufXCJr6QawJyw7tuRysRsrE8w2p/4gGaxKIt/hX3qz/IbD1A==}
+  class-variance-authority@0.7.1:
+    resolution: {integrity: sha512-Ka+9Trutv7G8M6WT6SeiRWz792K5qEqIGEGzXKhAE6xOWAY6pPH8U+9IY3oCMv6kqTmLsv7Xh/2w2RigkePMsg==}
 
   clean-css@5.3.3:
     resolution: {integrity: sha512-D5J+kHaVb/wKSFcyyV75uCn8fiY4sV38XJoe4CUyGQ+mOU/fMVYUdH1hJC+CJQ5uY3EnW27SbJYS4X8BiLrAFg==}
@@ -2359,10 +2331,6 @@ packages:
   cliui@8.0.1:
     resolution: {integrity: sha512-BSeNnyus75C4//NQ9gQt1/csTXyo/8Sb+afLAkzAptFuMsod9HFokGNudZpi/oQV73hnVK+sR+5PVRMd+Dr7YQ==}
     engines: {node: '>=12'}
-
-  clsx@2.0.0:
-    resolution: {integrity: sha512-rQ1+kcj+ttHG0MKVGBUXwayCCF1oh39BF5COIpRzuCEv8Mwjv0XucrI2ExNTOn9IlLifGClWQcU9BrZORvtw6Q==}
-    engines: {node: '>=6'}
 
   clsx@2.1.1:
     resolution: {integrity: sha512-eYm0QWBtUrBWZWG0d386OGAw16Z995PiOVo2B7bjWSbHedGl5e0ZWaq65kOGgUSNesEIDkB9ISbTg/JK9dhCZA==}
@@ -4739,34 +4707,6 @@ snapshots:
       '@jsonjoy.com/codegen': 1.0.0(tslib@2.8.1)
       tslib: 2.8.1
 
-  '@launchpad-ui/components@0.16.9(@react-aria/focus@3.21.1(react-dom@19.1.1(react@19.1.1))(react@19.1.1))(@react-aria/interactions@3.25.5(react-dom@19.1.1(react@19.1.1))(react@19.1.1))(@react-aria/utils@3.30.1(react-dom@19.1.1(react@19.1.1))(react@19.1.1))(@react-stately/utils@3.10.8(react@19.1.1))(@react-types/shared@3.32.0(react@19.1.1))(react-aria-components@1.12.2(react-dom@19.1.1(react@19.1.1))(react@19.1.1))(react-aria@3.43.2(react-dom@19.1.1(react@19.1.1))(react@19.1.1))(react-dom@19.1.1(react@19.1.1))(react-hook-form@7.59.0(react@19.1.1))(react-router@7.5.2(react-dom@19.1.1(react@19.1.1))(react@19.1.1))(react-stately@3.41.0(react@19.1.1))(react@19.1.1)':
-    dependencies:
-      '@internationalized/date': 3.9.0
-      '@launchpad-ui/icons': 0.24.4(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
-      '@launchpad-ui/tokens': 0.15.0
-      '@react-aria/focus': 3.21.1(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
-      '@react-aria/interactions': 3.25.5(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
-      '@react-aria/utils': 3.30.1(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
-      '@react-stately/utils': 3.10.8(react@19.1.1)
-      '@react-types/shared': 3.32.0(react@19.1.1)
-      class-variance-authority: 0.7.0
-      react: 19.1.1
-      react-aria: 3.43.2(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
-      react-aria-components: 1.12.2(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
-      react-dom: 19.1.1(react@19.1.1)
-      react-hook-form: 7.59.0(react@19.1.1)
-      react-router: 7.5.2(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
-      react-stately: 3.41.0(react@19.1.1)
-
-  '@launchpad-ui/icons@0.24.4(react-dom@19.1.1(react@19.1.1))(react@19.1.1)':
-    dependencies:
-      '@launchpad-ui/tokens': 0.15.0
-      class-variance-authority: 0.7.0
-      react: 19.1.1
-      react-dom: 19.1.1(react@19.1.1)
-
-  '@launchpad-ui/tokens@0.15.0': {}
-
   '@mdx-js/react@3.1.1(@types/react@19.1.13)(react@19.1.1)':
     dependencies:
       '@types/mdx': 2.0.13
@@ -6895,9 +6835,9 @@ snapshots:
 
   cjs-module-lexer@1.4.3: {}
 
-  class-variance-authority@0.7.0:
+  class-variance-authority@0.7.1:
     dependencies:
-      clsx: 2.0.0
+      clsx: 2.1.1
 
   clean-css@5.3.3:
     dependencies:
@@ -6912,8 +6852,6 @@ snapshots:
       string-width: 4.2.3
       strip-ansi: 6.0.1
       wrap-ansi: 7.0.0
-
-  clsx@2.0.0: {}
 
   clsx@2.1.1: {}
 

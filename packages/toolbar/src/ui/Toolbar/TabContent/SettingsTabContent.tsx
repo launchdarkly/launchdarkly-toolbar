@@ -1,4 +1,4 @@
-import { Button, ListBox, Popover, Select, SelectValue, ListBoxItem, Switch } from '@launchpad-ui/components';
+import { Button, ListBox, Popover, Select, SelectValue, ListBoxItem, Switch } from '../../../vendor/launchpad';
 import { List } from '../../List/List';
 import { ListItem } from '../../List/ListItem';
 import { useSearchContext } from '../context/SearchProvider';

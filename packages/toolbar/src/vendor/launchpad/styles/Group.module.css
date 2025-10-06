@@ -1,0 +1,39 @@
+.group {
+  display: flex;
+  align-items: center;
+  gap: var(--lp-spacing-300);
+  overflow: hidden;
+  width: 100%;
+
+  &:has([slot='increment'], [slot='decrement']) {
+    gap: 0;
+  }
+
+  &:has(button[data-rac]) {
+    padding-block: 3px;
+  }
+
+  &[data-focus-within] {
+    outline: 2px solid var(--lp-color-shadow-interactive-focus);
+    outline-offset: -2px;
+    z-index: 1;
+  }
+
+  & input[data-rac],
+  [role='presentation'][data-rac] {
+    padding: 0;
+    outline: none;
+    border: none;
+    border-radius: unset;
+    background-color: inherit;
+    cursor: inherit;
+  }
+
+  & :where(input[data-rac]) + [data-icon] {
+    fill: var(--lp-color-fill-ui-secondary);
+  }
+
+  &[data-disabled] > :where([data-icon]) {
+    opacity: 0.64;
+  }
+}
