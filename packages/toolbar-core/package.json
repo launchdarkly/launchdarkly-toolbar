@@ -28,16 +28,6 @@
     "./dist/static/**/*",
     "*.css"
   ],
-  "exports": {
-    ".": {
-      "types": "./dist/index.d.ts",
-      "import": "./dist/js/index.js"
-    },
-    "./plugins": {
-      "types": "./dist/plugins/index.d.ts",
-      "import": "./dist/js/plugins/index.js"
-    }
-  },
   "files": [
     "dist"
   ],
@@ -82,6 +72,7 @@
     "vite": "5.4.7",
     "vite-plugin-dts": "4.0.1",
     "vite-plugin-svgr": "^4.3.0",
+    "vite-plugin-css-injected-by-js": "^3.5.2",
     "vitest": "^3.2.2",
     "webpack": "5.101.3"
   },

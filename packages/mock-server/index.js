@@ -35,7 +35,7 @@ app.options('*.js', allowCORS, (_req, res) => {
 });
 app.get('*.js', allowCORS, (req, res) => {
   res.set({'Content-Type': 'application/javascript'});
-  res.render(`${__dirname}/../toolbar-core/dist//${req.url}`);
+  res.render(`${__dirname}/../toolbar-core/dist/${req.url}`);
 });
 
 app.listen(port, host);

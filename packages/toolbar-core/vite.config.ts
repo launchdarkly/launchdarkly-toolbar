@@ -5,6 +5,7 @@ import dts from 'vite-plugin-dts';
 
 import svgr from "vite-plugin-svgr";
 import {vanillaExtractPlugin} from '@vanilla-extract/vite-plugin';
+import cssInjectedByJsPlugin from 'vite-plugin-css-injected-by-js'
 
 const {env} = process;
 env.NODE_ENV = env.NODE_ENV ?? 'development';
@@ -17,7 +18,7 @@ export default defineConfig({
     svgr({
       include: '**/*.svg',
     }),
-    vanillaExtractPlugin()
+    vanillaExtractPlugin(),
   ],
   define: {
     'process.env.NODE_ENV': JSON.stringify(env.NODE_ENV),
@@ -41,6 +42,7 @@ export default defineConfig({
     },
   },
   css: {
+    transformer: 'postcss',
     modules: {
       localsConvention: 'camelCase',
     },

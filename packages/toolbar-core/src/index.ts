@@ -1,6 +1,7 @@
 import { InitializationConfig } from "@launchdarkly/toolbar-types";
 import mount from "./mount";
 import hydrateConfig from "./utils/hydrateConfig";
+import './globals.css';
 
 export type Cleanup = () => void;
 

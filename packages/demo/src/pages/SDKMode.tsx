@@ -11,7 +11,7 @@ export function SDKMode() {
     flagOverridePlugin,
     eventInterceptionPlugin,
     mountPoint: document.body,
-    position: 'bottom-right'
+    position: 'bottom-right',
   } });
   
   return (
