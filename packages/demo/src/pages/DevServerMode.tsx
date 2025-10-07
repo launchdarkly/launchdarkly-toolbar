@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { AppWrapper } from '../AppWrapper';
 import type { ToolbarPosition } from '@launchdarkly/toolbar-types';
 import { useLaunchDarklyToolbar } from '@launchdarkly/toolbar';
-import { flagOverridePlugin } from '../plugins';
+import { eventInterceptionPlugin, flagOverridePlugin } from '../plugins';
 
 export function DevServerMode() {
   const [position, setPosition] = useState<ToolbarPosition>('bottom-right');
@@ -13,7 +13,9 @@ export function DevServerMode() {
     cdn: 'http://localhost:8080/toolbar.min.js',
     enabled: true,
     initProps: {
+      devServerUrl,
       flagOverridePlugin,
+      eventInterceptionPlugin,
       mountPoint: document.body,
       position: 'bottom-right',
     },
