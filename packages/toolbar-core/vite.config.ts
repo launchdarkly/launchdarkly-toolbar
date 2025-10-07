@@ -33,7 +33,7 @@ export default defineConfig({
       name: 'LaunchDarklyToolbar',
       formats: ['iife'],
       // Implement a custom filename to remove the `iife` suffix
-      fileName: (format, entryName) => 'toolbar.min.js',
+      fileName: () => 'toolbar.min.js',
     },
     rollupOptions: {
       output: {

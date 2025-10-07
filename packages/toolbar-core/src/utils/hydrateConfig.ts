@@ -1,6 +1,6 @@
 import { FlagOverridePlugin, InitializationConfig, TOOLBAR_POSITIONS } from '@launchdarkly/toolbar-types';
 
-export default function hydrateProps({ mountPoint, ...config }: InitializationConfig): InitializationConfig {
+export default function hydrateProps(config: InitializationConfig): InitializationConfig {
   return {
     ...config,
     baseUrl: config.baseUrl ?? 'https://app.launchdarkly.com',

@@ -39,7 +39,7 @@ export default function useLaunchDarklyToolbar({ cdn, enabled, initProps, versio
     if (initPropsRef.current === null) {
       initPropsRef.current = initProps;
     }
-  }, [enabled, initProps]);
+  }, [enabled, initProps, initialized]);
 
   useEffect(() => {
     if (enabled === false || initPropsRef.current === null || initialized === true) {
@@ -65,9 +65,9 @@ export default function useLaunchDarklyToolbar({ cdn, enabled, initProps, versio
       controller.abort();
       cleanup();
     };
-  }, [enabled, url]);
+  }, [enabled, url, initialized]);
 }
 
-function versionToCdn(version = 'latest'): string {
+function versionToCdn(_version = 'latest'): string {
   throw new Error('Add CDN url when we know what it is!');
 }

@@ -151,7 +151,7 @@ export function useToolbarState(props: UseToolbarStateProps): UseToolbarStateRet
       shadowRoot.removeEventListener('mousedown', handleClickOutside);
       document.removeEventListener('mousedown', handleClickOutside);
     };
-  }, [isExpanded, isPinned, analytics]);
+  }, [isExpanded, isPinned, analytics, shadowRoot, domId]);
 
   return {
     // State values

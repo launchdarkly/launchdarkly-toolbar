@@ -133,6 +133,9 @@ importers:
       launchdarkly-js-client-sdk:
         specifier: ^3.9.0
         version: 3.9.0
+      oxlint:
+        specifier: ^1.0.0
+        version: 1.19.0
       react:
         specifier: 19.1.1
         version: 19.1.1
@@ -291,6 +294,9 @@ importers:
         specifier: ^3.9.0
         version: 3.9.0
     devDependencies:
+      oxlint:
+        specifier: ^1.0.0
+        version: 1.19.0
       tsup:
         specifier: ^8.5.0
         version: 8.5.0(@microsoft/api-extractor@7.47.4(@types/node@24.5.2))(postcss@8.5.6)(typescript@5.8.3)
