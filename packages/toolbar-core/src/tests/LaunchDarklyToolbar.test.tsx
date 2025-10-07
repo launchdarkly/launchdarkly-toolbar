@@ -40,7 +40,7 @@ describe('LaunchDarklyToolbar - User Flows', () => {
   describe('Dev Server Mode - Developer Flag Management Flow', () => {
     test('developer can explore and manage server-side flags', async () => {
       // GIVEN: Developer has a LaunchDarkly dev server running
-      render(<LaunchDarklyToolbar devServerUrl="http://localhost:8765" projectKey="my-project" />);
+      render(<LaunchDarklyToolbar domId="ld-toolbar" devServerUrl="http://localhost:8765" projectKey="my-project" />);
 
       // WHEN: Developer clicks the toolbar to explore available features
       const logo = screen.getByRole('img', { name: /launchdarkly/i });
@@ -91,6 +91,7 @@ describe('LaunchDarklyToolbar - User Flows', () => {
       // WHEN: They load the toolbar with both plugins
       render(
         <LaunchDarklyToolbar
+          domId="ld-toolbar"
           flagOverridePlugin={mockFlagOverridePlugin}
           eventInterceptionPlugin={mockEventInterceptionPlugin}
         />,
@@ -114,7 +115,7 @@ describe('LaunchDarklyToolbar - User Flows', () => {
 
     test('developer without flag override plugin can only access basic settings', async () => {
       // GIVEN: Developer is using the toolbar without any flag override plugins
-      render(<LaunchDarklyToolbar />);
+      render(<LaunchDarklyToolbar domId="ld-toolbar" />);
 
       // WHEN: They click the toolbar logo
       const logo = screen.getByRole('img', { name: /launchdarkly/i });
@@ -137,7 +138,7 @@ describe('LaunchDarklyToolbar - User Flows', () => {
   describe('Toolbar Positioning Flow', () => {
     test('developer can use toolbar in their preferred screen position', () => {
       // GIVEN: Developer prefers toolbar on the left side of screen
-      render(<LaunchDarklyToolbar position="bottom-left" />);
+      render(<LaunchDarklyToolbar domId="ld-toolbar" position="bottom-left" />);
 
       // WHEN: The toolbar renders
       const toolbar = screen.getByTestId('launchdarkly-toolbar');
@@ -148,7 +149,7 @@ describe('LaunchDarklyToolbar - User Flows', () => {
 
     test('toolbar defaults to right position when no preference specified', () => {
       // GIVEN: Developer hasn't specified a position preference
-      render(<LaunchDarklyToolbar />);
+      render(<LaunchDarklyToolbar domId="ld-toolbar" />);
 
       // WHEN: The toolbar renders
       const toolbar = screen.getByTestId('launchdarkly-toolbar');
@@ -160,7 +161,7 @@ describe('LaunchDarklyToolbar - User Flows', () => {
 
   test('preserves selected tab when toolbar is collapsed and expanded', async () => {
     // GIVEN: Developer has the toolbar expanded with default tab (flag-dev-server for dev-server mode)
-    render(<LaunchDarklyToolbar devServerUrl="http://localhost:8765" />);
+    render(<LaunchDarklyToolbar domId="ld-toolbar" devServerUrl="http://localhost:8765" />);
 
     const logo = screen.getByRole('img', { name: /launchdarkly/i });
     fireEvent.click(logo);
@@ -199,7 +200,7 @@ describe('LaunchDarklyToolbar - User Flows', () => {
   describe('Error Handling and Edge Cases', () => {
     test('SDK mode without flag override plugin shows limited functionality gracefully', async () => {
       // GIVEN: Developer is using SDK mode but forgot to provide flag override plugin
-      render(<LaunchDarklyToolbar />);
+      render(<LaunchDarklyToolbar domId="ld-toolbar" />);
 
       // WHEN: They expand the toolbar to see available features
       const logo = screen.getByRole('img', { name: /launchdarkly/i });
@@ -223,7 +224,7 @@ describe('LaunchDarklyToolbar - User Flows', () => {
 
     test('invalid devServerUrl is handled gracefully', async () => {
       // GIVEN: Developer provides an invalid or malformed URL
-      render(<LaunchDarklyToolbar devServerUrl="not-a-valid-url" projectKey="test" />);
+      render(<LaunchDarklyToolbar domId="ld-toolbar" devServerUrl="not-a-valid-url" projectKey="test" />);
 
       // WHEN: The toolbar tries to connect
       const toolbar = screen.getByTestId('launchdarkly-toolbar');
@@ -248,7 +249,7 @@ describe('LaunchDarklyToolbar - User Flows', () => {
 
     test('empty devServerUrl is treated as SDK mode', async () => {
       // GIVEN: Developer accidentally passes empty string for devServerUrl
-      render(<LaunchDarklyToolbar devServerUrl="" />);
+      render(<LaunchDarklyToolbar domId="ld-toolbar" devServerUrl="" />);
 
       // WHEN: The toolbar renders
       const logo = screen.getByRole('img', { name: /launchdarkly/i });
