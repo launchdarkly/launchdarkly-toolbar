@@ -20,7 +20,7 @@
     "lint": "pnpm -r lint",
     "storybook": "pnpm --filter @launchdarkly/toolbar storybook",
     "build:storybook": "pnpm --filter @launchdarkly/toolbar build:storybook",
-    "test": "pnpm --filter @launchdarkly/toolbar test",
+    "test": "pnpm --filter @launchdarkly/toolbar-core test",
     "test:e2e:ci": "TEST_ENV=ci playwright test --config=./e2e/playwright.config.ts",
     "test:e2e:ci:ui": "TEST_ENV=ci playwright test --ui --config=./e2e/playwright.config.ts",
     "test:e2e:local": "TEST_ENV=local playwright test --config=./e2e/playwright.config.ts",

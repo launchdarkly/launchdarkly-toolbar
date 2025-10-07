@@ -27,22 +27,21 @@ type Args =
     };
 
 export default function useLaunchDarklyToolbar({ cdn, enabled, initProps, version }: Args) {
-  const [initialized, setInitialized] = useState(false);
   const initPropsRef = useRef<null | InitProps>(null);
   const url = cdn ?? versionToCdn(version);
 
   useEffect(() => {
-    if (enabled === false || initialized === true) {
+    if (enabled === false) {
       return;
     }
 
     if (initPropsRef.current === null) {
       initPropsRef.current = initProps;
     }
-  }, [enabled, initProps, initialized]);
+  }, [enabled, initProps]);
 
   useEffect(() => {
-    if (enabled === false || initPropsRef.current === null || initialized === true) {
+    if (enabled === false || initPropsRef.current === null) {
       return;
     }
 
@@ -59,13 +58,11 @@ export default function useLaunchDarklyToolbar({ cdn, enabled, initProps, versio
       );
     });
 
-    setInitialized(true);
-
     return () => {
       controller.abort();
       cleanup();
     };
-  }, [enabled, url, initialized]);
+  }, [enabled, url]);
 }
 
 function versionToCdn(_version = 'latest'): string {
