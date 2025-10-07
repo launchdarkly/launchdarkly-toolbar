@@ -1,5 +1,6 @@
 @import '@launchpad-ui/tokens/dist/index.css';
 @import '@launchpad-ui/tokens/dist/themes.css';
+@import '@launchpad-ui/components/style.css';
 
 @font-face {
   font-family: inter;

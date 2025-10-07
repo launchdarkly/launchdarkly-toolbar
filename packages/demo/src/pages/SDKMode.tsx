@@ -12,7 +12,7 @@ export function SDKMode() {
     eventInterceptionPlugin,
     mountPoint: document.body,
     position: 'bottom-right',
-  } });
+  }});
   
   return (
     <AppWrapper mode="sdk" position={position} onPositionChange={setPosition}>

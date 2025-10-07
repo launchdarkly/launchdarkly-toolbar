@@ -19,6 +19,9 @@ export default defineConfig({
       include: '**/*.svg',
     }),
     vanillaExtractPlugin(),
+    cssInjectedByJsPlugin({
+      styleId: 'ld-toolbar-styles'
+    }),
   ],
   define: {
     'process.env.NODE_ENV': JSON.stringify(env.NODE_ENV),

@@ -50,7 +50,6 @@ export default function useLaunchDarklyToolbar({cdn, enabled, initProps, version
 
     let cleanup: () => void = () => {};
     lazyLoadToolbar(controller.signal, url).then(importedToolbar => {
-      // For TypeScript
       if (initPropsRef.current === null) {
         return;
       }
