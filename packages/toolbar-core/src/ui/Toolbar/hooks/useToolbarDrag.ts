@@ -1,6 +1,7 @@
-import { useCallback, useRef } from 'react';
+import { useCallback, useContext, useRef } from 'react';
 
 import { DRAG_CONSTANTS } from '../constants/animations';
+import ShadowRootContext from '../../../context/ShadowRootContext';
 
 interface Position {
   x: number;
@@ -19,6 +20,7 @@ interface UseToolbarDragReturn {
 }
 
 export function useToolbarDrag({ enabled, onDragEnd, elementRef }: UseToolbarDragOptions): UseToolbarDragReturn {
+  const shadowRoot = useContext(ShadowRootContext);
   // Track whether we've actually dragged (moved beyond threshold) vs just clicked
   const draggedRef = useRef(false);
   // Track velocity for momentum/flick
@@ -74,7 +76,7 @@ export function useToolbarDrag({ enabled, onDragEnd, elementRef }: UseToolbarDra
         if (distance > DRAG_CONSTANTS.THRESHOLD_PIXELS && !draggedRef.current) {
           draggedRef.current = true;
           // Prevent text selection while dragging
-          document.addEventListener('selectstart', preventDefault);
+          shadowRoot.addEventListener('selectstart', preventDefault);
         }
 
         // Only update element position if we're actually dragging
@@ -110,7 +112,7 @@ export function useToolbarDrag({ enabled, onDragEnd, elementRef }: UseToolbarDra
         // Clean up event listeners
         document.removeEventListener('mousemove', updateElementPosition);
         document.removeEventListener('mouseup', handleDragComplete);
-        document.removeEventListener('selectstart', preventDefault);
+        shadowRoot.removeEventListener('selectstart', preventDefault);
 
         // Calculate the center of the element and apply momentum
         let centerX = upEvent.clientX;

@@ -1,12 +1,14 @@
-import { useState, useRef, useCallback, useMemo, useEffect, Dispatch, SetStateAction } from 'react';
+import { useState, useRef, useCallback, useMemo, useEffect, Dispatch, SetStateAction, useContext } from 'react';
 
 import { useSearchContext } from '../context/SearchProvider';
 import { useAnalytics } from '../context/AnalyticsProvider';
 import { TabId, ActiveTabId, TAB_ORDER } from '../types';
 import { saveToolbarPinned, loadToolbarPinned } from '../utils/localStorage';
+import ShadowRootContext from '../../../context/ShadowRootContext';
 
 export interface UseToolbarStateProps {
   defaultActiveTab: ActiveTabId;
+  domId: string;
 }
 
 export interface UseToolbarStateReturn {
@@ -34,7 +36,8 @@ export interface UseToolbarStateReturn {
 }
 
 export function useToolbarState(props: UseToolbarStateProps): UseToolbarStateReturn {
-  const { defaultActiveTab } = props;
+  const shadowRoot = useContext(ShadowRootContext);
+  const { defaultActiveTab, domId } = props;
   const { setSearchTerm } = useSearchContext();
   const analytics = useAnalytics();
 
@@ -130,16 +133,22 @@ export function useToolbarState(props: UseToolbarStateProps): UseToolbarStateRet
 
   // Handle click outside to close toolbar (only when not pinned)
   useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (isExpanded && !isPinned && toolbarRef.current && !toolbarRef.current.contains(event.target as Node)) {
+    const handleClickOutside = (event: Event) => {
+      // Toolbar clicks will all register at the root of the Shadow DOM,
+      // so check to make sure that's the target. If not, the user clicked
+      // outside
+      const node = event.target as HTMLElement;
+      if (isExpanded && !isPinned && node.id !== domId) {
         // Track toolbar collapse from click outside
         analytics.trackToolbarToggle('collapse', 'click_outside');
         setIsExpanded(false);
       }
     };
 
+    shadowRoot.addEventListener('mousedown', handleClickOutside);
     document.addEventListener('mousedown', handleClickOutside);
     return () => {
+      shadowRoot.removeEventListener('mousedown', handleClickOutside);
       document.removeEventListener('mousedown', handleClickOutside);
     };
   }, [isExpanded, isPinned, analytics]);

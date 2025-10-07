@@ -1,5 +1,6 @@
 import { ReactNode } from "react";
 import ReactMountContext from "./ReactMountContext";
+import ShadowRootContext from "./ShadowRootContext";
 
 interface Props {
   children: ReactNode;
@@ -9,11 +10,13 @@ interface Props {
 }
 
 export default function Providers(props: Props) {
-  const { children, reactMount } = props;
+  const { children, reactMount, shadowRoot } = props;
 
   return (
-    <ReactMountContext.Provider value={reactMount}>
-      {children}
-    </ReactMountContext.Provider>
+    <ShadowRootContext value={shadowRoot}>
+      <ReactMountContext.Provider value={reactMount}>
+        {children}
+      </ReactMountContext.Provider>
+    </ShadowRootContext>
   )
 }

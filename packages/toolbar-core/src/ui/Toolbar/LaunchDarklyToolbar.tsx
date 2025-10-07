@@ -16,17 +16,18 @@ export interface LdToolbarProps {
   baseUrl: string;
   flagOverridePlugin?: IFlagOverridePlugin;
   eventInterceptionPlugin?: IEventInterceptionPlugin;
+  domId: string;
 }
 
 export function LdToolbar(props: LdToolbarProps) {
-  const { mode, flagOverridePlugin, eventInterceptionPlugin, baseUrl } = props;
+  const { mode, flagOverridePlugin, eventInterceptionPlugin, baseUrl, domId } = props;
   const { searchTerm } = useSearchContext();
   const { position, handlePositionChange } = useToolbarUIContext();
   const analytics = useAnalytics();
 
   const defaultActiveTab = getDefaultActiveTab(mode, !!flagOverridePlugin, !!eventInterceptionPlugin);
 
-  const toolbarState = useToolbarState({ defaultActiveTab });
+  const toolbarState = useToolbarState({ defaultActiveTab, domId });
   const circleButtonRef = useRef<HTMLButtonElement>(null);
   const expandedContentRef = useRef<HTMLDivElement>(null);
 
@@ -182,6 +183,7 @@ export interface LaunchDarklyToolbarProps {
   eventInterceptionPlugin?: IEventInterceptionPlugin; // Optional - for event tracking
   pollIntervalInMs?: number; // Optional - will default to 5000ms
   position?: ToolbarPosition; // Optional - will default to 'bottom-right'
+  domId: string;
 }
 
 export function LaunchDarklyToolbar(props: LaunchDarklyToolbarProps) {
@@ -193,6 +195,7 @@ export function LaunchDarklyToolbar(props: LaunchDarklyToolbarProps) {
     pollIntervalInMs = 5000,
     flagOverridePlugin,
     eventInterceptionPlugin,
+    domId
   } = props;
   const isVisible = useToolbarVisibility();
 
@@ -215,6 +218,7 @@ export function LaunchDarklyToolbar(props: LaunchDarklyToolbarProps) {
         <AnalyticsProvider ldClient={flagOverridePlugin?.getClient() ?? eventInterceptionPlugin?.getClient()}>
           <SearchProvider>
             <LdToolbar
+              domId={domId}
               mode={mode}
               baseUrl={baseUrl}
               flagOverridePlugin={flagOverridePlugin}

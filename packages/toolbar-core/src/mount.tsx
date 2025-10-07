@@ -20,6 +20,7 @@ export default function mount(rootNode: HTMLElement, config: InitializationConfi
   reactRoot.render(
     <StrictMode>
       <LaunchDarklyToolbar
+        domId={config.domId ?? 'ld-toolbar'}
         baseUrl={config.baseUrl}
         devServerUrl={config.devServerUrl}
         projectKey={config.projectKey}
@@ -47,15 +48,12 @@ function buildDom(config: InitializationConfig) {
   const host = document.createElement('div');
   host.id = config.domId ?? 'ld-toolbar';
   host.style.inset = '0';
+  host.style.width = '0px';
+  host.style.height = '0px';
   host.style.position = 'absolute';
   host.style.zIndex = '2147400100';
 
-  const shadowRoot = host.attachShadow({ mode: 'open', delegatesFocus: true });
-  shadowRoot.addEventListener('click', (event) => {
-    event.stopImmediatePropagation();
-    event.stopPropagation();
-    console.log('Clicked inside the Shadow DOM!');
-  });
+  const shadowRoot = host.attachShadow({ mode: 'open' });
 
   // the minified toolbar code, thanks to the 'vite-plugin-css-injected-by-js' vite plugin
   // will inject toolbar styles into the DOM. Sadly, we cannot specify where this should be done
@@ -71,8 +69,6 @@ function buildDom(config: InitializationConfig) {
 
   reactMount.dataset.name = 'react-mount';
   reactMount.id = 'ld-toolbar-react-mount'
-  reactMount.style.width = '100%';
-  reactMount.style.height = '100%';
   shadowRoot.appendChild(reactMount);
 
   return { host, reactMount };
