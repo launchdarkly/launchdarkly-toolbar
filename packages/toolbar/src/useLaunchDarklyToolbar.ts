@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef } from 'react';
 
 import lazyLoadToolbar from './lazyLoadToolbar';
 import type { LaunchDarklyToolbar } from './types';
