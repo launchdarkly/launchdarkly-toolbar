@@ -3,6 +3,8 @@ import { Switch, TextField, Group, Input } from '@launchpad-ui/components';
 import { EditIcon, CheckIcon, XIcon } from './icons';
 import { IconButton } from './IconButton';
 import type { LocalFlag } from '../context';
+import { enableShadowDOM } from '@react-stately/flags';
+enableShadowDOM();
 
 import * as sharedStyles from './FlagControls.css';
 import * as styles from './LocalFlagControls.css';
