@@ -1,5 +1,5 @@
-import {createContext} from 'react';
+import { createContext } from 'react';
 
-const ShadowRootContext = createContext<ShadowRoot>(document.createElement('div').attachShadow({mode: 'open'}));
+const ShadowRootContext = createContext<ShadowRoot>(document.createElement('div').attachShadow({ mode: 'open' }));
 
 export default ShadowRootContext;

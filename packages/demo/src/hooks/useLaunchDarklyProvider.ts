@@ -37,7 +37,7 @@ export function useLaunchDarklyProvider(): UseLaunchDarklyProviderReturn {
             plugins: [flagOverridePlugin, eventInterceptionPlugin],
           },
         });
-        
+
         demoLog('LaunchDarkly initialized successfully', { useMocks: isUsingMocksRef.current });
         setLDProvider(() => Provider as React.FC<{ children: React.ReactNode }>);
         setIsLoading(false);

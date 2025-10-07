@@ -1,4 +1,4 @@
-import { FlagOverridePlugin, InitializationConfig, TOOLBAR_POSITIONS } from "@launchdarkly/toolbar-types";
+import { FlagOverridePlugin, InitializationConfig, TOOLBAR_POSITIONS } from '@launchdarkly/toolbar-types';
 
 export default function hydrateProps({ mountPoint, ...config }: InitializationConfig): InitializationConfig {
   return {
@@ -11,5 +11,5 @@ export default function hydrateProps({ mountPoint, ...config }: InitializationCo
     pollIntervalInMs: config.pollIntervalInMs ?? undefined,
     position: config.position ?? TOOLBAR_POSITIONS[3],
     domId: config.domId ?? 'ld-toolbar',
-  }
+  };
 }

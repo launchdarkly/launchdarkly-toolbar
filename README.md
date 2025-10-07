@@ -33,11 +33,14 @@ pnpm install
 # Build all packages
 pnpm build
 
+# Run toolbar and toolbar-core in watch mode
+pnpm dev
+
+# Run mock-server (for hosting compiled toolbar code locally)
+pnpm dev:server
+
 # Run demo in development mode
 pnpm demo
-
-# Run toolbar in watch mode
-pnpm dev
 ```
 
 ### Testing

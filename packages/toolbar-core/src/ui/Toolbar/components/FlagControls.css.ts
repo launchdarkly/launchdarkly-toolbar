@@ -1,4 +1,3 @@
-
 import { style, globalStyle } from '@vanilla-extract/css';
 
 export const switch_ = style({

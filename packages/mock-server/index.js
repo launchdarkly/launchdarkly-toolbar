@@ -8,14 +8,14 @@ const port = process.env.PORT ?? '8080';
 
 const app = express();
 function renderTemplate(filePath, options, callback) {
-  fs.readFile(filePath, {encoding: 'utf8'})
-    .then(content => {
+  fs.readFile(filePath, { encoding: 'utf8' })
+    .then((content) => {
       const replacedContent = Object.entries(options)
         .filter(([token]) => token.startsWith('__') && token.endsWith('__'))
         .reduce((content, [token, value]) => content.replaceAll(token, JSON.stringify(value)), content);
       callback(null, replacedContent);
     })
-    .catch(error => {
+    .catch((error) => {
       callback(error);
     });
 }
@@ -34,7 +34,7 @@ app.options('*.js', allowCORS, (_req, res) => {
   res.sendStatus(204);
 });
 app.get('*.js', allowCORS, (req, res) => {
-  res.set({'Content-Type': 'application/javascript'});
+  res.set({ 'Content-Type': 'application/javascript' });
   res.render(`${__dirname}/../toolbar-core/dist/${req.url}`);
 });
 

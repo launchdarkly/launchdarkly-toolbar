@@ -1,5 +1,8 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { AfterEvaluationHook, type AfterEvaluationHookConfig } from '../../../../toolbar-types/src/types/hooks/AfterEvaluationHook';
+import {
+  AfterEvaluationHook,
+  type AfterEvaluationHookConfig,
+} from '../../../../toolbar-types/src/types/hooks/AfterEvaluationHook';
 import type { EvaluationSeriesData, EvaluationSeriesContext, LDEvaluationDetail } from 'launchdarkly-js-sdk-common';
 import { EventFilter, ProcessedEvent } from '@launchdarkly/toolbar-types';
 

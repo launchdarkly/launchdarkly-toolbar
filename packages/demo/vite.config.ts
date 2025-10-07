@@ -24,15 +24,20 @@ export default defineConfig(({ command }) => {
             },
             {
               find: '@launchdarkly/toolbar',
-              replacement: toolbarSrc
-            }
+              replacement: toolbarSrc,
+            },
           ]
         : [],
     },
     server: isDev
       ? {
           fs: {
-            allow: [rootDir, resolve(rootDir, 'toolbar-types'), resolve(rootDir, 'toolbar'), resolve(rootDir, '..', '..')],
+            allow: [
+              rootDir,
+              resolve(rootDir, 'toolbar-types'),
+              resolve(rootDir, 'toolbar'),
+              resolve(rootDir, '..', '..'),
+            ],
           },
         }
       : undefined,

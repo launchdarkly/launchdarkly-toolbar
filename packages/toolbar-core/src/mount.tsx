@@ -1,6 +1,6 @@
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
-import { InitializationConfig } from '@launchdarkly/toolbar-types'
+import { InitializationConfig } from '@launchdarkly/toolbar-types';
 import { LaunchDarklyToolbar } from './ui/Toolbar/LaunchDarklyToolbar';
 
 export default function mount(rootNode: HTMLElement, config: InitializationConfig) {
@@ -9,7 +9,7 @@ export default function mount(rootNode: HTMLElement, config: InitializationConfi
   // Make sure host applications don't mount the toolbar multiple
   if (document.getElementById(config.domId ?? 'ld-toolbar') != null) {
     return () => {
-      cleanup.forEach(fn => fn());
+      cleanup.forEach((fn) => fn());
     };
   }
 
@@ -29,18 +29,18 @@ export default function mount(rootNode: HTMLElement, config: InitializationConfi
         pollIntervalInMs={config.pollIntervalInMs}
         position={config.position}
       />
-    </StrictMode>
+    </StrictMode>,
   );
   cleanup.push(() =>
     // `setTimeout` helps to avoid "Attempted to synchronously unmount a root while React was already rendering."
-    setTimeout(() => reactRoot.unmount(), 0)
+    setTimeout(() => reactRoot.unmount(), 0),
   );
 
   rootNode.appendChild(host);
   cleanup.push(() => host.remove());
 
   return () => {
-    cleanup.forEach(fn => fn());
+    cleanup.forEach((fn) => fn());
   };
 }
 
@@ -68,7 +68,7 @@ function buildDom(config: InitializationConfig) {
   }
 
   reactMount.dataset.name = 'react-mount';
-  reactMount.id = 'ld-toolbar-react-mount'
+  reactMount.id = 'ld-toolbar-react-mount';
   shadowRoot.appendChild(reactMount);
 
   return { host, reactMount };

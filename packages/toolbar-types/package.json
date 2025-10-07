@@ -11,7 +11,7 @@
   },
   "scripts": {
     "build": "tsup src/index.ts --dts",
-    "dev": "vite",
+    "dev": "tsup src/index.ts --dts --watch",
     "lint": "eslint ."
   },
   "dependencies": {

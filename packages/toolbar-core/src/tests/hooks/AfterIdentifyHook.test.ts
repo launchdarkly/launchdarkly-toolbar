@@ -1,5 +1,8 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { AfterIdentifyHook, type AfterIdentifyHookConfig } from '../../../../toolbar-types/src/types/hooks/AfterIdentifyHook';
+import {
+  AfterIdentifyHook,
+  type AfterIdentifyHookConfig,
+} from '../../../../toolbar-types/src/types/hooks/AfterIdentifyHook';
 import type { IdentifySeriesData, IdentifySeriesContext, IdentifySeriesResult } from 'launchdarkly-js-sdk-common';
 import { EventFilter, ProcessedEvent } from '@launchdarkly/toolbar-types';
 

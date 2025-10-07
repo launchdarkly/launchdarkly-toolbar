@@ -1,16 +1,14 @@
-import {resolve} from 'path';
+import { resolve } from 'path';
 
-import {defineConfig} from 'vite';
+import { defineConfig } from 'vite';
 import dts from 'vite-plugin-dts';
 
-const {env} = process;
+const { env } = process;
 env.NODE_ENV = env.NODE_ENV ?? 'development';
 
 // https://vitejs.dev/config/re
 export default defineConfig({
-  plugins: [
-    dts({rollupTypes: true}),
-  ],
+  plugins: [dts({ rollupTypes: true })],
   define: {
     'process.env.NODE_ENV': JSON.stringify(env.NODE_ENV),
   },

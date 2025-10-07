@@ -41,7 +41,7 @@
   },
   "scripts": {
     "build": "vite build",
-    "dev": "vite",
+    "dev": "vite build --watch",
     "test": "vitest run",
     "lint": "oxlint"
   },

@@ -26,7 +26,7 @@ type Args =
       version?: never;
     };
 
-export default function useLaunchDarklyToolbar({cdn, enabled, initProps, version}: Args) {
+export default function useLaunchDarklyToolbar({ cdn, enabled, initProps, version }: Args) {
   const [initialized, setInitialized] = useState(false);
   const initPropsRef = useRef<null | InitProps>(null);
   const url = cdn ?? versionToCdn(version);
@@ -49,13 +49,13 @@ export default function useLaunchDarklyToolbar({cdn, enabled, initProps, version
     const controller = new AbortController();
 
     let cleanup: () => void = () => {};
-    lazyLoadToolbar(controller.signal, url).then(importedToolbar => {
+    lazyLoadToolbar(controller.signal, url).then((importedToolbar) => {
       if (initPropsRef.current === null) {
         return;
       }
 
       cleanup = importedToolbar.init(
-        typeof initPropsRef.current === 'function' ? initPropsRef.current(importedToolbar) : initPropsRef.current
+        typeof initPropsRef.current === 'function' ? initPropsRef.current(importedToolbar) : initPropsRef.current,
       );
     });
 
@@ -69,5 +69,5 @@ export default function useLaunchDarklyToolbar({cdn, enabled, initProps, version
 }
 
 function versionToCdn(version = 'latest'): string {
-  throw new Error('Add CDN url when we know what it is!')
+  throw new Error('Add CDN url when we know what it is!');
 }

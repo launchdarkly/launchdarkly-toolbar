@@ -1,4 +1,4 @@
-import type { LaunchDarklyToolbar } from "./types";
+import type { LaunchDarklyToolbar } from './types';
 
 interface WindowWithMaybeToolbar extends Window {
   LaunchDarklyToolbar?: LaunchDarklyToolbar;
@@ -37,7 +37,7 @@ async function lazyLoad(signal: AbortSignal, url: string): Promise<void> {
         resolve();
       }
     });
-    script.addEventListener('error', error => {
+    script.addEventListener('error', (error) => {
       if (!signal.aborted) {
         reject(error);
       }

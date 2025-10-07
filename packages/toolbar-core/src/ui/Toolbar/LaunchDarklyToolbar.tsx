@@ -195,7 +195,7 @@ export function LaunchDarklyToolbar(props: LaunchDarklyToolbarProps) {
     pollIntervalInMs = 5000,
     flagOverridePlugin,
     eventInterceptionPlugin,
-    domId
+    domId,
   } = props;
   const isVisible = useToolbarVisibility();
 

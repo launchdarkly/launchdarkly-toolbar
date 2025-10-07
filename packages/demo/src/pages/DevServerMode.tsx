@@ -8,8 +8,7 @@ export function DevServerMode() {
   const [devServerUrl, setDevServerUrl] = useState('http://localhost:8765');
   const [projectKey, setProjectKey] = useState('test-project');
 
-  useLaunchDarklyToolbar({ cdn: 'http://localhost:808/toolbar.min.js', enabled: true, initProps: {
-  } });
+  useLaunchDarklyToolbar({ cdn: 'http://localhost:808/toolbar.min.js', enabled: true, initProps: {} });
 
   return (
     <AppWrapper mode="dev-server" position={position} onPositionChange={setPosition}>
