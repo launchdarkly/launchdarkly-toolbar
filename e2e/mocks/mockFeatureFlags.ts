@@ -1,8 +1,8 @@
 import type { Page } from '@playwright/test';
+import { config } from '../config/environment';
 
-// LaunchDarkly API endpoints
-const LD_BASE_URL = 'https://app.ld.catamorphic.com/sdk/evalx/**';
-const LD_EVENT_STREAM_URL = 'https://stream.ld.catamorphic.com/eval/**';
+const LD_BASE_URL = `${config.ldBaseUrl}/sdk/evalx/**`;
+const LD_EVENT_STREAM_URL = `${config.ldStreamUrl}/eval/**`;
 
 // Static fixture flags
 export const FIXTURE_FLAGS = {
