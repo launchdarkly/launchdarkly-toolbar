@@ -16,7 +16,6 @@ export default function mount(rootNode: HTMLElement, config: InitializationConfi
   const { host, reactMount } = buildDom(config);
 
   const reactRoot = createRoot(reactMount);
-  console.log(config);
   reactRoot.render(
     <StrictMode>
       <LaunchDarklyToolbar
@@ -57,7 +56,7 @@ function buildDom(config: InitializationConfig) {
 
   // the minified toolbar code, thanks to the 'vite-plugin-css-injected-by-js' vite plugin
   // will inject toolbar styles into the DOM. Sadly, we cannot specify where this should be done
-  // but we can give it an identified. This allows us to do a workaround where we grab those styles
+  // but we can give it an identifier. This allows us to do a workaround where we grab those styles
   // and place them in the shadow DOM.
   const style = document.createElement('style');
   const loadedStyles = document.getElementById('ld-toolbar-styles');

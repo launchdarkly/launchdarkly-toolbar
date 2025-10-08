@@ -6,8 +6,11 @@ The LaunchDarkly toolbar is a React component that provides a developer-friendly
 
 This is a monorepo containing the following packages:
 
-- **[@launchdarkly/toolbar](./packages/toolbar/)**: The main toolbar component package
+- **[@launchdarkly/toolbar](./packages/toolbar/)**: The main developer interface for using the LaunchDarkly Developer Toolbar
+- **[@launchdarkly/toolbar-core](./packages/toolbar-core/)**: The internal react application that comprises the Developer Toolbar
+- **[@launchdarkly/toolbar-types](./packages/toolbar-types)**: Common types for the toolbar shared throughout this monorepo
 - **[demo](./packages/demo/)**: Demo application showcasing the toolbar
+- **[mock-server](./packages/mock-server/)**: (for development purposes) Simple express HTTP application that will serve a minified javascript file of compiled toolbar code
 
 ## Quickstart
 
