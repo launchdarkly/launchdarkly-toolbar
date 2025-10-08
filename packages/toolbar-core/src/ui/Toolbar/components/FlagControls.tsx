@@ -10,7 +10,7 @@ import {
   TextField,
   Group,
   Input,
-} from '@launchpad-ui/components';
+} from '../../../vendor/launchpad';
 import { ChevronDownIcon, EditIcon, CheckIcon, XIcon } from './icons';
 import { IconButton } from './IconButton';
 import { EnhancedFlag } from '../../../types/devServer';

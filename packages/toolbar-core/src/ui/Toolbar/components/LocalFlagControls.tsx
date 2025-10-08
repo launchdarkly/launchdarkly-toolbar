@@ -1,8 +1,10 @@
 import { useState, useMemo, useRef, useEffect } from 'react';
-import { Switch, TextField, Group, Input } from '@launchpad-ui/components';
+import { Switch, TextField, Group, Input } from '../../../vendor/launchpad';
 import { EditIcon, CheckIcon, XIcon } from './icons';
 import { IconButton } from './IconButton';
 import type { LocalFlag } from '../context';
+
+//ToDo: Consider moving this to a global file
 import { enableShadowDOM } from '@react-stately/flags';
 enableShadowDOM();
 

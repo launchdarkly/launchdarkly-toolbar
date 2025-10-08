@@ -49,7 +49,7 @@
     "@launchdarkly/toolbar-types": "workspace:*"
   },
   "devDependencies": {
-    "@types/react": "19.1.1",
+    "@types/react": "19.2.0",
     "launchdarkly-js-client-sdk": "^3.9.0",
     "oxlint": "^1.0.0",
     "react": "19.1.1",
