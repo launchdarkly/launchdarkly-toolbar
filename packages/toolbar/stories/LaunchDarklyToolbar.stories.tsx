@@ -2,10 +2,29 @@ import type { Meta, StoryObj } from '@storybook/react';
 
 import { LaunchDarklyToolbar } from '../src/core/ui/Toolbar/LaunchDarklyToolbar';
 import { EventInterceptionPlugin, FlagOverridePlugin } from '../src/types';
+import { JSX } from 'react';
+import { useLaunchDarklyToolbar } from '../src/react';
+
+const StorybookWrapper: () => JSX.Element = () => {
+  useLaunchDarklyToolbar({
+    cdn: 'http://localhost:8080/core/toolbar.min.js',
+    enabled: true,
+    initProps: {
+      flagOverridePlugin: new FlagOverridePlugin(),
+      eventInterceptionPlugin: new EventInterceptionPlugin(),
+      mountPoint: document.body,
+      position: 'bottom-right',
+    },
+  });
+
+  return (
+    <div></div>
+  )
+}
 
 const meta: Meta<typeof LaunchDarklyToolbar> = {
   title: 'UI/LaunchDarklyToolbar',
-  component: LaunchDarklyToolbar,
+  component: StorybookWrapper,
   parameters: {
     layout: 'fullscreen',
     docs: {
