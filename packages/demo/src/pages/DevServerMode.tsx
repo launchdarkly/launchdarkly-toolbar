@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { AppWrapper } from '../AppWrapper';
-import type { ToolbarPosition } from '@launchdarkly/toolbar';
-import { useLaunchDarklyToolbar } from '@launchdarkly/toolbar';
+import type { ToolbarPosition } from '@launchdarkly/toolbar/types';
+import { useLaunchDarklyToolbar } from '@launchdarkly/toolbar/react';
 import { eventInterceptionPlugin, flagOverridePlugin } from '../plugins';
 
 export function DevServerMode() {
@@ -10,7 +10,7 @@ export function DevServerMode() {
   const [projectKey, setProjectKey] = useState('test-project');
 
   useLaunchDarklyToolbar({
-    cdn: 'http://localhost:8080/toolbar.min.js',
+    cdn: 'http://localhost:8080/core/toolbar.min.js',
     enabled: true,
     initProps: {
       devServerUrl,

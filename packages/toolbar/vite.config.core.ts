@@ -16,7 +16,8 @@ export default defineConfig({
     dts({
       rollupTypes: false, // Disable rollup to avoid the API extractor issue
       exclude: ['**/*.stories.(ts|tsx)', '**/*.test.(ts|tsx)'],
-      entryRoot: 'src',
+      entryRoot: 'src/core',
+      outDir: 'dist/core',
     }),
     svgr({
       include: '**/*.svg',
@@ -32,7 +33,7 @@ export default defineConfig({
   build: {
     sourcemap: true,
     lib: {
-      entry: resolve(__dirname, 'src/index.ts'),
+      entry: resolve(__dirname, 'src/core/index.ts'),
       name: 'LaunchDarklyToolbar',
       formats: ['es', 'cjs', 'iife'],
       fileName: (format) => {
@@ -49,18 +50,21 @@ export default defineConfig({
       output: [
         // ES build - externalize all dependencies
         {
+          dir: 'dist/core',
           format: 'es',
           entryFileNames: 'toolbar.js',
           external: ['react', 'react-dom', 'react/jsx-runtime', 'launchdarkly-js-client-sdk'],
         },
         // CJS build - externalize all dependencies
         {
+          dir: 'dist/core',
           format: 'cjs',
           entryFileNames: 'toolbar.cjs',
           external: ['react', 'react-dom', 'react/jsx-runtime', 'launchdarkly-js-client-sdk'],
         },
         // IIFE build with bundled React (like the old toolbar-core)
         {
+          dir: 'dist/core',
           format: 'iife',
           entryFileNames: 'toolbar.min.js',
           name: 'LaunchDarklyToolbar',

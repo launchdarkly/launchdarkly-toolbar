@@ -6,7 +6,8 @@ import { dirname, resolve } from 'node:path';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const rootDir = resolve(__dirname, '..');
-const toolbarSrc = resolve(rootDir, 'toolbar', 'src', 'index.ts');
+const toolbarTypesSrc = resolve(rootDir, 'toolbar', 'src', 'types', 'index.ts');
+const toolbarReactSrc = resolve(rootDir, 'toolbar', 'src', 'react', 'index.ts');
 
 // https://vitejs.dev/config/
 export default defineConfig(({ command }) => {
@@ -18,8 +19,12 @@ export default defineConfig(({ command }) => {
       alias: isDev
         ? [
             {
-              find: '@launchdarkly/toolbar',
-              replacement: toolbarSrc,
+              find: '@launchdarkly/toolbar/types',
+              replacement: toolbarTypesSrc,
+            },
+            {
+              find: '@launchdarkly/toolbar/react',
+              replacement: toolbarReactSrc,
             },
           ]
         : [],
@@ -27,13 +32,19 @@ export default defineConfig(({ command }) => {
     server: isDev
       ? {
           fs: {
-            allow: [rootDir, resolve(rootDir, 'toolbar'), resolve(rootDir, '..', '..')],
+            allow: [
+              rootDir,
+              resolve(rootDir, 'toolbar', 'core'),
+              resolve(rootDir, 'toolbar', 'types'),
+              resolve(rootDir, 'toolbar', 'react'),
+              resolve(rootDir, '..', '..'),
+            ],
           },
         }
       : undefined,
     optimizeDeps: isDev
       ? {
-          exclude: ['@launchdarkly/toolbar'],
+          exclude: ['@launchdarkly/toolbar/types', '@launchdarkly/toolbar/react'],
         }
       : undefined,
   };

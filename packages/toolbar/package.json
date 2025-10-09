@@ -30,17 +30,37 @@
   "exports": {
     ".": {
       "import": {
-        "types": "./dist/index.d.ts",
+        "types": "./dist/core/index.d.ts",
         "default": "./dist/toolbar.js"
       },
       "require": {
         "types": "./dist/index.d.ts",
         "default": "./dist/toolbar.cjs"
       }
+    },
+    "./react": {
+      "import": {
+        "types": "./dist/react/index.d.ts",
+        "default": "./dist/react/index.js"
+      },
+      "require": {
+        "types": "./dist/react/index.d.ts",
+        "default": "./dist/react/index.cjs"
+      }
+    },
+    "./types": {
+      "import": {
+        "types": "./dist/types/index.d.ts",
+        "default": "./dist/types/index.js"
+      },
+      "require": {
+        "types": "./dist/types/index.d.ts",
+        "default": "./dist/types/index.cjs"
+      }
     }
   },
   "scripts": {
-    "build": "vite build",
+    "build": "vite build --config vite.config.types.ts && vite build --config vite.config.core.ts && vite build --config vite.config.react.ts",
     "dev": "vite build --watch",
     "test": "vitest run",
     "lint": "oxlint",

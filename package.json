@@ -11,7 +11,6 @@
     "demo:build:mock": "pnpm --filter launchdarkly-toolbar-demo build:mock",
     "dev": "pnpm --filter=@launchdarkly/toolbar dev",
     "dev:link": "./scripts/setup-local-links.sh",
-    "dev:server": "pnpm --filter mock-server start",
     "dev:status": "./scripts/dev-status.sh",
     "dev:unlink": "./scripts/remove-local-links.sh",
     "dev:watch": "./scripts/dev-watch.sh",
