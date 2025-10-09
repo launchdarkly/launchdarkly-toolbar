@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { AppWrapper } from '../AppWrapper';
 import { flagOverridePlugin, eventInterceptionPlugin } from '../plugins';
-import type { ToolbarPosition } from '@launchdarkly/toolbar-types';
+import type { ToolbarPosition } from '@launchdarkly/toolbar';
 import { useLaunchDarklyToolbar } from '@launchdarkly/toolbar';
 
 export function SDKMode() {

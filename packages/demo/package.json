@@ -8,14 +8,13 @@
     "dev:mock": "VITE_USE_MOCK_FLAGS=true vite",
     "build": "tsc -b && vite build",
     "build:mock": "VITE_USE_MOCK_FLAGS=true tsc -b && VITE_USE_MOCK_FLAGS=true vite build",
-    "prebuild": "pnpm --filter @launchdarkly/toolbar-types build",
-    "prebuild:mock": "pnpm --filter @launchdarkly/toolbar-types build",
+    "prebuild": "pnpm --filter @launchdarkly/toolbar build",
+    "prebuild:mock": "pnpm --filter @launchdarkly/toolbar build",
     "lint": "eslint .",
     "preview": "vite preview"
   },
   "dependencies": {
     "@launchdarkly/toolbar": "workspace:*",
-    "@launchdarkly/toolbar-types": "workspace:*",
     "launchdarkly-js-client-sdk": "^3.8.1",
     "launchdarkly-react-client-sdk": "^3.8.1",
     "msw": "^2.11.2",
