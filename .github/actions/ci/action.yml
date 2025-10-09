@@ -34,10 +34,10 @@ runs:
       shell: bash
       run: pnpm demo:build
       env:
-        VITE_LD_CLIENT_SIDE_ID: 67b94f6d17a8b408fa943d3c
-        VITE_LD_BASE_URL: https://app.ld.catamorphic.com
-        VITE_LD_STREAM_URL: https://stream.ld.catamorphic.com
-        VITE_LD_EVENTS_URL: https://events.ld.catamorphic.com
+        VITE_LD_CLIENT_SIDE_ID: 68e6a6a8d57c6b098d135c94
+        VITE_LD_BASE_URL: https://app.launchdarkly.com
+        VITE_LD_STREAM_URL: https://clientstream.launchdarkly.com
+        VITE_LD_EVENTS_URL: https://events.launchdarkly.com
 
     - name: Run Unit Tests
       shell: bash

@@ -14,8 +14,8 @@ Set the required configuration for your LaunchDarkly instance.
 To configure the dev server for Catamorphic, you'll need to use the following commands:
 
 ```bash
-ldcli config --set dev-stream-uri https://stream.ld.catamorphic.com
-ldcli config --set base-uri https://app.ld.catamorphic.com
+ldcli config --set dev-stream-uri https://clientstream.launchdarkly.com
+ldcli config --set base-uri https://app.launchdarkly.com
 ```
 
 ## 3. Authenticate with LaunchDarkly
