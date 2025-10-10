@@ -91,7 +91,6 @@ This project uses **pnpm workspaces** to manage packages in a monorepo structure
 | `pnpm test:e2e:ci:ui`    | Run E2E tests with Playwright UI against the packaged version |
 | `pnpm test:e2e:local`    | Run E2E tests against the local version                       |
 | `pnpm test:e2e:local:ui` | Run E2E tests with Playwright UI against the local version    |
-| `pnpm upgrade-launchpad` | Upgrade LaunchPad UI dependencies                             |
 
 ## Running the Project
 
