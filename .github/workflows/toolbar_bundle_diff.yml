@@ -1,0 +1,98 @@
+on:
+  pull_request:
+    paths:
+      - 'packages/toolbar/**'
+      - '**/package.json'
+      - 'pnpm-lock.yaml'
+name: Toolbar bundle size diff
+
+jobs:
+  build-head-stats:
+    name: 'Build head (bundle stats)'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '23'
+          cache: 'pnpm'
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+      - name: Build toolbar and generate bundle analysis
+        working-directory: packages/toolbar
+        env:
+          NODE_OPTIONS: '--max-old-space-size=4096'
+        run: |
+          # Build with bundle analysis and generate stats file
+          pnpm build:analyze
+      - name: Upload bundle analysis artifacts
+        uses: actions/upload-artifact@v4
+        if: ${{ !cancelled() }}
+        with:
+          name: head-toolbar-bundle-stats
+          path: packages/toolbar/rspack-stats.json
+          if-no-files-found: error
+
+  build-base-stats:
+    name: 'Build base (bundle stats)'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.base_ref }}
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '23'
+          cache: 'pnpm'
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+      - name: Build toolbar and generate bundle analysis
+        working-directory: packages/toolbar
+        env:
+          NODE_OPTIONS: '--max-old-space-size=4096'
+        run: |
+          # Build with bundle analysis and generate stats file
+          pnpm build:analyze
+      - name: Upload bundle analysis artifacts
+        uses: actions/upload-artifact@v4
+        if: ${{ !cancelled() }}
+        with:
+          name: base-toolbar-bundle-stats
+          path: packages/toolbar/rspack-stats.json
+          if-no-files-found: error
+
+  compare-bundle-sizes:
+    name: 'Compare toolbar bundle sizes'
+    runs-on: ubuntu-latest
+    needs: [build-base-stats, build-head-stats]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Download base bundle artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: base-toolbar-bundle-stats
+          path: base-stats
+      - name: Download head bundle artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: head-toolbar-bundle-stats
+          path: head-stats
+      - name: Compare toolbar bundle sizes
+        uses: launchdarkly-labs/webpack-bundle-diff-action@c903b35abed2d2315a06128757cb5c80a6b7abca # pin@main
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          base-bundle-analysis-report-path: ./base-stats/rspack-stats.json
+          head-bundle-analysis-report-path: ./head-stats/rspack-stats.json
+          increase-label: '⚠️ toolbar bundle increase'
+          decrease-label: '🎉 toolbar bundle decrease'
+          # No bundle size budgets - just track changes for now
+          should-block-pr-on-exceeded-budget: false
+          skip-comment-on-no-changes: true
