@@ -1,7 +1,5 @@
 const fs = require('node:fs/promises');
-
 const express = require('express');
-const httpProxy = require('http-proxy');
 
 const host = 'localhost';
 const port = process.env.PORT ?? '8080';
@@ -35,7 +33,7 @@ app.options('*.js', allowCORS, (_req, res) => {
 });
 app.get('*.js', allowCORS, (req, res) => {
   res.set({ 'Content-Type': 'application/javascript' });
-  res.render(`${__dirname}/../toolbar-core/dist/${req.url}`);
+  res.render(`${__dirname}/../toolbar/cdn/${req.url}`);
 });
 
 app.listen(port, host);

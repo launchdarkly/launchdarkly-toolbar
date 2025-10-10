@@ -1,3 +1,3 @@
-import { FlagOverridePlugin } from '@launchdarkly/toolbar-types';
+import { FlagOverridePlugin } from '@launchdarkly/toolbar';
 
 export const flagOverridePlugin = new FlagOverridePlugin();

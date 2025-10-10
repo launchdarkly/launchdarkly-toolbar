@@ -54,3 +54,27 @@ export interface ProcessedEvent {
   readonly category: EventCategory;
   readonly metadata?: Readonly<Record<string, unknown>>;
 }
+
+/**
+ * Event filter configuration
+ */
+export interface EventFilter {
+  readonly kinds?: ReadonlyArray<EventKind>;
+  readonly categories?: ReadonlyArray<EventCategory>;
+  readonly flagKeys?: ReadonlyArray<string>;
+  readonly timeRange?: {
+    readonly start: number;
+    readonly end: number;
+  };
+}
+
+/**
+ * Type guards for event validation
+ */
+export function isValidEventKind(kind: string): kind is EventKind {
+  return VALID_EVENT_KINDS.includes(kind as EventKind);
+}
+
+export function isValidEventCategory(category: string): category is EventCategory {
+  return VALID_EVENT_CATEGORIES.includes(category as EventCategory);
+}
