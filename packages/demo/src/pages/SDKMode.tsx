@@ -8,14 +8,11 @@ export function SDKMode() {
   const [position, setPosition] = useState<ToolbarPosition>('bottom-right');
 
   useLaunchDarklyToolbar({
-    cdn: 'http://localhost:8080/toolbar.min.js',
+    toolbarBundleUrl: 'http://localhost:8080/toolbar.min.js',
     enabled: true,
-    initProps: {
-      flagOverridePlugin,
-      eventInterceptionPlugin,
-      mountPoint: document.body,
-      position: 'bottom-right',
-    },
+    flagOverridePlugin,
+    eventInterceptionPlugin,
+    position: 'bottom-right',
   });
 
   return (
