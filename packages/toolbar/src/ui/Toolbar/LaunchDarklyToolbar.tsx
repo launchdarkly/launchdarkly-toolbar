@@ -1,7 +1,7 @@
 import { AnimatePresence, motion } from 'motion/react';
 import { useCallback, useRef } from 'react';
 
-import { SearchProvider, useSearchContext, AnalyticsProvider, useAnalytics } from './context';
+import { SearchProvider, useSearchContext, AnalyticsProvider, useAnalytics, PinnedFlagsProvider } from './context';
 import { CircleLogo, ExpandedToolbarContent } from './components';
 import { useToolbarAnimations, useToolbarVisibility, useToolbarDrag, useToolbarState } from './hooks';
 import { ToolbarUIProvider, useToolbarUIContext } from './context';
@@ -213,14 +213,16 @@ export function LaunchDarklyToolbar(props: LaunchDarklyToolbarProps) {
         }}
       >
         <AnalyticsProvider ldClient={flagOverridePlugin?.getClient() ?? eventInterceptionPlugin?.getClient()}>
-          <SearchProvider>
-            <LdToolbar
-              mode={mode}
-              baseUrl={baseUrl}
-              flagOverridePlugin={flagOverridePlugin}
-              eventInterceptionPlugin={eventInterceptionPlugin}
-            />
-          </SearchProvider>
+          <PinnedFlagsProvider>
+            <SearchProvider>
+              <LdToolbar
+                mode={mode}
+                baseUrl={baseUrl}
+                flagOverridePlugin={flagOverridePlugin}
+                eventInterceptionPlugin={eventInterceptionPlugin}
+              />
+            </SearchProvider>
+          </PinnedFlagsProvider>
         </AnalyticsProvider>
       </DevServerProvider>
     </ToolbarUIProvider>

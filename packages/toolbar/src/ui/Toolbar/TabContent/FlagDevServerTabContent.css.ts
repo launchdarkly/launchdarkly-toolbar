@@ -34,6 +34,7 @@ export const flagKey = style({
   overflow: 'hidden',
   textOverflow: 'ellipsis',
   whiteSpace: 'nowrap',
+  flex: 1,
 });
 
 export const flagOptions = style({

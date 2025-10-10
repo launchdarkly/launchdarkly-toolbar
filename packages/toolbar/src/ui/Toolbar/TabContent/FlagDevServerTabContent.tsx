@@ -1,14 +1,15 @@
-import { useRef, useState, useMemo, useCallback } from 'react';
+import { useRef, useState, useMemo, useCallback, useEffect } from 'react';
 import { useVirtualizer } from '@tanstack/react-virtual';
 import { List } from '../../List/List';
 import { ListItem } from '../../List/ListItem';
 import { useSearchContext } from '../context/SearchProvider';
 import { useDevServerContext } from '../context/DevServerProvider';
+import { usePinnedFlags } from '../context';
 import { EnhancedFlag } from '../../../types/devServer';
 import { GenericHelpText } from '../components/GenericHelpText';
 import { BooleanFlagControl, MultivariateFlagControl, StringNumberFlagControl } from '../components/FlagControls';
 import { OverrideIndicator } from '../components/OverrideIndicator';
-import { ActionButtonsContainer } from '../components';
+import { ActionButtonsContainer, PinButton } from '../components';
 import { VIRTUALIZATION } from '../constants';
 
 import * as styles from './FlagDevServerTabContent.css';
@@ -18,21 +19,46 @@ export function FlagDevServerTabContent() {
   const { searchTerm } = useSearchContext();
   const { state, setOverride, clearOverride, clearAllOverrides } = useDevServerContext();
   const { flags } = state;
+  const { isPinned, togglePin, cleanupDeletedFlags } = usePinnedFlags();
 
   const [showOverriddenOnly, setShowOverriddenOnly] = useState(false);
   const parentRef = useRef<HTMLDivElement>(null);
 
   const flagEntries = Object.entries(flags);
-  const filteredFlags = flagEntries.filter(([flagKey, flag]) => {
-    // Apply search filter
-    const matchesSearch =
-      flag.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      flagKey.toLowerCase().includes(searchTerm.trim().toLowerCase());
 
-    // Apply override filter if enabled
-    const matchesOverrideFilter = showOverriddenOnly ? flag.isOverridden : true;
-    return matchesSearch && matchesOverrideFilter;
-  });
+  // Cleanup deleted flags whenever flags change
+  useEffect(() => {
+    const currentFlagKeys = new Set(Object.keys(flags));
+    cleanupDeletedFlags(currentFlagKeys);
+  }, [flags, cleanupDeletedFlags]);
+
+  // Separate pinned and unpinned flags
+  const { pinnedFlags, unpinnedFlags } = useMemo(() => {
+    const pinned: [string, EnhancedFlag][] = [];
+    const unpinned: [string, EnhancedFlag][] = [];
+
+    flagEntries.forEach(([flagKey, flag]) => {
+      // Apply search filter
+      const matchesSearch =
+        flag.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        flagKey.toLowerCase().includes(searchTerm.trim().toLowerCase());
+
+      // Apply override filter if enabled
+      const matchesOverrideFilter = showOverriddenOnly ? flag.isOverridden : true;
+
+      if (matchesSearch && matchesOverrideFilter) {
+        if (isPinned(flagKey)) {
+          pinned.push([flagKey, flag]);
+        } else {
+          unpinned.push([flagKey, flag]);
+        }
+      }
+    });
+
+    return { pinnedFlags: pinned, unpinnedFlags: unpinned };
+  }, [flagEntries, searchTerm, showOverriddenOnly, isPinned]);
+
+  const filteredFlags = [...pinnedFlags, ...unpinnedFlags];
 
   const virtualizer = useVirtualizer({
     count: filteredFlags.length,
@@ -115,7 +141,9 @@ export function FlagDevServerTabContent() {
                 }}
               >
                 {virtualizer.getVirtualItems().map((virtualItem) => {
-                  const [_, flag] = filteredFlags[virtualItem.index];
+                  const [flagKey, flag] = filteredFlags[virtualItem.index];
+                  const flagIsPinned = isPinned(flagKey);
+                  const isPinnedSection = virtualItem.index < pinnedFlags.length;
 
                   return (
                     <div
@@ -124,12 +152,20 @@ export function FlagDevServerTabContent() {
                       style={{
                         height: `${virtualItem.size}px`,
                         transform: `translateY(${virtualItem.start}px)`,
-                        borderBottom: '1px solid var(--lp-color-gray-800)',
+                        borderBottom:
+                          isPinnedSection && virtualItem.index === pinnedFlags.length - 1
+                            ? '2px solid var(--lp-color-gray-700)'
+                            : '1px solid var(--lp-color-gray-800)',
                       }}
                     >
                       <ListItem className={styles.flagListItem}>
                         <div className={styles.flagHeader}>
                           <span className={styles.flagName}>
+                            <PinButton
+                              isPinned={flagIsPinned}
+                              onClick={() => togglePin(flagKey)}
+                              data-testid={`pin-button-${flagKey}`}
+                            />
                             <span className={styles.flagNameText}>{flag.name}</span>
                             {flag.isOverridden && <OverrideIndicator onClear={() => onClearOverride(flag.key)} />}
                           </span>
