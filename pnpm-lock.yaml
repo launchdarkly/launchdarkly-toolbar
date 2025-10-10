@@ -63,8 +63,8 @@ importers:
         specifier: ^3.8.1
         version: 3.9.0
       launchdarkly-react-client-sdk:
-        specifier: ^3.8.1
-        version: 3.8.1(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
+        specifier: ^3.9.0
+        version: 3.9.0(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
       msw:
         specifier: ^2.11.2
         version: 2.11.3(@types/node@24.5.2)(typescript@5.8.3)
@@ -3583,8 +3583,8 @@ packages:
   launchdarkly-js-sdk-common@5.8.0:
     resolution: {integrity: sha512-9X70K3kN1fuR6ZnRudkH7etMgFhi3sEU0mnJ+y2nhID+DpfkNDVnYUGnUs8/s4tsSDs7Q7Gpm4qnr3oqOqT9+A==}
 
-  launchdarkly-react-client-sdk@3.8.1:
-    resolution: {integrity: sha512-lQleTycQwAuNysNsV3VBC31N+wtCEF1FFfyffXlNV1g89jRG5dmEoChCqiuJVnlpL3l4O8+8HIbHuPALcWxCTQ==}
+  launchdarkly-react-client-sdk@3.9.0:
+    resolution: {integrity: sha512-Ayw6v5nfT0YoshUI89YH7lkOu+qAEtp9t743+dS6xnFq1IVOnckFlz4AoHa6smVjC3nPzj5n0dCLsRVfVIVEOg==}
     peerDependencies:
       react: ^16.6.3 || ^17.0.0 || ^18.0.0 || ^19.0.0
       react-dom: ^16.8.4 || ^17.0.0 || ^18.0.0 || ^19.0.0
@@ -9057,7 +9057,7 @@ snapshots:
       fast-deep-equal: 2.0.1
       uuid: 8.3.2
 
-  launchdarkly-react-client-sdk@3.8.1(react-dom@19.1.1(react@19.1.1))(react@19.1.1):
+  launchdarkly-react-client-sdk@3.9.0(react-dom@19.1.1(react@19.1.1))(react@19.1.1):
     dependencies:
       hoist-non-react-statics: 3.3.2
       launchdarkly-js-client-sdk: 3.9.0
