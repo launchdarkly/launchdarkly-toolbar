@@ -23,8 +23,7 @@
     "test:e2e:ci": "TEST_ENV=ci playwright test --config=./e2e/playwright.config.ts",
     "test:e2e:ci:ui": "TEST_ENV=ci playwright test --ui --config=./e2e/playwright.config.ts",
     "test:e2e:local": "TEST_ENV=local playwright test --config=./e2e/playwright.config.ts",
-    "test:e2e:local:ui": "TEST_ENV=local playwright test --ui --config=./e2e/playwright.config.ts",
-    "upgrade-launchpad": "pnpm up \"@launchpad-ui/*\" \"@internationalized/*\" react-aria \"@react-aria/*\" \"@react-types/*\" \"@react-stately/*\" react-stately react-aria-components react react-dom @types/react @types/react-dom --latest -r"
+    "test:e2e:local:ui": "TEST_ENV=local playwright test --ui --config=./e2e/playwright.config.ts"
   },
   "devDependencies": {
     "@playwright/test": "^1.53.1",
