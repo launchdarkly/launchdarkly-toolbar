@@ -1,7 +1,7 @@
 import type { IEventInterceptionPlugin, IFlagOverridePlugin } from './plugins';
 import type { ToolbarPosition } from './position';
 
-export interface InitializationProps {
+export interface ToolbarConfig {
   /**
    * The base LaunchDarkly URL the toolbar should use when creating deep links.
    *
@@ -51,27 +51,11 @@ export interface InitializationProps {
   pollIntervalInMs?: number;
 
   /**
+   * Toolbar position on screen.
    *
+   * Default `'bottom-right'`
    */
-  position?: ToolbarPosition; // Optional - will default to 'bottom-right'
+  position?: ToolbarPosition;
 }
 
-export interface InitializationConfig extends InitializationProps {
-  /**
-   * The root node where the Toolbar will be mounted.
-   *
-   * Default `document.body`
-   *
-   * You may pass a en HTMLElement directly, or a synchronous function to return one.
-   */
-  mountPoint?: HTMLElement | (() => HTMLElement);
-
-  /**
-   * The `id` of the div where all the toolbar html will live.
-   *
-   * Default: `"ld-toolbar"`
-   *
-   * You can select the div like this: `document.getElementById('ld-toolbar')`
-   */
-  domId?: string;
-}
+export interface InitializationConfig extends ToolbarConfig {}

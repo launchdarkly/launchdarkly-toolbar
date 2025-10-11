@@ -3,23 +3,25 @@ import { createRoot } from 'react-dom/client';
 import { InitializationConfig } from '@launchdarkly/toolbar-types';
 import { LaunchDarklyToolbar } from './ui/Toolbar/LaunchDarklyToolbar';
 
+const TOOLBAR_DOM_ID = 'ld-toolbar';
+
 export default function mount(rootNode: HTMLElement, config: InitializationConfig) {
   const cleanup: (() => void)[] = [];
 
   // Make sure host applications don't mount the toolbar multiple
-  if (document.getElementById(config.domId ?? 'ld-toolbar') != null) {
+  if (document.getElementById(TOOLBAR_DOM_ID) != null) {
     return () => {
       cleanup.forEach((fn) => fn());
     };
   }
 
-  const { host, reactMount } = buildDom(config);
+  const { host, reactMount } = buildDom();
 
   const reactRoot = createRoot(reactMount);
   reactRoot.render(
     <StrictMode>
       <LaunchDarklyToolbar
-        domId={config.domId ?? 'ld-toolbar'}
+        domId={TOOLBAR_DOM_ID}
         baseUrl={config.baseUrl}
         devServerUrl={config.devServerUrl}
         projectKey={config.projectKey}
@@ -43,9 +45,9 @@ export default function mount(rootNode: HTMLElement, config: InitializationConfi
   };
 }
 
-function buildDom(config: InitializationConfig) {
+function buildDom() {
   const host = document.createElement('div');
-  host.id = config.domId ?? 'ld-toolbar';
+  host.id = TOOLBAR_DOM_ID;
   host.style.inset = '0';
   host.style.width = '0px';
   host.style.height = '0px';

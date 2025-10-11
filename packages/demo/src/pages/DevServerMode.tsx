@@ -10,15 +10,12 @@ export function DevServerMode() {
   const [projectKey, setProjectKey] = useState('test-project');
 
   useLaunchDarklyToolbar({
-    cdn: 'http://localhost:8080/toolbar.min.js',
+    toolbarBundleUrl: 'http://localhost:8080/toolbar.min.js',
     enabled: true,
-    initProps: {
-      devServerUrl,
-      flagOverridePlugin,
-      eventInterceptionPlugin,
-      mountPoint: document.body,
-      position: 'bottom-right',
-    },
+    devServerUrl,
+    flagOverridePlugin,
+    eventInterceptionPlugin,
+    position: 'bottom-right',
   });
 
   return (
