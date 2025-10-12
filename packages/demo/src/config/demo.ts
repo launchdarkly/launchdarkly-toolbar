@@ -8,9 +8,18 @@ export interface DemoConfig {
   enableLogging: boolean;
 }
 
+// Check if running in an automated test environment i.e. Playwright
+const isAutomatedTest = () => {
+  if (typeof window === 'undefined') return false;
+  // Check for webdriver (used by Playwright)
+  if (navigator.webdriver === true) return true;
+  return false;
+};
+
 export const DEMO_CONFIG: DemoConfig = {
-  // Use mocks if explicitly enabled via env var
-  useMocks: import.meta.env.VITE_USE_MOCK_FLAGS === 'true',
+  // Use mocks if explicitly enabled via env var, but never during automated tests
+  // Automated tests (like Playwright) provide their own network mocking
+  useMocks: import.meta.env.VITE_USE_MOCK_FLAGS === 'true' && !isAutomatedTest(),
 
   // Enable logging in development
   enableLogging: import.meta.env.DEV,
