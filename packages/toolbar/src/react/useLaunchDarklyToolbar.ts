@@ -61,6 +61,6 @@ export default function useLaunchDarklyToolbar(args: UseLaunchDarklyToolbarConfi
   }, [enabled, url]);
 }
 
-function versionToCdn(_version = 'latest'): string {
-  throw new Error('Add CDN url when we know what it is!');
+function versionToCdn(version = 'latest'): string {
+  return `https://unpkg.com/@launchdarkly/toolbar@${version}/cdn/toolbar.min.js`
 }
