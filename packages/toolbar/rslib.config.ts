@@ -53,5 +53,4 @@ export default defineConfig({
     },
   },
   plugins: [pluginReact()],
-  // No tools.rspack needed - library consumers handle CSS processing
 });
