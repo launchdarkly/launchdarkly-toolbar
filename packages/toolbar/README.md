@@ -35,24 +35,21 @@ Below are a few examples on how to instantiate the toolbar, one using the `useLa
 ### React Hook (Recommended for React developers)
 
 ```tsx
-import { 
-  useLaunchDarklyToolbar,
-  FlagOverridePlugin,
-  EventInterceptionPlugin
-} from '@launchdarkly/toolbar';
+import { render } from 'react-dom';
 import { asyncWithLDProvider } from 'launchdarkly-react-client-sdk';
+import { useLaunchDarklyToolbar, FlagOverridePlugin, EventInterceptionPlugin } from '@launchdarkly/toolbar';
+
+const flagOverridePlugin = new FlagOverridePlugin();
+const eventInterceptionPlugin = new EventInterceptionPlugin();
 
 (async () => {
-  const flagOverridePlugin = new FlagOverridePlugin();
-  const eventInterceptionPlugin = new EventInterceptionPlugin();
-
   const LDProvider = await asyncWithLDProvider({
     clientSideID: 'client-side-id-123abc',
     context: {
-      "kind": "user",
-      "key": "user-key-123abc",
-      "name": "Sandy Smith",
-      "email": "sandy@example.com"
+      kind: 'user',
+      key: 'user-key-123abc',
+      name: 'Sandy Smith',
+      email: 'sandy@example.com',
     },
     options: {
       // the observability plugins require React Web SDK v3.7+
@@ -62,30 +59,34 @@ import { asyncWithLDProvider } from 'launchdarkly-react-client-sdk';
         eventInterceptionPlugin,
       ],
       // other options...
-    }
+    },
   });
 
-  useLaunchDarklyToolbar({
-    // Dev Server Mode: Connect to LaunchDarkly dev server
-    devServerUrl: 'http://localhost:8080',
-    projectKey: 'my-project', // Optional: auto-detects if not provided
+  function App() {
+    // Initialize toolbar with the same plugin instances
+    useLaunchDarklyToolbar({
+      flagOverridePlugin, // For flag overrides (SDK Mode only)
+      eventInterceptionPlugin, // For event monitoring (works in both modes)
 
-    // OR SDK Mode: Use with LaunchDarkly React SDK
-    flagOverridePlugin: myFlagOverridePlugin,
-    eventInterceptionPlugin: myEventPlugin,
+      // OR Dev Server Mode: Connect to LaunchDarkly dev server
+      devServerUrl: 'http://localhost:8080',
+      projectKey: 'my-project', // Optional: auto-detects if not provided
 
-    // Common options
-    position: 'bottom-right',
-    enabled: process.env.NODE_ENV === 'development',
-  });
+      // Common options
+      position: 'bottom-right',
+      enabled: process.env.NODE_ENV === 'development',
+    });
+
+    return <YourApp />;
+  }
 
   render(
     <LDProvider>
-      <YourApp />
+      <App />
     </LDProvider>,
-    document.getElementById('reactDiv'),
-  )
-})
+    document.getElementById('root'),
+  );
+})();
 ```
 
 ### CDN Script Tag
@@ -107,7 +108,7 @@ const eventInterceptionPlugin = new EventInterceptionPlugin();
 
 const context: LDClient.LDContext = {
   kind: 'user',
-  key: 'context-key-123abc'
+  key: 'context-key-123abc',
 };
 
 const client = LDClient.initialize('client-side-id-123abc', context, {
@@ -115,7 +116,7 @@ const client = LDClient.initialize('client-side-id-123abc', context, {
     // any other plugins you might want
     flagOverridePlugin,
     eventInterceptionPlugin,
-  ]
+  ],
 });
 
 try {
@@ -126,11 +127,11 @@ try {
   // initialization failed or did not complete before timeout
 }
 
-if (process.node.NODE_ENV === 'development' && window.LaunchDarklyToolbar) {
+if (process.env.NODE_ENV === 'development' && window.LaunchDarklyToolbar) {
   window.LaunchDarklyToolbar.init({
     flagOverridePlugin,
     eventInterceptionPlugin,
-    position: 'bottom-right'
+    position: 'bottom-right',
   });
 }
 ```
@@ -262,7 +263,7 @@ window.LaunchDarklyToolbar.init({
   flagOverridePlugin: new FlagOverridePlugin(),
   eventInterceptionPlugin: new EventInterceptionPlugin(),
   position: 'bottom-right',
-})
+});
 ```
 
 **Features:**
