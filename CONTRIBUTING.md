@@ -38,7 +38,7 @@ pnpm install
 3. **Build the project:**
 
 ```bash
-pnpm dev
+pnpm dev:cdn
 pnpm dev:server # Serve compiled toolbar code on a localhost port (defaults to port 8080)
 ```
 
