@@ -31,40 +31,8 @@ The Developer Toolbar is intended for use during local development. As such, you
 instantiating it will keep it disabled in production environments.
 
 The Developer Toolbar depends on your LaunchDarkly JS client having a reference to the same `FlagOverridePlugin` and
-`EventInterceptionPlugin` that you pass into the Developer Toolbar. As such, ensure that you instantiate the Developer Toolbar at the same time or immediately after the LaunchDarkly JS client is instantiated. Here is an example (via React):
-
-```tsx
-// Pass these into both the LaunchDarkly client provider + the developer toolbar
-const flagOverridePlugin = new FlagOverridePlugin();
-const eventInterceptionPlugin = new EventInterceptionPlugin();
-
-interface UseLaunchDarklyProviderReturn {
-  LDProvider: React.FC<{ children: React.ReactNode }> | null;
-  isUsingMocks: boolean;
-  isLoading: boolean;
-}
-
-export function Providers() {
-  const { LDProvider, isLoading } = useLaunchDarklyProvider();
-  useLaunchDarklyToolbar({
-    toolbarBundleUrl: 'http://localhost:8080/toolbar.min.js', // local toolbar development bundle
-    enabled: process.node.NODE_ENV === 'development', // disable in hosted environments
-    flagOverridePlugin,
-    eventInterceptionPlugin,
-    position: 'bottom-right',
-  });
-
-  if (isLoading) {
-    return <div>Loading...</div>
-  }
-
-  return (
-    <LDProvider>
-      {children}
-    </LDProvider>
-  )
-}
-```
+`EventInterceptionPlugin` that you pass into the Developer Toolbar. As such, ensure that you instantiate the Developer Toolbar at the same time or immediately after the LaunchDarkly JS client is instantiated.
+Below are a few examples on how to instantiate the toolbar, one using the `useLaunchDarklyToolbar` react hook, and one using the CDN hosted toolbar script.
 
 ### React Hook (Recommended for React developers)
 
@@ -74,6 +42,7 @@ import {
   FlagOverridePlugin,
   EventInterceptionPlugin
 } from '@launchdarkly/toolbar';
+import { asyncWithLDProvider } from 'launchdarkly-react-client-sdk';
 
 (async () => {
   const flagOverridePlugin = new FlagOverridePlugin();
