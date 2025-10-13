@@ -1,7 +1,5 @@
 # LaunchDarkly Toolbar
 
-> 🚧 **Beta:** This package is currently in beta. While functional and tested, APIs may still evolve based on feedback. Please report any issues or suggestions!
-
 A developer-friendly React component that provides real-time feature flag management and debugging capabilities during development. The toolbar integrates seamlessly with LaunchDarkly, allowing developers to inspect, override, and test feature flags without leaving their application.
 
 ## Features
