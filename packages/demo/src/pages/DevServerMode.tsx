@@ -10,7 +10,7 @@ export function DevServerMode() {
   const [projectKey, setProjectKey] = useState('test-project');
 
   useLaunchDarklyToolbar({
-    toolbarBundleUrl: 'http://localhost:8080/toolbar.min.js',
+    toolbarBundleUrl: import.meta.env.DEV ? 'http://localhost:8080/toolbar.min.js' : undefined,
     enabled: true,
     devServerUrl,
     flagOverridePlugin,
