@@ -1,6 +1,5 @@
 import { pluginReact } from '@rsbuild/plugin-react';
 import { defineConfig } from '@rslib/core';
-import { VanillaExtractPlugin } from '@vanilla-extract/webpack-plugin';
 
 export default defineConfig({
   source: {
@@ -54,9 +53,5 @@ export default defineConfig({
     },
   },
   plugins: [pluginReact()],
-  tools: {
-    rspack: {
-      plugins: [new VanillaExtractPlugin()],
-    },
-  },
+  // No tools.rspack needed - library consumers handle CSS processing
 });
