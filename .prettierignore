@@ -2,3 +2,7 @@
 yarn.lock
 CHANGELOG.md
 pnpm-lock.yaml
+
+# Generated files
+packages/toolbar/cdn/
+packages/toolbar/dist/

@@ -1,14 +1,14 @@
 import { useState } from 'react';
 import { AppWrapper } from '../AppWrapper';
 import { flagOverridePlugin, eventInterceptionPlugin } from '../plugins';
-import type { ToolbarPosition } from '@launchdarkly/toolbar-types';
+import type { ToolbarPosition } from '@launchdarkly/toolbar';
 import { useLaunchDarklyToolbar } from '@launchdarkly/toolbar';
 
 export function SDKMode() {
   const [position, setPosition] = useState<ToolbarPosition>('bottom-right');
 
   useLaunchDarklyToolbar({
-    toolbarBundleUrl: 'http://localhost:8080/toolbar.min.js',
+    toolbarBundleUrl: import.meta.env.DEV ? 'http://localhost:8080/toolbar.min.js' : undefined,
     enabled: true,
     flagOverridePlugin,
     eventInterceptionPlugin,

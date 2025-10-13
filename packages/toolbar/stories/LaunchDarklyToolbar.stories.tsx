@@ -1,0 +1,100 @@
+import type { Meta, StoryObj } from '@storybook/react';
+
+import { LaunchDarklyToolbar } from '../src/core/ui/Toolbar/LaunchDarklyToolbar';
+import { FlagOverridePlugin, EventInterceptionPlugin } from '../src/types';
+
+const meta: Meta<typeof LaunchDarklyToolbar> = {
+  title: 'UI/LaunchDarklyToolbar',
+  component: LaunchDarklyToolbar,
+  parameters: {
+    layout: 'fullscreen',
+    docs: {
+      description: {
+        component:
+          'The main LaunchDarkly toolbar component that provides feature flag management UI with real-time updates, search functionality, event tracking, and flag override capabilities. Supports plugins for extended functionality.',
+      },
+    },
+  },
+  args: {
+    position: 'bottom-right',
+    flagOverridePlugin: new FlagOverridePlugin(),
+    eventInterceptionPlugin: new EventInterceptionPlugin(),
+  },
+  argTypes: {
+    projectKey: {
+      control: 'text',
+      description: 'Project key to use. If not provided, will auto-detect first available project',
+    },
+    position: {
+      control: { type: 'radio' },
+      options: ['bottom-left', 'bottom-right', 'top-left', 'top-right'],
+      description: 'Position of the toolbar on screen (default: bottom-right)',
+    },
+    devServerUrl: {
+      control: 'text',
+      description: 'URL of the LaunchDarkly dev server',
+    },
+    pollIntervalInMs: {
+      control: { type: 'number', min: 1000, max: 30000, step: 1000 },
+      description: 'Polling interval in milliseconds for fetching data from dev server',
+    },
+    flagOverridePlugin: {
+      table: { disable: true },
+      description: 'Plugin for flag overrides functionality',
+    },
+    eventInterceptionPlugin: {
+      table: { disable: true },
+      description: 'Plugin for event interception and tracking',
+    },
+  },
+};
+
+export default meta;
+type Story = StoryObj<typeof meta>;
+
+// Default States
+export const Default: Story = {
+  args: {
+    position: 'bottom-right',
+  },
+  parameters: {
+    docs: {
+      description: {
+        story: 'Default toolbar state with auto-detected project and bottom-right positioning.',
+      },
+    },
+  },
+};
+
+export const DevServerMode: Story = {
+  args: {
+    devServerUrl: 'http://localhost:8765',
+    projectKey: 'test-project',
+    position: 'bottom-right',
+  },
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'Dev-server mode connects to a LaunchDarkly development server. Shows Flags and Settings tabs. This mode is used when you have a dev server running locally.',
+      },
+    },
+  },
+};
+
+export const SdkMode: Story = {
+  args: {
+    // No devServerUrl - triggers SDK mode
+    position: 'bottom-right',
+    flagOverridePlugin: new FlagOverridePlugin(),
+    eventInterceptionPlugin: new EventInterceptionPlugin(),
+  },
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'SDK mode works with an existing LaunchDarkly client in your application. Shows Local Overrides, Events, and Settings tabs. This mode is used when you have the LaunchDarkly SDK initialized in your app.',
+      },
+    },
+  },
+};
