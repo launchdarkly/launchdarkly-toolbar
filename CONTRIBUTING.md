@@ -35,7 +35,7 @@ cd launchdarkly-toolbar
 pnpm install
 ```
 
-3. **Build the project:**
+3. **Run development servers :**
 
 ```bash
 pnpm dev:cdn
@@ -45,6 +45,7 @@ pnpm dev:server # Serve compiled toolbar code on a localhost port (defaults to p
 4. **Verify everything works:**
 
 ```bash
+pnpm build
 pnpm test
 pnpm demo # Run the standalone demo application to test toolbar code in an example application
 ```
@@ -60,12 +61,12 @@ For Dev Server Mode setup instructions, see [DEV_SERVER_SETUP.md](docs/DEV_SERVE
 
 ## Standalone Demo Application
 
-To allow for contributors to easily test toolbar changes locally, this repository comes with a standalone Demo application, as well as a local "dev server" that will host the locally compiled toolbar 
+To allow for contributors to easily test toolbar changes locally, this repository comes with a standalone Demo application, as well as a local "dev server" that will host the locally compiled toolbar
 code on a localhost port (defaults to 8080). The Demo application is a react application and allows contributors to easily test the toolbar in both SDK Mode and Dev Server Mode.
 
-To set up the Demo application, copy the values in `.env.example` into a `.env` file and replace them where applicable. 
-More than likely, the only environment variable you will need to fill in will be `VITE_LD_CLIENT_SIDE_ID` with your 
-corresponding Client-Side ID for the project/environment you want to instantiate the LaunchDarkly client and the 
+To set up the Demo application, copy the values in `.env.example` into a `.env.local` file and replace them where applicable.
+More than likely, the only environment variable you will need to fill in will be `VITE_LD_CLIENT_SIDE_ID` with your
+corresponding Client-Side ID for the project/environment you want to instantiate the LaunchDarkly client and the
 Developer Toolbar with.
 
 ## Development Workflow
@@ -250,18 +251,15 @@ pnpm test:e2e:local:ui
 
 ## Building
 
-### Development Build
+To build the toolbar for production:
 
 ```bash
 pnpm build
 ```
 
-This creates the `packages/toolbar/dist/` folder with:
-
-- **JavaScript bundle** (`packages/toolbar/dist/js/index.js`)
-- **TypeScript declarations** (`packages/toolbar/dist/index.d.ts`)
-- **Static assets** (`packages/toolbar/dist/static/`) - Fonts and other assets
-- **Plugin bundles** (`packages/toolbar/dist/js/plugins/`)
+This creates:
+- **NPM package** (`packages/toolbar/dist/`) - ESM/CommonJS bundles and TypeScript declarations
+- **CDN bundle** (`packages/toolbar/cdn/`) - Minified IIFE bundle for script tags
 
 ## Publishing
 
