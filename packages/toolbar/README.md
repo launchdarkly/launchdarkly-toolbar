@@ -44,46 +44,11 @@ interface UseLaunchDarklyProviderReturn {
   isLoading: boolean;
 }
 
-function useLaunchDarklyProvider(): UseLaunchDarklyProviderReturn {
-  const [LDProvider, setLDProvider] = useState<React.FC<{ children: React.ReactNode }> | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-
-  useEffect(() => {
-    const initializeLD = async () => {
-      try {
-        // Initialize LaunchDarkly provider
-        const Provider = await asyncWithLDProvider({
-          clientSideID: import.meta.env.VITE_LD_CLIENT_SIDE_ID,
-          options: {
-            baseUrl: import.meta.env.VITE_LD_BASE_URL,
-            streamUrl: import.meta.env.VITE_LD_STREAM_URL,
-            eventsUrl: import.meta.env.VITE_LD_EVENTS_URL,
-            plugins: [flagOverridePlugin, eventInterceptionPlugin],
-          },
-        });
-
-        setLDProvider(() => Provider as React.FC<{ children: React.ReactNode }>);
-        setIsLoading(false);
-      } catch (error) {
-        demoLog('LaunchDarkly initialization failed', error);
-        setIsLoading(false);
-      }
-    };
-
-    initializeLD();
-  }, []);
-
-  return {
-    LDProvider,
-    isLoading
-  }
-}
-
 export function Providers() {
   const { LDProvider, isLoading } = useLaunchDarklyProvider();
   useLaunchDarklyToolbar({
     toolbarBundleUrl: 'http://localhost:8080/toolbar.min.js', // local toolbar development bundle
-    enabled: process.node.ENV === 'development', // disable in hosted environments
+    enabled: process.node.NODE_ENV === 'development', // disable in hosted environments
     flagOverridePlugin,
     eventInterceptionPlugin,
     position: 'bottom-right',
@@ -104,9 +69,35 @@ export function Providers() {
 ### React Hook (Recommended for React developers)
 
 ```tsx
-import { useLaunchDarklyToolbar } from '@launchdarkly/toolbar';
+import { 
+  useLaunchDarklyToolbar,
+  FlagOverridePlugin,
+  EventInterceptionPlugin
+} from '@launchdarkly/toolbar';
 
-function App() {
+(async () => {
+  const flagOverridePlugin = new FlagOverridePlugin();
+  const eventInterceptionPlugin = new EventInterceptionPlugin();
+
+  const LDProvider = await asyncWithLDProvider({
+    clientSideID: 'client-side-id-123abc',
+    context: {
+      "kind": "user",
+      "key": "user-key-123abc",
+      "name": "Sandy Smith",
+      "email": "sandy@example.com"
+    },
+    options: {
+      // the observability plugins require React Web SDK v3.7+
+      plugins: [
+        // other plugins...
+        flagOverridePlugin,
+        eventInterceptionPlugin,
+      ],
+      // other options...
+    }
+  });
+
   useLaunchDarklyToolbar({
     // Dev Server Mode: Connect to LaunchDarkly dev server
     devServerUrl: 'http://localhost:8080',
@@ -120,9 +111,7 @@ function App() {
     position: 'bottom-right',
     enabled: process.env.NODE_ENV === 'development',
   });
-
-  return <YourApp />;
-}
+})
 ```
 
 ### CDN Script Tag
@@ -150,7 +139,7 @@ const context: LDClient.LDContext = {
 const client = LDClient.initialize('client-side-id-123abc', context, {
   plugins: [
     // any other plugins you might want
-    flagOverridePlugin
+    flagOverridePlugin,
     eventInterceptionPlugin,
   ]
 });
@@ -163,7 +152,7 @@ try {
   // initialization failed or did not complete before timeout
 }
 
-if (process.node.ENV === 'development' && window.LaunchDarklyToolbar) {
+if (process.node.NODE_ENV === 'development' && window.LaunchDarklyToolbar) {
   window.LaunchDarklyToolbar.init({
     flagOverridePlugin,
     eventInterceptionPlugin,
