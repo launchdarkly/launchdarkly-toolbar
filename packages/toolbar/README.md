@@ -111,6 +111,13 @@ import {
     position: 'bottom-right',
     enabled: process.env.NODE_ENV === 'development',
   });
+
+  render(
+    <LDProvider>
+      <YourApp />
+    </LDProvider>,
+    document.getElementById('reactDiv'),
+  )
 })
 ```
 
