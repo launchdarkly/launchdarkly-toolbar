@@ -56,15 +56,19 @@ function buildDom() {
 
   const shadowRoot = host.attachShadow({ mode: 'open' });
 
-  // the minified toolbar code, thanks to the 'vite-plugin-css-injected-by-js' vite plugin
-  // will inject toolbar styles into the DOM. Sadly, we cannot specify where this should be done
-  // but we can give it an identifier. This allows us to do a workaround where we grab those styles
-  // and place them in the shadow DOM.
+  // rslib injects styles into <style> tags in the document head.
+  // For shadow DOM compatibility, we need to copy these styles into the shadow root.
   const style = document.createElement('style');
-  const loadedStyles = document.getElementById('ld-toolbar-styles');
   const reactMount = document.createElement('div');
-  if (loadedStyles) {
-    style.innerHTML = loadedStyles.innerHTML;
+
+  // Collect all toolbar-related styles from injected <style> elements
+  const toolbarStyles = Array.from(document.head.querySelectorAll('style'))
+    .filter((styleEl) => styleEl.textContent?.includes('--lp-') || styleEl.textContent?.includes('_'))
+    .map((styleEl) => styleEl.textContent || '')
+    .join('\n');
+
+  if (toolbarStyles) {
+    style.textContent = toolbarStyles;
     shadowRoot.appendChild(style);
   }
 

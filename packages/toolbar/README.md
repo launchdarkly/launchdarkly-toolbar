@@ -200,7 +200,7 @@ interface IEventInterceptionPlugin {
 pnpm build
 
 # Build only NPM package
-pnpm build:npm
+pnpm build:lib
 
 # Build only CDN bundle
 pnpm build:cdn

@@ -1,5 +1,5 @@
 import { dirname, join } from 'node:path';
-import type { StorybookConfig } from '@storybook/react-vite';
+import type { StorybookConfig } from 'storybook-react-rsbuild';
 
 /**
  * This function is used to resolve the absolute path of a package.
@@ -29,9 +29,12 @@ const config: StorybookConfig = {
     '@storybook/addon-links',
     '@storybook/addon-essentials',
     '@storybook/addon-interactions',
+    {
+      name: getAbsolutePath('storybook-addon-rslib'),
+    },
   ],
   framework: {
-    name: getAbsolutePath('@storybook/react-vite'),
+    name: getAbsolutePath('storybook-react-rsbuild'),
     options: {},
   },
   typescript: {
