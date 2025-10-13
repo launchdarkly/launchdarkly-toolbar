@@ -1,7 +1,5 @@
 # LaunchDarkly Toolbar
 
-> 🚧 **Beta:** This package is currently in beta. While functional and tested, APIs may still evolve based on feedback. Please report any issues or suggestions!
-
 A developer-friendly React component that provides real-time feature flag management and debugging capabilities during development. The toolbar integrates seamlessly with LaunchDarkly, allowing developers to inspect, override, and test feature flags without leaving their application.
 
 ## Features
@@ -27,12 +25,46 @@ yarn add @launchdarkly/toolbar
 
 ## Usage
 
-### React Hook (Recommended)
+The Developer Toolbar is intended for use during local development. As such, you should ensure that the way you are
+instantiating it will keep it disabled in production environments.
+
+The Developer Toolbar depends on your LaunchDarkly JS client having a reference to the same `FlagOverridePlugin` and
+`EventInterceptionPlugin` that you pass into the Developer Toolbar. As such, ensure that you instantiate the Developer Toolbar at the same time or immediately after the LaunchDarkly JS client is instantiated.
+Below are a few examples on how to instantiate the toolbar, one using the `useLaunchDarklyToolbar` react hook, and one using the CDN hosted toolbar script.
+
+### React Hook (Recommended for React developers)
 
 ```tsx
-import { useLaunchDarklyToolbar } from '@launchdarkly/toolbar';
+import { 
+  useLaunchDarklyToolbar,
+  FlagOverridePlugin,
+  EventInterceptionPlugin
+} from '@launchdarkly/toolbar';
+import { asyncWithLDProvider } from 'launchdarkly-react-client-sdk';
 
-function App() {
+(async () => {
+  const flagOverridePlugin = new FlagOverridePlugin();
+  const eventInterceptionPlugin = new EventInterceptionPlugin();
+
+  const LDProvider = await asyncWithLDProvider({
+    clientSideID: 'client-side-id-123abc',
+    context: {
+      "kind": "user",
+      "key": "user-key-123abc",
+      "name": "Sandy Smith",
+      "email": "sandy@example.com"
+    },
+    options: {
+      // the observability plugins require React Web SDK v3.7+
+      plugins: [
+        // other plugins...
+        flagOverridePlugin,
+        eventInterceptionPlugin,
+      ],
+      // other options...
+    }
+  });
+
   useLaunchDarklyToolbar({
     // Dev Server Mode: Connect to LaunchDarkly dev server
     devServerUrl: 'http://localhost:8080',
@@ -47,20 +79,73 @@ function App() {
     enabled: process.env.NODE_ENV === 'development',
   });
 
-  return <YourApp />;
-}
+  render(
+    <LDProvider>
+      <YourApp />
+    </LDProvider>,
+    document.getElementById('reactDiv'),
+  )
+})
 ```
 
 ### CDN Script Tag
 
+Add this script to your `index.html` file.
+
 ```html
 <script src="https://unpkg.com/@launchdarkly/toolbar@latest/cdn/toolbar.min.js"></script>
-<script>
+```
+
+In your corresponding code, wherever you instantiate your LaunchDarkly JS client, be sure to pass in the following plugins:
+
+```typescript
+import * as LDClient from 'launchdarkly-js-client-sdk';
+import { FlagOverridePlugin, EventInterceptionPlugin } from '@launchdarkly/toolbar';
+
+const flagOverridePlugin = new FlagOverridePlugin();
+const eventInterceptionPlugin = new EventInterceptionPlugin();
+
+const context: LDClient.LDContext = {
+  kind: 'user',
+  key: 'context-key-123abc'
+};
+
+const client = LDClient.initialize('client-side-id-123abc', context, {
+  plugins: [
+    // any other plugins you might want
+    flagOverridePlugin,
+    eventInterceptionPlugin,
+  ]
+});
+
+try {
+  await client.waitForInitialization(5);
+  // initialization succeeded, flag values are now available
+  handleInitializedClient(client);
+} catch (err) {
+  // initialization failed or did not complete before timeout
+}
+
+if (process.node.NODE_ENV === 'development' && window.LaunchDarklyToolbar) {
   window.LaunchDarklyToolbar.init({
-    devServerUrl: 'http://localhost:8080',
-    position: 'bottom-right',
+    flagOverridePlugin,
+    eventInterceptionPlugin,
+    position: 'bottom-right'
   });
-</script>
+}
+```
+
+Note: if you are using typescript and want type safety for the `window.LaunchDarklyToolbar.init` call,
+you can add a `window.d.ts` file to your application with the following:
+
+```typescript
+import type { LaunchDarklyToolbar } from '@launchdarkly/toolbar';
+
+declare global {
+  interface Window {
+    LaunchDarklyToolbar?: LaunchDarklyToolbar;
+  }
+}
 ```
 
 ## Package Structure
@@ -139,6 +224,16 @@ useLaunchDarklyToolbar({
 });
 ```
 
+or if you are using the CDN script:
+
+```typescript
+window.LaunchDarklyToolbar.init({
+  devServerUrl: 'http://localhost:8080',
+  projectKey: 'my-project', // Optional
+  position: 'bottom-right',
+});
+```
+
 **Features:**
 
 - View all flags from your LaunchDarkly project
@@ -158,6 +253,16 @@ useLaunchDarklyToolbar({
   eventInterceptionPlugin: useEventInterceptionPlugin(),
   position: 'bottom-right',
 });
+```
+
+or if you are using the CDN script:
+
+```typescript
+window.LaunchDarklyToolbar.init({
+  flagOverridePlugin: new FlagOverridePlugin(),
+  eventInterceptionPlugin: new EventInterceptionPlugin(),
+  position: 'bottom-right',
+})
 ```
 
 **Features:**
