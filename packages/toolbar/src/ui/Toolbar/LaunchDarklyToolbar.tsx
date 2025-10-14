@@ -40,8 +40,10 @@ export function LdToolbar(props: LdToolbarProps) {
     handleClose,
     handleSearch,
     handleTogglePin,
+    handleToggleReloadOnFlagChange,
     handleCircleClick,
     isPinned,
+    isReloadOnFlagChange,
     setSearchIsExpanded,
     setIsAnimating,
   } = toolbarState;
@@ -167,6 +169,8 @@ export function LdToolbar(props: LdToolbarProps) {
             baseUrl={baseUrl}
             defaultActiveTab={defaultActiveTab}
             onHeaderMouseDown={handleMouseDown}
+            isReloadOnFlagChange={isReloadOnFlagChange}
+            onToggleReloadOnFlagChange={handleToggleReloadOnFlagChange}
           />
         )}
       </AnimatePresence>

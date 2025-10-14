@@ -32,6 +32,8 @@ interface ExpandedToolbarContentProps {
   flagOverridePlugin?: IFlagOverridePlugin;
   eventInterceptionPlugin?: IEventInterceptionPlugin;
   onHeaderMouseDown?: (event: React.MouseEvent) => void;
+  isReloadOnFlagChange: boolean;
+  onToggleReloadOnFlagChange: () => void;
 }
 
 function getHeaderLabel(currentProjectKey: string | null, sourceEnvironmentKey: string | null) {
@@ -60,6 +62,8 @@ export const ExpandedToolbarContent = React.forwardRef<HTMLDivElement, ExpandedT
     baseUrl,
     defaultActiveTab,
     onHeaderMouseDown,
+    isReloadOnFlagChange,
+    onToggleReloadOnFlagChange,
   } = props;
 
   const { state } = useDevServerContext();
@@ -177,6 +181,8 @@ export const ExpandedToolbarContent = React.forwardRef<HTMLDivElement, ExpandedT
                     eventInterceptionPlugin={eventInterceptionPlugin}
                     isPinned={isPinned}
                     onTogglePin={onTogglePin}
+                    isReloadOnFlagChange={isReloadOnFlagChange}
+                    onToggleReloadOnFlagChange={onToggleReloadOnFlagChange}
                   />
                 )}
               </AnimatePresence>

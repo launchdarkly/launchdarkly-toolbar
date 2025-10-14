@@ -21,6 +21,7 @@ interface SettingsItem {
   isPositionSelector?: boolean;
   isConnectionStatus?: boolean;
   isPinToggle?: boolean;
+  isReloadOnFlagChangeToggle?: boolean;
   value?: string;
 }
 
@@ -156,6 +157,25 @@ function PinToggle(props: PinToggleProps) {
   );
 }
 
+interface ReloadOnFlagChangeToggleProps {
+  isReloadOnFlagChange: boolean;
+  onToggleReloadOnFlagChange: () => void;
+}
+
+function ReloadOnFlagChangeToggle(props: ReloadOnFlagChangeToggleProps) {
+  const { isReloadOnFlagChange, onToggleReloadOnFlagChange } = props;
+
+  return (
+    <Switch
+      className={styles.switch_}
+      data-theme="dark"
+      isSelected={isReloadOnFlagChange}
+      onChange={onToggleReloadOnFlagChange}
+      aria-label="Reload on flag change"
+    />
+  );
+}
+
 function ConnectionStatusDisplay(props: ConnectionStatusDisplayProps) {
   const { status } = props;
 
@@ -181,11 +201,13 @@ function ConnectionStatusDisplay(props: ConnectionStatusDisplayProps) {
 interface SettingsTabContentProps {
   mode: ToolbarMode;
   isPinned: boolean;
+  isReloadOnFlagChange: boolean;
   onTogglePin: () => void;
+  onToggleReloadOnFlagChange: () => void;
 }
 
 export function SettingsTabContent(props: SettingsTabContentProps) {
-  const { mode, isPinned, onTogglePin } = props;
+  const { mode, isPinned, onTogglePin, isReloadOnFlagChange, onToggleReloadOnFlagChange } = props;
   const { state, switchProject } = useDevServerContext();
   const { position, handlePositionChange } = useToolbarUIContext();
   const { searchTerm } = useSearchContext();
@@ -247,6 +269,12 @@ export function SettingsTabContent(props: SettingsTabContentProps) {
               icon: '',
               isPinToggle: true,
             },
+            {
+              id: 'reload-on-flag-change',
+              name: 'Reload on flag change',
+              icon: 'refresh',
+              isReloadOnFlagChangeToggle: true,
+            },
           ],
         },
       ];
@@ -267,6 +295,12 @@ export function SettingsTabContent(props: SettingsTabContentProps) {
               name: 'Pin toolbar',
               icon: '',
               isPinToggle: true,
+            },
+            {
+              id: 'reload-on-flag-change',
+              name: 'Reload on flag change',
+              icon: 'refresh',
+              isReloadOnFlagChangeToggle: true,
             },
           ],
         },
@@ -343,6 +377,11 @@ export function SettingsTabContent(props: SettingsTabContentProps) {
                           <PositionSelector currentPosition={position} onPositionChange={handlePositionSelect} />
                         ) : item.isPinToggle ? (
                           <PinToggle isPinned={isPinned} onTogglePin={onTogglePin} />
+                        ) : item.isReloadOnFlagChangeToggle ? (
+                          <ReloadOnFlagChangeToggle
+                            isReloadOnFlagChange={isReloadOnFlagChange}
+                            onToggleReloadOnFlagChange={onToggleReloadOnFlagChange}
+                          />
                         ) : (
                           <span className={styles.settingValue}>{item.value}</span>
                         )}

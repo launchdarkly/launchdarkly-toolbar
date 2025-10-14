@@ -3,7 +3,12 @@ import { useState, useRef, useCallback, useMemo, useEffect, Dispatch, SetStateAc
 import { useSearchContext } from '../context/SearchProvider';
 import { useAnalytics } from '../context/AnalyticsProvider';
 import { TabId, ActiveTabId, TAB_ORDER } from '../types';
-import { saveToolbarPinned, loadToolbarPinned } from '../utils/localStorage';
+import {
+  saveToolbarPinned,
+  loadToolbarPinned,
+  loadReloadOnFlagChange,
+  saveReloadOnFlagChange,
+} from '../utils/localStorage';
 
 export interface UseToolbarStateProps {
   defaultActiveTab: ActiveTabId;
@@ -19,6 +24,7 @@ export interface UseToolbarStateReturn {
   slideDirection: number;
   hasBeenExpanded: boolean;
   isPinned: boolean;
+  isReloadOnFlagChange: boolean;
 
   // Refs
   toolbarRef: React.RefObject<HTMLDivElement | null>;
@@ -28,6 +34,7 @@ export interface UseToolbarStateReturn {
   handleClose: () => void;
   handleSearch: (newSearchTerm: string) => void;
   handleTogglePin: () => void;
+  handleToggleReloadOnFlagChange: () => void;
   handleCircleClick: () => void;
   setIsAnimating: Dispatch<SetStateAction<boolean>>;
   setSearchIsExpanded: Dispatch<SetStateAction<boolean>>;
@@ -44,6 +51,7 @@ export function useToolbarState(props: UseToolbarStateProps): UseToolbarStateRet
   const [isAnimating, setIsAnimating] = useState(false);
   const [searchIsExpanded, setSearchIsExpanded] = useState(false);
   const [isPinned, setIsPinned] = useState(() => loadToolbarPinned());
+  const [isReloadOnFlagChange, setIsReloadOnFlagChange] = useState(() => loadReloadOnFlagChange());
 
   // Refs
   const hasBeenExpandedRef = useRef(false);
@@ -111,6 +119,14 @@ export function useToolbarState(props: UseToolbarStateProps): UseToolbarStateRet
     });
   }, []);
 
+  const handleToggleReloadOnFlagChange = useCallback(() => {
+    setIsReloadOnFlagChange((prev) => {
+      const newValue = !prev;
+      saveReloadOnFlagChange(newValue);
+      return newValue;
+    });
+  }, []);
+
   const handleCircleClick = useCallback(() => {
     if (!isExpanded) {
       // Only set default tab if no tab is currently selected
@@ -154,6 +170,7 @@ export function useToolbarState(props: UseToolbarStateProps): UseToolbarStateRet
     slideDirection,
     hasBeenExpanded: hasBeenExpandedRef.current,
     isPinned,
+    isReloadOnFlagChange,
 
     // Refs
     toolbarRef,
@@ -163,6 +180,7 @@ export function useToolbarState(props: UseToolbarStateProps): UseToolbarStateRet
     handleClose,
     handleSearch,
     handleTogglePin,
+    handleToggleReloadOnFlagChange,
     handleCircleClick,
     setIsAnimating,
     setSearchIsExpanded,
