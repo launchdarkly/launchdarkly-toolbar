@@ -53,8 +53,8 @@ pnpm demo
 This repository contains a Demo React application that is configured to use the LaunchDarkly Developer Toolbar to provide
 an easy and intuitive way to test local changes to the Developer Toolbar within the context of a simple example web
 application. To set up the Demo application + Developer Toolbar to use one of your LaunchDarkly projects, copy
-the values in `.env.example` into a `.env` (or `.env.local`) file, and replace `VITE_LD_CLIENT_SIDE_ID` with the 
-LaunchDarkly Client-Side ID of the project/environment you would like to test against. 
+the values in `.env.example` into a `.env` (or `.env.local`) file, and replace `VITE_LD_CLIENT_SIDE_ID` with the
+LaunchDarkly Client-Side ID of the project/environment you would like to test against.
 The other values in `env.example` are most likely fine as-is.
 
 ## Toolbar Integration Modes
