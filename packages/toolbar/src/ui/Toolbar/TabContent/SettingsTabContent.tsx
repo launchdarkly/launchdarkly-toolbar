@@ -174,6 +174,7 @@ function ReloadOnFlagChangeToggle(props: ReloadOnFlagChangeToggleProps) {
 
   return (
     <Switch
+      data-testid="reload-on-flag-change-toggle"
       className={styles.switch_}
       data-theme="dark"
       isSelected={isReloadOnFlagChange}
