@@ -13,7 +13,7 @@ storybook-static
 !.vscode/extensions.json
 .idea
 
-.env
+.env*
 
 playwright-report
 test-results
