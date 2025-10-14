@@ -28,7 +28,13 @@ export function IconLinkButton(props: IconButtonProps) {
   };
 
   return (
-    <a className={`${getSizeClass()} ${className || ''}`} target={target} href={href} aria-label={label} onClick={onClick}>
+    <a
+      className={`${getSizeClass()} ${className || ''}`}
+      target={target}
+      href={href}
+      aria-label={label}
+      onClick={onClick}
+    >
       {icon}
     </a>
   );
