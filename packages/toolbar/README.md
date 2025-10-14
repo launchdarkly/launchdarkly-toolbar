@@ -52,11 +52,10 @@ const eventInterceptionPlugin = new EventInterceptionPlugin();
       email: 'sandy@example.com',
     },
     options: {
-      // the observability plugins require React Web SDK v3.7+
       plugins: [
-        // other plugins...
         flagOverridePlugin,
         eventInterceptionPlugin,
+        // other plugins...
       ],
       // other options...
     },
