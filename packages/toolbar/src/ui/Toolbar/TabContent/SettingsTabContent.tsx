@@ -164,13 +164,20 @@ interface ReloadOnFlagChangeToggleProps {
 
 function ReloadOnFlagChangeToggle(props: ReloadOnFlagChangeToggleProps) {
   const { isReloadOnFlagChange, onToggleReloadOnFlagChange } = props;
+  const analytics = useAnalytics();
+
+  const handleToggle = (isSelected: boolean) => {
+    // Track reload on flag change toggle
+    analytics.trackReloadOnFlagChangeToggle(isSelected);
+    onToggleReloadOnFlagChange();
+  };
 
   return (
     <Switch
       className={styles.switch_}
       data-theme="dark"
       isSelected={isReloadOnFlagChange}
-      onChange={onToggleReloadOnFlagChange}
+      onChange={handleToggle}
       aria-label="Reload on flag change"
     />
   );
