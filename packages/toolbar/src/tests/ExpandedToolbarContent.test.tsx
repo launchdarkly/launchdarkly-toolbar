@@ -92,6 +92,8 @@ describe('ExpandedToolbarContent - User Interaction Flows', () => {
     onClose: vi.fn(),
     onTogglePin: vi.fn(),
     isPinned: false,
+    isReloadOnFlagChange: false,
+    onToggleReloadOnFlagChange: vi.fn(),
     onTabChange: vi.fn(),
     setSearchIsExpanded: vi.fn(),
     defaultActiveTab: 'settings' as const,
