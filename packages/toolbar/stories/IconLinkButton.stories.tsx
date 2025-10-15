@@ -143,24 +143,9 @@ export const LargeSize: Story = {
 export const SizesComparison: Story = {
   render: () => (
     <div style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
-      <IconLinkButton
-        icon={<GearIcon />}
-        label="Small Settings"
-        href="#small"
-        size="small"
-      />
-      <IconLinkButton
-        icon={<GearIcon />}
-        label="Medium Settings"
-        href="#medium"
-        size="medium"
-      />
-      <IconLinkButton
-        icon={<GearIcon />}
-        label="Large Settings"
-        href="#large"
-        size="large"
-      />
+      <IconLinkButton icon={<GearIcon />} label="Small Settings" href="#small" size="small" />
+      <IconLinkButton icon={<GearIcon />} label="Medium Settings" href="#medium" size="medium" />
+      <IconLinkButton icon={<GearIcon />} label="Large Settings" href="#large" size="large" />
     </div>
   ),
   parameters: {
