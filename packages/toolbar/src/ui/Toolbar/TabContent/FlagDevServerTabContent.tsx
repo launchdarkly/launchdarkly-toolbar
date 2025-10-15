@@ -76,8 +76,8 @@ export function FlagDevServerTabContent(props: FlagDevServerTabContentProps) {
     }
   };
 
-  const onRemoveAllOverrides = () => {
-    clearAllOverrides();
+  const onRemoveAllOverrides = async () => {
+    await clearAllOverrides();
     setShowOverriddenOnly(false);
     if (reloadOnFlagChangeIsEnabled) {
       window.location.reload();
@@ -89,10 +89,11 @@ export function FlagDevServerTabContent(props: FlagDevServerTabContentProps) {
       if (totalOverriddenFlags <= 1) {
         setShowOverriddenOnly(false);
       }
-      clearOverride(flagKey);
-      if (reloadOnFlagChangeIsEnabled) {
-        window.location.reload();
-      }
+      clearOverride(flagKey).then(() => {
+        if (reloadOnFlagChangeIsEnabled) {
+          window.location.reload();
+        }
+      });
     },
     [totalOverriddenFlags, setShowOverriddenOnly, clearOverride, reloadOnFlagChangeIsEnabled],
   );
