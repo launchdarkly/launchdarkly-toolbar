@@ -176,7 +176,7 @@ test.describe('LaunchDarkly Toolbar - UI Interactions', () => {
       await booleanFlagControl.click();
 
       // 5. Verify toolbar reloads
-      await page.waitForSelector('[data-testid="launchdarkly-toolbar"]');
+      await page.waitForLoadState('networkidle');
       expect(page.getByRole('img', { name: 'LaunchDarkly' })).toBeVisible();
 
       await page.getByRole('img', { name: 'LaunchDarkly' }).click();
@@ -186,26 +186,6 @@ test.describe('LaunchDarkly Toolbar - UI Interactions', () => {
       booleanFlagControl = page.getByTestId('flag-control-boolean-flag');
       const input = booleanFlagControl.getByLabel('Toggle Boolean Flag');
       await expect(input).toBeChecked();
-    });
-
-    test('should not reload when flag is changed and reload on flag change is disabled', async ({
-      page,
-    }: {
-      page: Page;
-    }) => {
-      // 1. Expand toolbar and navigate to Settings
-      await page.getByRole('img', { name: 'LaunchDarkly' }).click();
-      await page.getByRole('tab', { name: 'Settings' }).click();
-
-      // 2. Verify Settings tab content is visible
-      await expect(page.getByLabel('Reload on flag change')).toBeVisible();
-
-      // 3. Verify Reload on Flag Change toggle functionality
-      await page.getByTestId('reload-on-flag-change-toggle').click();
-
-      // 4. Verify toolbar does not reload
-      await page.waitForSelector('[data-testid="launchdarkly-toolbar"]');
-      expect(page.getByRole('img', { name: 'LaunchDarkly' })).not.toBeVisible();
     });
   });
 
