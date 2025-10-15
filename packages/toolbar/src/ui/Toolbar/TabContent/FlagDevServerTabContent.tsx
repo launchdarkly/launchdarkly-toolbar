@@ -58,7 +58,7 @@ export function FlagDevServerTabContent(props: FlagDevServerTabContentProps) {
       if (reloadOnFlagChangeIsEnabled) {
         window.location.reload();
       }
-    }
+    };
 
     switch (flag.type) {
       case 'boolean':

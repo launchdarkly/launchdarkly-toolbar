@@ -136,7 +136,12 @@ describe('ExpandedToolbarContent - User Interaction Flows', () => {
       // GIVEN: Developer has expanded the toolbar in dev server mode with event plugin
       render(
         <TestWrapper devServerUrl="http://localhost:8765">
-          <ExpandedToolbarContent baseUrl="http://localhost:3002" {...defaultProps} mode="dev-server" reloadOnFlagChangeIsEnabled={false} />
+          <ExpandedToolbarContent
+            baseUrl="http://localhost:3002"
+            {...defaultProps}
+            mode="dev-server"
+            reloadOnFlagChangeIsEnabled={false}
+          />
         </TestWrapper>,
       );
 
