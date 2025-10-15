@@ -96,6 +96,6 @@ export function loadReloadOnFlagChange(): boolean {
       : DEFAULT_SETTINGS.reloadOnFlagChange;
   } catch (error) {
     console.warn('Failed to load reload on flag change from localStorage:', error);
-    return false;
+    return DEFAULT_SETTINGS.reloadOnFlagChange;
   }
 }
