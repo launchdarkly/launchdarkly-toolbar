@@ -84,26 +84,25 @@ This project uses **pnpm workspaces** to manage packages in a monorepo structure
 | Command                  | Description                                                   |
 | ------------------------ | ------------------------------------------------------------- |
 | `pnpm build`             | Build the toolbar library for production                      |
-| `pnpm dev`               | Build toolbar in watch mode for development                   |
 | `pnpm demo`              | Build toolbar and run the demo application                    |
 | `pnpm demo:mock`         | Run demo application with mock flags enabled                  |
 | `pnpm demo:build`        | Build both toolbar and demo for production                    |
 | `pnpm demo:build:mock`   | Build demo for production with mock flags enabled             |
+| `pnpm dev`               | Build toolbar in watch mode for development                   |
+| `pnpm dev:link`          | Link local SDKs and set pnpm overrides (advanced)             |
+| `pnpm dev:status`        | Check health of repos, links, ports, tools (advanced)         |
+| `pnpm dev:unlink`        | Restore registry versions when done (advanced)                |
+| `pnpm dev:watch`         | Start watch + demo (advanced)                                 |
+| `pnpm format`            | Format code with Prettier                                     |
+| `pnpm format:ci`         | Check code formatting in CI                                   |
+| `pnpm lint`              | Run linter across all packages                                |
+| `pnpm storybook`         | Run Storybook for component development                       |
+| `pnpm build:storybook`   | Build Storybook for production                                |
 | `pnpm test`              | Run unit tests for toolbar                                    |
 | `pnpm test:e2e:ci`       | Run E2E tests against the packaged version                    |
 | `pnpm test:e2e:ci:ui`    | Run E2E tests with Playwright UI against the packaged version |
 | `pnpm test:e2e:local`    | Run E2E tests against the local version                       |
 | `pnpm test:e2e:local:ui` | Run E2E tests with Playwright UI against the local version    |
-| `pnpm storybook`         | Run Storybook for component development                       |
-| `pnpm build:storybook`   | Build Storybook for production                                |
-| `pnpm lint`              | Run linter across all packages                                |
-| `pnpm format`            | Format code with Prettier                                     |
-| `pnpm format:ci`         | Check code formatting in CI                                   |
-| `pnpm dev:link`          | Link local SDKs and set pnpm overrides (advanced)             |
-| `pnpm dev:status`        | Check health of repos, links, ports, tools (advanced)         |
-| `pnpm dev:unlink`        | Restore registry versions when done (advanced)                |
-| `pnpm dev:watch`         | Start watch + demo (advanced)                                 |
-| `pnpm upgrade-launchpad` | Upgrade LaunchPad UI dependencies                             |
 
 ## Running the Project
 

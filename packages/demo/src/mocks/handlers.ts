@@ -1,5 +1,9 @@
 import { http, HttpResponse } from 'msw';
 
+const LD_BASE_URL = import.meta.env.VITE_LD_BASE_URL || 'https://app.launchdarkly.com';
+const LD_STREAM_URL = import.meta.env.VITE_LD_STREAM_URL || 'https://clientstream.launchdarkly.com';
+const LD_EVENTS_URL = import.meta.env.VITE_LD_EVENTS_URL || 'https://events.launchdarkly.com';
+
 // Mock flag data for demo
 export const MOCK_FLAGS = {
   'boolean-flag': { value: false, version: 1 },
@@ -19,17 +23,12 @@ export const MOCK_FLAGS = {
 
 export const handlers = [
   // Mock LaunchDarkly SDK evaluation endpoint
-  http.get('https://app.launchdarkly.com/sdk/evalx/*', () => {
-    return HttpResponse.json(MOCK_FLAGS);
-  }),
-
-  // Mock LaunchDarkly SDK evaluation endpoint (alternative URL)
-  http.get('https://app.ld.catamorphic.com/sdk/evalx/*', () => {
+  http.get(`${LD_BASE_URL}/sdk/evalx/*`, () => {
     return HttpResponse.json(MOCK_FLAGS);
   }),
 
   // Mock LaunchDarkly streaming endpoint
-  http.get('https://clientstream.launchdarkly.com/eval/*', () => {
+  http.get(`${LD_STREAM_URL}/eval/*`, () => {
     // Return empty response for streaming to prevent real-time updates
     return new HttpResponse(undefined, {
       status: 200,
@@ -42,36 +41,13 @@ export const handlers = [
     });
   }),
 
-  // Mock LaunchDarkly streaming endpoint (alternative URL)
-  http.get('https://stream.ld.catamorphic.com/eval/*', () => {
-    return new HttpResponse(undefined, {
-      status: 200,
-      headers: {
-        'Content-Type': 'text/event-stream',
-        'Cache-Control': 'no-cache',
-        Connection: 'keep-alive',
-        'Access-Control-Allow-Origin': '*',
-      },
-    });
-  }),
-
   // Mock LaunchDarkly events endpoint
-  http.post('https://events.launchdarkly.com/bulk/*', () => {
-    return HttpResponse.json({ success: true }, { status: 202 });
-  }),
-
-  // Mock LaunchDarkly events endpoint (alternative URL)
-  http.post('https://events.ld.catamorphic.com/bulk/*', () => {
+  http.post(`${LD_EVENTS_URL}/bulk/*`, () => {
     return HttpResponse.json({ success: true }, { status: 202 });
   }),
 
   // Mock LaunchDarkly goals endpoint
-  http.get('https://app.launchdarkly.com/sdk/goals/*', () => {
-    return HttpResponse.json([]);
-  }),
-
-  // Mock LaunchDarkly goals endpoint (alternative URL)
-  http.get('https://app.ld.catamorphic.com/sdk/goals/*', () => {
+  http.get(`${LD_BASE_URL}/sdk/goals/*`, () => {
     return HttpResponse.json([]);
   }),
 ];
