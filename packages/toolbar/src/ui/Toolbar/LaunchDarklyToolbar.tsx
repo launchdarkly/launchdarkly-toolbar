@@ -43,7 +43,7 @@ export function LdToolbar(props: LdToolbarProps) {
     handleToggleReloadOnFlagChange,
     handleCircleClick,
     isPinned,
-    isReloadOnFlagChange,
+    reloadOnFlagChangeIsEnabled,
     setSearchIsExpanded,
     setIsAnimating,
   } = toolbarState;
@@ -169,7 +169,7 @@ export function LdToolbar(props: LdToolbarProps) {
             baseUrl={baseUrl}
             defaultActiveTab={defaultActiveTab}
             onHeaderMouseDown={handleMouseDown}
-            isReloadOnFlagChange={isReloadOnFlagChange}
+            reloadOnFlagChangeIsEnabled={reloadOnFlagChangeIsEnabled}
             onToggleReloadOnFlagChange={handleToggleReloadOnFlagChange}
           />
         )}

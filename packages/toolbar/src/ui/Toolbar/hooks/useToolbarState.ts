@@ -24,7 +24,7 @@ export interface UseToolbarStateReturn {
   slideDirection: number;
   hasBeenExpanded: boolean;
   isPinned: boolean;
-  isReloadOnFlagChange: boolean;
+  reloadOnFlagChangeIsEnabled: boolean;
 
   // Refs
   toolbarRef: React.RefObject<HTMLDivElement | null>;
@@ -51,7 +51,7 @@ export function useToolbarState(props: UseToolbarStateProps): UseToolbarStateRet
   const [isAnimating, setIsAnimating] = useState(false);
   const [searchIsExpanded, setSearchIsExpanded] = useState(false);
   const [isPinned, setIsPinned] = useState(() => loadToolbarPinned());
-  const [isReloadOnFlagChange, setIsReloadOnFlagChange] = useState(() => loadReloadOnFlagChange());
+  const [reloadOnFlagChangeIsEnabled, enableReloadOnFlagChange] = useState(() => loadReloadOnFlagChange());
 
   // Refs
   const hasBeenExpandedRef = useRef(false);
@@ -120,7 +120,7 @@ export function useToolbarState(props: UseToolbarStateProps): UseToolbarStateRet
   }, []);
 
   const handleToggleReloadOnFlagChange = useCallback(() => {
-    setIsReloadOnFlagChange((prev) => {
+    enableReloadOnFlagChange((prev) => {
       const newValue = !prev;
       saveReloadOnFlagChange(newValue);
       return newValue;
@@ -170,7 +170,7 @@ export function useToolbarState(props: UseToolbarStateProps): UseToolbarStateRet
     slideDirection,
     hasBeenExpanded: hasBeenExpandedRef.current,
     isPinned,
-    isReloadOnFlagChange,
+    reloadOnFlagChangeIsEnabled,
 
     // Refs
     toolbarRef,

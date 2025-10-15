@@ -158,12 +158,12 @@ function PinToggle(props: PinToggleProps) {
 }
 
 interface ReloadOnFlagChangeToggleProps {
-  isReloadOnFlagChange: boolean;
+  reloadOnFlagChangeIsEnabled: boolean;
   onToggleReloadOnFlagChange: () => void;
 }
 
 function ReloadOnFlagChangeToggle(props: ReloadOnFlagChangeToggleProps) {
-  const { isReloadOnFlagChange, onToggleReloadOnFlagChange } = props;
+  const { reloadOnFlagChangeIsEnabled, onToggleReloadOnFlagChange } = props;
   const analytics = useAnalytics();
 
   const handleToggle = (isSelected: boolean) => {
@@ -177,7 +177,7 @@ function ReloadOnFlagChangeToggle(props: ReloadOnFlagChangeToggleProps) {
       data-testid="reload-on-flag-change-toggle"
       className={styles.switch_}
       data-theme="dark"
-      isSelected={isReloadOnFlagChange}
+      isSelected={reloadOnFlagChangeIsEnabled}
       onChange={handleToggle}
       aria-label="Reload on flag change"
     />
@@ -209,13 +209,13 @@ function ConnectionStatusDisplay(props: ConnectionStatusDisplayProps) {
 interface SettingsTabContentProps {
   mode: ToolbarMode;
   isPinned: boolean;
-  isReloadOnFlagChange: boolean;
+  reloadOnFlagChangeIsEnabled: boolean;
   onTogglePin: () => void;
   onToggleReloadOnFlagChange: () => void;
 }
 
 export function SettingsTabContent(props: SettingsTabContentProps) {
-  const { mode, isPinned, onTogglePin, isReloadOnFlagChange, onToggleReloadOnFlagChange } = props;
+  const { mode, isPinned, onTogglePin, reloadOnFlagChangeIsEnabled, onToggleReloadOnFlagChange } = props;
   const { state, switchProject } = useDevServerContext();
   const { position, handlePositionChange } = useToolbarUIContext();
   const { searchTerm } = useSearchContext();
@@ -387,7 +387,7 @@ export function SettingsTabContent(props: SettingsTabContentProps) {
                           <PinToggle isPinned={isPinned} onTogglePin={onTogglePin} />
                         ) : item.isReloadOnFlagChangeToggle ? (
                           <ReloadOnFlagChangeToggle
-                            isReloadOnFlagChange={isReloadOnFlagChange}
+                            reloadOnFlagChangeIsEnabled={reloadOnFlagChangeIsEnabled}
                             onToggleReloadOnFlagChange={onToggleReloadOnFlagChange}
                           />
                         ) : (

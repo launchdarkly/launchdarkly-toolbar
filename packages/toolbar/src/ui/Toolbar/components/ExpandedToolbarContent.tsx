@@ -32,7 +32,7 @@ interface ExpandedToolbarContentProps {
   flagOverridePlugin?: IFlagOverridePlugin;
   eventInterceptionPlugin?: IEventInterceptionPlugin;
   onHeaderMouseDown?: (event: React.MouseEvent) => void;
-  isReloadOnFlagChange: boolean;
+  reloadOnFlagChangeIsEnabled: boolean;
   onToggleReloadOnFlagChange: () => void;
 }
 
@@ -62,7 +62,7 @@ export const ExpandedToolbarContent = React.forwardRef<HTMLDivElement, ExpandedT
     baseUrl,
     defaultActiveTab,
     onHeaderMouseDown,
-    isReloadOnFlagChange,
+    reloadOnFlagChangeIsEnabled,
     onToggleReloadOnFlagChange,
   } = props;
 
@@ -181,7 +181,7 @@ export const ExpandedToolbarContent = React.forwardRef<HTMLDivElement, ExpandedT
                     eventInterceptionPlugin={eventInterceptionPlugin}
                     isPinned={isPinned}
                     onTogglePin={onTogglePin}
-                    isReloadOnFlagChange={isReloadOnFlagChange}
+                    reloadOnFlagChangeIsEnabled={reloadOnFlagChangeIsEnabled}
                     onToggleReloadOnFlagChange={onToggleReloadOnFlagChange}
                   />
                 )}

@@ -15,7 +15,7 @@ interface TabContentRendererProps {
   flagOverridePlugin?: IFlagOverridePlugin;
   eventInterceptionPlugin?: IEventInterceptionPlugin;
   isPinned: boolean;
-  isReloadOnFlagChange: boolean;
+  reloadOnFlagChangeIsEnabled: boolean;
   onTogglePin: () => void;
   onToggleReloadOnFlagChange: () => void;
 }
@@ -29,7 +29,7 @@ export function TabContentRenderer(props: TabContentRendererProps) {
     eventInterceptionPlugin,
     baseUrl,
     isPinned,
-    isReloadOnFlagChange,
+    reloadOnFlagChangeIsEnabled,
     onTogglePin,
     onToggleReloadOnFlagChange,
   } = props;
@@ -40,11 +40,11 @@ export function TabContentRenderer(props: TabContentRendererProps) {
         return (
           <FlagSdkOverrideTabContent
             flagOverridePlugin={flagOverridePlugin}
-            isReloadOnFlagChange={isReloadOnFlagChange}
+            reloadOnFlagChangeIsEnabled={reloadOnFlagChangeIsEnabled}
           />
         );
       case 'flag-dev-server':
-        return <FlagDevServerTabContent />;
+        return <FlagDevServerTabContent reloadOnFlagChangeIsEnabled={reloadOnFlagChangeIsEnabled} />;
       case 'events':
         return <EventsTabContent baseUrl={baseUrl} eventInterceptionPlugin={eventInterceptionPlugin} />;
       case 'settings':
@@ -53,7 +53,7 @@ export function TabContentRenderer(props: TabContentRendererProps) {
             mode={mode}
             isPinned={isPinned}
             onTogglePin={onTogglePin}
-            isReloadOnFlagChange={isReloadOnFlagChange}
+            reloadOnFlagChangeIsEnabled={reloadOnFlagChangeIsEnabled}
             onToggleReloadOnFlagChange={onToggleReloadOnFlagChange}
           />
         );

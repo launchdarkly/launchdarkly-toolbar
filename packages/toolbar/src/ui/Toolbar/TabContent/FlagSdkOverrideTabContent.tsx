@@ -21,11 +21,11 @@ import * as actionStyles from '../components/ActionButtonsContainer.css';
 
 interface FlagSdkOverrideTabContentInnerProps {
   flagOverridePlugin: IFlagOverridePlugin;
-  isReloadOnFlagChange: boolean;
+  reloadOnFlagChangeIsEnabled: boolean;
 }
 
 function FlagSdkOverrideTabContentInner(props: FlagSdkOverrideTabContentInnerProps) {
-  const { flagOverridePlugin, isReloadOnFlagChange } = props;
+  const { flagOverridePlugin, reloadOnFlagChangeIsEnabled } = props;
   const { searchTerm } = useSearchContext();
   const analytics = useAnalytics();
   const { flags, isLoading } = useFlagSdkOverrideContext();
@@ -38,12 +38,12 @@ function FlagSdkOverrideTabContentInner(props: FlagSdkOverrideTabContentInnerPro
         flagOverridePlugin.removeOverride(flagKey);
         analytics.trackFlagOverride(flagKey, null, 'remove');
 
-        if (isReloadOnFlagChange) {
+        if (reloadOnFlagChangeIsEnabled) {
           window.location.reload();
         }
       }
     },
-    [flagOverridePlugin, analytics, isReloadOnFlagChange],
+    [flagOverridePlugin, analytics, reloadOnFlagChangeIsEnabled],
   );
 
   // Count total overridden flags (not just filtered ones)
@@ -92,7 +92,7 @@ function FlagSdkOverrideTabContentInner(props: FlagSdkOverrideTabContentInnerPro
     flagOverridePlugin.setOverride(flagKey, value);
     analytics.trackFlagOverride(flagKey, value, 'set');
 
-    if (isReloadOnFlagChange) {
+    if (reloadOnFlagChangeIsEnabled) {
       window.location.reload();
     }
   };
@@ -104,7 +104,7 @@ function FlagSdkOverrideTabContentInner(props: FlagSdkOverrideTabContentInnerPro
     flagOverridePlugin.clearAllOverrides();
     analytics.trackFlagOverride('*', { count: overrideCount }, 'clear_all');
 
-    if (isReloadOnFlagChange) {
+    if (reloadOnFlagChangeIsEnabled) {
       window.location.reload();
     }
   };
@@ -232,11 +232,11 @@ function FlagSdkOverrideTabContentInner(props: FlagSdkOverrideTabContentInnerPro
 
 interface FlagSdkOverrideTabContentProps {
   flagOverridePlugin?: IFlagOverridePlugin;
-  isReloadOnFlagChange: boolean;
+  reloadOnFlagChangeIsEnabled: boolean;
 }
 
 export function FlagSdkOverrideTabContent(props: FlagSdkOverrideTabContentProps) {
-  const { flagOverridePlugin, isReloadOnFlagChange } = props;
+  const { flagOverridePlugin, reloadOnFlagChangeIsEnabled } = props;
 
   if (!flagOverridePlugin) {
     return (
@@ -251,7 +251,7 @@ export function FlagSdkOverrideTabContent(props: FlagSdkOverrideTabContentProps)
     <FlagSdkOverrideProvider flagOverridePlugin={flagOverridePlugin}>
       <FlagSdkOverrideTabContentInner
         flagOverridePlugin={flagOverridePlugin}
-        isReloadOnFlagChange={isReloadOnFlagChange}
+        reloadOnFlagChangeIsEnabled={reloadOnFlagChangeIsEnabled}
       />
     </FlagSdkOverrideProvider>
   );
