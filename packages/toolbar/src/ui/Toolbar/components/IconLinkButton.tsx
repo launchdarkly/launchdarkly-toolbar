@@ -1,7 +1,7 @@
 import React from 'react';
 import * as styles from './IconButton.css';
 
-export interface IconButtonProps {
+export interface IconLinkButtonProps {
   icon: React.ReactNode;
   label: string;
   href: string;
@@ -11,7 +11,7 @@ export interface IconButtonProps {
   onClick?: () => void;
 }
 
-export function IconLinkButton(props: IconButtonProps) {
+export function IconLinkButton(props: IconLinkButtonProps) {
   const { icon, label, href, target = '_blank', className, size = 'large', onClick } = props;
 
   const getSizeClass = () => {
