@@ -29,6 +29,7 @@
   "sideEffects": false,
   "files": [
     "dist",
+    "cdn",
     "README.md",
     "LICENSE"
   ],
