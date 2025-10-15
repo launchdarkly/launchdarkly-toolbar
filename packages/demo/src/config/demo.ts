@@ -8,20 +8,20 @@ export interface DemoConfig {
   enableLogging: boolean;
 }
 
-// Check if running in an automated test environment i.e. Playwright
+/**
+ * Detects if running in an automated test environment (e.g., Playwright).
+ * This disables MSW so Playwright's network mocks can work.
+ * See e2e/README.md for details.
+ */
 const isAutomatedTest = () => {
   if (typeof window === 'undefined') return false;
-  // Check for webdriver (used by Playwright)
   if (navigator.webdriver === true) return true;
   return false;
 };
 
 export const DEMO_CONFIG: DemoConfig = {
-  // Use mocks if explicitly enabled via env var, but never during automated tests
-  // Automated tests (like Playwright) provide their own network mocking
+  // Disable MSW during E2E tests to allow Playwright mocks to work
   useMocks: import.meta.env.VITE_USE_MOCK_FLAGS === 'true' && !isAutomatedTest(),
-
-  // Enable logging in development
   enableLogging: import.meta.env.DEV,
 };
 
