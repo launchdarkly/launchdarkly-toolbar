@@ -1,8 +1,8 @@
 import type { Page } from '@playwright/test';
-import { config } from '../config/environment';
 
-const LD_BASE_URL = `${config.ldBaseUrl}/sdk/evalx/**`;
-const LD_EVENT_STREAM_URL = `${config.ldStreamUrl}/eval/**`;
+// Match LaunchDarkly SDK endpoints regardless of base URL
+const LD_BASE_URL = '**/sdk/evalx/**';
+const LD_EVENT_STREAM_URL = '**/eval/**';
 
 // Static fixture flags
 export const FIXTURE_FLAGS = {
