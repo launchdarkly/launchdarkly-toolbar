@@ -1,5 +1,6 @@
-import { test, expect } from '@playwright/test';
+import { expect } from '@playwright/test';
 import type { Page } from '@playwright/test';
+import { test } from '../setup/global';
 
 test.describe('LaunchDarkly Toolbar - UI Interactions', () => {
   test.beforeEach(async ({ page }: { page: Page }) => {
