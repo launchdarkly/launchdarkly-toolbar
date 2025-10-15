@@ -1,6 +1,6 @@
 # Changelog
 
-## [0.25.0-beta.1](https://github.com/launchdarkly/launchdarkly-toolbar/compare/0.24.0-beta.1...0.25.0-beta.1) (2025-10-15)
+## [0.25.0](https://github.com/launchdarkly/launchdarkly-toolbar/compare/0.24.0-beta.1...0.25.0-beta.1) (2025-10-15)
 
 
 ### Features
