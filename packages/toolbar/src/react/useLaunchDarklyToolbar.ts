@@ -62,5 +62,5 @@ export default function useLaunchDarklyToolbar(args: UseLaunchDarklyToolbarConfi
 }
 
 function versionToCdn(version = 'latest'): string {
-  return `https://unpkg.com/@launchdarkly/toolbar@${version}/cdn/toolbar.min.js`
+  return `https://unpkg.com/@launchdarkly/toolbar@${version}/cdn/toolbar.min.js`;
 }
