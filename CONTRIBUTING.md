@@ -258,6 +258,7 @@ pnpm build
 ```
 
 This creates:
+
 - **NPM package** (`packages/toolbar/dist/`) - ESM/CommonJS bundles and TypeScript declarations
 - **CDN bundle** (`packages/toolbar/cdn/`) - Minified IIFE bundle for script tags
 

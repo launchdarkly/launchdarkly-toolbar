@@ -52,11 +52,10 @@ const eventInterceptionPlugin = new EventInterceptionPlugin();
       email: 'sandy@example.com',
     },
     options: {
-      // the observability plugins require React Web SDK v3.7+
       plugins: [
-        // other plugins...
         flagOverridePlugin,
         eventInterceptionPlugin,
+        // other plugins...
       ],
       // other options...
     },
@@ -306,7 +305,7 @@ interface IEventInterceptionPlugin {
 pnpm build
 
 # Build only NPM package
-pnpm build:npm
+pnpm build:lib
 
 # Build only CDN bundle
 pnpm build:cdn
