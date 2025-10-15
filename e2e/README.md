@@ -43,7 +43,21 @@ pnpm test:e2e:ci:ui
 
 ## How It Works
 
-### 1. Environment Configuration
+### 1. Mock Data Strategy
+
+E2E tests use **Playwright's network mocking** for controlled, deterministic test data.
+
+**Automated Test Detection**
+
+The demo app uses Mock Service Worker (MSW) for manual testing, which conflicts with Playwright mocks (MSW intercepts at a higher priority). The `isAutomatedTest()` function detects Playwright via `navigator.webdriver` and automatically disables MSW during E2E tests.
+
+See [`isAutomatedTest()`](../packages/demo/src/config/demo.ts) for implementation.
+
+**Mock files**:
+
+- E2E tests: [`e2e/mocks/mockFeatureFlags.ts`](./mocks/mockFeatureFlags.ts)
+
+### 2. Environment Configuration
 
 The `config/environment.ts` file determines which demo routes to load based on `TEST_ENV`:
 
