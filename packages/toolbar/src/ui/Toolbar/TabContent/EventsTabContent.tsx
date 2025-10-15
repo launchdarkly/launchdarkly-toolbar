@@ -15,8 +15,8 @@ import * as actionStyles from '../components/ActionButtonsContainer.css';
 import { useCurrentDate, useEvents } from '../hooks';
 import type { IEventInterceptionPlugin } from '../../../types/plugin';
 import { ProcessedEvent, SyntheticEventContext } from '../../../types/events';
-import { IconButton } from '../components/IconButton';
 import { AddIcon } from '../components/icons/AddIcon';
+import { IconLinkButton } from '../components/IconLinkButton';
 
 interface EventsTabContentProps {
   baseUrl: string;
@@ -61,12 +61,8 @@ export function EventsTabContent(props: EventsTabContentProps) {
   };
 
   const handleAddFeatureFlag = (flagKey: string) => {
-    const url = createFlagDeeplinkUrl(flagKey);
-
     // Track deeplink opening
     analytics.trackOpenFlagDeeplink(flagKey, baseUrl);
-
-    window.open(url, '_blank');
   };
 
   const createFlagDeeplinkUrl = (flagKey: string): string => {
@@ -189,12 +185,13 @@ export function EventsTabContent(props: EventsTabContentProps) {
                     <div className={getBadgeClass(event.kind)}>{event.kind}</div>
                     {event.kind === 'feature' && isFlagNotFound(event.context) && (
                       <div className={styles.addButtonContainer}>
-                        <IconButton
+                        <IconLinkButton
                           className={styles.addButton}
                           data-testid="add-flag-button"
                           key={`add-flag-${event.context.key}`}
                           icon={<AddIcon />}
                           label="Add Feature Flag"
+                          href={createFlagDeeplinkUrl(event.context.key || '')}
                           size="medium"
                           onClick={() => handleAddFeatureFlag(event.context.key || '')}
                         />
