@@ -45,6 +45,12 @@ export const settingName = style({
   color: 'var(--lp-color-gray-200)',
 });
 
+export const settingDescription = style({
+  fontSize: '12px',
+  color: 'var(--lp-color-gray-200)',
+  fontWeight: 400,
+});
+
 export const settingValue = style({
   fontSize: '12px',
   color: 'var(--lp-color-gray-400)',
