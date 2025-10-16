@@ -88,8 +88,6 @@ test.describe('LaunchDarkly Toolbar - UI Interactions', () => {
     });
 
     test('should not collapse when auto-collapse is disabled', async ({ page }: { page: Page }) => {
-      const toolbar = page.getByTestId('launchdarkly-toolbar');
-
       // 1. Expand toolbar and navigate to Settings
       await page.getByRole('img', { name: 'LaunchDarkly' }).click();
       await page.getByRole('tab', { name: 'Settings' }).click();
