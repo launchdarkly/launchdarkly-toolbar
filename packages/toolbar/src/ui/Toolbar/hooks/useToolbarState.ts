@@ -151,7 +151,7 @@ export function useToolbarState(props: UseToolbarStateProps): UseToolbarStateRet
 
   // Handle focus outside to close toolbar (only when auto-collapse is enabled)
   // Use focusin instead of focusout since 'focusout' fires when focus is lost,
-  // meaning the toolbar will stay open the first time the user clicks outside of the toolbar.
+  // meaning the toolbar will stay open the first time the user tabs outside of the toolbar.
   useEffect(() => {
     const handleFocusIn = (event: FocusEvent) => {
       if (isExpanded && isAutoCollapseEnabled && !toolbarRef.current?.contains(event.target as Node)) {
