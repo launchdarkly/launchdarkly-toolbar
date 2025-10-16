@@ -155,6 +155,8 @@ export function useToolbarState(props: UseToolbarStateProps): UseToolbarStateRet
   useEffect(() => {
     const handleFocusIn = (event: FocusEvent) => {
       if (isExpanded && isAutoCollapseEnabled && !toolbarRef.current?.contains(event.target as Node)) {
+        // Track toolbar collapse from focus lost
+        analytics.trackToolbarToggle('collapse', 'focus_lost');
         setIsExpanded(false);
       }
     };

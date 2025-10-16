@@ -106,7 +106,10 @@ export class ToolbarAnalytics {
   /**
    * Track toolbar expand/collapse events
    */
-  trackToolbarToggle(action: 'expand' | 'collapse', trigger: 'close_button' | 'click_outside' | 'tab_toggle'): void {
+  trackToolbarToggle(
+    action: 'expand' | 'collapse',
+    trigger: 'close_button' | 'click_outside' | 'tab_toggle' | 'focus_lost',
+  ): void {
     this.track(EVENTS.TOGGLE, {
       action,
       trigger,
