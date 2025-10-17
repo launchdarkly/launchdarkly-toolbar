@@ -18,13 +18,13 @@
     "launchdarkly-js-client-sdk": "^3.8.1",
     "launchdarkly-react-client-sdk": "^3.9.0",
     "msw": "^2.11.5",
-    "react": "^19.1.1",
+    "react": "^19.2.0",
     "react-dom": "^19.1.1",
     "react-router-dom": "^7.9.4"
   },
   "devDependencies": {
     "@eslint/js": "^9.37.0",
-    "@types/react": "^19.1.13",
+    "@types/react": "^19.2.2",
     "@types/react-dom": "^19.1.9",
     "@vanilla-extract/vite-plugin": "^5.1.1",
     "@vitejs/plugin-react": "^5.0.4",
