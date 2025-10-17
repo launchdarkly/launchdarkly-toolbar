@@ -1,5 +1,18 @@
 # Changelog
 
+## [0.26.0](https://github.com/launchdarkly/launchdarkly-toolbar/compare/0.25.0...0.26.0) (2025-10-17)
+
+
+### Features
+
+* [REL-10145] Update 'pin' functionality to be called 'Auto-collapse' ([#193](https://github.com/launchdarkly/launchdarkly-toolbar/issues/193)) ([fd4562b](https://github.com/launchdarkly/launchdarkly-toolbar/commit/fd4562bfe3a8a6543220c7d8c8d8b87bc57b5af8))
+* [REL-9565] add 'Reload on Flag Change' setting + functionality ([#185](https://github.com/launchdarkly/launchdarkly-toolbar/issues/185)) ([22afc0b](https://github.com/launchdarkly/launchdarkly-toolbar/commit/22afc0bda3be16c663c723b2edfafd25d26897dc))
+
+
+### Bug Fixes
+
+* update toolbar icons to match launchpad icons ([#199](https://github.com/launchdarkly/launchdarkly-toolbar/issues/199)) ([66fdb57](https://github.com/launchdarkly/launchdarkly-toolbar/commit/66fdb57b17fce54b65d25f7f1b4eb6f031382aef))
+
 ## [0.25.0](https://github.com/launchdarkly/launchdarkly-toolbar/compare/0.24.0-beta.1...0.25.0-beta.1) (2025-10-15)
 
 
