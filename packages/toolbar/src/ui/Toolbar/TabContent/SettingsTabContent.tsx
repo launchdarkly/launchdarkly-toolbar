@@ -246,7 +246,7 @@ export function SettingsTabContent(props: SettingsTabContentProps) {
             {
               id: 'auto-collapse',
               name: 'Auto-collapse',
-              description: 'Automatically collapses the toolbar when clicking outside or when the toolbar loses focus.',
+              description: 'Automatically collapses the toolbar when clicking outside.',
               icon: '',
               isAutoCollapseToggle: true,
             },
@@ -268,7 +268,7 @@ export function SettingsTabContent(props: SettingsTabContentProps) {
             {
               id: 'auto-collapse',
               name: 'Auto-collapse',
-              description: 'Automatically collapses the toolbar when clicking outside or when the toolbar loses focus.',
+              description: 'Automatically collapses the toolbar when clicking outside.',
               icon: '',
               isAutoCollapseToggle: true,
             },
