@@ -151,12 +151,7 @@ export function useToolbarState(props: UseToolbarStateProps): UseToolbarStateRet
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       const node = event.target as HTMLElement;
-      if (
-        isExpanded &&
-        isAutoCollapseEnabled &&
-        toolbarRef.current &&
-        node.id !== domId 
-      ) {
+      if (isExpanded && isAutoCollapseEnabled && toolbarRef.current && node.id !== domId) {
         // Track toolbar collapse from click outside
         analytics.trackToolbarToggle('collapse', 'click_outside');
         setIsExpanded(false);
