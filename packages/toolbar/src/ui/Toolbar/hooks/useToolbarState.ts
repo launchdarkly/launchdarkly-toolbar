@@ -149,24 +149,6 @@ export function useToolbarState(props: UseToolbarStateProps): UseToolbarStateRet
     };
   }, [isExpanded, isAutoCollapseEnabled, analytics]);
 
-  // Handle focus outside to close toolbar (only when auto-collapse is enabled)
-  // Use focusin instead of focusout since 'focusout' fires when focus is lost,
-  // meaning the toolbar will stay open the first time the user tabs outside of the toolbar.
-  useEffect(() => {
-    const handleFocusIn = (event: FocusEvent) => {
-      if (isExpanded && isAutoCollapseEnabled && !toolbarRef.current?.contains(event.target as Node)) {
-        // Track toolbar collapse from focus lost
-        analytics.trackToolbarToggle('collapse', 'focus_lost');
-        setIsExpanded(false);
-      }
-    };
-
-    document.addEventListener('focusin', handleFocusIn as EventListener);
-    return () => {
-      document.removeEventListener('focusin', handleFocusIn as EventListener);
-    };
-  }, [isExpanded, isAutoCollapseEnabled]);
-
   return {
     // State values
     isExpanded,
