@@ -76,7 +76,7 @@ export const ExpandedToolbarContent = React.forwardRef<HTMLDivElement, ExpandedT
   const shouldShowError = error && mode === 'dev-server' && state.connectionStatus === 'error';
 
   return (
-    <FocusScope>
+    <FocusScope restoreFocus>
       <motion.div
         ref={ref}
         key="toolbar-content"
