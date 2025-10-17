@@ -1,9 +1,8 @@
-import { useState, useRef, useCallback, useMemo, useEffect, Dispatch, SetStateAction, useContext } from 'react';
+import { useState, useRef, useCallback, useMemo, useEffect, Dispatch, SetStateAction } from 'react';
 
 import { useSearchContext } from '../context/SearchProvider';
 import { useAnalytics } from '../context/AnalyticsProvider';
 import { TabId, ActiveTabId, TAB_ORDER } from '../types';
-import ShadowRootContext from '../../../context/ShadowRootContext';
 import {
   saveToolbarAutoCollapse,
   loadToolbarAutoCollapse,
@@ -43,7 +42,6 @@ export interface UseToolbarStateReturn {
 }
 
 export function useToolbarState(props: UseToolbarStateProps): UseToolbarStateReturn {
-  const shadowRoot = useContext(ShadowRootContext);
   const { defaultActiveTab, domId } = props;
   const { setSearchTerm } = useSearchContext();
   const analytics = useAnalytics();
