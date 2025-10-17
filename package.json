@@ -9,12 +9,13 @@
     "demo:mock": "pnpm --filter launchdarkly-toolbar-demo dev:mock",
     "demo:build": "pnpm --filter launchdarkly-toolbar-demo build",
     "demo:build:mock": "pnpm --filter launchdarkly-toolbar-demo build:mock",
-    "dev": "pnpm --filter @launchdarkly/toolbar dev",
-    "dev:link": "./scripts/setup-local-links.sh",
+    "dev": "tsx scripts/dev-with-hot-reload.ts",
+    "dev:toolbar": "pnpm --filter @launchdarkly/toolbar dev",
+    "dev:link": "./scripts/sdk-symlinks/setup-local-links.sh",
     "dev:server": "pnpm --filter mock-server start",
-    "dev:status": "./scripts/dev-status.sh",
-    "dev:unlink": "./scripts/remove-local-links.sh",
-    "dev:watch": "./scripts/dev-watch.sh",
+    "dev:status": "./scripts/sdk-symlinks/dev-status.sh",
+    "dev:unlink": "./scripts/sdk-symlinks/remove-local-links.sh",
+    "dev:watch": "./scripts/sdk-symlinks/dev-watch.sh",
     "format": "prettier --write .",
     "format:ci": "prettier --check .",
     "lint": "pnpm -r lint",
@@ -28,7 +29,8 @@
   "devDependencies": {
     "@playwright/test": "^1.53.1",
     "@types/node": "^24.7.2",
-    "prettier": "^3.5.3"
+    "prettier": "^3.5.3",
+    "tsx": "^4.20.6"
   },
   "packageManager": "pnpm@10.14.0"
 }
