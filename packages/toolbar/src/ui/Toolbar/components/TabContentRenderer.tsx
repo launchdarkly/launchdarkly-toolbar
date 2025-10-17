@@ -14,6 +14,8 @@ interface TabContentRendererProps {
   mode: ToolbarMode;
   flagOverridePlugin?: IFlagOverridePlugin;
   eventInterceptionPlugin?: IEventInterceptionPlugin;
+  reloadOnFlagChangeIsEnabled: boolean;
+  onToggleReloadOnFlagChange: () => void;
   isAutoCollapseEnabled: boolean;
   onToggleAutoCollapse: () => void;
 }
@@ -26,6 +28,8 @@ export function TabContentRenderer(props: TabContentRendererProps) {
     flagOverridePlugin,
     eventInterceptionPlugin,
     baseUrl,
+    reloadOnFlagChangeIsEnabled,
+    onToggleReloadOnFlagChange,
     isAutoCollapseEnabled,
     onToggleAutoCollapse,
   } = props;
@@ -33,15 +37,22 @@ export function TabContentRenderer(props: TabContentRendererProps) {
   const renderContent = () => {
     switch (activeTab) {
       case 'flag-sdk':
-        return <FlagSdkOverrideTabContent flagOverridePlugin={flagOverridePlugin} />;
+        return (
+          <FlagSdkOverrideTabContent
+            flagOverridePlugin={flagOverridePlugin}
+            reloadOnFlagChangeIsEnabled={reloadOnFlagChangeIsEnabled}
+          />
+        );
       case 'flag-dev-server':
-        return <FlagDevServerTabContent />;
+        return <FlagDevServerTabContent reloadOnFlagChangeIsEnabled={reloadOnFlagChangeIsEnabled} />;
       case 'events':
         return <EventsTabContent baseUrl={baseUrl} eventInterceptionPlugin={eventInterceptionPlugin} />;
       case 'settings':
         return (
           <SettingsTabContent
             mode={mode}
+            reloadOnFlagChangeIsEnabled={reloadOnFlagChangeIsEnabled}
+            onToggleReloadOnFlagChange={onToggleReloadOnFlagChange}
             isAutoCollapseEnabled={isAutoCollapseEnabled}
             onToggleAutoCollapse={onToggleAutoCollapse}
           />

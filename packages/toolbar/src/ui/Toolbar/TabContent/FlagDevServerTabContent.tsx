@@ -14,7 +14,12 @@ import { VIRTUALIZATION } from '../constants';
 import * as styles from './FlagDevServerTabContent.css';
 import * as actionStyles from '../components/ActionButtonsContainer.css';
 
-export function FlagDevServerTabContent() {
+interface FlagDevServerTabContentProps {
+  reloadOnFlagChangeIsEnabled: boolean;
+}
+
+export function FlagDevServerTabContent(props: FlagDevServerTabContentProps) {
+  const { reloadOnFlagChangeIsEnabled } = props;
   const { searchTerm } = useSearchContext();
   const { state, setOverride, clearOverride, clearAllOverrides } = useDevServerContext();
   const { flags } = state;
@@ -47,7 +52,13 @@ export function FlagDevServerTabContent() {
   }, [flags]);
 
   const renderFlagControl = (flag: EnhancedFlag) => {
-    const handleOverride = (value: any) => setOverride(flag.key, value);
+    const handleOverride = (value: any) => {
+      setOverride(flag.key, value);
+
+      if (reloadOnFlagChangeIsEnabled) {
+        window.location.reload();
+      }
+    };
 
     switch (flag.type) {
       case 'boolean':
@@ -65,9 +76,12 @@ export function FlagDevServerTabContent() {
     }
   };
 
-  const onRemoveAllOverrides = () => {
-    clearAllOverrides();
+  const onRemoveAllOverrides = async () => {
+    await clearAllOverrides();
     setShowOverriddenOnly(false);
+    if (reloadOnFlagChangeIsEnabled) {
+      window.location.reload();
+    }
   };
 
   const onClearOverride = useCallback(
@@ -75,9 +89,13 @@ export function FlagDevServerTabContent() {
       if (totalOverriddenFlags <= 1) {
         setShowOverriddenOnly(false);
       }
-      clearOverride(flagKey);
+      clearOverride(flagKey).then(() => {
+        if (reloadOnFlagChangeIsEnabled) {
+          window.location.reload();
+        }
+      });
     },
-    [totalOverriddenFlags, setShowOverriddenOnly, clearOverride],
+    [totalOverriddenFlags, setShowOverriddenOnly, clearOverride, reloadOnFlagChangeIsEnabled],
   );
 
   const genericHelpTitle = showOverriddenOnly ? 'No overrides found' : 'No flags found';

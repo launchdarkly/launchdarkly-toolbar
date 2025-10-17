@@ -14,6 +14,7 @@ const EVENTS = {
   OPEN_FLAG_DEEPLINK: 'open.flag.deeplink',
   SHOW_OVERRIDES_ONLY: 'show.overrides.only',
   EVENT_CLICK: 'event.click',
+  RELOAD_ON_FLAG_CHANGE_TOGGLE: 'reload.on.flag.change.toggle',
 } as const;
 
 /**
@@ -151,6 +152,15 @@ export class ToolbarAnalytics {
   trackEventClick(eventName: string): void {
     this.track(EVENTS.EVENT_CLICK, {
       eventName,
+    });
+  }
+
+  /**
+   * Track Reload on Flag Change toggles
+   */
+  trackReloadOnFlagChangeToggle(enabled: boolean): void {
+    this.track(EVENTS.RELOAD_ON_FLAG_CHANGE_TOGGLE, {
+      enabled,
     });
   }
 }

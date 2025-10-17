@@ -1,4 +1,5 @@
-import { test, expect } from '@playwright/test';
+import { expect } from '@playwright/test';
+import { test } from '../setup/global';
 import type { Page } from '@playwright/test';
 
 test.describe('LaunchDarkly Toolbar - UI Interactions', () => {
@@ -170,6 +171,39 @@ test.describe('LaunchDarkly Toolbar - UI Interactions', () => {
       await expect(page.getByRole('tab', { name: 'Flags' })).toBeVisible();
       await expect(page.getByRole('tab', { name: 'Events' })).toBeVisible();
       await expect(page.getByRole('tab', { name: 'Settings' })).toBeVisible();
+    });
+
+    test('should reload when flag is changed and reload on flag change is enabled', async ({
+      page,
+    }: {
+      page: Page;
+    }) => {
+      // 1. Expand toolbar and navigate to Settings
+      await page.getByRole('img', { name: 'LaunchDarkly' }).click();
+      await page.getByRole('tab', { name: 'Settings' }).click();
+
+      // 2. Verify Settings tab content is visible
+      await expect(page.getByLabel('Reload on flag change')).toBeVisible();
+
+      // 3. Verify Reload on Flag Change toggle functionality
+      await page.getByTestId('reload-on-flag-change-toggle').click();
+
+      // 4. Navigate to Flags tab and verify reload on flag change functionality
+      await page.getByRole('tab', { name: 'Flags' }).click();
+      let booleanFlagControl = page.getByTestId('flag-control-boolean-flag');
+      await booleanFlagControl.click();
+
+      // 5. Verify toolbar reloads
+      await page.waitForLoadState('networkidle');
+      expect(page.getByRole('img', { name: 'LaunchDarkly' })).toBeVisible();
+
+      await page.getByRole('img', { name: 'LaunchDarkly' }).click();
+      await page.getByRole('tab', { name: 'Flags' }).click();
+
+      // 6. Verify boolean flag switch is checked
+      booleanFlagControl = page.getByTestId('flag-control-boolean-flag');
+      const input = booleanFlagControl.getByLabel('Toggle Boolean Flag');
+      await expect(input).toBeChecked();
     });
   });
 

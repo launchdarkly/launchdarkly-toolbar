@@ -21,6 +21,7 @@ interface SettingsItem {
   isProjectSelector?: boolean;
   isPositionSelector?: boolean;
   isConnectionStatus?: boolean;
+  isReloadOnFlagChangeToggle?: boolean;
   isAutoCollapseToggle?: boolean;
   value?: string;
 }
@@ -158,6 +159,33 @@ function AutoCollapseToggle(props: AutoCollapseToggleProps) {
   );
 }
 
+interface ReloadOnFlagChangeToggleProps {
+  reloadOnFlagChangeIsEnabled: boolean;
+  onToggleReloadOnFlagChange: () => void;
+}
+
+function ReloadOnFlagChangeToggle(props: ReloadOnFlagChangeToggleProps) {
+  const { reloadOnFlagChangeIsEnabled, onToggleReloadOnFlagChange } = props;
+  const analytics = useAnalytics();
+
+  const handleToggle = (isSelected: boolean) => {
+    // Track reload on flag change toggle
+    analytics.trackReloadOnFlagChangeToggle(isSelected);
+    onToggleReloadOnFlagChange();
+  };
+
+  return (
+    <Switch
+      data-testid="reload-on-flag-change-toggle"
+      className={styles.switch_}
+      data-theme="dark"
+      isSelected={reloadOnFlagChangeIsEnabled}
+      onChange={handleToggle}
+      aria-label="Reload on flag change"
+    />
+  );
+}
+
 function ConnectionStatusDisplay(props: ConnectionStatusDisplayProps) {
   const { status } = props;
 
@@ -182,12 +210,15 @@ function ConnectionStatusDisplay(props: ConnectionStatusDisplayProps) {
 
 interface SettingsTabContentProps {
   mode: ToolbarMode;
+  reloadOnFlagChangeIsEnabled: boolean;
+  onToggleReloadOnFlagChange: () => void;
   isAutoCollapseEnabled: boolean;
   onToggleAutoCollapse: () => void;
 }
 
 export function SettingsTabContent(props: SettingsTabContentProps) {
-  const { mode, isAutoCollapseEnabled, onToggleAutoCollapse } = props;
+  const { mode, reloadOnFlagChangeIsEnabled, onToggleReloadOnFlagChange, isAutoCollapseEnabled, onToggleAutoCollapse } =
+    props;
   const { state, switchProject } = useDevServerContext();
   const { position, handlePositionChange } = useToolbarUIContext();
   const { searchTerm } = useSearchContext();
@@ -250,6 +281,12 @@ export function SettingsTabContent(props: SettingsTabContentProps) {
               icon: '',
               isAutoCollapseToggle: true,
             },
+            {
+              id: 'reload-on-flag-change',
+              name: 'Reload on flag change',
+              icon: 'refresh',
+              isReloadOnFlagChangeToggle: true,
+            },
           ],
         },
       ];
@@ -271,6 +308,12 @@ export function SettingsTabContent(props: SettingsTabContentProps) {
               description: 'Automatically collapses the toolbar when clicking outside.',
               icon: '',
               isAutoCollapseToggle: true,
+            },
+            {
+              id: 'reload-on-flag-change',
+              name: 'Reload on flag change',
+              icon: 'refresh',
+              isReloadOnFlagChangeToggle: true,
             },
           ],
         },
@@ -350,6 +393,11 @@ export function SettingsTabContent(props: SettingsTabContentProps) {
                           <AutoCollapseToggle
                             isAutoCollapseEnabled={isAutoCollapseEnabled}
                             onToggleAutoCollapse={onToggleAutoCollapse}
+                          />
+                        ) : item.isReloadOnFlagChangeToggle ? (
+                          <ReloadOnFlagChangeToggle
+                            reloadOnFlagChangeIsEnabled={reloadOnFlagChangeIsEnabled}
+                            onToggleReloadOnFlagChange={onToggleReloadOnFlagChange}
                           />
                         ) : (
                           <span className={styles.settingValue}>{item.value}</span>

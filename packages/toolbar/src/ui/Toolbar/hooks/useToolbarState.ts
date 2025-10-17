@@ -3,7 +3,12 @@ import { useState, useRef, useCallback, useMemo, useEffect, Dispatch, SetStateAc
 import { useSearchContext } from '../context/SearchProvider';
 import { useAnalytics } from '../context/AnalyticsProvider';
 import { TabId, ActiveTabId, TAB_ORDER } from '../types';
-import { saveToolbarAutoCollapse, loadToolbarAutoCollapse } from '../utils/localStorage';
+import {
+  saveToolbarAutoCollapse,
+  loadToolbarAutoCollapse,
+  loadReloadOnFlagChange,
+  saveReloadOnFlagChange,
+} from '../utils/localStorage';
 
 export interface UseToolbarStateProps {
   defaultActiveTab: ActiveTabId;
@@ -18,6 +23,7 @@ export interface UseToolbarStateReturn {
   searchIsExpanded: boolean;
   slideDirection: number;
   hasBeenExpanded: boolean;
+  reloadOnFlagChangeIsEnabled: boolean;
   isAutoCollapseEnabled: boolean;
 
   // Refs
@@ -27,6 +33,7 @@ export interface UseToolbarStateReturn {
   handleTabChange: (tabId: string) => void;
   handleClose: () => void;
   handleSearch: (newSearchTerm: string) => void;
+  handleToggleReloadOnFlagChange: () => void;
   handleToggleAutoCollapse: () => void;
   handleCircleClick: () => void;
   setIsAnimating: Dispatch<SetStateAction<boolean>>;
@@ -43,6 +50,7 @@ export function useToolbarState(props: UseToolbarStateProps): UseToolbarStateRet
   const [previousTab, setPreviousTab] = useState<ActiveTabId>();
   const [isAnimating, setIsAnimating] = useState(false);
   const [searchIsExpanded, setSearchIsExpanded] = useState(false);
+  const [reloadOnFlagChangeIsEnabled, enableReloadOnFlagChange] = useState(() => loadReloadOnFlagChange());
   const [isAutoCollapseEnabled, setAutoCollapse] = useState(() => loadToolbarAutoCollapse());
 
   // Refs
@@ -111,6 +119,14 @@ export function useToolbarState(props: UseToolbarStateProps): UseToolbarStateRet
     });
   }, []);
 
+  const handleToggleReloadOnFlagChange = useCallback(() => {
+    enableReloadOnFlagChange((prev) => {
+      const newValue = !prev;
+      saveReloadOnFlagChange(newValue);
+      return newValue;
+    });
+  }, []);
+
   const handleCircleClick = useCallback(() => {
     if (!isExpanded) {
       // Only set default tab if no tab is currently selected
@@ -158,6 +174,7 @@ export function useToolbarState(props: UseToolbarStateProps): UseToolbarStateRet
     searchIsExpanded,
     slideDirection,
     hasBeenExpanded: hasBeenExpandedRef.current,
+    reloadOnFlagChangeIsEnabled,
     isAutoCollapseEnabled,
 
     // Refs
@@ -167,6 +184,7 @@ export function useToolbarState(props: UseToolbarStateProps): UseToolbarStateRet
     handleTabChange,
     handleClose,
     handleSearch,
+    handleToggleReloadOnFlagChange,
     handleToggleAutoCollapse,
     handleCircleClick,
     setIsAnimating,
