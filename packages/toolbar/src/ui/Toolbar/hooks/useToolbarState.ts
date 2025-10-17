@@ -3,7 +3,7 @@ import { useState, useRef, useCallback, useMemo, useEffect, Dispatch, SetStateAc
 import { useSearchContext } from '../context/SearchProvider';
 import { useAnalytics } from '../context/AnalyticsProvider';
 import { TabId, ActiveTabId, TAB_ORDER } from '../types';
-import { saveToolbarPinned, loadToolbarPinned } from '../utils/localStorage';
+import { saveToolbarAutoCollapse, loadToolbarAutoCollapse } from '../utils/localStorage';
 
 export interface UseToolbarStateProps {
   defaultActiveTab: ActiveTabId;
@@ -18,7 +18,7 @@ export interface UseToolbarStateReturn {
   searchIsExpanded: boolean;
   slideDirection: number;
   hasBeenExpanded: boolean;
-  isPinned: boolean;
+  isAutoCollapseEnabled: boolean;
 
   // Refs
   toolbarRef: React.RefObject<HTMLDivElement | null>;
@@ -27,7 +27,7 @@ export interface UseToolbarStateReturn {
   handleTabChange: (tabId: string) => void;
   handleClose: () => void;
   handleSearch: (newSearchTerm: string) => void;
-  handleTogglePin: () => void;
+  handleToggleAutoCollapse: () => void;
   handleCircleClick: () => void;
   setIsAnimating: Dispatch<SetStateAction<boolean>>;
   setSearchIsExpanded: Dispatch<SetStateAction<boolean>>;
@@ -43,7 +43,7 @@ export function useToolbarState(props: UseToolbarStateProps): UseToolbarStateRet
   const [previousTab, setPreviousTab] = useState<ActiveTabId>();
   const [isAnimating, setIsAnimating] = useState(false);
   const [searchIsExpanded, setSearchIsExpanded] = useState(false);
-  const [isPinned, setIsPinned] = useState(() => loadToolbarPinned());
+  const [isAutoCollapseEnabled, setAutoCollapse] = useState(() => loadToolbarAutoCollapse());
 
   // Refs
   const hasBeenExpandedRef = useRef(false);
@@ -92,8 +92,8 @@ export function useToolbarState(props: UseToolbarStateProps): UseToolbarStateRet
     analytics.trackToolbarToggle('collapse', 'close_button');
 
     setIsExpanded(false);
-    setIsPinned(false);
-    saveToolbarPinned(false);
+    setAutoCollapse(false);
+    saveToolbarAutoCollapse(false);
   }, [analytics]);
 
   const handleSearch = useCallback(
@@ -103,10 +103,10 @@ export function useToolbarState(props: UseToolbarStateProps): UseToolbarStateRet
     [setSearchTerm],
   );
 
-  const handleTogglePin = useCallback(() => {
-    setIsPinned((prev) => {
+  const handleToggleAutoCollapse = useCallback(() => {
+    setAutoCollapse((prev) => {
       const newValue = !prev;
-      saveToolbarPinned(newValue);
+      saveToolbarAutoCollapse(newValue);
       return newValue;
     });
   }, []);
@@ -128,10 +128,15 @@ export function useToolbarState(props: UseToolbarStateProps): UseToolbarStateRet
     }
   }, [isExpanded]);
 
-  // Handle click outside to close toolbar (only when not pinned)
+  // Handle click outside to close toolbar (only when auto-collapse is enabled)
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (isExpanded && !isPinned && toolbarRef.current && !toolbarRef.current.contains(event.target as Node)) {
+      if (
+        isExpanded &&
+        isAutoCollapseEnabled &&
+        toolbarRef.current &&
+        !toolbarRef.current.contains(event.target as Node)
+      ) {
         // Track toolbar collapse from click outside
         analytics.trackToolbarToggle('collapse', 'click_outside');
         setIsExpanded(false);
@@ -142,7 +147,7 @@ export function useToolbarState(props: UseToolbarStateProps): UseToolbarStateRet
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
     };
-  }, [isExpanded, isPinned, analytics]);
+  }, [isExpanded, isAutoCollapseEnabled, analytics]);
 
   return {
     // State values
@@ -153,7 +158,7 @@ export function useToolbarState(props: UseToolbarStateProps): UseToolbarStateRet
     searchIsExpanded,
     slideDirection,
     hasBeenExpanded: hasBeenExpandedRef.current,
-    isPinned,
+    isAutoCollapseEnabled,
 
     // Refs
     toolbarRef,
@@ -162,7 +167,7 @@ export function useToolbarState(props: UseToolbarStateProps): UseToolbarStateRet
     handleTabChange,
     handleClose,
     handleSearch,
-    handleTogglePin,
+    handleToggleAutoCollapse,
     handleCircleClick,
     setIsAnimating,
     setSearchIsExpanded,

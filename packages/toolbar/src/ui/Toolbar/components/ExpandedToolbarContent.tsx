@@ -22,8 +22,8 @@ interface ExpandedToolbarContentProps {
   searchIsExpanded: boolean;
   onSearch: (searchTerm: string) => void;
   onClose: () => void;
-  onTogglePin: () => void;
-  isPinned: boolean;
+  onToggleAutoCollapse: () => void;
+  isAutoCollapseEnabled: boolean;
   onTabChange: (tabId: string) => void;
   setSearchIsExpanded: Dispatch<SetStateAction<boolean>>;
   mode: ToolbarMode;
@@ -50,8 +50,8 @@ export const ExpandedToolbarContent = React.forwardRef<HTMLDivElement, ExpandedT
     searchIsExpanded,
     onSearch,
     onClose,
-    onTogglePin,
-    isPinned,
+    onToggleAutoCollapse,
+    isAutoCollapseEnabled,
     onTabChange,
     setSearchIsExpanded,
     mode,
@@ -72,7 +72,7 @@ export const ExpandedToolbarContent = React.forwardRef<HTMLDivElement, ExpandedT
   const shouldShowError = error && mode === 'dev-server' && state.connectionStatus === 'error';
 
   return (
-    <FocusScope>
+    <FocusScope restoreFocus>
       <motion.div
         ref={ref}
         key="toolbar-content"
@@ -175,8 +175,8 @@ export const ExpandedToolbarContent = React.forwardRef<HTMLDivElement, ExpandedT
                     mode={mode}
                     flagOverridePlugin={flagOverridePlugin}
                     eventInterceptionPlugin={eventInterceptionPlugin}
-                    isPinned={isPinned}
-                    onTogglePin={onTogglePin}
+                    isAutoCollapseEnabled={isAutoCollapseEnabled}
+                    onToggleAutoCollapse={onToggleAutoCollapse}
                   />
                 )}
               </AnimatePresence>
