@@ -4,7 +4,7 @@ import { useSearchContext } from '../context/SearchProvider';
 import { useAnalytics } from '../context/AnalyticsProvider';
 import { TabId, ActiveTabId, TAB_ORDER } from '../types';
 import {
-  saveToolbarAutoCollapse, 
+  saveToolbarAutoCollapse,
   loadToolbarAutoCollapse,
   loadReloadOnFlagChange,
   saveReloadOnFlagChange,

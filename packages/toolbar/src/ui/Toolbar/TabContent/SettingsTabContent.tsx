@@ -217,7 +217,8 @@ interface SettingsTabContentProps {
 }
 
 export function SettingsTabContent(props: SettingsTabContentProps) {
-  const { mode, reloadOnFlagChangeIsEnabled, onToggleReloadOnFlagChange, isAutoCollapseEnabled, onToggleAutoCollapse } = props;
+  const { mode, reloadOnFlagChangeIsEnabled, onToggleReloadOnFlagChange, isAutoCollapseEnabled, onToggleAutoCollapse } =
+    props;
   const { state, switchProject } = useDevServerContext();
   const { position, handlePositionChange } = useToolbarUIContext();
   const { searchTerm } = useSearchContext();
