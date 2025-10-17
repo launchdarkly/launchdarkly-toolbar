@@ -14,10 +14,10 @@ interface TabContentRendererProps {
   mode: ToolbarMode;
   flagOverridePlugin?: IFlagOverridePlugin;
   eventInterceptionPlugin?: IEventInterceptionPlugin;
-  isPinned: boolean;
   reloadOnFlagChangeIsEnabled: boolean;
-  onTogglePin: () => void;
   onToggleReloadOnFlagChange: () => void;
+  isAutoCollapseEnabled: boolean;
+  onToggleAutoCollapse: () => void;
 }
 
 export function TabContentRenderer(props: TabContentRendererProps) {
@@ -28,10 +28,10 @@ export function TabContentRenderer(props: TabContentRendererProps) {
     flagOverridePlugin,
     eventInterceptionPlugin,
     baseUrl,
-    isPinned,
     reloadOnFlagChangeIsEnabled,
-    onTogglePin,
     onToggleReloadOnFlagChange,
+    isAutoCollapseEnabled,
+    onToggleAutoCollapse,
   } = props;
 
   const renderContent = () => {
@@ -51,10 +51,10 @@ export function TabContentRenderer(props: TabContentRendererProps) {
         return (
           <SettingsTabContent
             mode={mode}
-            isPinned={isPinned}
-            onTogglePin={onTogglePin}
             reloadOnFlagChangeIsEnabled={reloadOnFlagChangeIsEnabled}
             onToggleReloadOnFlagChange={onToggleReloadOnFlagChange}
+            isAutoCollapseEnabled={isAutoCollapseEnabled}
+            onToggleAutoCollapse={onToggleAutoCollapse}
           />
         );
       default:

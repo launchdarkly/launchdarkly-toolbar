@@ -39,11 +39,11 @@ export function LdToolbar(props: LdToolbarProps) {
     handleTabChange,
     handleClose,
     handleSearch,
-    handleTogglePin,
     handleToggleReloadOnFlagChange,
     handleCircleClick,
-    isPinned,
     reloadOnFlagChangeIsEnabled,
+    handleToggleAutoCollapse,
+    isAutoCollapseEnabled,
     setSearchIsExpanded,
     setIsAnimating,
   } = toolbarState;
@@ -159,8 +159,8 @@ export function LdToolbar(props: LdToolbarProps) {
             searchIsExpanded={searchIsExpanded}
             onSearch={handleSearch}
             onClose={handleClose}
-            onTogglePin={handleTogglePin}
-            isPinned={isPinned}
+            onToggleAutoCollapse={handleToggleAutoCollapse}
+            isAutoCollapseEnabled={isAutoCollapseEnabled}
             onTabChange={handleTabChange}
             setSearchIsExpanded={setSearchIsExpanded}
             flagOverridePlugin={flagOverridePlugin}

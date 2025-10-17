@@ -1,6 +1,6 @@
 {
   "name": "@launchdarkly/toolbar",
-  "version": "0.24.0-beta.1",
+  "version": "0.25.0",
   "description": "A React component that provides a developer-friendly toolbar for interacting with LaunchDarkly during development",
   "keywords": [
     "launchdarkly",
@@ -74,9 +74,9 @@
     "@vitest/coverage-v8": "3.2.4",
     "jsdom": "^27.0.0",
     "launchdarkly-js-client-sdk": "^3.9.0",
-    "oxlint": "^1.0.0",
+    "oxlint": "^1.23.0",
     "react": "^19.1.1",
-    "storybook": "^9.0.5",
+    "storybook": "^9.1.12",
     "storybook-addon-rslib": "^2.0.0",
     "storybook-react-rsbuild": "^2.0.0",
     "typescript": "^5.8.3",
@@ -101,7 +101,7 @@
     "@vanilla-extract/webpack-plugin": "^2.3.22",
     "class-variance-authority": "^0.7.1",
     "motion": "^12.23.24",
-    "react-aria": "3.43.2",
+    "react-aria": "3.44.0",
     "react-aria-components": "1.13.0",
     "react-hook-form": "7.59.0",
     "react-router": "7.9.4"

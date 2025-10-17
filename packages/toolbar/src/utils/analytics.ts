@@ -6,7 +6,7 @@ export const ANALYTICS_EVENT_PREFIX = 'ld.toolbar';
 const EVENTS = {
   INITIALIZED: 'initialized',
   POSITION_CHANGED: 'position.changed',
-  PIN_TOGGLED: 'pin.toggled',
+  AUTO_COLLAPSE_TOGGLED: 'auto.collapse.toggled',
   TAB_CHANGED: 'tab.changed',
   SEARCH: 'search',
   TOGGLE: 'toggle',
@@ -70,10 +70,10 @@ export class ToolbarAnalytics {
   }
 
   /**
-   * Track toolbar pin/unpin actions
+   * Track toolbar auto-collapse toggle
    */
-  trackPinToggle(action: 'pin' | 'unpin'): void {
-    this.track(EVENTS.PIN_TOGGLED, {
+  trackAutoCollapseToggle(action: 'enable' | 'disable'): void {
+    this.track(EVENTS.AUTO_COLLAPSE_TOGGLED, {
       action,
     });
   }
@@ -107,7 +107,10 @@ export class ToolbarAnalytics {
   /**
    * Track toolbar expand/collapse events
    */
-  trackToolbarToggle(action: 'expand' | 'collapse', trigger: 'close_button' | 'click_outside' | 'tab_toggle'): void {
+  trackToolbarToggle(
+    action: 'expand' | 'collapse',
+    trigger: 'close_button' | 'click_outside' | 'tab_toggle' | 'focus_lost',
+  ): void {
     this.track(EVENTS.TOGGLE, {
       action,
       trigger,

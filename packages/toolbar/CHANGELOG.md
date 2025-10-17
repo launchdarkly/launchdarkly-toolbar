@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.25.0](https://github.com/launchdarkly/launchdarkly-toolbar/compare/0.24.0-beta.1...0.25.0-beta.1) (2025-10-15)
+
+
+### Features
+
+* [REL-10137] add IconLinkButton and use that for linking to create missing flag ([#186](https://github.com/launchdarkly/launchdarkly-toolbar/issues/186)) ([398c8eb](https://github.com/launchdarkly/launchdarkly-toolbar/commit/398c8eb432c166bf5f5fe9addaea7eb979e73779))
+
 ## [0.24.0-beta.1](https://github.com/launchdarkly/launchdarkly-toolbar/compare/0.23.1-beta.1...0.24.0-beta.1) (2025-10-06)
 
 
