@@ -14,8 +14,10 @@ interface TabContentRendererProps {
   mode: ToolbarMode;
   flagOverridePlugin?: IFlagOverridePlugin;
   eventInterceptionPlugin?: IEventInterceptionPlugin;
-  isPinned: boolean;
-  onTogglePin: () => void;
+  reloadOnFlagChangeIsEnabled: boolean;
+  onToggleReloadOnFlagChange: () => void;
+  isAutoCollapseEnabled: boolean;
+  onToggleAutoCollapse: () => void;
 }
 
 export function TabContentRenderer(props: TabContentRendererProps) {
@@ -26,20 +28,35 @@ export function TabContentRenderer(props: TabContentRendererProps) {
     flagOverridePlugin,
     eventInterceptionPlugin,
     baseUrl,
-    isPinned,
-    onTogglePin,
+    reloadOnFlagChangeIsEnabled,
+    onToggleReloadOnFlagChange,
+    isAutoCollapseEnabled,
+    onToggleAutoCollapse,
   } = props;
 
   const renderContent = () => {
     switch (activeTab) {
       case 'flag-sdk':
-        return <FlagSdkOverrideTabContent flagOverridePlugin={flagOverridePlugin} />;
+        return (
+          <FlagSdkOverrideTabContent
+            flagOverridePlugin={flagOverridePlugin}
+            reloadOnFlagChangeIsEnabled={reloadOnFlagChangeIsEnabled}
+          />
+        );
       case 'flag-dev-server':
-        return <FlagDevServerTabContent />;
+        return <FlagDevServerTabContent reloadOnFlagChangeIsEnabled={reloadOnFlagChangeIsEnabled} />;
       case 'events':
         return <EventsTabContent baseUrl={baseUrl} eventInterceptionPlugin={eventInterceptionPlugin} />;
       case 'settings':
-        return <SettingsTabContent mode={mode} isPinned={isPinned} onTogglePin={onTogglePin} />;
+        return (
+          <SettingsTabContent
+            mode={mode}
+            reloadOnFlagChangeIsEnabled={reloadOnFlagChangeIsEnabled}
+            onToggleReloadOnFlagChange={onToggleReloadOnFlagChange}
+            isAutoCollapseEnabled={isAutoCollapseEnabled}
+            onToggleAutoCollapse={onToggleAutoCollapse}
+          />
+        );
       default:
         return null;
     }

@@ -3,8 +3,13 @@ import { useState, useRef, useCallback, useMemo, useEffect, Dispatch, SetStateAc
 import { useSearchContext } from '../context/SearchProvider';
 import { useAnalytics } from '../context/AnalyticsProvider';
 import { TabId, ActiveTabId, TAB_ORDER } from '../types';
-import { saveToolbarPinned, loadToolbarPinned } from '../utils/localStorage';
 import ShadowRootContext from '../../../context/ShadowRootContext';
+import {
+  saveToolbarAutoCollapse,
+  loadToolbarAutoCollapse,
+  loadReloadOnFlagChange,
+  saveReloadOnFlagChange,
+} from '../utils/localStorage';
 
 export interface UseToolbarStateProps {
   defaultActiveTab: ActiveTabId;
@@ -20,7 +25,8 @@ export interface UseToolbarStateReturn {
   searchIsExpanded: boolean;
   slideDirection: number;
   hasBeenExpanded: boolean;
-  isPinned: boolean;
+  reloadOnFlagChangeIsEnabled: boolean;
+  isAutoCollapseEnabled: boolean;
 
   // Refs
   toolbarRef: React.RefObject<HTMLDivElement | null>;
@@ -29,7 +35,8 @@ export interface UseToolbarStateReturn {
   handleTabChange: (tabId: string) => void;
   handleClose: () => void;
   handleSearch: (newSearchTerm: string) => void;
-  handleTogglePin: () => void;
+  handleToggleReloadOnFlagChange: () => void;
+  handleToggleAutoCollapse: () => void;
   handleCircleClick: () => void;
   setIsAnimating: Dispatch<SetStateAction<boolean>>;
   setSearchIsExpanded: Dispatch<SetStateAction<boolean>>;
@@ -46,7 +53,8 @@ export function useToolbarState(props: UseToolbarStateProps): UseToolbarStateRet
   const [previousTab, setPreviousTab] = useState<ActiveTabId>();
   const [isAnimating, setIsAnimating] = useState(false);
   const [searchIsExpanded, setSearchIsExpanded] = useState(false);
-  const [isPinned, setIsPinned] = useState(() => loadToolbarPinned());
+  const [reloadOnFlagChangeIsEnabled, enableReloadOnFlagChange] = useState(() => loadReloadOnFlagChange());
+  const [isAutoCollapseEnabled, setAutoCollapse] = useState(() => loadToolbarAutoCollapse());
 
   // Refs
   const hasBeenExpandedRef = useRef(false);
@@ -95,8 +103,8 @@ export function useToolbarState(props: UseToolbarStateProps): UseToolbarStateRet
     analytics.trackToolbarToggle('collapse', 'close_button');
 
     setIsExpanded(false);
-    setIsPinned(false);
-    saveToolbarPinned(false);
+    setAutoCollapse(false);
+    saveToolbarAutoCollapse(false);
   }, [analytics]);
 
   const handleSearch = useCallback(
@@ -106,10 +114,18 @@ export function useToolbarState(props: UseToolbarStateProps): UseToolbarStateRet
     [setSearchTerm],
   );
 
-  const handleTogglePin = useCallback(() => {
-    setIsPinned((prev) => {
+  const handleToggleAutoCollapse = useCallback(() => {
+    setAutoCollapse((prev) => {
       const newValue = !prev;
-      saveToolbarPinned(newValue);
+      saveToolbarAutoCollapse(newValue);
+      return newValue;
+    });
+  }, []);
+
+  const handleToggleReloadOnFlagChange = useCallback(() => {
+    enableReloadOnFlagChange((prev) => {
+      const newValue = !prev;
+      saveReloadOnFlagChange(newValue);
       return newValue;
     });
   }, []);
@@ -131,27 +147,29 @@ export function useToolbarState(props: UseToolbarStateProps): UseToolbarStateRet
     }
   }, [isExpanded]);
 
-  // Handle click outside to close toolbar (only when not pinned)
+  // Handle click outside to close toolbar (only when auto-collapse is enabled)
   useEffect(() => {
-    const handleClickOutside = (event: Event) => {
-      // Toolbar clicks will all register at the root of the Shadow DOM,
-      // so check to make sure that's the target. If not, the user clicked
-      // outside
+    const handleClickOutside = (event: MouseEvent) => {
       const node = event.target as HTMLElement;
-      if (isExpanded && !isPinned && node.id !== domId) {
+      if (
+        isExpanded &&
+        isAutoCollapseEnabled &&
+        toolbarRef.current &&
+        node.id !== domId 
+      ) {
         // Track toolbar collapse from click outside
         analytics.trackToolbarToggle('collapse', 'click_outside');
         setIsExpanded(false);
       }
     };
 
-    shadowRoot.addEventListener('mousedown', handleClickOutside);
+    // shadowRoot.addEventListener('mousedown', handleClickOutside);
     document.addEventListener('mousedown', handleClickOutside);
     return () => {
-      shadowRoot.removeEventListener('mousedown', handleClickOutside);
+      // shadowRoot.removeEventListener('mousedown', handleClickOutside);
       document.removeEventListener('mousedown', handleClickOutside);
     };
-  }, [isExpanded, isPinned, analytics, shadowRoot, domId]);
+  }, [isExpanded, isAutoCollapseEnabled, analytics, domId]);
 
   return {
     // State values
@@ -162,7 +180,8 @@ export function useToolbarState(props: UseToolbarStateProps): UseToolbarStateRet
     searchIsExpanded,
     slideDirection,
     hasBeenExpanded: hasBeenExpandedRef.current,
-    isPinned,
+    reloadOnFlagChangeIsEnabled,
+    isAutoCollapseEnabled,
 
     // Refs
     toolbarRef,
@@ -171,7 +190,8 @@ export function useToolbarState(props: UseToolbarStateProps): UseToolbarStateRet
     handleTabChange,
     handleClose,
     handleSearch,
-    handleTogglePin,
+    handleToggleReloadOnFlagChange,
+    handleToggleAutoCollapse,
     handleCircleClick,
     setIsAnimating,
     setSearchIsExpanded,

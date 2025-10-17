@@ -15,12 +15,14 @@ import * as popoverStyles from '../components/Popover.css';
 
 interface SettingsItem {
   id: string;
+  description?: string;
   name: string;
   icon: string;
   isProjectSelector?: boolean;
   isPositionSelector?: boolean;
   isConnectionStatus?: boolean;
-  isPinToggle?: boolean;
+  isReloadOnFlagChangeToggle?: boolean;
+  isAutoCollapseToggle?: boolean;
   value?: string;
 }
 
@@ -130,28 +132,56 @@ interface ConnectionStatusDisplayProps {
   status: 'connected' | 'disconnected' | 'error';
 }
 
-interface PinToggleProps {
-  isPinned: boolean;
-  onTogglePin: () => void;
+interface AutoCollapseToggleProps {
+  isAutoCollapseEnabled: boolean;
+  onToggleAutoCollapse: () => void;
 }
 
-function PinToggle(props: PinToggleProps) {
-  const { isPinned, onTogglePin } = props;
+function AutoCollapseToggle(props: AutoCollapseToggleProps) {
+  const { isAutoCollapseEnabled, onToggleAutoCollapse } = props;
   const analytics = useAnalytics();
 
   const handleToggle = (isSelected: boolean) => {
-    // Track pin/unpin action
-    analytics.trackPinToggle(isSelected ? 'pin' : 'unpin');
-    onTogglePin();
+    // Track auto-collapse toggle action
+    analytics.trackAutoCollapseToggle(isSelected ? 'enable' : 'disable');
+    onToggleAutoCollapse();
   };
 
   return (
     <Switch
+      data-testid="auto-collapse-toggle"
       className={styles.switch_}
       data-theme="dark"
-      isSelected={isPinned}
+      isSelected={isAutoCollapseEnabled}
       onChange={handleToggle}
-      aria-label="Pin toolbar"
+      aria-label="Auto-collapse toolbar"
+    />
+  );
+}
+
+interface ReloadOnFlagChangeToggleProps {
+  reloadOnFlagChangeIsEnabled: boolean;
+  onToggleReloadOnFlagChange: () => void;
+}
+
+function ReloadOnFlagChangeToggle(props: ReloadOnFlagChangeToggleProps) {
+  const { reloadOnFlagChangeIsEnabled, onToggleReloadOnFlagChange } = props;
+  const analytics = useAnalytics();
+
+  const handleToggle = (isSelected: boolean) => {
+    // Track reload on flag change toggle
+    analytics.trackReloadOnFlagChangeToggle(isSelected);
+    onToggleReloadOnFlagChange();
+  };
+
+  return (
+    <Switch
+      data-testid="reload-on-flag-change-toggle"
+      className={styles.switch_}
+      data-theme="dark"
+      isSelected={reloadOnFlagChangeIsEnabled}
+      onChange={handleToggle}
+      aria-label="Reload on flag change"
     />
   );
 }
@@ -180,12 +210,15 @@ function ConnectionStatusDisplay(props: ConnectionStatusDisplayProps) {
 
 interface SettingsTabContentProps {
   mode: ToolbarMode;
-  isPinned: boolean;
-  onTogglePin: () => void;
+  reloadOnFlagChangeIsEnabled: boolean;
+  onToggleReloadOnFlagChange: () => void;
+  isAutoCollapseEnabled: boolean;
+  onToggleAutoCollapse: () => void;
 }
 
 export function SettingsTabContent(props: SettingsTabContentProps) {
-  const { mode, isPinned, onTogglePin } = props;
+  const { mode, reloadOnFlagChangeIsEnabled, onToggleReloadOnFlagChange, isAutoCollapseEnabled, onToggleAutoCollapse } =
+    props;
   const { state, switchProject } = useDevServerContext();
   const { position, handlePositionChange } = useToolbarUIContext();
   const { searchTerm } = useSearchContext();
@@ -242,10 +275,17 @@ export function SettingsTabContent(props: SettingsTabContentProps) {
               isPositionSelector: true,
             },
             {
-              id: 'pin',
-              name: 'Pin toolbar',
+              id: 'auto-collapse',
+              name: 'Auto-collapse',
+              description: 'Automatically collapses the toolbar when clicking outside.',
               icon: '',
-              isPinToggle: true,
+              isAutoCollapseToggle: true,
+            },
+            {
+              id: 'reload-on-flag-change',
+              name: 'Reload on flag change',
+              icon: 'refresh',
+              isReloadOnFlagChangeToggle: true,
             },
           ],
         },
@@ -263,10 +303,17 @@ export function SettingsTabContent(props: SettingsTabContentProps) {
               isPositionSelector: true,
             },
             {
-              id: 'pin',
-              name: 'Pin toolbar',
+              id: 'auto-collapse',
+              name: 'Auto-collapse',
+              description: 'Automatically collapses the toolbar when clicking outside.',
               icon: '',
-              isPinToggle: true,
+              isAutoCollapseToggle: true,
+            },
+            {
+              id: 'reload-on-flag-change',
+              name: 'Reload on flag change',
+              icon: 'refresh',
+              isReloadOnFlagChangeToggle: true,
             },
           ],
         },
@@ -331,6 +378,7 @@ export function SettingsTabContent(props: SettingsTabContentProps) {
                       <div className={styles.settingInfo}>
                         <div className={styles.settingDetails}>
                           <span className={styles.settingName}>{item.name}</span>
+                          {item.description && <span className={styles.settingDescription}>{item.description}</span>}
                         </div>
                         {item.isProjectSelector ? (
                           <ProjectSelector
@@ -341,8 +389,16 @@ export function SettingsTabContent(props: SettingsTabContentProps) {
                           />
                         ) : item.isPositionSelector ? (
                           <PositionSelector currentPosition={position} onPositionChange={handlePositionSelect} />
-                        ) : item.isPinToggle ? (
-                          <PinToggle isPinned={isPinned} onTogglePin={onTogglePin} />
+                        ) : item.isAutoCollapseToggle ? (
+                          <AutoCollapseToggle
+                            isAutoCollapseEnabled={isAutoCollapseEnabled}
+                            onToggleAutoCollapse={onToggleAutoCollapse}
+                          />
+                        ) : item.isReloadOnFlagChangeToggle ? (
+                          <ReloadOnFlagChangeToggle
+                            reloadOnFlagChangeIsEnabled={reloadOnFlagChangeIsEnabled}
+                            onToggleReloadOnFlagChange={onToggleReloadOnFlagChange}
+                          />
                         ) : (
                           <span className={styles.settingValue}>{item.value}</span>
                         )}

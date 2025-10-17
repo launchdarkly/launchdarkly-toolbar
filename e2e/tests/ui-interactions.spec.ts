@@ -40,7 +40,7 @@ test.describe('LaunchDarkly Toolbar - UI Interactions', () => {
 
       await page.getByRole('tab', { name: 'Settings' }).click();
       await expect(page.getByRole('tab', { name: 'Settings' })).toHaveAttribute('aria-selected', 'true');
-      await expect(page.getByLabel('Pin toolbar')).toBeVisible();
+      await expect(page.getByLabel('Auto-collapse toolbar')).toBeVisible();
 
       // 4. Test search functionality
       await page.getByRole('button', { name: /search/i }).click();
@@ -73,9 +73,10 @@ test.describe('LaunchDarkly Toolbar - UI Interactions', () => {
       await expect(page.getByRole('tab', { name: 'Settings' })).not.toBeVisible();
       await expect(page.getByRole('img', { name: 'LaunchDarkly' })).toBeVisible();
 
-      // Method 2: Click outside (should work when unpinned)
+      // Method 2: Click outside (should work when auto-collapse is enabled)
       await page.getByRole('img', { name: 'LaunchDarkly' }).click();
       await expect(page.getByRole('tab', { name: 'Flags' })).toBeVisible();
+      await page.getByTestId('auto-collapse-toggle').click();
       await page.mouse.click(50, 50);
       await expect(page.getByRole('tab', { name: 'Flags' })).not.toBeVisible();
       await expect(page.getByRole('tab', { name: 'Events' })).not.toBeVisible();
@@ -85,6 +86,22 @@ test.describe('LaunchDarkly Toolbar - UI Interactions', () => {
       await page.getByRole('img', { name: 'LaunchDarkly' }).focus();
       await page.keyboard.press('Enter');
       await expect(page.getByRole('tab', { name: 'Flags' })).toBeVisible();
+    });
+
+    test('should not collapse when auto-collapse is disabled', async ({ page }: { page: Page }) => {
+      // 1. Expand toolbar and navigate to Settings
+      await page.getByRole('img', { name: 'LaunchDarkly' }).click();
+      await page.getByRole('tab', { name: 'Settings' }).click();
+
+      // 2. Verify Settings tab content is visible
+      await expect(page.getByLabel('Auto-collapse toolbar')).toBeVisible();
+      await expect(page.getByRole('tab', { name: 'Settings' })).toHaveAttribute('aria-selected', 'true');
+      const autoCollapseToggle = page.getByTestId('auto-collapse-toggle');
+      await expect(autoCollapseToggle.getByRole('switch')).not.toBeChecked();
+
+      // 3. Click outside should not collapse toolbar
+      await page.mouse.click(50, 50);
+      await expect(page.getByRole('tab', { name: 'Settings' })).toBeVisible();
     });
 
     test('should support basic keyboard accessibility and focus management', async ({ page }: { page: Page }) => {
@@ -105,7 +122,7 @@ test.describe('LaunchDarkly Toolbar - UI Interactions', () => {
       await page.getByRole('tab', { name: 'Settings' }).focus();
       await page.getByRole('tab', { name: 'Settings' }).click();
       await expect(page.getByRole('tab', { name: 'Settings' })).toHaveAttribute('aria-selected', 'true');
-      await expect(page.getByLabel('Pin toolbar')).toBeVisible();
+      await expect(page.getByLabel('Auto-collapse toolbar')).toBeVisible();
 
       // 4. Test close button can be focused and activated
       const closeButton = page.getByRole('button', { name: 'Close toolbar' });
@@ -135,10 +152,11 @@ test.describe('LaunchDarkly Toolbar - UI Interactions', () => {
       await page.getByRole('tab', { name: 'Settings' }).click();
 
       // 2. Verify Settings tab content is visible
-      await expect(page.getByLabel('Pin toolbar')).toBeVisible();
+      await expect(page.getByLabel('Auto-collapse toolbar')).toBeVisible();
       await expect(page.getByRole('tab', { name: 'Settings' })).toHaveAttribute('aria-selected', 'true');
+      await page.getByTestId('auto-collapse-toggle').click();
 
-      // 3. Test unpinned behavior - click outside should close
+      // 3. Test auto-collapse behavior - click outside should close
       await page.mouse.click(50, 50);
       await expect(page.getByRole('tab', { name: 'Flags' })).not.toBeVisible();
       await expect(page.getByRole('tab', { name: 'Events' })).not.toBeVisible();
@@ -147,12 +165,45 @@ test.describe('LaunchDarkly Toolbar - UI Interactions', () => {
       // 4. Expand again and verify Settings tab functionality persists
       await page.getByRole('img', { name: 'LaunchDarkly' }).click();
       await expect(page.getByRole('tab', { name: 'Settings' })).toHaveAttribute('aria-selected', 'true');
-      await expect(page.getByLabel('Pin toolbar')).toBeVisible();
+      await expect(page.getByLabel('Auto-collapse toolbar')).toBeVisible();
 
       // 5. Verify all tabs are present and accessible
       await expect(page.getByRole('tab', { name: 'Flags' })).toBeVisible();
       await expect(page.getByRole('tab', { name: 'Events' })).toBeVisible();
       await expect(page.getByRole('tab', { name: 'Settings' })).toBeVisible();
+    });
+
+    test('should reload when flag is changed and reload on flag change is enabled', async ({
+      page,
+    }: {
+      page: Page;
+    }) => {
+      // 1. Expand toolbar and navigate to Settings
+      await page.getByRole('img', { name: 'LaunchDarkly' }).click();
+      await page.getByRole('tab', { name: 'Settings' }).click();
+
+      // 2. Verify Settings tab content is visible
+      await expect(page.getByLabel('Reload on flag change')).toBeVisible();
+
+      // 3. Verify Reload on Flag Change toggle functionality
+      await page.getByTestId('reload-on-flag-change-toggle').click();
+
+      // 4. Navigate to Flags tab and verify reload on flag change functionality
+      await page.getByRole('tab', { name: 'Flags' }).click();
+      let booleanFlagControl = page.getByTestId('flag-control-boolean-flag');
+      await booleanFlagControl.click();
+
+      // 5. Verify toolbar reloads
+      await page.waitForLoadState('networkidle');
+      expect(page.getByRole('img', { name: 'LaunchDarkly' })).toBeVisible();
+
+      await page.getByRole('img', { name: 'LaunchDarkly' }).click();
+      await page.getByRole('tab', { name: 'Flags' }).click();
+
+      // 6. Verify boolean flag switch is checked
+      booleanFlagControl = page.getByTestId('flag-control-boolean-flag');
+      const input = booleanFlagControl.getByLabel('Toggle Boolean Flag');
+      await expect(input).toBeChecked();
     });
   });
 

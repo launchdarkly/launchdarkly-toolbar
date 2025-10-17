@@ -180,7 +180,11 @@ describe('LaunchDarklyToolbar - User Flows', () => {
     // Verify settings tab is now selected
     expect(screen.getByRole('tab', { name: /settings/i })).toHaveAttribute('aria-selected', 'true');
 
-    // AND: They collapse the toolbar by clicking outside (if not pinned)
+    // AND: They enable auto-collapse
+    const autoCollapseToggle = screen.getByTestId('auto-collapse-toggle');
+    fireEvent.click(autoCollapseToggle);
+
+    // AND: They collapse the toolbar by clicking outside (if auto-collapse is enabled)
     fireEvent.mouseDown(document.body);
 
     // Wait for collapse (settings tab removed)

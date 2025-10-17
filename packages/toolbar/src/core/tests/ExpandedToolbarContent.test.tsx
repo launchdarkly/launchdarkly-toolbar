@@ -90,8 +90,10 @@ describe('ExpandedToolbarContent - User Interaction Flows', () => {
     searchIsExpanded: false,
     onSearch: vi.fn(),
     onClose: vi.fn(),
-    onTogglePin: vi.fn(),
-    isPinned: false,
+    reloadOnFlagChangeIsEnabled: false,
+    onToggleReloadOnFlagChange: vi.fn(),
+    onToggleAutoCollapse: vi.fn(),
+    isAutoCollapseEnabled: false,
     onTabChange: vi.fn(),
     setSearchIsExpanded: vi.fn(),
     defaultActiveTab: 'settings' as const,
@@ -134,7 +136,12 @@ describe('ExpandedToolbarContent - User Interaction Flows', () => {
       // GIVEN: Developer has expanded the toolbar in dev server mode with event plugin
       render(
         <TestWrapper devServerUrl="http://localhost:8765">
-          <ExpandedToolbarContent baseUrl="http://localhost:3002" {...defaultProps} mode="dev-server" />
+          <ExpandedToolbarContent
+            baseUrl="http://localhost:3002"
+            {...defaultProps}
+            mode="dev-server"
+            reloadOnFlagChangeIsEnabled={false}
+          />
         </TestWrapper>,
       );
 

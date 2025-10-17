@@ -8,12 +8,14 @@ export const TOOLBAR_STORAGE_KEYS = {
 
 export interface ToolbarSettings {
   position: ToolbarPosition;
-  pinned: boolean;
+  reloadOnFlagChange: boolean;
+  autoCollapse: boolean;
 }
 
 export const DEFAULT_SETTINGS: ToolbarSettings = {
   position: 'bottom-right',
-  pinned: false,
+  reloadOnFlagChange: false,
+  autoCollapse: false,
 };
 
 /**
@@ -58,21 +60,42 @@ export function loadToolbarPosition(): ToolbarPosition | null {
   }
 }
 
-export function saveToolbarPinned(isPinned: boolean): void {
-  updateSetting('pinned', isPinned);
+export function saveToolbarAutoCollapse(autoCollapse: boolean): void {
+  updateSetting('autoCollapse', autoCollapse);
 }
 
-export function loadToolbarPinned(): boolean {
+export function loadToolbarAutoCollapse(): boolean {
   try {
     const stored = localStorage.getItem(TOOLBAR_STORAGE_KEYS.SETTINGS);
     if (!stored) {
-      return DEFAULT_SETTINGS.pinned;
+      return DEFAULT_SETTINGS.autoCollapse;
     }
 
     const parsed = JSON.parse(stored) as Partial<ToolbarSettings>;
-    return typeof parsed.pinned === 'boolean' ? parsed.pinned : DEFAULT_SETTINGS.pinned;
+    return typeof parsed.autoCollapse === 'boolean' ? parsed.autoCollapse : DEFAULT_SETTINGS.autoCollapse;
   } catch (error) {
-    console.warn('Failed to load toolbar pinned state from localStorage:', error);
+    console.warn('Failed to load toolbar auto-collapse state from localStorage:', error);
     return false;
+  }
+}
+
+export function saveReloadOnFlagChange(isReloadOnFlagChange: boolean): void {
+  updateSetting('reloadOnFlagChange', isReloadOnFlagChange);
+}
+
+export function loadReloadOnFlagChange(): boolean {
+  try {
+    const stored = localStorage.getItem(TOOLBAR_STORAGE_KEYS.SETTINGS);
+    if (!stored) {
+      return DEFAULT_SETTINGS.reloadOnFlagChange;
+    }
+
+    const parsed = JSON.parse(stored) as Partial<ToolbarSettings>;
+    return typeof parsed.reloadOnFlagChange === 'boolean'
+      ? parsed.reloadOnFlagChange
+      : DEFAULT_SETTINGS.reloadOnFlagChange;
+  } catch (error) {
+    console.warn('Failed to load reload on flag change from localStorage:', error);
+    return DEFAULT_SETTINGS.reloadOnFlagChange;
   }
 }
