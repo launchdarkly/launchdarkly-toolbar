@@ -9,10 +9,14 @@ export function CancelCircleIcon({ className }: IconProps) {
     <svg
       className={`${styles.icon} ${className}`}
       fill="currentColor"
-      viewBox="0 0 24 24"
+      viewBox="0 0 20 20"
       xmlns="http://www.w3.org/2000/svg"
     >
-      <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm5 13.59L15.59 17 12 13.41 8.41 17 7 15.59 10.59 12 7 8.41 8.41 7 12 10.59 15.59 7 17 8.41 13.41 12 17 15.59z" />
+      <path
+        fillRule="evenodd"
+        d="M10 1.75a8.25 8.25 0 1 0 0 16.5 8.25 8.25 0 0 0 0-16.5M6.97 6.97a.75.75 0 0 1 1.06 0L10 8.94l1.97-1.97a.75.75 0 1 1 1.06 1.06L11.062 10l1.97 1.97a.75.75 0 0 1-1.06 1.06L10 11.06l-1.97 1.97a.75.75 0 1 1-1.06-1.06L8.94 10 6.97 8.03a.75.75 0 0 1 0-1.06"
+        clipRule="evenodd"
+      />
     </svg>
   );
 }
