@@ -194,7 +194,7 @@ test.describe('LaunchDarkly Toolbar - UI Interactions', () => {
       await booleanFlagControl.click();
 
       // 5. Verify toolbar reloads
-      await page.waitForLoadState('networkidle');
+      await page.waitForLoadState('load');
       expect(page.getByRole('img', { name: 'LaunchDarkly' })).toBeVisible();
 
       await page.getByRole('img', { name: 'LaunchDarkly' }).click();
