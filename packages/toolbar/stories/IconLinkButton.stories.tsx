@@ -1,7 +1,7 @@
 import React from 'react';
 import type { Meta, StoryObj } from '@storybook/react';
-import { IconLinkButton } from '../src/ui/Toolbar/components/IconLinkButton';
-import { GearIcon, EditIcon, SearchIcon } from '../src/ui/Toolbar/components/icons';
+import { IconLinkButton } from '../src/core/ui/Toolbar/components/IconLinkButton';
+import { GearIcon, EditIcon, SearchIcon } from '../src/core/ui/Toolbar/components/icons';
 
 const meta: Meta<typeof IconLinkButton> = {
   title: 'UI/Toolbar/IconLinkButton',

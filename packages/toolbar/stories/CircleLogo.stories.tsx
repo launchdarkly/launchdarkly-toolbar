@@ -1,6 +1,6 @@
 import React from 'react';
 import type { Meta, StoryObj } from '@storybook/react';
-import { CircleLogo } from '../src/ui/Toolbar/components/CircleLogo';
+import { CircleLogo } from '../src/core/ui/Toolbar/components/CircleLogo';
 
 const meta: Meta<typeof CircleLogo> = {
   title: 'UI/Toolbar/CircleLogo',

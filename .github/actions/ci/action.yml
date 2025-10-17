@@ -86,6 +86,11 @@ runs:
       shell: bash
       id: playwright
       run: pnpm test:e2e:ci
+      env:
+        VITE_LD_CLIENT_SIDE_ID: 68e6a6a8d57c6b098d135c94
+        VITE_LD_BASE_URL: https://app.launchdarkly.com
+        VITE_LD_STREAM_URL: https://clientstream.launchdarkly.com
+        VITE_LD_EVENTS_URL: https://events.launchdarkly.com
 
     - name: Upload Playwright Artifacts
       uses: actions/upload-artifact@b4b15b8c7c6ac21ea08fcf65892d2ee8f75cf882 # v4.4.3

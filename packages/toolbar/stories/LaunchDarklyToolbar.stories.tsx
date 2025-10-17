@@ -1,8 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react';
 
-import { LaunchDarklyToolbar } from '../src/ui/Toolbar/LaunchDarklyToolbar';
-import { FlagOverridePlugin } from '../src/plugins/FlagOverridePlugin';
-import { EventInterceptionPlugin } from '../src/plugins/EventInterceptionPlugin';
+import { LaunchDarklyToolbar } from '../src/core/ui/Toolbar/LaunchDarklyToolbar';
+import { FlagOverridePlugin, EventInterceptionPlugin } from '../src/types';
 
 const meta: Meta<typeof LaunchDarklyToolbar> = {
   title: 'UI/LaunchDarklyToolbar',

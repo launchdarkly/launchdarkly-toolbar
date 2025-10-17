@@ -1,16 +1,22 @@
-import { useState, lazy, Suspense } from 'react';
+import { useState } from 'react';
 import { AppWrapper } from '../AppWrapper';
-import { eventInterceptionPlugin } from '../plugins';
 import type { ToolbarPosition } from '@launchdarkly/toolbar';
-
-const LaunchDarklyToolbar = lazy(() =>
-  import('@launchdarkly/toolbar').then((module) => ({ default: module.LaunchDarklyToolbar })),
-);
+import { useLaunchDarklyToolbar } from '@launchdarkly/toolbar';
+import { eventInterceptionPlugin, flagOverridePlugin } from '../plugins';
 
 export function DevServerMode() {
   const [position, setPosition] = useState<ToolbarPosition>('bottom-right');
   const [devServerUrl, setDevServerUrl] = useState('http://localhost:8765');
   const [projectKey, setProjectKey] = useState('test-project');
+
+  useLaunchDarklyToolbar({
+    toolbarBundleUrl: import.meta.env.DEV ? 'http://localhost:8080/toolbar.min.js' : undefined,
+    enabled: true,
+    devServerUrl,
+    flagOverridePlugin,
+    eventInterceptionPlugin,
+    position: 'bottom-right',
+  });
 
   return (
     <AppWrapper mode="dev-server" position={position} onPositionChange={setPosition}>
@@ -40,17 +46,6 @@ export function DevServerMode() {
         <div className="config-group">
           <p style={{ color: '#666', fontStyle: 'italic' }}>Toolbar is disabled in production mode.</p>
         </div>
-      )}
-
-      {LaunchDarklyToolbar && (
-        <Suspense fallback={<div>Loading toolbar...</div>}>
-          <LaunchDarklyToolbar
-            position={position}
-            devServerUrl={devServerUrl}
-            projectKey={projectKey || undefined}
-            eventInterceptionPlugin={eventInterceptionPlugin}
-          />
-        </Suspense>
       )}
     </AppWrapper>
   );

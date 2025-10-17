@@ -1,10 +1,10 @@
 import React from 'react';
 import type { Meta, StoryObj } from '@storybook/react';
 
-import { Tabs } from '../src/ui/Tabs/Tabs';
-import { TabButton } from '../src/ui/Tabs/TabButton';
-import { ToggleOffIcon, GearIcon } from '../src/ui/Toolbar/components/icons';
-import { TabId } from '../src/ui/Toolbar/types';
+import { Tabs } from '../src/core/ui/Tabs/Tabs';
+import { TabButton } from '../src/core/ui/Tabs/TabButton';
+import { ToggleOffIcon, GearIcon } from '../src/core/ui/Toolbar/components/icons';
+import { TabId } from '../src/core/ui/Toolbar/types';
 
 const meta: Meta<typeof Tabs> = {
   title: 'Components/Tabs',
