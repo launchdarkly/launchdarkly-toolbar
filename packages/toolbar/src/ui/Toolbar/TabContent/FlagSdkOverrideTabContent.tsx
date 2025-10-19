@@ -1,5 +1,5 @@
 import { useRef, useState, useMemo, useCallback } from 'react';
-import { useVirtualizer } from '@tanstack/react-virtual';
+import { Virtualizer, ListLayout } from 'react-aria-components';
 import { List } from '../../List/List';
 import { ListItem } from '../../List/ListItem';
 import { useSearchContext, useAnalytics } from '../context';
@@ -51,7 +51,7 @@ function FlagSdkOverrideTabContentInner(props: FlagSdkOverrideTabContentInnerPro
     analytics.trackShowOverridesOnlyClick(enabled);
   };
 
-  // Prepare data for virtualizer (must be done before useVirtualizer hook)
+  // Prepare data for GridList
   const flagEntries = Object.entries(flags);
   const filteredFlags = flagEntries.filter(([flagKey, flag]) => {
     // Apply search filter
@@ -64,12 +64,15 @@ function FlagSdkOverrideTabContentInner(props: FlagSdkOverrideTabContentInnerPro
     return matchesSearch && matchesOverrideFilter;
   });
 
-  const virtualizer = useVirtualizer({
-    count: filteredFlags.length,
-    getScrollElement: () => parentRef.current,
-    estimateSize: () => VIRTUALIZATION.ITEM_HEIGHT,
-    overscan: VIRTUALIZATION.OVERSCAN,
-  });
+  // Convert to items array with unique IDs for GridList
+  const items = useMemo(
+    () =>
+      filteredFlags.map(([flagKey, flag]) => ({
+        id: flagKey,
+        flag,
+      })),
+    [filteredFlags],
+  );
 
   if (!flagOverridePlugin) {
     return (
@@ -169,47 +172,41 @@ function FlagSdkOverrideTabContentInner(props: FlagSdkOverrideTabContentInnerPro
           <GenericHelpText title={genericHelpTitle} subtitle={genericHelpSubtitle} />
         ) : (
           <div ref={parentRef} className={sharedStyles.virtualContainer}>
-            <List>
-              <div
-                className={sharedStyles.virtualInner}
-                style={{
-                  height: virtualizer.getTotalSize(),
-                }}
+            <Virtualizer
+              layout={ListLayout}
+              layoutOptions={{
+                estimatedRowHeight: VIRTUALIZATION.ITEM_HEIGHT,
+                gap: 0,
+                padding: 0,
+              }}
+            >
+              <List
+                aria-label="Feature flags"
+                items={items}
               >
-                {virtualizer.getVirtualItems().map((virtualItem) => {
-                  const [flagKey, flag] = filteredFlags[virtualItem.index];
-
-                  return (
-                    <div
-                      key={virtualItem.key}
-                      className={sharedStyles.virtualItem}
-                      style={{
-                        height: `${virtualItem.size}px`,
-                        transform: `translateY(${virtualItem.start}px)`,
-                        borderBottom: '1px solid var(--lp-color-gray-800)',
-                      }}
-                      data-testid={`flag-row-${flagKey}`}
-                    >
-                      <ListItem className={sharedStyles.flagListItem}>
-                        <div className={sharedStyles.flagHeader}>
-                          <span className={sharedStyles.flagName}>
-                            <span className={sharedStyles.flagNameText} data-testid={`flag-name-${flagKey}`}>
-                              {flag.name}
-                            </span>
-                            {flag.isOverridden && <OverrideIndicator onClear={() => handleClearOverride(flagKey)} />}
-                          </span>
-                          <span className={sharedStyles.flagKey} data-testid={`flag-key-${flagKey}`}>
-                            {flagKey}
-                          </span>
-                        </div>
-
-                        <div className={sharedStyles.flagOptions}>{renderFlagControl(flag)}</div>
-                      </ListItem>
+                {(item) => (
+                  <ListItem
+                    textValue={item.flag.name}
+                    className={sharedStyles.flagListItem}
+                    data-testid={`flag-row-${item.id}`}
+                  >
+                    <div className={sharedStyles.flagHeader}>
+                      <span className={sharedStyles.flagName}>
+                        <span className={sharedStyles.flagNameText} data-testid={`flag-name-${item.id}`}>
+                          {item.flag.name}
+                        </span>
+                        {item.flag.isOverridden && <OverrideIndicator onClear={() => handleClearOverride(item.id)} />}
+                      </span>
+                      <span className={sharedStyles.flagKey} data-testid={`flag-key-${item.id}`}>
+                        {item.id}
+                      </span>
                     </div>
-                  );
-                })}
-              </div>
-            </List>
+
+                    <div className={sharedStyles.flagOptions}>{renderFlagControl(item.flag)}</div>
+                  </ListItem>
+                )}
+              </List>
+            </Virtualizer>
           </div>
         )}
       </>

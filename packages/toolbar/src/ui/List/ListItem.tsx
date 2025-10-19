@@ -1,32 +1,33 @@
-import { motion } from 'motion/react';
+import { GridListItem as AriaGridListItem, composeRenderProps } from 'react-aria-components';
+import type { GridListItemProps as AriaGridListItemProps } from 'react-aria-components';
+import type { ReactNode } from 'react';
+
 import * as styles from './List.css';
 
-export interface ListItemProps {
-  children: React.ReactNode;
-  onClick?: () => void;
-  className?: string;
+interface ListItemProps extends Omit<AriaGridListItemProps, 'children'> {
+	children: ReactNode;
 }
 
+/**
+ * ListItem component with keyboard navigation support.
+ * Wraps React Aria's GridListItem for accessibility.
+ */
 export function ListItem(props: ListItemProps) {
-  const { children, onClick, className } = props;
+	const { children, className, textValue, ...rest } = props;
 
-  const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (onClick && (e.key === 'Enter' || e.key === ' ')) {
-      onClick();
-    }
-  };
+	// Auto-generate textValue from children if it's a string
+	const derivedTextValue = textValue || (typeof children === 'string' ? children : undefined);
 
-  return (
-    <motion.div
-      className={`${styles.listItem} ${className || ''}`}
-      onClick={onClick}
-      onKeyDown={handleKeyDown}
-      tabIndex={onClick ? 0 : undefined}
-      role={onClick ? 'button' : undefined}
-      whileHover={{ backgroundColor: onClick ? 'var(--lp-color-gray-850)' : undefined }}
-      transition={{ duration: 0.2 }}
-    >
-      {children}
-    </motion.div>
-  );
+	return (
+		<AriaGridListItem
+			{...rest}
+			textValue={derivedTextValue}
+			className={composeRenderProps(className, (providedClassName) => {
+				// Always apply base styles, then merge with provided className
+				return `${styles.listItem} ${providedClassName || ''}`.trim();
+			})}
+		>
+			{children}
+		</AriaGridListItem>
+	);
 }

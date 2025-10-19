@@ -305,51 +305,38 @@ export function SettingsTabContent(props: SettingsTabContentProps) {
         return (
           <div key={group.title} className={styles.settingsGroup}>
             <h4 className={styles.settingsGroupTitle}>{group.title}</h4>
-            <List>
+            <List aria-label={group.title}>
               {group.items
                 .filter(
                   (item) =>
                     item.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
                     item.id.toLowerCase().includes(searchTerm.trim().toLowerCase()),
                 )
-                .map((item) => {
-                  if (item.isConnectionStatus) {
-                    return (
-                      <ListItem key={item.id}>
-                        <div className={styles.settingInfo}>
-                          <div className={styles.settingDetails}>
-                            <span className={styles.settingName}>{item.name}</span>
-                          </div>
-                          <ConnectionStatusDisplay status={state.connectionStatus} />
-                        </div>
-                      </ListItem>
-                    );
-                  }
-
-                  return (
-                    <ListItem key={item.id}>
-                      <div className={styles.settingInfo}>
-                        <div className={styles.settingDetails}>
-                          <span className={styles.settingName}>{item.name}</span>
-                        </div>
-                        {item.isProjectSelector ? (
-                          <ProjectSelector
-                            availableProjects={state.availableProjects}
-                            currentProject={state.currentProjectKey}
-                            onProjectChange={handleProjectSwitch}
-                            isLoading={state.isLoading}
-                          />
-                        ) : item.isPositionSelector ? (
-                          <PositionSelector currentPosition={position} onPositionChange={handlePositionSelect} />
-                        ) : item.isPinToggle ? (
-                          <PinToggle isPinned={isPinned} onTogglePin={onTogglePin} />
-                        ) : (
-                          <span className={styles.settingValue}>{item.value}</span>
-                        )}
+                .map((item) => (
+                  <ListItem key={item.id} textValue={item.name} data-testid={`setting-item-${item.id}`}>
+                    <div className={styles.settingInfo}>
+                      <div className={styles.settingDetails}>
+                        <span className={styles.settingName}>{item.name}</span>
                       </div>
-                    </ListItem>
-                  );
-                })}
+                      {item.isConnectionStatus ? (
+                        <ConnectionStatusDisplay status={state.connectionStatus} />
+                      ) : item.isProjectSelector ? (
+                        <ProjectSelector
+                          availableProjects={state.availableProjects}
+                          currentProject={state.currentProjectKey}
+                          onProjectChange={handleProjectSwitch}
+                          isLoading={state.isLoading}
+                        />
+                      ) : item.isPositionSelector ? (
+                        <PositionSelector currentPosition={position} onPositionChange={handlePositionSelect} />
+                      ) : item.isPinToggle ? (
+                        <PinToggle isPinned={isPinned} onTogglePin={onTogglePin} />
+                      ) : (
+                        <span className={styles.settingValue}>{item.value}</span>
+                      )}
+                    </div>
+                  </ListItem>
+                ))}
             </List>
           </div>
         );

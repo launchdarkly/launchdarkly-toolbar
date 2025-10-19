@@ -1,5 +1,5 @@
 import { useRef, useState, useMemo, useCallback } from 'react';
-import { useVirtualizer } from '@tanstack/react-virtual';
+import { Virtualizer, ListLayout } from 'react-aria-components';
 import { List } from '../../List/List';
 import { ListItem } from '../../List/ListItem';
 import { useSearchContext } from '../context/SearchProvider';
@@ -34,12 +34,15 @@ export function FlagDevServerTabContent() {
     return matchesSearch && matchesOverrideFilter;
   });
 
-  const virtualizer = useVirtualizer({
-    count: filteredFlags.length,
-    getScrollElement: () => parentRef.current,
-    estimateSize: () => VIRTUALIZATION.ITEM_HEIGHT,
-    overscan: VIRTUALIZATION.OVERSCAN,
-  });
+  // Convert to items array with unique IDs
+  const items = useMemo(
+    () =>
+      filteredFlags.map(([flagKey, flag]) => ({
+        id: flagKey,
+        flag,
+      })),
+    [filteredFlags],
+  );
 
   // Count total overridden flags (not just filtered ones)
   const totalOverriddenFlags = useMemo(() => {
@@ -107,42 +110,36 @@ export function FlagDevServerTabContent() {
           <GenericHelpText title={genericHelpTitle} subtitle={genericHelpSubtitle} />
         ) : (
           <div ref={parentRef} className={styles.virtualContainer}>
-            <List>
-              <div
-                className={styles.virtualInner}
-                style={{
-                  height: virtualizer.getTotalSize(),
-                }}
+            <Virtualizer
+              layout={ListLayout}
+              layoutOptions={{
+                estimatedRowHeight: VIRTUALIZATION.ITEM_HEIGHT,
+                gap: 0,
+                padding: 0,
+              }}
+            >
+              <List
+                aria-label="Feature flags"
+                items={items}
               >
-                {virtualizer.getVirtualItems().map((virtualItem) => {
-                  const [_, flag] = filteredFlags[virtualItem.index];
-
-                  return (
-                    <div
-                      key={virtualItem.key}
-                      className={styles.virtualItem}
-                      style={{
-                        height: `${virtualItem.size}px`,
-                        transform: `translateY(${virtualItem.start}px)`,
-                        borderBottom: '1px solid var(--lp-color-gray-800)',
-                      }}
-                    >
-                      <ListItem className={styles.flagListItem}>
-                        <div className={styles.flagHeader}>
-                          <span className={styles.flagName}>
-                            <span className={styles.flagNameText}>{flag.name}</span>
-                            {flag.isOverridden && <OverrideIndicator onClear={() => onClearOverride(flag.key)} />}
-                          </span>
-                          <span className={styles.flagKey}>{flag.key}</span>
-                        </div>
-
-                        <div className={styles.flagOptions}>{renderFlagControl(flag)}</div>
-                      </ListItem>
+                {(item) => (
+                  <ListItem
+                    textValue={item.flag.name}
+                    className={styles.flagListItem}
+                  >
+                    <div className={styles.flagHeader}>
+                      <span className={styles.flagName}>
+                        <span className={styles.flagNameText}>{item.flag.name}</span>
+                        {item.flag.isOverridden && <OverrideIndicator onClear={() => onClearOverride(item.flag.key)} />}
+                      </span>
+                      <span className={styles.flagKey}>{item.flag.key}</span>
                     </div>
-                  );
-                })}
-              </div>
-            </List>
+
+                    <div className={styles.flagOptions}>{renderFlagControl(item.flag)}</div>
+                  </ListItem>
+                )}
+              </List>
+            </Virtualizer>
           </div>
         )}
       </>

@@ -1,8 +1,8 @@
 import { useMemo, useRef } from 'react';
-import { useVirtualizer } from '@tanstack/react-virtual';
-import { motion } from 'motion/react';
+import { Virtualizer, ListLayout } from 'react-aria-components';
 import { List } from '../../List/List';
 import { ListItem } from '../../List/ListItem';
+import { motion } from 'motion/react';
 import { useSearchContext, useAnalytics } from '../context';
 import { GenericHelpText } from '../components/GenericHelpText';
 import { ActionButtonsContainer, DoNotTrackWarning } from '../components';
@@ -97,12 +97,15 @@ export function EventsTabContent(props: EventsTabContentProps) {
     }
   };
 
-  const virtualizer = useVirtualizer({
-    count: events.length,
-    getScrollElement: () => parentRef.current,
-    estimateSize: () => VIRTUALIZATION.ITEM_HEIGHT,
-    overscan: VIRTUALIZATION.OVERSCAN,
-  });
+  // Convert events to items array with unique IDs for GridList
+  const items = useMemo(
+    () =>
+      events.map((event, index) => ({
+        id: `${event.timestamp}-${index}`,
+        event,
+      })),
+    [events],
+  );
 
   if (!eventInterceptionPlugin) {
     return (
@@ -156,53 +159,47 @@ export function EventsTabContent(props: EventsTabContentProps) {
       </div>
 
       <div ref={parentRef} className={styles.virtualContainer}>
-        <List>
-          <div
-            className={styles.virtualInner}
-            style={{
-              height: virtualizer.getTotalSize(),
-            }}
+        <Virtualizer
+          layout={ListLayout}
+          layoutOptions={{
+            estimatedRowHeight: VIRTUALIZATION.ITEM_HEIGHT,
+            gap: 0,
+            padding: 0,
+          }}
+        >
+          <List
+            aria-label="Events"
+            items={items}
           >
-            {virtualizer.getVirtualItems().map((virtualItem) => {
-              const event = events[virtualItem.index];
-              return (
-                <div
-                  data-testid="event-item"
-                  key={virtualItem.key}
-                  className={styles.virtualItem}
-                  style={{
-                    height: `${virtualItem.size}px`,
-                    transform: `translateY(${virtualItem.start}px)`,
-                    borderBottom: '1px solid var(--lp-color-gray-800)',
-                    cursor: 'pointer',
-                  }}
-                >
-                  <ListItem className={styles.eventListItem} onClick={() => handleEventClick(event)}>
-                    <div className={styles.eventInfo}>
-                      <span className={styles.eventName}>{event.displayName}</span>
-                      <span className={styles.eventMeta}>{formatTimeAgo(event.timestamp, currentDate)}</span>
-                    </div>
-                    <div className={getBadgeClass(event.kind)}>{event.kind}</div>
-                    {event.kind === 'feature' && isFlagNotFound(event.context) && (
-                      <div className={styles.addButtonContainer}>
-                        <IconLinkButton
-                          className={styles.addButton}
-                          data-testid="add-flag-button"
-                          key={`add-flag-${event.context.key}`}
-                          icon={<AddIcon />}
-                          label="Add Feature Flag"
-                          href={createFlagDeeplinkUrl(event.context.key || '')}
-                          size="medium"
-                          onClick={() => handleAddFeatureFlag(event.context.key || '')}
-                        />
-                      </div>
-                    )}
-                  </ListItem>
+            {(item) => (
+              <ListItem
+                textValue={item.event.displayName}
+                className={styles.eventListItem}
+                data-testid="event-item"
+                onAction={() => handleEventClick(item.event)}
+              >
+                <div className={styles.eventInfo}>
+                  <span className={styles.eventName}>{item.event.displayName}</span>
+                  <span className={styles.eventMeta}>{formatTimeAgo(item.event.timestamp, currentDate)}</span>
                 </div>
-              );
-            })}
-          </div>
-        </List>
+                <div className={getBadgeClass(item.event.kind)}>{item.event.kind}</div>
+                {item.event.kind === 'feature' && isFlagNotFound(item.event.context) && (
+                  <div className={styles.addButtonContainer}>
+                    <IconLinkButton
+                      className={styles.addButton}
+                      data-testid="add-flag-button"
+                      icon={<AddIcon />}
+                      label="Add Feature Flag"
+                      href={createFlagDeeplinkUrl(item.event.context.key || '')}
+                      size="medium"
+                      onClick={() => handleAddFeatureFlag(item.event.context.key || '')}
+                    />
+                  </div>
+                )}
+              </ListItem>
+            )}
+          </List>
+        </Virtualizer>
       </div>
     </div>
   );
