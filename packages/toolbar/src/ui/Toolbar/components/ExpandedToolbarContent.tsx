@@ -1,4 +1,4 @@
-import React, { Dispatch, SetStateAction } from 'react';
+import React, { Dispatch, SetStateAction, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 
 import { Header } from '../Header/Header';
@@ -8,6 +8,7 @@ import { TabContentRenderer } from './TabContentRenderer';
 import { ANIMATION_CONFIG, EASING } from '../constants';
 import { ActiveTabId, ToolbarMode, getTabsForMode, TAB_ORDER } from '../types';
 import { useDevServerContext } from '../context/DevServerProvider';
+import { useToolbarKeyboardNavigation } from '../hooks';
 import type { IFlagOverridePlugin, IEventInterceptionPlugin } from '../../../types/plugin';
 
 import * as styles from '../LaunchDarklyToolbar.css';
@@ -63,6 +64,7 @@ export const ExpandedToolbarContent = React.forwardRef<HTMLDivElement, ExpandedT
   } = props;
 
   const { state } = useDevServerContext();
+  const toolbarRef = useRef<HTMLDivElement>(null);
 
   const headerLabel = getHeaderLabel(state.currentProjectKey, state.sourceEnvironmentKey);
   const { error } = state;
@@ -71,10 +73,24 @@ export const ExpandedToolbarContent = React.forwardRef<HTMLDivElement, ExpandedT
 
   const shouldShowError = error && mode === 'dev-server' && state.connectionStatus === 'error';
 
+  // Enable global keyboard navigation
+  useToolbarKeyboardNavigation(toolbarRef);
+
+  // Forward toolbarRef to parent for focus management
+  useEffect(() => {
+    if (ref) {
+      if (typeof ref === 'function') {
+        ref(toolbarRef.current);
+      } else {
+        ref.current = toolbarRef.current;
+      }
+    }
+  }, [ref]);
+
   return (
     <FocusScope>
       <motion.div
-        ref={ref}
+        ref={toolbarRef}
         key="toolbar-content"
         className={styles.toolbarContent}
         tabIndex={0}
