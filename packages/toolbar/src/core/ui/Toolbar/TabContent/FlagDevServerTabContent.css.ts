@@ -13,6 +13,7 @@ export const flagName = style({
 
 export const codeEditor = style({
   minHeight: '100px',
+  display: 'block',
   height: '100%',
   width: '100%',
   border: '1px solid var(--lp-color-gray-800)',
@@ -105,4 +106,9 @@ export const virtualItem = style({
 
 export const flagListItem = style({
   height: '100%',
+});
+
+export const flagListItemObject = style({
+  height: '100%',
+  display: 'block'
 });

@@ -18,7 +18,7 @@ globalStyle(`${switchContainer} label`, {
 export const customVariantContainer = style({
   display: 'flex',
   alignItems: 'center',
-  flexDirection: 'row',
+  flexDirection: 'row-reverse',
   gap: '4px',
   minWidth: '120px',
   maxWidth: '160px',

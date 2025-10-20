@@ -138,11 +138,6 @@ interface LocalObjectFlagControlProps {
 
 export function LocalObjectFlagControl(props: LocalObjectFlagControlProps) {
   const { flag, isEditing, handleEdit, handleConfirm, handleCancel } = props;
-  const currentValue = JSON.stringify(flag.currentValue, null, 2);
-  const textareaRef = useRef<HTMLTextAreaElement>(null);
-
-
-
   return (
     <div>
       <div className={sharedStyles.customVariantContainer} data-testid={`flag-control-${flag.key}`}>

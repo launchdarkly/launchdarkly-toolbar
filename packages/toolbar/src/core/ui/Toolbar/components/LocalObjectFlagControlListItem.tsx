@@ -12,15 +12,16 @@ import * as sharedStyles from '../TabContent/FlagDevServerTabContent.css';
 interface LocalObjectFlagControlListItemProps {
   handleClearOverride: (key: string) => void;
   handleOverride: (flagKey: string, value: any) => void;
-  handleEditingChange: (isEditing: boolean) => void;
+  handleEditingChange: (index: number, size: number) => void;
   flag: LocalFlag;
   key: number | string | bigint;
+  index: number;
   size: number;
   start: number;
 }
 
 export function LocalObjectFlagControlListItem(props: LocalObjectFlagControlListItemProps) {
-  const { handleClearOverride, handleOverride, handleEditingChange, flag, key, size, start } = props;
+  const { handleClearOverride, handleOverride, handleEditingChange, flag, key, index, size, start } = props;
   const currentValue = JSON.stringify(flag.currentValue, null, 2);
 
   const [isEditing, setIsEditing] = useState(false);
@@ -38,7 +39,7 @@ export function LocalObjectFlagControlListItem(props: LocalObjectFlagControlList
   const handleEdit = () => {
     setTempValue(currentValue);
     setIsEditing(true);
-    handleEditingChange(true);
+    handleEditingChange(index, 250);
   };
 
   const handleConfirm = () => {
@@ -60,29 +61,33 @@ export function LocalObjectFlagControlListItem(props: LocalObjectFlagControlList
         borderBottom: '1px solid var(--lp-color-gray-800)',
       }}
     >
-      <ListItem>
-        <div className={sharedStyles.flagListItem}>
-          <span>
-            <span data-testid={`flag-name-${flag.key}`}>
-              {flag.name}
+      <ListItem className={sharedStyles.flagListItemObject}>
+        <div style={{ display: 'flex', width: '100%', alignItems: 'center' }}>
+          <div style={{ display: 'inline-block', width: '100%' }}>
+            <span>
+              <span data-testid={`flag-name-${flag.key}`}>
+                {flag.name}
+              </span>
+              {flag.isOverridden && <OverrideIndicator onClear={() => handleClearOverride(flag.key)} />}
             </span>
-            {flag.isOverridden && <OverrideIndicator onClear={() => handleClearOverride(flag.key)} />}
-          </span>
-          <span data-testid={`flag-key-${flag.key}`}>
-            {flag.key}
-          </span>
+            <div>
+              <span data-testid={`flag-key-${flag.key}`}>
+                {flag.key}
+              </span>
+            </div>
+
+          </div>
 
           <LocalObjectFlagControl flag={flag} isEditing={isEditing} handleEdit={handleEdit} handleConfirm={handleConfirm} handleCancel={handleCancel} onOverride={() => handleOverride(flag.key, tempValue)} />
-
-          {isEditing && (
-            <CodeEditor
-              className={sharedStyles.codeEditor}
-              value={tempValue}
-              onChange={handleValueChange}
-              data-testid={`flag-input-${flag.key}`}
-            />
-          )}
         </div>
+        {isEditing && (
+          <CodeEditor
+            className={sharedStyles.codeEditor}
+            value={tempValue}
+            onChange={handleValueChange}
+            data-testid={`flag-input-${flag.key}`}
+          />
+        )}
       </ListItem>
     </div>
   )
