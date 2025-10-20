@@ -11,6 +11,20 @@ export const flagName = style({
   flex: 1,
 });
 
+export const codeEditor = style({
+  minHeight: '100px',
+  height: '100%',
+  width: '100%',
+  border: '1px solid var(--lp-color-gray-800)',
+  borderRadius: '4px',
+  padding: '8px',
+  backgroundColor: 'var(--lp-color-gray-900)',
+  color: 'var(--lp-color-gray-200)',
+  fontSize: '12px',
+  fontFamily: 'var(--lp-font-family-monospace)',
+  overflow: 'auto',
+});
+
 export const flagNameText = style({
   overflow: 'hidden',
   textOverflow: 'ellipsis',

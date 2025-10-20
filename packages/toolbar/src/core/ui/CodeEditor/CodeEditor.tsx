@@ -15,6 +15,8 @@ import 'codemirror/addon/lint/json-lint';
 import 'codemirror/lib/codemirror.css';
 import 'codemirror/theme/neo.css';
 import 'codemirror/addon/lint/lint.css';
+import './styles.css';
+
 import { useRef } from 'react';
 import { useEffect } from 'react';
 

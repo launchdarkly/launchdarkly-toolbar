@@ -8,7 +8,6 @@ import { GenericHelpText } from '../components/GenericHelpText';
 import {
   LocalBooleanFlagControl,
   LocalStringNumberFlagControl,
-  LocalObjectFlagControl,
 } from '../components/LocalFlagControls';
 import { OverrideIndicator } from '../components/OverrideIndicator';
 import { ActionButtonsContainer } from '../components';
@@ -18,6 +17,7 @@ import type { LocalFlag } from '../context';
 import * as sharedStyles from './FlagDevServerTabContent.css';
 import * as actionStyles from '../components/ActionButtonsContainer.css';
 import { IFlagOverridePlugin } from '../../../../types';
+import { LocalObjectFlagControlListItem } from '../components/LocalObjectFlagControlListItem';
 
 interface FlagSdkOverrideTabContentInnerProps {
   flagOverridePlugin: IFlagOverridePlugin;
@@ -109,6 +109,10 @@ function FlagSdkOverrideTabContentInner(props: FlagSdkOverrideTabContentInnerPro
     }
   };
 
+  const handleEditingChange = (isEditing: boolean) => {
+    virtualizer.measure();
+  };
+
   const renderFlagControl = (flag: LocalFlag) => {
     const handleOverride = (value: any) => handleSetOverride(flag.key, value);
 
@@ -119,12 +123,6 @@ function FlagSdkOverrideTabContentInner(props: FlagSdkOverrideTabContentInnerPro
       case 'string':
       case 'number':
         return <LocalStringNumberFlagControl flag={flag} onOverride={handleOverride} />;
-
-      case 'object':
-        return <LocalObjectFlagControl flag={flag} onOverride={handleOverride} />;
-
-      default:
-        return <LocalObjectFlagControl flag={flag} onOverride={handleOverride} />;
     }
   };
 
@@ -194,12 +192,16 @@ function FlagSdkOverrideTabContentInner(props: FlagSdkOverrideTabContentInnerPro
                   if (!entry) return null;
                   const [flagKey, flag] = entry;
 
+                  if (flag.type === 'object') {
+                    return <LocalObjectFlagControlListItem handleEditingChange={handleEditingChange} flag={flag} key={virtualItem.key} size={virtualItem.size} start={virtualItem.start} handleClearOverride={handleClearOverride} handleOverride={handleSetOverride} />;
+                  }
+
                   return (
                     <div
                       key={virtualItem.key}
                       className={sharedStyles.virtualItem}
                       style={{
-                        height: `${virtualItem.size}px`,
+                        height: `60px`,
                         transform: `translateY(${virtualItem.start}px)`,
                         borderBottom: '1px solid var(--lp-color-gray-800)',
                       }}
