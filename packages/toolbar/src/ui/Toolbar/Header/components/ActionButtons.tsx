@@ -79,20 +79,12 @@ export function ActionButtons(props: ActionButtonsProps) {
           className={styles.actionButton}
         />
       )}
-      <motion.div
-        whileHover={{ scale: 1.05 }}
-        whileTap={{ scale: 0.95 }}
-        transition={{ duration: 0.1 }}
-        className={styles.closeButtonArea}
-        tabIndex={-1}
-      >
-        <IconButton
-          icon={isTop ? <ChevronUpIcon /> : <ChevronDownIcon />}
-          label="Close toolbar"
-          onClick={onClose}
-          className={styles.actionButton}
-        />
-      </motion.div>
+      <IconButton
+        icon={isTop ? <ChevronUpIcon /> : <ChevronDownIcon />}
+        label="Close toolbar"
+        onClick={onClose}
+        className={styles.actionButton}
+      />
     </div>
   );
 }

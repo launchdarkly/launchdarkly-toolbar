@@ -1,17 +1,18 @@
-import React, { Dispatch, SetStateAction, useRef, useEffect } from 'react';
+import React, { Dispatch, SetStateAction, useRef, useEffect, useState, useCallback } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
+import { Toolbar } from 'react-aria-components';
 
 import { Header } from '../Header/Header';
-import { Tabs } from '../../Tabs/Tabs';
 import { TabButton } from '../../Tabs/TabButton';
+import { TabsContext } from '../../Tabs/useTabsContext';
 import { TabContentRenderer } from './TabContentRenderer';
 import { ANIMATION_CONFIG, EASING } from '../constants';
 import { ActiveTabId, ToolbarMode, getTabsForMode, TAB_ORDER } from '../types';
 import { useDevServerContext } from '../context/DevServerProvider';
-import { useToolbarKeyboardNavigation } from '../hooks';
 import type { IFlagOverridePlugin, IEventInterceptionPlugin } from '../../../types/plugin';
 
 import * as styles from '../LaunchDarklyToolbar.css';
+import * as tabStyles from '../../Tabs/Tabs.css';
 import { GearIcon, SyncIcon, ToggleOffIcon } from './icons';
 import { ErrorMessage } from './ErrorMessage';
 import { FocusScope } from '@react-aria/focus';
@@ -65,6 +66,8 @@ export const ExpandedToolbarContent = React.forwardRef<HTMLDivElement, ExpandedT
 
   const { state } = useDevServerContext();
   const toolbarRef = useRef<HTMLDivElement>(null);
+  const tabsContainerRef = useRef<HTMLDivElement>(null);
+  const [indicatorStyle, setIndicatorStyle] = useState({ left: '0px', width: '0px' });
 
   const headerLabel = getHeaderLabel(state.currentProjectKey, state.sourceEnvironmentKey);
   const { error } = state;
@@ -73,8 +76,30 @@ export const ExpandedToolbarContent = React.forwardRef<HTMLDivElement, ExpandedT
 
   const shouldShowError = error && mode === 'dev-server' && state.connectionStatus === 'error';
 
-  // Enable global keyboard navigation
-  useToolbarKeyboardNavigation(toolbarRef);
+  const updateIndicatorPosition = useCallback(() => {
+    if (!tabsContainerRef.current) return;
+
+    const activeButton = tabsContainerRef.current.querySelector(`[aria-selected="true"]`) as HTMLElement;
+    if (activeButton) {
+      const left = activeButton.offsetLeft;
+      const width = activeButton.offsetWidth;
+
+      setIndicatorStyle({
+        left: `${left}px`,
+        width: `${width}px`,
+      });
+    }
+  }, []);
+
+  // Update indicator position when active tab changes
+  useEffect(() => {
+    updateIndicatorPosition();
+
+    // Update indicator position after a short delay to handle container animations
+    const timeoutId = setTimeout(updateIndicatorPosition, 250);
+
+    return () => clearTimeout(timeoutId);
+  }, [activeTab, updateIndicatorPosition]);
 
   // Forward toolbarRef to parent for focus management
   useEffect(() => {
@@ -113,39 +138,48 @@ export const ExpandedToolbarContent = React.forwardRef<HTMLDivElement, ExpandedT
         }}
         transition={ANIMATION_CONFIG.toolbarContent}
       >
-        <motion.div
-          className={styles.tabsContainer}
-          initial={{
-            opacity: 0,
-            y: 10,
-          }}
-          animate={{
-            opacity: 1,
-            y: 0,
-          }}
-          transition={ANIMATION_CONFIG.tabsContainer}
+        <Toolbar
+          ref={tabsContainerRef}
+          orientation="horizontal"
+          aria-label="LaunchDarkly developer toolbar"
+          style={{ display: 'contents' }}
         >
-          <Tabs defaultActiveTab={defaultActiveTab} activeTab={activeTab} onTabChange={onTabChange}>
-            {TAB_ORDER.filter((tabId) => availableTabs.includes(tabId)).map((tabId) => {
-              switch (tabId) {
-                case 'flag-dev-server':
-                  return <TabButton key={tabId} id={tabId} label="Flags" icon={ToggleOffIcon} />;
-                case 'flag-sdk':
-                  return <TabButton key={tabId} id={tabId} label="Flags" icon={ToggleOffIcon} />;
-                case 'events':
-                  return <TabButton key={tabId} id={tabId} label="Events" icon={SyncIcon} />;
-                case 'settings':
-                  return <TabButton key={tabId} id={tabId} label="Settings" icon={GearIcon} />;
-                default:
-                  return null;
-              }
-            })}
-          </Tabs>
-        </motion.div>
+          <TabsContext.Provider value={{ activeTab: (activeTab || defaultActiveTab) as string, onTabChange }}>
+            <motion.div
+              className={styles.tabsContainer}
+              initial={{
+                opacity: 0,
+                y: 10,
+              }}
+              animate={{
+                opacity: 1,
+                y: 0,
+              }}
+              transition={ANIMATION_CONFIG.tabsContainer}
+            >
+              <div style={{ position: 'relative', width: '100%', display: 'flex', gap: '6px' }}>
+                {TAB_ORDER.filter((tabId) => availableTabs.includes(tabId)).map((tabId) => {
+                  switch (tabId) {
+                    case 'flag-dev-server':
+                      return <TabButton key={tabId} id={tabId} label="Flags" icon={ToggleOffIcon} />;
+                    case 'flag-sdk':
+                      return <TabButton key={tabId} id={tabId} label="Flags" icon={ToggleOffIcon} />;
+                    case 'events':
+                      return <TabButton key={tabId} id={tabId} label="Events" icon={SyncIcon} />;
+                    case 'settings':
+                      return <TabButton key={tabId} id={tabId} label="Settings" icon={GearIcon} />;
+                    default:
+                      return null;
+                  }
+                })}
+                <div className={tabStyles.activeIndicator} style={indicatorStyle} />
+              </div>
+            </motion.div>
+          </TabsContext.Provider>
 
-        {/* Expandable content area */}
-        <motion.div
-          className={styles.contentArea}
+          {/* Expandable content area */}
+          <motion.div
+            className={styles.contentArea}
           initial={{
             opacity: 0,
             y: -10,
@@ -198,7 +232,8 @@ export const ExpandedToolbarContent = React.forwardRef<HTMLDivElement, ExpandedT
               </AnimatePresence>
             </motion.div>
           )}
-        </motion.div>
+          </motion.div>
+        </Toolbar>
       </motion.div>
     </FocusScope>
   );

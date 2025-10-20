@@ -138,7 +138,7 @@ export function LdToolbar(props: LdToolbarProps) {
       }}
       data-testid="launchdarkly-toolbar"
       data-theme="dark"
-      role={isExpanded ? 'toolbar' : 'button'}
+      role={isExpanded ? undefined : 'button'}
       aria-label={isExpanded ? 'LaunchDarkly toolbar' : 'Open LaunchDarkly toolbar'}
       tabIndex={isExpanded ? -1 : 0}
     >

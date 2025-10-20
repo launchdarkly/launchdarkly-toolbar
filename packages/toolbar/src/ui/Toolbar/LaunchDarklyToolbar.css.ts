@@ -112,6 +112,7 @@ export const scrollableContent = style({
 export const tabsContainer = style({
   display: 'flex',
   alignItems: 'center',
+  gap: '6px',
   padding: '8px 8px',
   backgroundColor: 'var(--lp-color-gray-900)',
   borderRadius: '12px',
@@ -119,4 +120,11 @@ export const tabsContainer = style({
 
 export const tabsContainerChild = style({
   flex: 1,
+});
+
+export const toolbarTabs = style({
+  display: 'flex',
+  gap: '6px',
+  width: '100%',
+  position: 'relative',
 });
