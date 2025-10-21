@@ -1,0 +1,23 @@
+@import '@launchpad-ui/tokens/dist/index.css';
+@import '@launchpad-ui/tokens/dist/themes.css';
+
+@font-face {
+  font-family: inter;
+  src: url('https://static.launchdarkly.com/app/s/ld/inter.var-subset.woff2') format('woff2');
+  font-display: swap;
+  font-weight: 300 700;
+}
+
+@font-face {
+  font-family: 'Audimat 3000 Regulier';
+  src: url('https://static.launchdarkly.com/app/s/ld/Audimat3000-Regulier.var-subset.woff2') format('woff2');
+  font-display: swap;
+  font-weight: 400;
+  -webkit-font-smoothing: antialiased;
+}
+
+body {
+  margin: 0;
+  font-family: var(--lp-font-family-base);
+  color: var(--lp-color-text-ui-primary-base);
+}

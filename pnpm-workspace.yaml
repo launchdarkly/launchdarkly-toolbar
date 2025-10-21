@@ -1,5 +1,2 @@
 packages:
   - packages/*
-
-autoInstallPeers: false
-strictPeerDependencies: true

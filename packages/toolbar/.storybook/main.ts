@@ -29,12 +29,9 @@ const config: StorybookConfig = {
     '@storybook/addon-links',
     '@storybook/addon-essentials',
     '@storybook/addon-interactions',
-    {
-      name: getAbsolutePath('storybook-addon-rslib'),
-    },
   ],
   framework: {
-    name: getAbsolutePath('storybook-react-rsbuild'),
+    name: getAbsolutePath('@storybook/react-vite'),
     options: {},
   },
   typescript: {
