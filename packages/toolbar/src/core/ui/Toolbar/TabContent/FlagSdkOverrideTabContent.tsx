@@ -109,9 +109,8 @@ function FlagSdkOverrideTabContentInner(props: FlagSdkOverrideTabContentInnerPro
     }
   };
 
-  const handleEditingChange = (index: number, size: number) => {
+  const handleSizeChange = (index: number, size: number) => {
     virtualizer.resizeItem(index, size);
-    // virtualizer.measure();
   };
 
   const renderFlagControl = (flag: LocalFlag) => {
@@ -194,7 +193,7 @@ function FlagSdkOverrideTabContentInner(props: FlagSdkOverrideTabContentInnerPro
                   const [flagKey, flag] = entry;
 
                   if (flag.type === 'object') {
-                    return <LocalObjectFlagControlListItem index={virtualItem.index} handleEditingChange={handleEditingChange} flag={flag} key={virtualItem.key} size={virtualItem.size} start={virtualItem.start} handleClearOverride={handleClearOverride} handleOverride={handleSetOverride} />;
+                    return <LocalObjectFlagControlListItem index={virtualItem.index} handleSizeChange={handleSizeChange} flag={flag} key={virtualItem.key} size={virtualItem.size} start={virtualItem.start} handleClearOverride={handleClearOverride} handleOverride={handleSetOverride} />;
                   }
 
                   return (

@@ -70,6 +70,7 @@
     "@codemirror/view": "6.38.2",
     "@launchpad-ui/components": "0.16.12",
     "@launchpad-ui/tokens": "0.15.1",
+    "@lezer/highlight": "1.2.1",
     "@react-aria/focus": "3.21.2",
     "@react-aria/interactions": "3.25.6",
     "@react-aria/utils": "3.31.0",
@@ -82,13 +83,16 @@
     "class-variance-authority": "^0.7.1",
     "codemirror": "5.65.18",
     "codemirror-json-schema": "0.8.0",
+    "jsonc-parser": "3.3.1",
     "motion": "^12.19.2",
     "react": "19.2.0",
     "react-aria": "3.44.0",
     "react-aria-components": "1.13.0",
     "react-dom": "19.2.0",
     "react-hook-form": "7.59.0",
-    "react-router": "7.5.2"
+    "react-router": "7.5.2",
+    "zod": "3.25.17",
+    "zod-to-json-schema": "3.24.5"
   },
   "devDependencies": {
     "@rsbuild/core": "^1.5.17",

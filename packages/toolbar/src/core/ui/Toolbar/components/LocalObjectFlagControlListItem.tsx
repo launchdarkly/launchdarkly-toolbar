@@ -8,11 +8,10 @@ import { useState } from "react";
 
 import * as sharedStyles from '../TabContent/FlagDevServerTabContent.css';
 
-
 interface LocalObjectFlagControlListItemProps {
   handleClearOverride: (key: string) => void;
   handleOverride: (flagKey: string, value: any) => void;
-  handleEditingChange: (index: number, size: number) => void;
+  handleSizeChange: (index: number, size: number) => void;
   flag: LocalFlag;
   key: number | string | bigint;
   index: number;
@@ -21,7 +20,7 @@ interface LocalObjectFlagControlListItemProps {
 }
 
 export function LocalObjectFlagControlListItem(props: LocalObjectFlagControlListItemProps) {
-  const { handleClearOverride, handleOverride, handleEditingChange, flag, key, index, size, start } = props;
+  const { handleClearOverride, handleOverride, handleSizeChange, flag, key, index, size, start } = props;
   const currentValue = JSON.stringify(flag.currentValue, null, 2);
 
   const [isEditing, setIsEditing] = useState(false);
@@ -29,7 +28,7 @@ export function LocalObjectFlagControlListItem(props: LocalObjectFlagControlList
   const [parseError, setParseError] = useState<string | null>(null);
 
   const displayValue = useMemo(() => JSON.stringify(flag.currentValue), [flag.currentValue]);
-
+  console.log(displayValue);
 
   const handleValueChange = (value: string) => {
     setTempValue(value);
@@ -39,15 +38,17 @@ export function LocalObjectFlagControlListItem(props: LocalObjectFlagControlList
   const handleEdit = () => {
     setTempValue(currentValue);
     setIsEditing(true);
-    handleEditingChange(index, 250);
+    handleSizeChange(index, 250);
   };
 
   const handleConfirm = () => {
     setIsEditing(false);
+    handleSizeChange(index, 65);
   };
 
   const handleCancel = () => {
     setIsEditing(false);
+    handleSizeChange(index, 65);
   };
   
   return (
@@ -83,9 +84,13 @@ export function LocalObjectFlagControlListItem(props: LocalObjectFlagControlList
         {isEditing && (
           <CodeEditor
             className={sharedStyles.codeEditor}
-            value={tempValue}
+            docString={tempValue}
             onChange={handleValueChange}
             data-testid={`flag-input-${flag.key}`}
+            initialState={{
+              startCursorAtLine: 0,
+              autoFocus: false,
+            }}
           />
         )}
       </ListItem>

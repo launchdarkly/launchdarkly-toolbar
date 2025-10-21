@@ -12,7 +12,7 @@ export const flagName = style({
 });
 
 export const codeEditor = style({
-  minHeight: '100px',
+  minHeight: '60px',
   display: 'block',
   height: '100%',
   width: '100%',

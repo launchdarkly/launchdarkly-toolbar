@@ -1,185 +1,147 @@
-import CodeMirror from 'codemirror';
-import { TextareaHTMLAttributes, JSX, Ref } from 'react';
+import { useCallback, useEffect, useMemo, useRef, type FocusEvent, useImperativeHandle } from 'react';
+import { EditorView, type ViewUpdate } from '@codemirror/view';
+import { Annotation, EditorState, Extension, StateEffect } from '@codemirror/state';
+import type { Ref } from 'react';
+import type { CodeEditorHandle } from './types';
+import { getDocumentSize } from './utils';
+import { getFoldEffects } from './folding';
 
-// Addons
-import 'codemirror/keymap/sublime';
-import 'codemirror/mode/javascript/javascript';
-import 'codemirror/addon/edit/closebrackets';
-import 'codemirror/addon/edit/matchtags';
-import 'codemirror/addon/selection/active-line';
-// Linting
-import 'codemirror/addon/lint/lint';
-import 'codemirror/addon/lint/json-lint';
-
-// Styles
-import 'codemirror/lib/codemirror.css';
-import 'codemirror/theme/neo.css';
-import 'codemirror/addon/lint/lint.css';
-import './styles.css';
-
-import { useRef } from 'react';
-import { useEffect } from 'react';
-
-const editorSettings = {
-  theme: 'neo',
-  keyMap: 'sublime',
-  autoCloseBrackets: true,
-  matchTags: { bothTags: true },
-  styleActiveLine: true,
-};
-
-export type CodeEditorProps = Omit<TextareaHTMLAttributes<HTMLTextAreaElement>, 'onChange'> & {
-  value?: string;
-  lint?: boolean;
-  keyMap?: CodeMirror.KeyMap;
-  onChange?: (value: string) => void;
-  onFocus?: () => void;
-  onBlur?: () => void;
-  className?: string;
-  readOnly?: boolean;
+interface BaseProps {
   id?: string;
-  options?: {};
-  name?: string;
-  label?: string | JSX.Element | null;
-  screenReaderLabel?: string;
-  startCursorAtLine?: number;
-  bootstrapFn?: (editor: CodeMirror.EditorFromTextArea, codeMirror: typeof CodeMirror) => CodeMirror.EditorFromTextArea;
-  swallowUnmountErrors?: boolean;
-  description?: string | JSX.Element | null;
-  innerRef?: Ref<unknown>;
-};
+  docString: string;
+  className?: string;
+  onFocus?: (e: FocusEvent<HTMLDivElement>) => void;
+  onBlur?: (e: FocusEvent<HTMLDivElement>, value: string) => void;
+  onChange?: (value: string, viewUpdate: ViewUpdate) => void;
+  codeEditorHandle?: Ref<CodeEditorHandle | null>;
+  initialState?: {
+    startCursorAtLine?: number;
+    autoFocus?: boolean;
+  };
+}
 
-export function CodeEditor(props: CodeEditorProps) {
-  const {
-    value,
-    lint,
-    keyMap,
-    onChange,
-    onFocus,
-    onBlur,
-    className,
-    readOnly,
-    id,
-    options,
-    name,
-    label,
-    screenReaderLabel,
-    startCursorAtLine,
-    bootstrapFn,
-    swallowUnmountErrors,
-    description,
-    innerRef,
-    ...rest
-  } = props;
+const MAX_DOC_SIZE = 250;
+const External = Annotation.define<boolean>();
 
-  const textareaRef = useRef<HTMLTextAreaElement>(null);
-  let cm: CodeMirror.EditorFromTextArea | undefined;
+export const CodeEditor = (props: BaseProps) => {
+  const { id, docString, className, onFocus, onBlur, onChange, codeEditorHandle, initialState } = props;
+  const containerRef = useRef<HTMLDivElement | null>(null);
+  const editorRef = useRef<EditorView | null>(null);
+  const { current: codeEditor } = editorRef;
+
+  const onChangeCallback = useCallback(
+    (viewUpdate: ViewUpdate) => {
+      if (
+        viewUpdate.docChanged &&
+        typeof onChange === 'function' &&
+        // Fix echoing of the remote changes:
+        // If transaction is marked as remote we don't have to call `onChange` handler again
+        !viewUpdate.transactions.some((tx) => tx.annotation(External))
+      ) {
+        const doc = viewUpdate.state.doc;
+        const value = doc.toString();
+        onChange(value, viewUpdate);
+      }
+    },
+    [onChange],
+  );
+
+  const dynamicExtensions = useMemo<Extension[]>(() => {
+    const extensions: Extension[] = [EditorView.updateListener.of(onChangeCallback)];
+
+    return extensions;
+  }, [onChangeCallback]);
 
   useEffect(() => {
-    if (!cm) {
-      setup();
+    // This happens on initialization - only create editor if mode is loaded and extensions are ready
+    if (containerRef.current && !editorRef.current && dynamicExtensions.length > 0) {
+      const state = EditorState.create({
+        doc: docString,
+        selection: initialState?.startCursorAtLine ? { anchor: initialState.startCursorAtLine } : undefined,
+      });
+
+      editorRef.current = new EditorView({
+        state,
+        parent: containerRef.current,
+        extensions: dynamicExtensions,
+      });
     }
-  }, [cm]);
+  }, [docString, dynamicExtensions, initialState?.startCursorAtLine]);
 
-  const setup = () => {
-    const editor = textareaRef.current;
+  // If the onChange callback/disabled state, mode, or customErrors changes externally, update the editor extension
+  useEffect(() => {
+    const { current: editorView } = editorRef;
+    if (editorView) {
+      let effects: Array<StateEffect<unknown>> = [];
+      const docSize = getDocumentSize(editorView.state.doc.toString());
 
-    const finalOptions: CodeMirror.EditorConfiguration = {
-      ...options,
-      ...editorSettings,
-      mode: 'json',
-      readOnly: !!readOnly,
-      lint,
-      lineWrapping: true,
-      screenReaderLabel: screenReaderLabel ?? 'Editor',
-    };
+      if (docSize > MAX_DOC_SIZE) {
+        effects = getFoldEffects(editorView, 3);
+      }
 
-    if (!editor) {
-      return;
+      effects.push(StateEffect.reconfigure.of(dynamicExtensions));
+
+      editorView.dispatch({
+        effects,
+      });
     }
+  }, [dynamicExtensions]);
 
-    cm = CodeMirror.fromTextArea(editor, finalOptions);
+  useEffect(
+    () => () => {
+      editorRef.current?.destroy();
+    },
+    [],
+  );
 
-    if (!cm) {
-      return;
+  // Called when the editor is mounted
+  const initialized = editorRef.current !== null;
+  useEffect(() => {
+    if (initialized && initialState?.autoFocus) {
+      editorRef.current?.focus();
     }
+  }, [initialized, initialState?.autoFocus]);
 
-    if (bootstrapFn) {
-      cm = bootstrapFn(cm, CodeMirror);
-    }
-
-    if (typeof startCursorAtLine === 'number' && cm) {
-      setTimeout(() => {
-        if (cm) {
-          const line = startCursorAtLine - 1; // Convert to 0-based index
-          const lineContent = cm.getLine(line) || '';
-          // Trim trailing whitespace to get the last non-whitespace character
-          const lastNonWhitespacePos = lineContent.trimEnd().length;
-          cm.setCursor({ line, ch: lastNonWhitespacePos });
+  useImperativeHandle(
+    codeEditorHandle,
+    () => ({
+      containerRef: containerRef.current,
+      getEditorView: () => editorRef.current,
+      setDocument: (doc: string) => {
+        const editor = editorRef.current;
+        if (editor) {
+          const selection = editor.state.selection.ranges[0];
+          
+          if (selection) {
+            editor.dispatch({
+              changes: {
+                from: 0,
+                to: editor.state.doc.length,
+                insert: doc,
+              },
+              selection: {
+                anchor: doc.length < selection.anchor ? doc.length : selection.anchor,
+              },
+            });
+          }
         }
-      }, 0);
-    }
-
-    if (keyMap) {
-      cm.addKeyMap(keyMap);
-    }
-
-    cm.on('change', handleChange);
-    cm.on('blur', handleBlur);
-    cm.on('focus', handleFocus);
-
-    // Codemirror has a non-hidden input field.
-    // This is what we need to describe for accessibility, not the initial textarea that
-    // codemirror mounts on and replaces.
-    const inputId = id ?? 'editor';
-    const inputField = cm.getInputField();
-    inputField.setAttribute('id', inputId);
-    /* eslint-disable @typescript-eslint/no-non-null-assertion */
-    inputField.setAttribute(
-      'aria-describedby',
-      props['aria-describedby'] ?? `${[...inputId].join('')}-err`,
-    ); /* eslint-enable @typescript-eslint/no-non-null-assertion */
-    inputField.setAttribute('name', name ?? inputId);
-  }
-
-  const handleChange = (editor: CodeMirror.Editor) => {
-    const value = editor.getValue();
-
-    if (onChange) {
-      onChange(value);
-    }
-  };
-
-  const handleFocus = () => {
-    if (onFocus) {
-      onFocus();
-    }
-  };
-
-  const handleBlur = () => {
-    if (onBlur) {
-      onBlur();
-    }
-  };
+      },
+    }),
+    [],
+  );
 
   return (
-    <div className={className}>
-      {label && <label htmlFor={id}>{label}</label>}
-      {description && <>{description}</>}
-      <textarea
-        autoComplete="off"
-        className="CodeEditor-textarea"
-        defaultValue={value}
-        ref={(element) => {
-          textareaRef.current = element;
-
-          if (typeof innerRef === 'function') {
-            innerRef(element);
-          } else if (innerRef) {
-            innerRef.current = element;
-          }
-        }}
-      />
-    </div>
+    <div
+      role="textbox"
+      data-enable-grammarly="false"
+      id={id}
+      tabIndex={0}
+      onFocus={onFocus}
+      onBlur={(e) => {
+        onBlur?.(e, codeEditor?.contentDOM.textContent ?? '');
+      }}
+      className={className}
+      ref={containerRef}
+    />
   );
 }
