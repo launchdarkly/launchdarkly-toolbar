@@ -1,0 +1,71 @@
+{
+  "private": false,
+  "name": "@launchdarkly/toolbar-react",
+  "version": "1.0.0-beta.1",
+  "description": "A React hook that provides an easy way to initialize the LaunchDarkly toolbar",
+  "keywords": [
+    "launchdarkly",
+    "feature-flags",
+    "react",
+    "toolbar",
+    "development",
+    "typescript"
+  ],
+  "type": "module",
+  "license": "Apache-2.0",
+  "author": "Catamorphic Co.",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/launchdarkly/launchdarkly-toolbar.git"
+  },
+  "bugs": {
+    "url": "https://github.com/launchdarkly/launchdarkly-toolbar/issues"
+  },
+  "homepage": "https://github.com/launchdarkly/launchdarkly-toolbar#readme",
+  "main": "./dist/index.cjs",
+  "module": "./dist/js/index.js",
+  "types": "./dist/index.d.ts",
+  "typings": "./dist/index.d.ts",
+  "sideEffects": false,
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/js/index.js"
+      },
+      "require": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.cjs"
+      }
+    }
+  },
+  "scripts": {
+    "build": "rslib build",
+    "dev": "rslib build --watch",
+    "lint": "oxlint"
+  },
+  "dependencies": {
+    "@launchdarkly/toolbar-types": "workspace:*"
+  },
+  "peerDependencies": {
+    "launchdarkly-js-client-sdk": "^3.9.0",
+    "react": ">=18"
+  },
+  "devDependencies": {
+    "@rsbuild/core": "^1.5.17",
+    "@rsbuild/plugin-react": "^1.4.1",
+    "@rslib/core": "^0.15.1",
+    "@types/react": "19.2.2",
+    "@types/react-dom": "19.2.2",
+    "oxlint": "^1.23.0",
+    "typescript": "^5.8.3"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}

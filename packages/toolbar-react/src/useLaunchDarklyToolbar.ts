@@ -1,8 +1,8 @@
 import { useEffect, useRef } from 'react';
 
 import lazyLoadToolbar from './lazyLoadToolbar';
-import type { InitializationConfig } from '../types';
-import packageJson from '../../package.json';
+import type { InitializationConfig } from '@launchdarkly/toolbar-types';
+import packageJson from '../package.json';
 
 interface UseLaunchDarklyToolbarConfig extends InitializationConfig {
   /**

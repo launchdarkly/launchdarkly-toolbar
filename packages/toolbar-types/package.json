@@ -1,0 +1,65 @@
+{
+  "private": false,
+  "name": "@launchdarkly/toolbar-types",
+  "version": "1.0.0-beta.1",
+  "description": "Types for the LaunchDarkly toolbar. Allows for type safety when instantiating the toolbar with the framework-agnostic minified CDN build.",
+  "keywords": [
+    "launchdarkly",
+    "feature-flags",
+    "react",
+    "toolbar",
+    "development",
+    "typescript"
+  ],
+  "type": "module",
+  "license": "Apache-2.0",
+  "author": "Catamorphic Co.",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/launchdarkly/launchdarkly-toolbar.git"
+  },
+  "bugs": {
+    "url": "https://github.com/launchdarkly/launchdarkly-toolbar/issues"
+  },
+  "homepage": "https://github.com/launchdarkly/launchdarkly-toolbar#readme",
+  "main": "./dist/index.cjs",
+  "module": "./dist/js/index.js",
+  "types": "./dist/index.d.ts",
+  "typings": "./dist/index.d.ts",
+  "sideEffects": false,
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/js/index.js"
+      },
+      "require": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.cjs"
+      }
+    }
+  },
+  "scripts": {
+    "build": "rslib build",
+    "dev": "rslib build --watch",
+    "lint": "oxlint"
+  },
+  "devDependencies": {
+    "@rsbuild/core": "^1.5.17",
+    "@rslib/core": "^0.15.1",
+    "launchdarkly-js-client-sdk": "^3.9.0",
+    "oxlint": "^1.23.0",
+    "typescript": "^5.8.3"
+  },
+  "peerDependencies": {
+    "launchdarkly-js-client-sdk": "^3.9.0"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}

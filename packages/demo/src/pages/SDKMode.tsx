@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import { AppWrapper } from '../AppWrapper';
 import { flagOverridePlugin, eventInterceptionPlugin } from '../plugins';
-import type { ToolbarPosition } from '@launchdarkly/toolbar';
-import { useLaunchDarklyToolbar } from '@launchdarkly/toolbar';
+import type { ToolbarPosition } from '@launchdarkly/toolbar-types';
+import { useLaunchDarklyToolbar } from '@launchdarkly/toolbar-react';
 
 export function SDKMode() {
   const [position, setPosition] = useState<ToolbarPosition>('bottom-right');

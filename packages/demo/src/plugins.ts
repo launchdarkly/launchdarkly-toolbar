@@ -1,4 +1,4 @@
-import { EventInterceptionPlugin, FlagOverridePlugin } from '@launchdarkly/toolbar';
+import { EventInterceptionPlugin, FlagOverridePlugin } from '@launchdarkly/toolbar-types';
 
 export const flagOverridePlugin = new FlagOverridePlugin({
   storageNamespace: 'ld-demo-overrides',

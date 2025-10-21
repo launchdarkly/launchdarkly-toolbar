@@ -1,4 +1,4 @@
-import type { LaunchDarklyToolbar } from '../index';
+import type { LaunchDarklyToolbar } from './index';
 
 interface WindowWithMaybeToolbar extends Window {
   LaunchDarklyToolbar?: LaunchDarklyToolbar;
