@@ -1,14 +1,19 @@
-import { useState, lazy, Suspense } from 'react';
+import { useState } from 'react';
 import { AppWrapper } from '../AppWrapper';
 import { flagOverridePlugin, eventInterceptionPlugin } from '../plugins';
 import type { ToolbarPosition } from '@launchdarkly/toolbar';
-
-const LaunchDarklyToolbar = lazy(() =>
-  import('@launchdarkly/toolbar').then((module) => ({ default: module.LaunchDarklyToolbar })),
-);
+import { useLaunchDarklyToolbar } from '@launchdarkly/toolbar';
 
 export function SDKMode() {
   const [position, setPosition] = useState<ToolbarPosition>('bottom-right');
+
+  useLaunchDarklyToolbar({
+    toolbarBundleUrl: import.meta.env.DEV ? 'http://localhost:8080/toolbar.min.js' : undefined,
+    enabled: true,
+    flagOverridePlugin,
+    eventInterceptionPlugin,
+    position: 'bottom-right',
+  });
 
   return (
     <AppWrapper mode="sdk" position={position} onPositionChange={setPosition}>
@@ -21,17 +26,6 @@ export function SDKMode() {
           <p style={{ color: '#666', fontStyle: 'italic' }}>Toolbar is disabled in production mode.</p>
         )}
       </div>
-
-      {LaunchDarklyToolbar && (
-        <Suspense fallback={<div>Loading toolbar...</div>}>
-          <LaunchDarklyToolbar
-            baseUrl={import.meta.env.VITE_LD_BASE_URL}
-            position={position}
-            flagOverridePlugin={flagOverridePlugin}
-            eventInterceptionPlugin={eventInterceptionPlugin}
-          />
-        </Suspense>
-      )}
     </AppWrapper>
   );
 }

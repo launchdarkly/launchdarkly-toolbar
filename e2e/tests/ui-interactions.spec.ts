@@ -1,6 +1,6 @@
 import { expect } from '@playwright/test';
-import { test } from '../setup/global';
 import type { Page } from '@playwright/test';
+import { test } from '../setup/global';
 
 test.describe('LaunchDarkly Toolbar - UI Interactions', () => {
   test.beforeEach(async ({ page }: { page: Page }) => {
@@ -194,7 +194,7 @@ test.describe('LaunchDarkly Toolbar - UI Interactions', () => {
       await booleanFlagControl.click();
 
       // 5. Verify toolbar reloads
-      await page.waitForLoadState('networkidle');
+      await page.waitForLoadState('load');
       expect(page.getByRole('img', { name: 'LaunchDarkly' })).toBeVisible();
 
       await page.getByRole('img', { name: 'LaunchDarkly' }).click();
