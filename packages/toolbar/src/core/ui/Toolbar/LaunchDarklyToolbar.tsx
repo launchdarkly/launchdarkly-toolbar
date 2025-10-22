@@ -10,6 +10,7 @@ import { ToolbarMode, ToolbarPosition, getToolbarMode, getDefaultActiveTab } fro
 import * as styles from './LaunchDarklyToolbar.css';
 import { DevServerProvider } from './context';
 import { IEventInterceptionPlugin, IFlagOverridePlugin } from '../../../types';
+import { AuthProvider, useAuth } from './context/AuthProvider';
 
 export interface LdToolbarProps {
   mode: ToolbarMode;
@@ -24,6 +25,7 @@ export function LdToolbar(props: LdToolbarProps) {
   const { searchTerm } = useSearchContext();
   const { position, handlePositionChange } = useToolbarUIContext();
   const analytics = useAnalytics();
+  const { isAuthenticated } = useAuth();
 
   const defaultActiveTab = getDefaultActiveTab(mode, !!flagOverridePlugin, !!eventInterceptionPlugin);
 
@@ -221,13 +223,13 @@ export function LaunchDarklyToolbar(props: LaunchDarklyToolbarProps) {
       >
         <AnalyticsProvider ldClient={flagOverridePlugin?.getClient() ?? eventInterceptionPlugin?.getClient()}>
           <SearchProvider>
-            <LdToolbar
+            <AuthProvider><LdToolbar
               domId={domId}
               mode={mode}
               baseUrl={baseUrl}
               flagOverridePlugin={flagOverridePlugin}
               eventInterceptionPlugin={eventInterceptionPlugin}
-            />
+            /></AuthProvider>
           </SearchProvider>
         </AnalyticsProvider>
       </DevServerProvider>

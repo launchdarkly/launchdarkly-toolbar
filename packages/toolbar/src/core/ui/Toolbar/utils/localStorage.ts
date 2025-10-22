@@ -3,19 +3,22 @@ import { ToolbarPosition, TOOLBAR_POSITIONS } from '../types/toolbar';
 export const TOOLBAR_STORAGE_KEYS = {
   SETTINGS: 'ld-toolbar-settings',
   DISABLED: 'ld-toolbar-disabled',
-  PROJECT: 'ld-toolbar-project',
+  PROJECT: 'ld-toolbar-project',  
+  AUTHENTICATED: 'ld-toolbar-authenticated',
 } as const;
 
 export interface ToolbarSettings {
   position: ToolbarPosition;
   reloadOnFlagChange: boolean;
   autoCollapse: boolean;
+  authenticated: boolean;
 }
 
 export const DEFAULT_SETTINGS: ToolbarSettings = {
   position: 'bottom-right',
   reloadOnFlagChange: false,
   autoCollapse: false,
+  authenticated: false,
 };
 
 /**
@@ -97,5 +100,23 @@ export function loadReloadOnFlagChange(): boolean {
   } catch (error) {
     console.warn('Failed to load reload on flag change from localStorage:', error);
     return DEFAULT_SETTINGS.reloadOnFlagChange;
+  }
+}
+
+export function saveAuthenticated(authenticated: boolean): void { 
+  updateSetting('authenticated', authenticated);
+}
+
+export function loadAuthenticated(): boolean {
+  try {
+    const stored = localStorage.getItem(TOOLBAR_STORAGE_KEYS.SETTINGS);
+    if (!stored) {
+      return DEFAULT_SETTINGS.authenticated;
+    }
+    const parsed = JSON.parse(stored) as Partial<ToolbarSettings>;
+    return typeof parsed.authenticated === 'boolean' ? parsed.authenticated : DEFAULT_SETTINGS.authenticated;
+  } catch (error) {
+    console.warn('Failed to load authenticated from localStorage:', error);
+    return DEFAULT_SETTINGS.authenticated;
   }
 }
