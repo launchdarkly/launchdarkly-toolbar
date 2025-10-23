@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.1-beta.1](https://github.com/launchdarkly/launchdarkly-toolbar/compare/1.0.0-beta.1...1.0.1-beta.1) (2025-10-23)
+
+
+### Bug Fixes
+
+* use composedPath for auto-collapse click detection ([#215](https://github.com/launchdarkly/launchdarkly-toolbar/issues/215)) ([2e11db0](https://github.com/launchdarkly/launchdarkly-toolbar/commit/2e11db0f0a4ffdd106641a5630c2eb4928e565ed))
+
 ## [1.0.0-beta.1](https://github.com/launchdarkly/launchdarkly-toolbar/compare/0.26.0-beta.1...1.0.0-beta.1) (2025-10-21)
 
 
