@@ -31,7 +31,7 @@ export function useToolbarAnimations(props: UseToolbarAnimationsProps): UseToolb
   const containerAnimations = useMemo(
     () => ({
       width: isExpanded ? DIMENSIONS.expanded.width : DIMENSIONS.collapsed.width,
-      height: isExpanded ? DIMENSIONS.expanded.height : DIMENSIONS.collapsed.height,
+      height: isExpanded ? 'fit-content' : DIMENSIONS.collapsed.height,
       borderRadius: isExpanded ? DIMENSIONS.expanded.borderRadius : DIMENSIONS.collapsed.borderRadius,
       scale: isExpanded ? DIMENSIONS.scale.expanded : DIMENSIONS.scale.collapsed,
       boxShadow: isExpanded ? SHADOWS.expanded : SHADOWS.collapsed,
