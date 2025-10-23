@@ -67,6 +67,7 @@ export function TabContentRenderer(props: TabContentRendererProps) {
 
   return (
     <motion.div
+      style={{ height: '450px' }}
       key={activeTab}
       initial={{
         opacity: 0,
