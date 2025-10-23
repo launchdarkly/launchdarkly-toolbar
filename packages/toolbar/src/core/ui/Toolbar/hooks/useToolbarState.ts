@@ -148,8 +148,15 @@ export function useToolbarState(props: UseToolbarStateProps): UseToolbarStateRet
   // Handle click outside to close toolbar (only when auto-collapse is enabled)
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      const node = event.target as HTMLElement;
-      if (isExpanded && isAutoCollapseEnabled && toolbarRef.current && node.id !== domId) {
+      /**
+       * composedPath() is used to reliably detect clicks across Shadow DOM boundaries.
+       * It provides the full event path including shadow DOM internals, allowing us to
+       * reliably detect whether a click occurred inside the toolbar.
+       */
+      const path = event.composedPath();
+      const clickedInsideToolbar = path.some((el) => (el as HTMLElement).id === domId);
+
+      if (isExpanded && isAutoCollapseEnabled && toolbarRef.current && !clickedInsideToolbar) {
         // Track toolbar collapse from click outside
         analytics.trackToolbarToggle('collapse', 'click_outside');
         setIsExpanded(false);
