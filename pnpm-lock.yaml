@@ -107,7 +107,7 @@ importers:
     dependencies:
       '@launchpad-ui/components':
         specifier: 0.16.12
-        version: 0.16.12(@react-aria/focus@3.21.2(react-dom@19.2.0(react@19.2.0))(react@19.2.0))(@react-aria/interactions@3.25.6(react-dom@19.2.0(react@19.2.0))(react@19.2.0))(@react-aria/utils@3.31.0(react-dom@19.2.0(react@19.2.0))(react@19.2.0))(@react-stately/utils@3.10.8(react@19.2.0))(@react-types/shared@3.32.1(react@19.2.0))(react-aria-components@1.13.0(react-dom@19.2.0(react@19.2.0))(react@19.2.0))(react-aria@3.44.0(react-dom@19.2.0(react@19.2.0))(react@19.2.0))(react-dom@19.2.0(react@19.2.0))(react-hook-form@7.59.0(react@19.2.0))(react-router@7.5.2(react-dom@19.2.0(react@19.2.0))(react@19.2.0))(react-stately@3.42.0(react@19.2.0))(react@19.2.0)
+        version: 0.16.12(@react-aria/focus@3.21.2(react-dom@19.2.0(react@19.2.0))(react@19.2.0))(@react-aria/interactions@3.25.6(react-dom@19.2.0(react@19.2.0))(react@19.2.0))(@react-aria/utils@3.31.0(react-dom@19.2.0(react@19.2.0))(react@19.2.0))(@react-stately/utils@3.10.8(react@19.2.0))(@react-types/shared@3.32.1(react@19.2.0))(react-aria-components@1.13.0(react-dom@19.2.0(react@19.2.0))(react@19.2.0))(react-aria@3.44.0(react-dom@19.2.0(react@19.2.0))(react@19.2.0))(react-dom@19.2.0(react@19.2.0))(react-hook-form@7.65.0(react@19.2.0))(react-router@7.5.2(react-dom@19.2.0(react@19.2.0))(react@19.2.0))(react-stately@3.42.0(react@19.2.0))(react@19.2.0)
       '@launchpad-ui/tokens':
         specifier: 0.15.1
         version: 0.15.1
@@ -157,8 +157,8 @@ importers:
         specifier: 19.2.0
         version: 19.2.0(react@19.2.0)
       react-hook-form:
-        specifier: 7.59.0
-        version: 7.59.0(react@19.2.0)
+        specifier: 7.65.0
+        version: 7.65.0(react@19.2.0)
       react-router:
         specifier: 7.5.2
         version: 7.5.2(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
@@ -3776,8 +3776,8 @@ packages:
     peerDependencies:
       react: ^19.2.0
 
-  react-hook-form@7.59.0:
-    resolution: {integrity: sha512-kmkek2/8grqarTJExFNjy+RXDIP8yM+QTl3QL6m6Q8b2bih4ltmiXxH7T9n+yXNK477xPh5yZT/6vD8sYGzJTA==}
+  react-hook-form@7.65.0:
+    resolution: {integrity: sha512-xtOzDz063WcXvGWaHgLNrNzlsdFgtUWcb32E6WFaGTd7kPZG3EeDusjdZfUsPwKCKVXy1ZlntifaHZ4l8pAsmw==}
     engines: {node: '>=18.0.0'}
     peerDependencies:
       react: ^16.8.0 || ^17 || ^18 || ^19
@@ -5103,7 +5103,7 @@ snapshots:
       '@jsonjoy.com/codegen': 1.0.0(tslib@2.8.1)
       tslib: 2.8.1
 
-  '@launchpad-ui/components@0.16.12(@react-aria/focus@3.21.2(react-dom@19.2.0(react@19.2.0))(react@19.2.0))(@react-aria/interactions@3.25.6(react-dom@19.2.0(react@19.2.0))(react@19.2.0))(@react-aria/utils@3.31.0(react-dom@19.2.0(react@19.2.0))(react@19.2.0))(@react-stately/utils@3.10.8(react@19.2.0))(@react-types/shared@3.32.1(react@19.2.0))(react-aria-components@1.13.0(react-dom@19.2.0(react@19.2.0))(react@19.2.0))(react-aria@3.44.0(react-dom@19.2.0(react@19.2.0))(react@19.2.0))(react-dom@19.2.0(react@19.2.0))(react-hook-form@7.59.0(react@19.2.0))(react-router@7.5.2(react-dom@19.2.0(react@19.2.0))(react@19.2.0))(react-stately@3.42.0(react@19.2.0))(react@19.2.0)':
+  '@launchpad-ui/components@0.16.12(@react-aria/focus@3.21.2(react-dom@19.2.0(react@19.2.0))(react@19.2.0))(@react-aria/interactions@3.25.6(react-dom@19.2.0(react@19.2.0))(react@19.2.0))(@react-aria/utils@3.31.0(react-dom@19.2.0(react@19.2.0))(react@19.2.0))(@react-stately/utils@3.10.8(react@19.2.0))(@react-types/shared@3.32.1(react@19.2.0))(react-aria-components@1.13.0(react-dom@19.2.0(react@19.2.0))(react@19.2.0))(react-aria@3.44.0(react-dom@19.2.0(react@19.2.0))(react@19.2.0))(react-dom@19.2.0(react@19.2.0))(react-hook-form@7.65.0(react@19.2.0))(react-router@7.5.2(react-dom@19.2.0(react@19.2.0))(react@19.2.0))(react-stately@3.42.0(react@19.2.0))(react@19.2.0)':
     dependencies:
       '@internationalized/date': 3.10.0
       '@launchpad-ui/icons': 0.24.7(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
@@ -5118,7 +5118,7 @@ snapshots:
       react-aria: 3.44.0(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
       react-aria-components: 1.13.0(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
       react-dom: 19.2.0(react@19.2.0)
-      react-hook-form: 7.59.0(react@19.2.0)
+      react-hook-form: 7.65.0(react@19.2.0)
       react-router: 7.5.2(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
       react-stately: 3.42.0(react@19.2.0)
 
@@ -8802,7 +8802,7 @@ snapshots:
       react: 19.2.0
       scheduler: 0.27.0
 
-  react-hook-form@7.59.0(react@19.2.0):
+  react-hook-form@7.65.0(react@19.2.0):
     dependencies:
       react: 19.2.0
 
