@@ -32,7 +32,7 @@ export default defineConfig({
     injectStyles: true,
     target: 'web',
     minify: true,
-    sourceMap: true,
+    sourceMap: false,
   },
   plugins: [pluginReact()],
   tools: {
