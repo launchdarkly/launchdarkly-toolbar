@@ -70,10 +70,8 @@
     "@vanilla-extract/webpack-plugin": "^2.3.22",
     "class-variance-authority": "^0.7.1",
     "motion": "^12.19.2",
-    "react": "19.2.0",
     "react-aria": "3.44.0",
     "react-aria-components": "1.13.0",
-    "react-dom": "19.2.0",
     "react-hook-form": "7.65.0",
     "react-router": "7.5.2"
   },
@@ -103,6 +101,7 @@
     "launchdarkly-js-client-sdk": "^3.9.0",
     "oxlint": "^1.23.0",
     "react": "^19.1.1",
+    "react-dom": "^19.1.1",
     "storybook": "^9.1.13",
     "storybook-addon-rslib": "^2.1.2",
     "storybook-react-rsbuild": "^2.0.0",
@@ -111,7 +110,8 @@
   },
   "peerDependencies": {
     "launchdarkly-js-client-sdk": "^3.9.0",
-    "react": ">=18"
+    "react": "^18.0.0 || ^19.0.0",
+    "react-dom": "^18.0.0 || ^19.0.0"
   },
   "publishConfig": {
     "access": "public"
