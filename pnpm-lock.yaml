@@ -150,9 +150,6 @@ importers:
       react-aria-components:
         specifier: 1.13.0
         version: 1.13.0(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
-      react-dom:
-        specifier: 19.2.0
-        version: 19.2.0(react@19.2.0)
       react-hook-form:
         specifier: 7.65.0
         version: 7.65.0(react@19.2.0)
@@ -232,6 +229,9 @@ importers:
       react:
         specifier: ^19.1.1
         version: 19.2.0
+      react-dom:
+        specifier: ^19.1.1
+        version: 19.2.0(react@19.2.0)
       storybook:
         specifier: ^9.1.13
         version: 9.1.13(@testing-library/dom@10.4.0)(msw@2.11.5(@types/node@24.9.1)(typescript@5.8.3))(prettier@3.6.2)(vite@7.1.11(@types/node@24.9.1)(jiti@2.6.1)(terser@5.44.0)(tsx@4.20.6))
