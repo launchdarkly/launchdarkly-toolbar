@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.0.2-beta.1](https://github.com/launchdarkly/launchdarkly-toolbar/compare/1.0.1-beta.1...1.0.2-beta.1) (2025-10-23)
+
+
+### Bug Fixes
+
+* [REL-10308] consistent toolbar height ([#217](https://github.com/launchdarkly/launchdarkly-toolbar/issues/217)) ([8f4755e](https://github.com/launchdarkly/launchdarkly-toolbar/commit/8f4755eaed661060b5f779f7bd33101db02af921))
+* [REL-10339] update react, react-dom to be peer deps ([#218](https://github.com/launchdarkly/launchdarkly-toolbar/issues/218)) ([098cc91](https://github.com/launchdarkly/launchdarkly-toolbar/commit/098cc911eec2c49417e8e5459469c91b240253c9))
+
 ## [1.0.1-beta.1](https://github.com/launchdarkly/launchdarkly-toolbar/compare/1.0.0-beta.1...1.0.1-beta.1) (2025-10-23)
 
 
