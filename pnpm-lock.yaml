@@ -182,8 +182,8 @@ importers:
         specifier: ^9.0.0-alpha.10
         version: 9.0.0-alpha.10(storybook@9.1.13(@testing-library/dom@10.4.0)(msw@2.11.5(@types/node@24.9.1)(typescript@5.8.3))(prettier@3.6.2)(vite@7.1.11(@types/node@24.9.1)(jiti@2.6.1)(terser@5.44.0)(tsx@4.20.6)))
       '@storybook/addon-links':
-        specifier: ^9.0.5
-        version: 9.1.8(react@19.2.0)(storybook@9.1.13(@testing-library/dom@10.4.0)(msw@2.11.5(@types/node@24.9.1)(typescript@5.8.3))(prettier@3.6.2)(vite@7.1.11(@types/node@24.9.1)(jiti@2.6.1)(terser@5.44.0)(tsx@4.20.6)))
+        specifier: ^9.1.13
+        version: 9.1.13(react@19.2.0)(storybook@9.1.13(@testing-library/dom@10.4.0)(msw@2.11.5(@types/node@24.9.1)(typescript@5.8.3))(prettier@3.6.2)(vite@7.1.11(@types/node@24.9.1)(jiti@2.6.1)(terser@5.44.0)(tsx@4.20.6)))
       '@storybook/addon-onboarding':
         specifier: ^9.0.5
         version: 9.1.8(storybook@9.1.13(@testing-library/dom@10.4.0)(msw@2.11.5(@types/node@24.9.1)(typescript@5.8.3))(prettier@3.6.2)(vite@7.1.11(@types/node@24.9.1)(jiti@2.6.1)(terser@5.44.0)(tsx@4.20.6)))
@@ -1770,11 +1770,11 @@ packages:
     peerDependencies:
       storybook: ^9.0.0-alpha.10
 
-  '@storybook/addon-links@9.1.8':
-    resolution: {integrity: sha512-+XJiYO3Cu79nTMnkybA4ORjSbQfKvVyVer1TC6cDJC7AGVe0FpdgGu2ZWIn3edUmQHLPwovd6B+5pU4VH5tgPQ==}
+  '@storybook/addon-links@9.1.13':
+    resolution: {integrity: sha512-wx33RA5PPRSepVAjR0hMFp2IXoPgjwNAHIP92aoi2QQFS3+NHlf1I4vXEPpHU6lc0WBwM43qvLSI0qTAyZd8Nw==}
     peerDependencies:
       react: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0-beta
-      storybook: ^9.1.8
+      storybook: ^9.1.13
     peerDependenciesMeta:
       react:
         optional: true
@@ -6515,7 +6515,7 @@ snapshots:
       storybook: 9.1.13(@testing-library/dom@10.4.0)(msw@2.11.5(@types/node@24.9.1)(typescript@5.8.3))(prettier@3.6.2)(vite@7.1.11(@types/node@24.9.1)(jiti@2.6.1)(terser@5.44.0)(tsx@4.20.6))
       ts-dedent: 2.2.0
 
-  '@storybook/addon-links@9.1.8(react@19.2.0)(storybook@9.1.13(@testing-library/dom@10.4.0)(msw@2.11.5(@types/node@24.9.1)(typescript@5.8.3))(prettier@3.6.2)(vite@7.1.11(@types/node@24.9.1)(jiti@2.6.1)(terser@5.44.0)(tsx@4.20.6)))':
+  '@storybook/addon-links@9.1.13(react@19.2.0)(storybook@9.1.13(@testing-library/dom@10.4.0)(msw@2.11.5(@types/node@24.9.1)(typescript@5.8.3))(prettier@3.6.2)(vite@7.1.11(@types/node@24.9.1)(jiti@2.6.1)(terser@5.44.0)(tsx@4.20.6)))':
     dependencies:
       '@storybook/global': 5.0.0
       storybook: 9.1.13(@testing-library/dom@10.4.0)(msw@2.11.5(@types/node@24.9.1)(typescript@5.8.3))(prettier@3.6.2)(vite@7.1.11(@types/node@24.9.1)(jiti@2.6.1)(terser@5.44.0)(tsx@4.20.6))
