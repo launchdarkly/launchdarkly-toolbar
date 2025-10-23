@@ -6,6 +6,7 @@ import { SettingsTabContent } from '../TabContent/SettingsTabContent';
 import { ANIMATION_CONFIG, DIMENSIONS } from '../constants';
 import { TabId, ToolbarMode } from '../types';
 import { IEventInterceptionPlugin, IFlagOverridePlugin } from '../../../../types';
+import * as styles from './TabContentRenderer.css';
 
 interface TabContentRendererProps {
   activeTab: TabId;
@@ -67,7 +68,7 @@ export function TabContentRenderer(props: TabContentRendererProps) {
 
   return (
     <motion.div
-      style={{ height: '450px' }}
+      className={styles.tabContent}
       key={activeTab}
       initial={{
         opacity: 0,
