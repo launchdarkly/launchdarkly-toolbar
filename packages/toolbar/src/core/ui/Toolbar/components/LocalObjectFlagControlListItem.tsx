@@ -6,11 +6,12 @@ import { useState } from 'react';
 
 import * as sharedStyles from '../TabContent/FlagDevServerTabContent.css';
 import { JsonEditor } from '../../JsonEditor/JsonEditor';
+import { ViewUpdate } from '@codemirror/view';
 
 interface LocalObjectFlagControlListItemProps {
   handleClearOverride: (key: string) => void;
   handleOverride: (flagKey: string, value: any) => void;
-  handleEditingChange: (index: number) => void;
+  handleEditingChange: (index: number, isEditing: boolean) => void;
   flag: LocalFlag;  
   key: number | string | bigint;
   index: number;
@@ -31,15 +32,18 @@ export function LocalObjectFlagControlListItem(props: LocalObjectFlagControlList
   const handleEdit = () => {
     setTempValue(currentValue);
     setIsEditing(true);
-    handleEditingChange(index);
+    handleEditingChange(index, true);
   };
 
   const handleConfirm = () => {
+    handleOverride(flag.key, JSON.parse(tempValue));
     setIsEditing(false);
+    handleEditingChange(index, false);
   };
 
   const handleCancel = () => {
     setIsEditing(false);
+    handleEditingChange(index, false);
   };
 
   return (

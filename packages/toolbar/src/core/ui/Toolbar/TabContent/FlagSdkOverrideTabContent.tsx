@@ -106,9 +106,13 @@ function FlagSdkOverrideTabContentInner(props: FlagSdkOverrideTabContentInnerPro
     }
   };
 
-  const handleEditingChange = (index: number) => {
+  const handleEditingChange = (index: number, isEditing: boolean) => {
     virtualizer.measure();
-    virtualizer.resizeItem(index, 250);
+    if (isEditing) {
+      virtualizer.resizeItem(index, 150);
+    } else {
+      virtualizer.resizeItem(index, 65);
+    }
   };
 
   const renderFlagControl = (flag: LocalFlag) => {

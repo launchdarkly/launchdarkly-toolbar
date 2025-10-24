@@ -42,16 +42,18 @@ export function JsonEditor(props: JsonEditorProps) {
   );
 
   useEffect(() => {
-    if (containerRef.current) {
+    if (containerRef.current && !editorRef.current) {
+      const extensions = [EditorView.updateListener.of(onChangeCallback), lineNumbers(), json()];
       const state = EditorState.create({
         doc: docString,
         selection: initialState?.startCursorAtLine ? { anchor: initialState.startCursorAtLine } : undefined,
+        extensions,
       });
 
       editorRef.current = new EditorView({
         state,
         parent: containerRef.current,
-        extensions: [EditorView.updateListener.of(onChangeCallback), lineNumbers(), json()],
+        extensions,
       });
     }
   }, [docString, initialState, onChangeCallback]);
