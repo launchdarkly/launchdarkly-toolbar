@@ -78,7 +78,7 @@
   "devDependencies": {
     "@rsbuild/core": "^1.5.17",
     "@rsbuild/plugin-react": "^1.4.1",
-    "@rslib/core": "^0.15.1",
+    "@rslib/core": "^0.16.1",
     "@storybook/addon-docs": "^9.0.5",
     "@storybook/addon-essentials": "^9.0.0-alpha.12",
     "@storybook/addon-interactions": "^9.0.0-alpha.10",
