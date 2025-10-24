@@ -2,6 +2,8 @@ import { EditorState, Annotation } from '@codemirror/state';
 import { EditorView, lineNumbers, ViewUpdate } from '@codemirror/view';
 import { json } from '@codemirror/lang-json';
 import { useCallback, useEffect, useRef } from 'react';
+import * as styles from './JsonEditor.css';
+import { getThemeForMode } from './theme';
 
 interface JsonEditorProps {
   id: string;
@@ -43,7 +45,8 @@ export function JsonEditor(props: JsonEditorProps) {
 
   useEffect(() => {
     if (containerRef.current && !editorRef.current) {
-      const extensions = [EditorView.updateListener.of(onChangeCallback), lineNumbers(), json()];
+      const theme = getThemeForMode();
+      const extensions = [EditorView.updateListener.of(onChangeCallback), lineNumbers(), json(), ...theme];
       const state = EditorState.create({
         doc: docString,
         selection: initialState?.startCursorAtLine ? { anchor: initialState.startCursorAtLine } : undefined,
@@ -75,6 +78,7 @@ export function JsonEditor(props: JsonEditorProps) {
 
   return (
     <div
+      className={styles.jsonEditor}
       role="textbox"
       data-enable-grammarly="false"
       id={id}
