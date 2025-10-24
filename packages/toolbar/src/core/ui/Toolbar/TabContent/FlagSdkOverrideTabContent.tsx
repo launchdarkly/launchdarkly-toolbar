@@ -5,10 +5,7 @@ import { ListItem } from '../../List/ListItem';
 import { useSearchContext, useAnalytics } from '../context';
 import { FlagSdkOverrideProvider, useFlagSdkOverrideContext } from '../context';
 import { GenericHelpText } from '../components/GenericHelpText';
-import {
-  LocalBooleanFlagControl,
-  LocalStringNumberFlagControl,
-} from '../components/LocalFlagControls';
+import { LocalBooleanFlagControl, LocalStringNumberFlagControl } from '../components/LocalFlagControls';
 import { OverrideIndicator } from '../components/OverrideIndicator';
 import { ActionButtonsContainer } from '../components';
 import { VIRTUALIZATION } from '../constants';
@@ -109,8 +106,9 @@ function FlagSdkOverrideTabContentInner(props: FlagSdkOverrideTabContentInnerPro
     }
   };
 
-  const handleEditingChange = (isEditing: boolean) => {
+  const handleEditingChange = (index: number) => {
     virtualizer.measure();
+    virtualizer.resizeItem(index, 250);
   };
 
   const renderFlagControl = (flag: LocalFlag) => {
@@ -193,7 +191,18 @@ function FlagSdkOverrideTabContentInner(props: FlagSdkOverrideTabContentInnerPro
                   const [flagKey, flag] = entry;
 
                   if (flag.type === 'object') {
-                    return <LocalObjectFlagControlListItem handleEditingChange={handleEditingChange} flag={flag} key={virtualItem.key} size={virtualItem.size} start={virtualItem.start} handleClearOverride={handleClearOverride} handleOverride={handleSetOverride} />;
+                    return (
+                      <LocalObjectFlagControlListItem
+                        handleEditingChange={handleEditingChange}
+                        flag={flag}
+                        key={virtualItem.key}
+                        index={virtualItem.index}
+                        start={virtualItem.start}
+                        size={virtualItem.size}
+                        handleClearOverride={handleClearOverride}
+                        handleOverride={handleSetOverride}
+                      />
+                    );
                   }
 
                   return (
@@ -201,7 +210,7 @@ function FlagSdkOverrideTabContentInner(props: FlagSdkOverrideTabContentInnerPro
                       key={virtualItem.key}
                       className={sharedStyles.virtualItem}
                       style={{
-                        height: `60px`,
+                        height: `${virtualItem.size}px`,
                         transform: `translateY(${virtualItem.start}px)`,
                         borderBottom: '1px solid var(--lp-color-gray-800)',
                       }}

@@ -141,11 +141,17 @@ export function LocalObjectFlagControl(props: LocalObjectFlagControlProps) {
     <div>
       <div className={sharedStyles.customVariantContainer} data-testid={`flag-control-${flag.key}`}>
         {!isEditing ? (
-          <Button onClick={handleEdit} data-testid={`flag-edit-${flag.key}`}>Edit JSON</Button>
+          <Button onClick={handleEdit} data-testid={`flag-edit-${flag.key}`}>
+            Edit JSON
+          </Button>
         ) : (
           <>
-            <Button onClick={handleConfirm} data-testid={`flag-confirm-${flag.key}`}>Confirm</Button>
-            <Button onClick={handleCancel} data-testid={`flag-cancel-${flag.key}`}>Cancel</Button>
+            <Button onClick={handleConfirm} data-testid={`flag-confirm-${flag.key}`}>
+              Confirm
+            </Button>
+            <Button onClick={handleCancel} data-testid={`flag-cancel-${flag.key}`}>
+              Cancel
+            </Button>
           </>
         )}
       </div>
