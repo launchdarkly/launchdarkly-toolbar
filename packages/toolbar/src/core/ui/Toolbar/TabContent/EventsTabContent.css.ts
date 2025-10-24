@@ -119,7 +119,7 @@ export const eventBadgeDefault = style([
 ]);
 
 export const virtualContainer = style({
-  height: '400px',
+  height: '350px',
   overflow: 'auto',
   scrollbarColor: 'var(--lp-color-gray-800) transparent',
   scrollbarWidth: 'thin',
@@ -169,7 +169,7 @@ export const liveTailContainer = style({
   flexDirection: 'column',
   alignItems: 'center',
   justifyContent: 'center',
-  height: '400px',
+  height: '350px',
   gap: '12px',
   color: 'var(--lp-color-gray-400)',
 });

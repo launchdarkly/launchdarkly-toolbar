@@ -102,7 +102,7 @@ export const toolbarContent = style({
 export const contentArea = style({
   backgroundColor: 'var(--lp-color-gray-900)',
   overflow: 'hidden',
-  borderRadius: '12px',
+  borderRadius: '0px',
 });
 
 export const scrollableContent = style({
@@ -114,7 +114,7 @@ export const tabsContainer = style({
   alignItems: 'center',
   padding: '8px 8px',
   backgroundColor: 'var(--lp-color-gray-900)',
-  borderRadius: '12px',
+  borderRadius: '0px',
 });
 
 export const tabsContainerChild = style({
