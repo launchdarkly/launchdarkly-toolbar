@@ -1,5 +1,28 @@
 # Changelog
 
+## [1.0.3](https://github.com/launchdarkly/launchdarkly-toolbar/compare/1.0.2-beta.1...1.0.3-beta.1) (2025-10-24)
+
+
+### Bug Fixes
+
+* [REL-10230] preserve search term when toggling active tab ([#225](https://github.com/launchdarkly/launchdarkly-toolbar/issues/225)) ([46bc323](https://github.com/launchdarkly/launchdarkly-toolbar/commit/46bc323f4f41d777432b1b877add0eff3461b9b4))
+* preserve search term when toggling active tab ([46bc323](https://github.com/launchdarkly/launchdarkly-toolbar/commit/46bc323f4f41d777432b1b877add0eff3461b9b4))
+
+## [1.0.2-beta.1](https://github.com/launchdarkly/launchdarkly-toolbar/compare/1.0.1-beta.1...1.0.2-beta.1) (2025-10-23)
+
+
+### Bug Fixes
+
+* [REL-10308] consistent toolbar height ([#217](https://github.com/launchdarkly/launchdarkly-toolbar/issues/217)) ([8f4755e](https://github.com/launchdarkly/launchdarkly-toolbar/commit/8f4755eaed661060b5f779f7bd33101db02af921))
+* [REL-10339] update react, react-dom to be peer deps ([#218](https://github.com/launchdarkly/launchdarkly-toolbar/issues/218)) ([098cc91](https://github.com/launchdarkly/launchdarkly-toolbar/commit/098cc911eec2c49417e8e5459469c91b240253c9))
+
+## [1.0.1-beta.1](https://github.com/launchdarkly/launchdarkly-toolbar/compare/1.0.0-beta.1...1.0.1-beta.1) (2025-10-23)
+
+
+### Bug Fixes
+
+* use composedPath for auto-collapse click detection ([#215](https://github.com/launchdarkly/launchdarkly-toolbar/issues/215)) ([2e11db0](https://github.com/launchdarkly/launchdarkly-toolbar/commit/2e11db0f0a4ffdd106641a5630c2eb4928e565ed))
+
 ## [1.0.0-beta.1](https://github.com/launchdarkly/launchdarkly-toolbar/compare/0.26.0-beta.1...1.0.0-beta.1) (2025-10-21)
 
 
