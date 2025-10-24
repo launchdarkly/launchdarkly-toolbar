@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.0.3-beta.1](https://github.com/launchdarkly/launchdarkly-toolbar/compare/1.0.2-beta.1...1.0.3-beta.1) (2025-10-24)
+
+
+### Bug Fixes
+
+* [REL-10230] preserve search term when toggling active tab ([#225](https://github.com/launchdarkly/launchdarkly-toolbar/issues/225)) ([46bc323](https://github.com/launchdarkly/launchdarkly-toolbar/commit/46bc323f4f41d777432b1b877add0eff3461b9b4))
+* preserve search term when toggling active tab ([46bc323](https://github.com/launchdarkly/launchdarkly-toolbar/commit/46bc323f4f41d777432b1b877add0eff3461b9b4))
+
 ## [1.0.2-beta.1](https://github.com/launchdarkly/launchdarkly-toolbar/compare/1.0.1-beta.1...1.0.2-beta.1) (2025-10-23)
 
 
