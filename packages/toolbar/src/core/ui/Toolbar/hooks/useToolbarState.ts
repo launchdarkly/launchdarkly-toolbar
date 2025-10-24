@@ -70,9 +70,6 @@ export function useToolbarState(props: UseToolbarStateProps): UseToolbarStateRet
       // Prevent tab changes during container expansion/collapse animation
       if (isAnimating) return;
 
-      setSearchIsExpanded(false);
-      setSearchTerm('');
-
       const newTabId = tabId as TabId;
 
       // If clicking the currently active tab, toggle the toolbar
@@ -82,6 +79,10 @@ export function useToolbarState(props: UseToolbarStateProps): UseToolbarStateRet
         setIsExpanded(false);
         return;
       }
+
+      // Only clear search when actually changing tabs
+      setSearchIsExpanded(false);
+      setSearchTerm('');
 
       // Track tab change analytics
       analytics.trackTabChange(activeTab || null, newTabId);
