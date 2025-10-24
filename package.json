@@ -27,7 +27,7 @@
     "test:e2e:local:ui": "TEST_ENV=local playwright test --ui --config=./e2e/playwright.config.ts"
   },
   "devDependencies": {
-    "@playwright/test": "^1.53.1",
+    "@playwright/test": "^1.56.1",
     "@types/node": "^24.9.1",
     "http-server": "^14.1.1",
     "prettier": "^3.5.3",
