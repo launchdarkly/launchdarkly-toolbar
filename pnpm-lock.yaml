@@ -107,7 +107,7 @@ importers:
     dependencies:
       '@launchpad-ui/components':
         specifier: 0.16.12
-        version: 0.16.12(@react-aria/focus@3.21.2(react-dom@19.2.0(react@19.2.0))(react@19.2.0))(@react-aria/interactions@3.25.6(react-dom@19.2.0(react@19.2.0))(react@19.2.0))(@react-aria/utils@3.31.0(react-dom@19.2.0(react@19.2.0))(react@19.2.0))(@react-stately/utils@3.10.8(react@19.2.0))(@react-types/shared@3.32.1(react@19.2.0))(react-aria-components@1.13.0(react-dom@19.2.0(react@19.2.0))(react@19.2.0))(react-aria@3.44.0(react-dom@19.2.0(react@19.2.0))(react@19.2.0))(react-dom@19.2.0(react@19.2.0))(react-hook-form@7.65.0(react@19.2.0))(react-router@7.5.2(react-dom@19.2.0(react@19.2.0))(react@19.2.0))(react-stately@3.42.0(react@19.2.0))(react@19.2.0)
+        version: 0.16.12(@react-aria/focus@3.21.2(react-dom@19.2.0(react@19.2.0))(react@19.2.0))(@react-aria/interactions@3.25.6(react-dom@19.2.0(react@19.2.0))(react@19.2.0))(@react-aria/utils@3.31.0(react-dom@19.2.0(react@19.2.0))(react@19.2.0))(@react-stately/utils@3.10.8(react@19.2.0))(@react-types/shared@3.32.1(react@19.2.0))(react-aria-components@1.13.0(react-dom@19.2.0(react@19.2.0))(react@19.2.0))(react-aria@3.44.0(react-dom@19.2.0(react@19.2.0))(react@19.2.0))(react-dom@19.2.0(react@19.2.0))(react-hook-form@7.65.0(react@19.2.0))(react-router@7.9.4(react-dom@19.2.0(react@19.2.0))(react@19.2.0))(react-stately@3.42.0(react@19.2.0))(react@19.2.0)
       '@launchpad-ui/tokens':
         specifier: 0.15.1
         version: 0.15.1
@@ -154,8 +154,8 @@ importers:
         specifier: 7.65.0
         version: 7.65.0(react@19.2.0)
       react-router:
-        specifier: 7.5.2
-        version: 7.5.2(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
+        specifier: 7.9.4
+        version: 7.9.4(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
     devDependencies:
       '@rsbuild/core':
         specifier: ^1.5.17
@@ -3937,16 +3937,6 @@ packages:
       react: '>=18'
       react-dom: '>=18'
 
-  react-router@7.5.2:
-    resolution: {integrity: sha512-9Rw8r199klMnlGZ8VAsV/I8WrIF6IyJ90JQUdboupx1cdkgYqwnrYjH+I/nY/7cA1X5zia4mDJqH36npP7sxGQ==}
-    engines: {node: '>=20.0.0'}
-    peerDependencies:
-      react: '>=18'
-      react-dom: '>=18'
-    peerDependenciesMeta:
-      react-dom:
-        optional: true
-
   react-router@7.9.4:
     resolution: {integrity: sha512-SD3G8HKviFHg9xj7dNODUKDFgpG4xqD5nhyd0mYoB5iISepuZAvzSr8ywxgxKJ52yRzf/HWtVHc9AWwoTbljvA==}
     engines: {node: '>=20.0.0'}
@@ -4445,9 +4435,6 @@ packages:
     resolution: {integrity: sha512-ytQKuwgmrrkDTFP4LjR0ToE2nqgy886GpvRSpU0JAnrdBYppuY5rLkRUYPU1yCryb24SsKBTL/hlDQAEFVwtZg==}
     engines: {node: '>=18.0.0'}
     hasBin: true
-
-  turbo-stream@2.4.0:
-    resolution: {integrity: sha512-FHncC10WpBd2eOmGwpmQsWLDoK4cqsA/UT/GqNoaKOQnT8uzhtCbg3EoUDMvqpOSAI0S26mr0rkjzbOO6S3v1g==}
 
   type-check@0.4.0:
     resolution: {integrity: sha512-XleUoc9uwGXqjWwXaUTZAmzMcFZ5858QA2vvx1Ur5xIcixXIP+8LnFDgRplU30us6teqdlskFfu+ae4K79Ooew==}
@@ -5309,7 +5296,7 @@ snapshots:
       '@jsonjoy.com/codegen': 1.0.0(tslib@2.8.1)
       tslib: 2.8.1
 
-  '@launchpad-ui/components@0.16.12(@react-aria/focus@3.21.2(react-dom@19.2.0(react@19.2.0))(react@19.2.0))(@react-aria/interactions@3.25.6(react-dom@19.2.0(react@19.2.0))(react@19.2.0))(@react-aria/utils@3.31.0(react-dom@19.2.0(react@19.2.0))(react@19.2.0))(@react-stately/utils@3.10.8(react@19.2.0))(@react-types/shared@3.32.1(react@19.2.0))(react-aria-components@1.13.0(react-dom@19.2.0(react@19.2.0))(react@19.2.0))(react-aria@3.44.0(react-dom@19.2.0(react@19.2.0))(react@19.2.0))(react-dom@19.2.0(react@19.2.0))(react-hook-form@7.65.0(react@19.2.0))(react-router@7.5.2(react-dom@19.2.0(react@19.2.0))(react@19.2.0))(react-stately@3.42.0(react@19.2.0))(react@19.2.0)':
+  '@launchpad-ui/components@0.16.12(@react-aria/focus@3.21.2(react-dom@19.2.0(react@19.2.0))(react@19.2.0))(@react-aria/interactions@3.25.6(react-dom@19.2.0(react@19.2.0))(react@19.2.0))(@react-aria/utils@3.31.0(react-dom@19.2.0(react@19.2.0))(react@19.2.0))(@react-stately/utils@3.10.8(react@19.2.0))(@react-types/shared@3.32.1(react@19.2.0))(react-aria-components@1.13.0(react-dom@19.2.0(react@19.2.0))(react@19.2.0))(react-aria@3.44.0(react-dom@19.2.0(react@19.2.0))(react@19.2.0))(react-dom@19.2.0(react@19.2.0))(react-hook-form@7.65.0(react@19.2.0))(react-router@7.9.4(react-dom@19.2.0(react@19.2.0))(react@19.2.0))(react-stately@3.42.0(react@19.2.0))(react@19.2.0)':
     dependencies:
       '@internationalized/date': 3.10.0
       '@launchpad-ui/icons': 0.24.7(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
@@ -5325,7 +5312,7 @@ snapshots:
       react-aria-components: 1.13.0(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
       react-dom: 19.2.0(react@19.2.0)
       react-hook-form: 7.65.0(react@19.2.0)
-      react-router: 7.5.2(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
+      react-router: 7.9.4(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
       react-stately: 3.42.0(react@19.2.0)
 
   '@launchpad-ui/icons@0.24.7(react-dom@19.2.0(react@19.2.0))(react@19.2.0)':
@@ -9157,15 +9144,6 @@ snapshots:
       react-dom: 19.1.1(react@19.1.1)
       react-router: 7.9.4(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
 
-  react-router@7.5.2(react-dom@19.2.0(react@19.2.0))(react@19.2.0):
-    dependencies:
-      cookie: 1.0.2
-      react: 19.2.0
-      set-cookie-parser: 2.7.1
-      turbo-stream: 2.4.0
-    optionalDependencies:
-      react-dom: 19.2.0(react@19.2.0)
-
   react-router@7.9.4(react-dom@19.1.1(react@19.1.1))(react@19.1.1):
     dependencies:
       cookie: 1.0.2
@@ -9173,6 +9151,14 @@ snapshots:
       set-cookie-parser: 2.7.1
     optionalDependencies:
       react-dom: 19.1.1(react@19.1.1)
+
+  react-router@7.9.4(react-dom@19.2.0(react@19.2.0))(react@19.2.0):
+    dependencies:
+      cookie: 1.0.2
+      react: 19.2.0
+      set-cookie-parser: 2.7.1
+    optionalDependencies:
+      react-dom: 19.2.0(react@19.2.0)
 
   react-stately@3.42.0(react@19.2.0):
     dependencies:
@@ -9785,8 +9771,6 @@ snapshots:
       get-tsconfig: 4.12.0
     optionalDependencies:
       fsevents: 2.3.3
-
-  turbo-stream@2.4.0: {}
 
   type-check@0.4.0:
     dependencies:
