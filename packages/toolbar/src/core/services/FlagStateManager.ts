@@ -52,7 +52,7 @@ export class FlagStateManager {
   private determineFlagType(
     variations: Variation[],
     currentValue: any,
-  ): 'boolean' | 'multivariate' | 'string' | 'number' {
+  ): 'boolean' | 'multivariate' | 'string' | 'number' | 'object' {
     // If we have exactly 2 variations and they're both boolean, it's a boolean flag
     if (variations.length === 2 && variations.every((v) => typeof v.value === 'boolean')) {
       return 'boolean';
@@ -70,6 +70,10 @@ export class FlagStateManager {
 
     if (typeof currentValue === 'number') {
       return 'number';
+    }
+
+    if (typeof currentValue === 'object') {
+      return 'object';
     }
 
     // Default to boolean for simple flags

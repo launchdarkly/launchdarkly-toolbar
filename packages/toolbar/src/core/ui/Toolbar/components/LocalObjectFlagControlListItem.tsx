@@ -9,12 +9,13 @@ import * as sharedStyles from '../TabContent/FlagDevServerTabContent.css';
 import { JsonEditor } from '../../JsonEditor/JsonEditor';
 import { EASING } from '../constants/animations';
 import { VIRTUALIZATION } from '../constants';
+import { EnhancedFlag } from '../../../types/devServer';
 
 interface LocalObjectFlagControlListItemProps {
   handleClearOverride: (key: string) => void;
   handleOverride: (flagKey: string, value: any) => void;
   handleHeightChange: (height: number) => void;
-  flag: LocalFlag;
+  flag: LocalFlag | EnhancedFlag;
   index: number;
   size: number;
   start: number;
@@ -61,13 +62,18 @@ export function LocalObjectFlagControlListItem(props: LocalObjectFlagControlList
       }}
     >
       <ListItem className={sharedStyles.flagListItemBlock}>
-        <div className={sharedStyles.flagListItem} style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between' }}>
+        <div
+          className={sharedStyles.flagListItem}
+          style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between' }}
+        >
           <div className={sharedStyles.flagHeader} style={{ display: 'flex', flexDirection: 'column' }}>
             <span className={sharedStyles.flagName}>
               <span data-testid={`flag-name-${flag.key}`}>{flag.name}</span>
               {flag.isOverridden && <OverrideIndicator onClear={() => handleClearOverride(flag.key)} />}
             </span>
-            <span className={sharedStyles.flagKey} data-testid={`flag-key-${flag.key}`}>{flag.key}</span>
+            <span className={sharedStyles.flagKey} data-testid={`flag-key-${flag.key}`}>
+              {flag.key}
+            </span>
           </div>
 
           <LocalObjectFlagControl

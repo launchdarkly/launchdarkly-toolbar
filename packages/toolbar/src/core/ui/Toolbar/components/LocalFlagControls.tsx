@@ -4,10 +4,12 @@ import { EditIcon, CheckIcon, XIcon } from './icons';
 import { IconButton } from './IconButton';
 import type { LocalFlag } from '../context';
 import { enableShadowDOM } from '@react-stately/flags';
-enableShadowDOM();
 
 import * as sharedStyles from './FlagControls.css';
 import * as styles from './LocalFlagControls.css';
+import { EnhancedFlag } from '../../../types/devServer';
+
+enableShadowDOM();
 
 interface LocalBooleanFlagControlProps {
   flag: LocalFlag;
@@ -127,7 +129,7 @@ export function LocalStringNumberFlagControl(props: LocalStringNumberFlagControl
 }
 
 interface LocalObjectFlagControlProps {
-  flag: LocalFlag;
+  flag: LocalFlag | EnhancedFlag;
   isEditing: boolean;
   handleEdit: () => void;
   handleConfirm: () => void;

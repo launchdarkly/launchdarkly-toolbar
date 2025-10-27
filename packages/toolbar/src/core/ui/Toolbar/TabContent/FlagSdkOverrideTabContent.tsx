@@ -108,15 +108,18 @@ function FlagSdkOverrideTabContentInner(props: FlagSdkOverrideTabContentInnerPro
     }
   };
 
-  const handleHeightChange = useCallback((index: number, height: number) => {
-    if (height > VIRTUALIZATION.ITEM_HEIGHT) {
-      virtualizer.resizeItem(index, height);
-    } else {
-      setTimeout(() => {
+  const handleHeightChange = useCallback(
+    (index: number, height: number) => {
+      if (height > VIRTUALIZATION.ITEM_HEIGHT) {
         virtualizer.resizeItem(index, height);
-      }, 125);
-    }
-  }, [virtualizer]);
+      } else {
+        setTimeout(() => {
+          virtualizer.resizeItem(index, height);
+        }, 125);
+      }
+    },
+    [virtualizer],
+  );
 
   const renderFlagControl = (flag: LocalFlag) => {
     const handleOverride = (value: any) => handleSetOverride(flag.key, value);
