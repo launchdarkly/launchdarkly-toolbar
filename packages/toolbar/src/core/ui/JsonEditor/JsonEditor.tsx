@@ -46,7 +46,7 @@ export function JsonEditor(props: JsonEditorProps) {
   useEffect(() => {
     if (containerRef.current && !editorRef.current) {
       const theme = getThemeForMode();
-      const extensions = [EditorView.updateListener.of(onChangeCallback), lineNumbers(), json(), ...theme];
+      const extensions = [EditorView.updateListener.of(onChangeCallback), json(), ...theme];
       const state = EditorState.create({
         doc: docString,
         selection: initialState?.startCursorAtLine ? { anchor: initialState.startCursorAtLine } : undefined,

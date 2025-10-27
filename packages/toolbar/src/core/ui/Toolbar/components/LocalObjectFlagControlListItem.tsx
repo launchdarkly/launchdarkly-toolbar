@@ -56,13 +56,15 @@ export function LocalObjectFlagControlListItem(props: LocalObjectFlagControlList
         borderBottom: '1px solid var(--lp-color-gray-800)',
       }}
     >
-      <ListItem>
-        <div className={sharedStyles.flagListItem}>
-          <span>
-            <span data-testid={`flag-name-${flag.key}`}>{flag.name}</span>
-            {flag.isOverridden && <OverrideIndicator onClear={() => handleClearOverride(flag.key)} />}
-          </span>
-          <span data-testid={`flag-key-${flag.key}`}>{flag.key}</span>
+      <ListItem className={sharedStyles.flagListItemBlock}>
+        <div className={sharedStyles.flagListItem} style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between' }}>
+          <div className={sharedStyles.flagHeader} style={{ display: 'flex', flexDirection: 'column' }}>
+            <span className={sharedStyles.flagName}>
+              <span data-testid={`flag-name-${flag.key}`}>{flag.name}</span>
+              {flag.isOverridden && <OverrideIndicator onClear={() => handleClearOverride(flag.key)} />}
+            </span>
+            <span className={sharedStyles.flagKey} data-testid={`flag-key-${flag.key}`}>{flag.key}</span>
+          </div>
 
           <LocalObjectFlagControl
             flag={flag}
@@ -72,8 +74,8 @@ export function LocalObjectFlagControlListItem(props: LocalObjectFlagControlList
             handleCancel={handleCancel}
             onOverride={() => handleOverride(flag.key, tempValue)}
           />
-
-          {isEditing && (
+        </div>
+        {isEditing && (
             <JsonEditor
               docString={tempValue}
               onChange={handleValueChange}
@@ -81,7 +83,6 @@ export function LocalObjectFlagControlListItem(props: LocalObjectFlagControlList
               id={`flag-input-${flag.key}`}
             />
           )}
-        </div>
       </ListItem>
     </div>
   );

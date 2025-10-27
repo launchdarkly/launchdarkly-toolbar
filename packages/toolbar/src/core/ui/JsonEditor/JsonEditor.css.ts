@@ -2,6 +2,7 @@ import { globalStyle, style } from '@vanilla-extract/css';
 
 export const jsonEditor = style({
   height: '100%',
+  width: '100%',
 });
 
 globalStyle('.cm-editor', {

@@ -146,8 +146,8 @@ export function LocalObjectFlagControl(props: LocalObjectFlagControlProps) {
           </Button>
         ) : (
           <>
-            <Button onClick={handleConfirm} data-testid={`flag-confirm-${flag.key}`}>
-              Confirm
+            <Button variant="primary" onClick={handleConfirm} data-testid={`flag-confirm-${flag.key}`}>
+              Save
             </Button>
             <Button onClick={handleCancel} data-testid={`flag-cancel-${flag.key}`}>
               Cancel

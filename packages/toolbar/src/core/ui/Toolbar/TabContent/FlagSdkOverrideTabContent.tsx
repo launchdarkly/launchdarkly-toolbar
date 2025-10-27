@@ -109,9 +109,9 @@ function FlagSdkOverrideTabContentInner(props: FlagSdkOverrideTabContentInnerPro
   const handleEditingChange = (index: number, isEditing: boolean) => {
     virtualizer.measure();
     if (isEditing) {
-      virtualizer.resizeItem(index, 150);
+      virtualizer.resizeItem(index, VIRTUALIZATION.EDITING_JSON_ITEM_HEIGHT);
     } else {
-      virtualizer.resizeItem(index, 65);
+      virtualizer.resizeItem(index, VIRTUALIZATION.ITEM_HEIGHT);
     }
   };
 
