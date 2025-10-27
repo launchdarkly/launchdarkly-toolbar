@@ -57,7 +57,8 @@ an easy and intuitive way to test local changes to the Developer Toolbar within 
 application. To set up the Demo application + Developer Toolbar to use one of your LaunchDarkly projects, copy
 the values in `.env.example` into a `.env` (or `.env.local`) file, and replace `VITE_LD_CLIENT_SIDE_ID` with the
 LaunchDarkly Client-Side ID of the project/environment you would like to test against.
-The other values in `env.example` are most likely fine as-is.
+The other values in `env.example` are most likely fine as-is. If you are planning on developing features for/testing using
+a local dev-server, ensure you also update `VITE_LD_DEV_SERVER_URL` and `VITE_LD_DEV_SERVER_URL_PROJECT_KEY` to valid values.
 
 ## Toolbar Integration Modes
 
@@ -196,7 +197,7 @@ The demo application is the best way to test your changes:
 **Testing Both Modes:**
 
 - **SDK Mode**: Test flag overrides, event interception, and real-time updates
-- **Dev Server Mode**: Test dev server connection, flag browsing, and CLI integration
+- **Dev Server Mode**: Test dev server connection, flag browsing + overrides (via the dev server), and CLI integration
 
 ## Testing
 
