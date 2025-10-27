@@ -1,5 +1,6 @@
 import { useRef, useState, useMemo, useCallback } from 'react';
 import { useVirtualizer } from '@tanstack/react-virtual';
+import { motion } from 'motion/react';
 import { List } from '../../List/List';
 import { ListItem } from '../../List/ListItem';
 import { useSearchContext, useAnalytics } from '../context';
@@ -9,6 +10,7 @@ import { LocalBooleanFlagControl, LocalStringNumberFlagControl } from '../compon
 import { OverrideIndicator } from '../components/OverrideIndicator';
 import { ActionButtonsContainer } from '../components';
 import { VIRTUALIZATION } from '../constants';
+import { EASING } from '../constants/animations';
 import type { LocalFlag } from '../context';
 
 import * as sharedStyles from './FlagDevServerTabContent.css';
@@ -106,14 +108,17 @@ function FlagSdkOverrideTabContentInner(props: FlagSdkOverrideTabContentInnerPro
     }
   };
 
-  const handleEditingChange = (index: number, isEditing: boolean) => {
-    virtualizer.measure();
+  const handleEditingChange = useCallback((index: number, isEditing: boolean) => {
     if (isEditing) {
+      // Immediately resize for expansion to prevent layout shift
       virtualizer.resizeItem(index, VIRTUALIZATION.EDITING_JSON_ITEM_HEIGHT);
     } else {
-      virtualizer.resizeItem(index, VIRTUALIZATION.ITEM_HEIGHT);
+      // Delay resize for collapse to allow animation to complete
+      setTimeout(() => {
+        virtualizer.resizeItem(index, VIRTUALIZATION.ITEM_HEIGHT);
+      }, 300); // Match animation duration
     }
-  };
+  }, [virtualizer]);
 
   const renderFlagControl = (flag: LocalFlag) => {
     const handleOverride = (value: any) => handleSetOverride(flag.key, value);
@@ -196,16 +201,32 @@ function FlagSdkOverrideTabContentInner(props: FlagSdkOverrideTabContentInnerPro
 
                   if (flag.type === 'object') {
                     return (
-                      <LocalObjectFlagControlListItem
-                        handleEditingChange={handleEditingChange}
-                        flag={flag}
+                      <motion.div
                         key={virtualItem.key}
-                        index={virtualItem.index}
-                        start={virtualItem.start}
-                        size={virtualItem.size}
-                        handleClearOverride={handleClearOverride}
-                        handleOverride={handleSetOverride}
-                      />
+                        layout
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -10 }}
+                        transition={{
+                          duration: 0.2,
+                          ease: EASING.smooth,
+                          layout: {
+                            duration: 0.25,
+                            ease: EASING.smooth,
+                          },
+                        }}
+                      >
+                        <LocalObjectFlagControlListItem
+                          handleEditingChange={handleEditingChange}
+                          flag={flag}
+                          key={virtualItem.key}
+                          index={virtualItem.index}
+                          start={virtualItem.start}
+                          size={virtualItem.size}
+                          handleClearOverride={handleClearOverride}
+                          handleOverride={handleSetOverride}
+                        />
+                      </motion.div>
                     );
                   }
 

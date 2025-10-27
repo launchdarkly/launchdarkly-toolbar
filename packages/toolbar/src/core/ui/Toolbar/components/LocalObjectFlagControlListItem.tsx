@@ -3,23 +3,24 @@ import { LocalFlag } from '../context';
 import { LocalObjectFlagControl } from './LocalFlagControls';
 import { OverrideIndicator } from './OverrideIndicator';
 import { useState } from 'react';
+import { motion, AnimatePresence } from 'motion/react';
 
 import * as sharedStyles from '../TabContent/FlagDevServerTabContent.css';
 import { JsonEditor } from '../../JsonEditor/JsonEditor';
+import { EASING } from '../constants/animations';
 
 interface LocalObjectFlagControlListItemProps {
   handleClearOverride: (key: string) => void;
   handleOverride: (flagKey: string, value: any) => void;
   handleEditingChange: (index: number, isEditing: boolean) => void;
   flag: LocalFlag;
-  key: number | string | bigint;
   index: number;
   size: number;
   start: number;
 }
 
 export function LocalObjectFlagControlListItem(props: LocalObjectFlagControlListItemProps) {
-  const { handleClearOverride, handleOverride, handleEditingChange, flag, key, index, size, start } = props;
+  const { handleClearOverride, handleOverride, handleEditingChange, flag, index, size, start } = props;
   const currentValue = JSON.stringify(flag.currentValue, null, 2);
   const [isEditing, setIsEditing] = useState(false);
   const [tempValue, setTempValue] = useState(currentValue);
@@ -47,7 +48,6 @@ export function LocalObjectFlagControlListItem(props: LocalObjectFlagControlList
 
   return (
     <div
-      key={key}
       data-testid={`flag-row-${flag.key}`}
       className={sharedStyles.virtualItem}
       style={{
@@ -75,14 +75,46 @@ export function LocalObjectFlagControlListItem(props: LocalObjectFlagControlList
             onOverride={() => handleOverride(flag.key, tempValue)}
           />
         </div>
-        {isEditing && (
-            <JsonEditor
-              docString={tempValue}
-              onChange={handleValueChange}
-              data-testid={`flag-input-${flag.key}`}
-              id={`flag-input-${flag.key}`}
-            />
+        <AnimatePresence mode="wait">
+          {isEditing && (
+            <motion.div
+              key={`json-editor-${flag.key}`}
+              initial={{
+                opacity: 0,
+                height: 0,
+                y: -10,
+              }}
+              animate={{
+                opacity: 1,
+                height: 'auto',
+                y: 0,
+              }}
+              exit={{
+                opacity: 0,
+                height: 0,
+                y: -10,
+              }}
+              transition={{
+                duration: 0.25,
+                ease: EASING.smooth,
+                height: {
+                  duration: 0.3,
+                  ease: EASING.smooth,
+                },
+              }}
+              style={{
+                overflow: 'hidden',
+              }}
+            >
+              <JsonEditor
+                docString={tempValue}
+                onChange={handleValueChange}
+                data-testid={`flag-input-${flag.key}`}
+                id={`flag-input-${flag.key}`}
+              />
+            </motion.div>
           )}
+        </AnimatePresence>
       </ListItem>
     </div>
   );
