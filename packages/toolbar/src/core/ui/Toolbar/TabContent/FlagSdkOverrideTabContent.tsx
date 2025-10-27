@@ -221,7 +221,6 @@ function FlagSdkOverrideTabContentInner(props: FlagSdkOverrideTabContentInnerPro
                           handleHeightChange={(height) => handleHeightChange(virtualItem.index, height)}
                           flag={flag}
                           key={virtualItem.key}
-                          index={virtualItem.index}
                           start={virtualItem.start}
                           size={virtualItem.size}
                           handleClearOverride={handleClearOverride}

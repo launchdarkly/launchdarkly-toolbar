@@ -16,13 +16,12 @@ interface LocalObjectFlagControlListItemProps {
   handleOverride: (flagKey: string, value: any) => void;
   handleHeightChange: (height: number) => void;
   flag: LocalFlag | EnhancedFlag;
-  index: number;
   size: number;
   start: number;
 }
 
 export function LocalObjectFlagControlListItem(props: LocalObjectFlagControlListItemProps) {
-  const { handleClearOverride, handleOverride, handleHeightChange, flag, index, size, start } = props;
+  const { handleClearOverride, handleOverride, handleHeightChange, flag, size, start } = props;
   const currentValue = JSON.stringify(flag.currentValue, null, 2);
   const [isEditing, setIsEditing] = useState(false);
   const [tempValue, setTempValue] = useState(currentValue);

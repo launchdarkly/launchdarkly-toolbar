@@ -158,7 +158,6 @@ export function FlagDevServerTabContent(props: FlagDevServerTabContentProps) {
                       <div key={virtualItem.key} className={styles.virtualItem}>
                         <LocalObjectFlagControlListItem
                           flag={flag}
-                          index={virtualItem.index}
                           size={virtualItem.size}
                           start={virtualItem.start}
                           handleOverride={handleSetOverride}
