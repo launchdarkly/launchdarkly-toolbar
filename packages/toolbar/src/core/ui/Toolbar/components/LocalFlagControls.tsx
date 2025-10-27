@@ -7,6 +7,7 @@ import { enableShadowDOM } from '@react-stately/flags';
 enableShadowDOM();
 
 import * as sharedStyles from './FlagControls.css';
+import * as styles from './LocalFlagControls.css';
 
 interface LocalBooleanFlagControlProps {
   flag: LocalFlag;
@@ -138,7 +139,7 @@ export function LocalObjectFlagControl(props: LocalObjectFlagControlProps) {
   const { flag, isEditing, handleEdit, handleConfirm, handleCancel } = props;
 
   return (
-    <div>
+    <div className={styles.editActionsContainer}>
       <div className={sharedStyles.customVariantContainer} data-testid={`flag-control-${flag.key}`}>
         {!isEditing ? (
           <Button onClick={handleEdit} data-testid={`flag-edit-${flag.key}`}>

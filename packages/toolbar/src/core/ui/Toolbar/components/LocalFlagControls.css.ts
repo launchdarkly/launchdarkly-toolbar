@@ -26,3 +26,10 @@ export const jsonParseError = style({
   fontSize: '12px',
   marginTop: '4px',
 });
+
+export const editActionsContainer = style({
+  display: 'flex',
+  justifyContent: 'flex-end',
+  gap: '4px',
+  marginTop: '4px',
+});

@@ -8,11 +8,12 @@ import { motion, AnimatePresence } from 'motion/react';
 import * as sharedStyles from '../TabContent/FlagDevServerTabContent.css';
 import { JsonEditor } from '../../JsonEditor/JsonEditor';
 import { EASING } from '../constants/animations';
+import { VIRTUALIZATION } from '../constants';
 
 interface LocalObjectFlagControlListItemProps {
   handleClearOverride: (key: string) => void;
   handleOverride: (flagKey: string, value: any) => void;
-  handleEditingChange: (index: number, isEditing: boolean) => void;
+  handleHeightChange: (height: number) => void;
   flag: LocalFlag;
   index: number;
   size: number;
@@ -20,7 +21,7 @@ interface LocalObjectFlagControlListItemProps {
 }
 
 export function LocalObjectFlagControlListItem(props: LocalObjectFlagControlListItemProps) {
-  const { handleClearOverride, handleOverride, handleEditingChange, flag, index, size, start } = props;
+  const { handleClearOverride, handleOverride, handleHeightChange, flag, index, size, start } = props;
   const currentValue = JSON.stringify(flag.currentValue, null, 2);
   const [isEditing, setIsEditing] = useState(false);
   const [tempValue, setTempValue] = useState(currentValue);
@@ -32,18 +33,21 @@ export function LocalObjectFlagControlListItem(props: LocalObjectFlagControlList
   const handleEdit = () => {
     setTempValue(currentValue);
     setIsEditing(true);
-    handleEditingChange(index, true);
   };
 
   const handleConfirm = () => {
     handleOverride(flag.key, JSON.parse(tempValue));
     setIsEditing(false);
-    handleEditingChange(index, false);
+    handleHeightChange(VIRTUALIZATION.ITEM_HEIGHT);
   };
 
   const handleCancel = () => {
     setIsEditing(false);
-    handleEditingChange(index, false);
+    handleHeightChange(VIRTUALIZATION.ITEM_HEIGHT);
+  };
+
+  const handleEditorExpand = (height: number) => {
+    handleHeightChange(VIRTUALIZATION.ITEM_HEIGHT + height + 20); // 20px for padding
   };
 
   return (
@@ -111,6 +115,7 @@ export function LocalObjectFlagControlListItem(props: LocalObjectFlagControlList
                 onChange={handleValueChange}
                 data-testid={`flag-input-${flag.key}`}
                 id={`flag-input-${flag.key}`}
+                onEditorExpand={handleEditorExpand}
               />
             </motion.div>
           )}

@@ -1,5 +1,5 @@
 import { EditorState, Annotation } from '@codemirror/state';
-import { EditorView, lineNumbers, ViewUpdate } from '@codemirror/view';
+import { EditorView, ViewUpdate } from '@codemirror/view';
 import { json } from '@codemirror/lang-json';
 import { useCallback, useEffect, useRef } from 'react';
 import * as styles from './JsonEditor.css';
@@ -15,12 +15,13 @@ interface JsonEditorProps {
     startCursorAtLine?: number;
     autoFocus?: boolean;
   };
+  onEditorExpand: (height: number) => void;
 }
 
 const External = Annotation.define<boolean>();
 
 export function JsonEditor(props: JsonEditorProps) {
-  const { id, docString, onFocus, onBlur, onChange, initialState } = props;
+  const { id, docString, onFocus, onBlur, onChange, initialState, onEditorExpand } = props;
 
   const containerRef = useRef<HTMLDivElement | null>(null);
   const editorRef = useRef<EditorView | null>(null);
@@ -45,6 +46,7 @@ export function JsonEditor(props: JsonEditorProps) {
 
   useEffect(() => {
     if (containerRef.current && !editorRef.current) {
+      console.log('containerRef', containerRef.current?.clientHeight);
       const theme = getThemeForMode();
       const extensions = [EditorView.updateListener.of(onChangeCallback), json(), ...theme];
       const state = EditorState.create({
@@ -67,6 +69,10 @@ export function JsonEditor(props: JsonEditorProps) {
     },
     [],
   );
+
+  useEffect(() => {
+    onEditorExpand(editorRef.current?.contentDOM.clientHeight ?? 0);
+  }, [onEditorExpand, editorRef.current?.contentDOM.clientHeight]);
 
   // Called when the editor is mounted
   const initialized = editorRef.current !== null;

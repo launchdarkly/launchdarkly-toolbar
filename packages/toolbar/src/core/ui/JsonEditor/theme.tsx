@@ -10,7 +10,7 @@ export const theme = {
     borderRadius: '4px',
     backgroundColor: 'var(--lp-color-bg-ui-primary)',
     fontFamily: 'var(--lp-font-family-monospace)',
-    fontSize: 'var(--lp-font-size-300)',
+    fontSize: 'var(--lp-font-size-200)',
     '& .ͼ1.cm-focused': {
       outline: 'none',
     },

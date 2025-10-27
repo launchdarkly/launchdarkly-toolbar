@@ -108,15 +108,13 @@ function FlagSdkOverrideTabContentInner(props: FlagSdkOverrideTabContentInnerPro
     }
   };
 
-  const handleEditingChange = useCallback((index: number, isEditing: boolean) => {
-    if (isEditing) {
-      // Immediately resize for expansion to prevent layout shift
-      virtualizer.resizeItem(index, VIRTUALIZATION.EDITING_JSON_ITEM_HEIGHT);
+  const handleHeightChange = useCallback((index: number, height: number) => {
+    if (height > VIRTUALIZATION.ITEM_HEIGHT) {
+      virtualizer.resizeItem(index, height);
     } else {
-      // Delay resize for collapse to allow animation to complete
       setTimeout(() => {
-        virtualizer.resizeItem(index, VIRTUALIZATION.ITEM_HEIGHT);
-      }, 300); // Match animation duration
+        virtualizer.resizeItem(index, height);
+      }, 125);
     }
   }, [virtualizer]);
 
@@ -217,7 +215,7 @@ function FlagSdkOverrideTabContentInner(props: FlagSdkOverrideTabContentInnerPro
                         }}
                       >
                         <LocalObjectFlagControlListItem
-                          handleEditingChange={handleEditingChange}
+                          handleHeightChange={(height) => handleHeightChange(virtualItem.index, height)}
                           flag={flag}
                           key={virtualItem.key}
                           index={virtualItem.index}

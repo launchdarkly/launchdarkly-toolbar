@@ -1,6 +1,7 @@
 import { globalStyle, style } from '@vanilla-extract/css';
 
 export const jsonEditor = style({
+  marginTop: 'var(--lp-spacing-300)',
   height: '100%',
   width: '100%',
 });
