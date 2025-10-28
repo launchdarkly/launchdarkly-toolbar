@@ -31,7 +31,7 @@ export const jsonEditorContainer = style({
   gap: '4px',
   minWidth: '120px',
   maxWidth: '160px',
-})
+});
 
 export const currentValueGroup = style({
   display: 'flex',

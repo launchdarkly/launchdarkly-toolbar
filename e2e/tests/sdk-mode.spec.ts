@@ -198,7 +198,7 @@ test.describe('LaunchDarkly Toolbar - SDK Mode', () => {
       await jsonInput.fill(validJson);
 
       await page.getByTestId('flag-confirm-json-object-flag').click();
-      
+
       // Verify override was created
       await expect(jsonFlagRow.getByTestId('override-indicator')).toBeVisible();
       await expect(page.getByText('Clear all overrides (1)')).toBeVisible();
