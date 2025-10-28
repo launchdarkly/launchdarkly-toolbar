@@ -12,7 +12,7 @@ export function DevServerMode() {
   const [projectKey, setProjectKey] = useState('test-project');
 
   const { LDProvider, isLoading, isUsingMocks } = useLaunchDarklyProvider({
-    clientSideID: import.meta.env.VITE_LD_DEV_SERVER_URL_PROJECT_KEY, // Use project key as client side ID for dev-server mode
+    clientSideID: import.meta.env.VITE_LD_DEV_SERVER_PROJECT_KEY, // Use project key as client side ID for dev-server mode
     baseUrl: import.meta.env.VITE_LD_DEV_SERVER_URL,
     streamUrl: import.meta.env.VITE_LD_DEV_SERVER_URL,
     eventsUrl: import.meta.env.VITE_LD_DEV_SERVER_URL,
@@ -23,7 +23,6 @@ export function DevServerMode() {
     toolbarBundleUrl: import.meta.env.DEV ? 'http://localhost:8080/toolbar.min.js' : undefined,
     enabled: true,
     devServerUrl: import.meta.env.VITE_LD_DEV_SERVER_URL,
-    flagOverridePlugin,
     eventInterceptionPlugin,
     position: 'bottom-right',
   });
