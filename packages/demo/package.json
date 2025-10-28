@@ -15,7 +15,7 @@
   },
   "dependencies": {
     "@launchdarkly/toolbar": "workspace:*",
-    "launchdarkly-js-client-sdk": "^3.8.1",
+    "launchdarkly-js-client-sdk": "^3.9.0",
     "launchdarkly-react-client-sdk": "^3.9.0",
     "msw": "^2.11.5",
     "react": "^19.1.1",
