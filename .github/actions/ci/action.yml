@@ -39,7 +39,7 @@ runs:
         VITE_LD_STREAM_URL: https://clientstream.launchdarkly.com
         VITE_LD_EVENTS_URL: https://events.launchdarkly.com
         VITE_LD_DEV_SERVER_URL: http://localhost:8765
-        VITE_LD_DEV_SERVER_URL_PROJECT_KEY: developer-toolbar-sandbox
+        VITE_LD_DEV_SERVER_PROJECT_KEY: developer-toolbar-sandbox
 
     - name: Run Unit Tests
       shell: bash
@@ -94,7 +94,7 @@ runs:
         VITE_LD_STREAM_URL: https://clientstream.launchdarkly.com
         VITE_LD_EVENTS_URL: https://events.launchdarkly.com
         VITE_LD_DEV_SERVER_URL: http://localhost:8765
-        VITE_LD_DEV_SERVER_URL_PROJECT_KEY: developer-toolbar-sandbox
+        VITE_LD_DEV_SERVER_PROJECT_KEY: developer-toolbar-sandbox
 
     - name: Upload Playwright Artifacts
       uses: actions/upload-artifact@b4b15b8c7c6ac21ea08fcf65892d2ee8f75cf882 # v4.4.3
