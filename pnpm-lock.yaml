@@ -28,7 +28,7 @@ importers:
         version: 2.1.2(@rsbuild/core@1.6.0-beta.1)(@rslib/core@0.16.1(typescript@5.9.3))(storybook-builder-rsbuild@2.1.2(@rsbuild/core@1.6.0-beta.1)(@rspack/core@1.5.8(@swc/helpers@0.5.17))(react-dom@19.2.0(react@19.2.0))(react@19.2.0)(storybook@9.1.13(@testing-library/dom@10.4.0)(msw@2.11.5(@types/node@24.9.1)(typescript@5.9.3))(prettier@3.6.2)(vite@7.1.11(@types/node@24.9.1)(jiti@2.6.1)(terser@5.44.0)(tsx@4.20.6)))(typescript@5.9.3))(typescript@5.9.3)
       storybook-react-rsbuild:
         specifier: ^2.1.2
-        version: 2.1.2(@rsbuild/core@1.6.0-beta.1)(@rspack/core@1.5.8(@swc/helpers@0.5.17))(react-dom@19.2.0(react@19.2.0))(react@19.2.0)(rollup@4.52.5)(storybook@9.1.13(@testing-library/dom@10.4.0)(msw@2.11.5(@types/node@24.9.1)(typescript@5.9.3))(prettier@3.6.2)(vite@7.1.11(@types/node@24.9.1)(jiti@2.6.1)(terser@5.44.0)(tsx@4.20.6)))(typescript@5.9.3)(webpack@5.102.1)
+        version: 2.1.2(@rsbuild/core@1.6.0-beta.1)(@rspack/core@1.5.8(@swc/helpers@0.5.17))(react-dom@19.2.0(react@19.2.0))(react@19.2.0)(rollup@4.52.5)(storybook@9.1.13(@testing-library/dom@10.4.0)(msw@2.11.5(@types/node@24.9.1)(typescript@5.9.3))(prettier@3.6.2)(vite@7.1.11(@types/node@24.9.1)(jiti@2.6.1)(terser@5.44.0)(tsx@4.20.6)))(typescript@5.9.3)(webpack@5.102.1(esbuild@0.25.11))
       tsx:
         specifier: ^4.20.6
         version: 4.20.6
@@ -39,7 +39,7 @@ importers:
         specifier: workspace:*
         version: link:../toolbar
       launchdarkly-js-client-sdk:
-        specifier: ^3.8.1
+        specifier: ^3.9.0
         version: 3.9.0
       launchdarkly-react-client-sdk:
         specifier: ^3.9.0
@@ -106,56 +106,26 @@ importers:
   packages/toolbar:
     dependencies:
       '@launchpad-ui/components':
-        specifier: 0.16.12
+        specifier: ^0.16.12
         version: 0.16.12(@react-aria/focus@3.21.2(react-dom@19.2.0(react@19.2.0))(react@19.2.0))(@react-aria/interactions@3.25.6(react-dom@19.2.0(react@19.2.0))(react@19.2.0))(@react-aria/utils@3.31.0(react-dom@19.2.0(react@19.2.0))(react@19.2.0))(@react-stately/utils@3.10.8(react@19.2.0))(@react-types/shared@3.32.1(react@19.2.0))(react-aria-components@1.13.0(react-dom@19.2.0(react@19.2.0))(react@19.2.0))(react-aria@3.44.0(react-dom@19.2.0(react@19.2.0))(react@19.2.0))(react-dom@19.2.0(react@19.2.0))(react-hook-form@7.65.0(react@19.2.0))(react-router@7.9.4(react-dom@19.2.0(react@19.2.0))(react@19.2.0))(react-stately@3.42.0(react@19.2.0))(react@19.2.0)
       '@launchpad-ui/tokens':
-        specifier: 0.15.1
+        specifier: ^0.15.1
         version: 0.15.1
       '@react-aria/focus':
-        specifier: 3.21.2
+        specifier: ^3.21.2
         version: 3.21.2(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
-      '@react-aria/interactions':
-        specifier: 3.25.6
-        version: 3.25.6(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
-      '@react-aria/utils':
-        specifier: 3.31.0
-        version: 3.31.0(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
       '@react-stately/flags':
         specifier: ^3.1.2
         version: 3.1.2
-      '@react-stately/utils':
-        specifier: ^3.10.8
-        version: 3.10.8(react@19.2.0)
-      '@react-types/shared':
-        specifier: 3.32.1
-        version: 3.32.1(react@19.2.0)
       '@tanstack/react-virtual':
         specifier: ^3.13.12
         version: 3.13.12(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
       '@vanilla-extract/css':
         specifier: ^1.17.4
         version: 1.17.4
-      '@vanilla-extract/webpack-plugin':
-        specifier: ^2.3.22
-        version: 2.3.22(webpack@5.102.1(esbuild@0.25.11))
-      class-variance-authority:
-        specifier: ^0.7.1
-        version: 0.7.1
       motion:
         specifier: ^12.19.2
         version: 12.23.24(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
-      react-aria:
-        specifier: 3.44.0
-        version: 3.44.0(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
-      react-aria-components:
-        specifier: 1.13.0
-        version: 1.13.0(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
-      react-hook-form:
-        specifier: 7.65.0
-        version: 7.65.0(react@19.2.0)
-      react-router:
-        specifier: 7.9.4
-        version: 7.9.4(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
     devDependencies:
       '@rsbuild/core':
         specifier: ^1.5.17
@@ -211,6 +181,9 @@ importers:
       '@vanilla-extract/vite-plugin':
         specifier: ^5.1.1
         version: 5.1.1(@types/node@24.9.1)(jiti@2.6.1)(terser@5.44.0)(tsx@4.20.6)(vite@7.1.11(@types/node@24.9.1)(jiti@2.6.1)(terser@5.44.0)(tsx@4.20.6))
+      '@vanilla-extract/webpack-plugin':
+        specifier: ^2.3.22
+        version: 2.3.22(webpack@5.102.1(esbuild@0.25.11))
       '@vitest/coverage-v8':
         specifier: 4.0.2
         version: 4.0.2(vitest@3.2.4(@types/node@24.9.1)(jiti@2.6.1)(jsdom@26.1.0)(msw@2.11.5(@types/node@24.9.1)(typescript@5.9.3))(terser@5.44.0)(tsx@4.20.6))
@@ -2535,9 +2508,6 @@ packages:
 
   class-variance-authority@0.7.0:
     resolution: {integrity: sha512-jFI8IQw4hczaL4ALINxqLEXQbWcNjoSkloa4IaufXCJr6QawJyw7tuRysRsrE8w2p/4gGaxKIt/hX3qz/IbD1A==}
-
-  class-variance-authority@0.7.1:
-    resolution: {integrity: sha512-Ka+9Trutv7G8M6WT6SeiRWz792K5qEqIGEGzXKhAE6xOWAY6pPH8U+9IY3oCMv6kqTmLsv7Xh/2w2RigkePMsg==}
 
   clean-css@5.3.3:
     resolution: {integrity: sha512-D5J+kHaVb/wKSFcyyV75uCn8fiY4sV38XJoe4CUyGQ+mOU/fMVYUdH1hJC+CJQ5uY3EnW27SbJYS4X8BiLrAFg==}
@@ -6834,20 +6804,6 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@storybook/react-docgen-typescript-plugin@1.0.1(typescript@5.9.3)(webpack@5.102.1)':
-    dependencies:
-      debug: 4.4.3
-      endent: 2.1.0
-      find-cache-dir: 3.3.2
-      flat-cache: 3.2.0
-      micromatch: 4.0.8
-      react-docgen-typescript: 2.4.0(typescript@5.9.3)
-      tslib: 2.8.1
-      typescript: 5.9.3
-      webpack: 5.102.1
-    transitivePeerDependencies:
-      - supports-color
-
   '@storybook/react-dom-shim@9.1.12(react-dom@19.2.0(react@19.2.0))(react@19.2.0)(storybook@9.1.13(@testing-library/dom@10.4.0)(msw@2.11.5(@types/node@24.9.1)(typescript@5.9.3))(prettier@3.6.2)(vite@7.1.11(@types/node@24.9.1)(jiti@2.6.1)(terser@5.44.0)(tsx@4.20.6)))':
     dependencies:
       react: 19.2.0
@@ -7640,10 +7596,6 @@ snapshots:
   class-variance-authority@0.7.0:
     dependencies:
       clsx: 2.0.0
-
-  class-variance-authority@0.7.1:
-    dependencies:
-      clsx: 2.1.1
 
   clean-css@5.3.3:
     dependencies:
@@ -9513,12 +9465,12 @@ snapshots:
       - supports-color
       - webpack
 
-  storybook-react-rsbuild@2.1.2(@rsbuild/core@1.6.0-beta.1)(@rspack/core@1.5.8(@swc/helpers@0.5.17))(react-dom@19.2.0(react@19.2.0))(react@19.2.0)(rollup@4.52.5)(storybook@9.1.13(@testing-library/dom@10.4.0)(msw@2.11.5(@types/node@24.9.1)(typescript@5.9.3))(prettier@3.6.2)(vite@7.1.11(@types/node@24.9.1)(jiti@2.6.1)(terser@5.44.0)(tsx@4.20.6)))(typescript@5.9.3)(webpack@5.102.1):
+  storybook-react-rsbuild@2.1.2(@rsbuild/core@1.6.0-beta.1)(@rspack/core@1.5.8(@swc/helpers@0.5.17))(react-dom@19.2.0(react@19.2.0))(react@19.2.0)(rollup@4.52.5)(storybook@9.1.13(@testing-library/dom@10.4.0)(msw@2.11.5(@types/node@24.9.1)(typescript@5.9.3))(prettier@3.6.2)(vite@7.1.11(@types/node@24.9.1)(jiti@2.6.1)(terser@5.44.0)(tsx@4.20.6)))(typescript@5.9.3)(webpack@5.102.1(esbuild@0.25.11)):
     dependencies:
       '@rollup/pluginutils': 5.3.0(rollup@4.52.5)
       '@rsbuild/core': 1.6.0-beta.1
       '@storybook/react': 9.1.15(react-dom@19.2.0(react@19.2.0))(react@19.2.0)(storybook@9.1.13(@testing-library/dom@10.4.0)(msw@2.11.5(@types/node@24.9.1)(typescript@5.9.3))(prettier@3.6.2)(vite@7.1.11(@types/node@24.9.1)(jiti@2.6.1)(terser@5.44.0)(tsx@4.20.6)))(typescript@5.9.3)
-      '@storybook/react-docgen-typescript-plugin': 1.0.1(typescript@5.9.3)(webpack@5.102.1)
+      '@storybook/react-docgen-typescript-plugin': 1.0.1(typescript@5.9.3)(webpack@5.102.1(esbuild@0.25.11))
       find-up: 5.0.0
       magic-string: 0.30.21
       react: 19.2.0
@@ -9624,15 +9576,6 @@ snapshots:
       webpack: 5.102.1(esbuild@0.25.11)
     optionalDependencies:
       esbuild: 0.25.11
-
-  terser-webpack-plugin@5.3.14(webpack@5.102.1):
-    dependencies:
-      '@jridgewell/trace-mapping': 0.3.31
-      jest-worker: 27.5.1
-      schema-utils: 4.3.3
-      serialize-javascript: 6.0.2
-      terser: 5.44.0
-      webpack: 5.102.1
 
   terser@5.44.0:
     dependencies:
@@ -9912,38 +9855,6 @@ snapshots:
   webpack-sources@3.3.3: {}
 
   webpack-virtual-modules@0.6.2: {}
-
-  webpack@5.102.1:
-    dependencies:
-      '@types/eslint-scope': 3.7.7
-      '@types/estree': 1.0.8
-      '@types/json-schema': 7.0.15
-      '@webassemblyjs/ast': 1.14.1
-      '@webassemblyjs/wasm-edit': 1.14.1
-      '@webassemblyjs/wasm-parser': 1.14.1
-      acorn: 8.15.0
-      acorn-import-phases: 1.0.4(acorn@8.15.0)
-      browserslist: 4.27.0
-      chrome-trace-event: 1.0.4
-      enhanced-resolve: 5.18.3
-      es-module-lexer: 1.7.0
-      eslint-scope: 5.1.1
-      events: 3.3.0
-      glob-to-regexp: 0.4.1
-      graceful-fs: 4.2.11
-      json-parse-even-better-errors: 2.3.1
-      loader-runner: 4.3.1
-      mime-types: 2.1.35
-      neo-async: 2.6.2
-      schema-utils: 4.3.3
-      tapable: 2.3.0
-      terser-webpack-plugin: 5.3.14(webpack@5.102.1)
-      watchpack: 2.4.4
-      webpack-sources: 3.3.3
-    transitivePeerDependencies:
-      - '@swc/core'
-      - esbuild
-      - uglify-js
 
   webpack@5.102.1(esbuild@0.25.11):
     dependencies:
