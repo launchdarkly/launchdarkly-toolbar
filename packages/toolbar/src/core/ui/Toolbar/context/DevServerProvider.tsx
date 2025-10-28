@@ -256,7 +256,6 @@ export const DevServerProvider: FC<DevServerProviderProps> = ({ children, config
 
   const setOverride = useCallback(
     async (flagKey: string, value: any) => {
-      console.log('setOverride', flagKey, value);
       if (!flagStateManager) {
         const errorMessage = 'Flag state manager not available - not in dev-server mode';
         config.onError?.(errorMessage);
