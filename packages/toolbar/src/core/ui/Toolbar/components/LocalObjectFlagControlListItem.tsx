@@ -84,7 +84,7 @@ export function LocalObjectFlagControlListItem(props: LocalObjectFlagControlList
             onOverride={() => handleOverride(flag.key, tempValue)}
           />
         </div>
-        <AnimatePresence mode="wait">
+        <AnimatePresence data-testid={`json-editor-${flag.key}`} mode="wait">
           {isEditing && (
             <motion.div
               key={`json-editor-${flag.key}`}
@@ -119,7 +119,7 @@ export function LocalObjectFlagControlListItem(props: LocalObjectFlagControlList
                 docString={tempValue}
                 onChange={handleValueChange}
                 data-testid={`flag-input-${flag.key}`}
-                id={`flag-input-${flag.key}`}
+                editorId={`json-editor-${flag.key}`}
                 onEditorHeightChange={handleEditorHeightChange}
               />
             </motion.div>

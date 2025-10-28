@@ -6,7 +6,7 @@ import * as styles from './JsonEditor.css';
 import { getThemeForMode } from './theme';
 
 interface JsonEditorProps {
-  id: string;
+  editorId: string;
   docString: string;
   onFocus?: () => void;
   onBlur?: (e: React.FocusEvent<HTMLDivElement>, value: string) => void;
@@ -21,7 +21,7 @@ interface JsonEditorProps {
 const External = Annotation.define<boolean>();
 
 export function JsonEditor(props: JsonEditorProps) {
-  const { id, docString, onFocus, onBlur, onChange, initialState, onEditorHeightChange } = props;
+  const { editorId, docString, onFocus, onBlur, onChange, initialState, onEditorHeightChange } = props;
 
   const containerRef = useRef<HTMLDivElement | null>(null);
   const editorRef = useRef<EditorView | null>(null);
@@ -86,7 +86,8 @@ export function JsonEditor(props: JsonEditorProps) {
       className={styles.jsonEditor}
       role="textbox"
       data-enable-grammarly="false"
-      id={id}
+      data-testid={editorId}
+      id={editorId}
       tabIndex={0}
       onFocus={onFocus}
       onBlur={(e) => {
