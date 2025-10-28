@@ -2,7 +2,7 @@ import { ListItem } from '../../List/ListItem';
 import { LocalFlag } from '../context';
 import { LocalObjectFlagControl } from './LocalFlagControls';
 import { OverrideIndicator } from './OverrideIndicator';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 
 import * as sharedStyles from '../TabContent/FlagDevServerTabContent.css';
@@ -26,12 +26,19 @@ export function LocalObjectFlagControlListItem(props: LocalObjectFlagControlList
   const [isEditing, setIsEditing] = useState(false);
   const [tempValue, setTempValue] = useState(currentValue);
 
+  // Since this is a virtualized item, we need to set the height to the standard item height when the component mounts
+  // This happens specifically if the user is editing a JSON flag, scrolls to the point where the item is no longer visible,
+  // and then scrolls back to the point where the item is visible again.
+  useEffect(() => {
+    handleHeightChange(VIRTUALIZATION.ITEM_HEIGHT);
+  }, []);
+
   const handleValueChange = (value: string) => {
     setTempValue(value);
   };
 
   const handleEdit = () => {
-    setTempValue(currentValue); 
+    setTempValue(currentValue);
     setIsEditing(true);
   };
 
@@ -64,7 +71,10 @@ export function LocalObjectFlagControlListItem(props: LocalObjectFlagControlList
         <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
           <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
             <div className={sharedStyles.flagHeader} style={{ display: 'flex', flexDirection: 'column' }}>
-              <span className={sharedStyles.flagName} style={{  whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+              <span
+                className={sharedStyles.flagName}
+                style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}
+              >
                 <span data-testid={`flag-name-${flag.key}`}>{flag.name}</span>
                 {flag.isOverridden && <OverrideIndicator onClear={() => handleClearOverride(flag.key)} />}
               </span>
