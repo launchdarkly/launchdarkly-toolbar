@@ -71,11 +71,13 @@ export function LocalObjectFlagControlListItem(props: LocalObjectFlagControlList
         <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
           <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
             <div className={sharedStyles.flagHeader} style={{ display: 'flex', flexDirection: 'column' }}>
-              <span
-                className={sharedStyles.flagName}
-                style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}
-              >
-                <span data-testid={`flag-name-${flag.key}`}>{flag.name}</span>
+              <span className={sharedStyles.flagName}>
+                <span
+                  style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}
+                  data-testid={`flag-name-${flag.key}`}
+                >
+                  {flag.name}
+                </span>
                 {flag.isOverridden && <OverrideIndicator onClear={() => handleClearOverride(flag.key)} />}
               </span>
               <span className={sharedStyles.flagKey} data-testid={`flag-key-${flag.key}`}>
