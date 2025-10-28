@@ -31,7 +31,7 @@ export function LocalObjectFlagControlListItem(props: LocalObjectFlagControlList
   };
 
   const handleEdit = () => {
-    setTempValue(currentValue);
+    setTempValue(currentValue); 
     setIsEditing(true);
   };
 
@@ -61,70 +61,71 @@ export function LocalObjectFlagControlListItem(props: LocalObjectFlagControlList
       }}
     >
       <ListItem className={sharedStyles.flagListItemBlock}>
-        <div
-          className={sharedStyles.flagListItem}
-          style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between' }}
-        >
-          <div className={sharedStyles.flagHeader} style={{ display: 'flex', flexDirection: 'column' }}>
-            <span className={sharedStyles.flagName}>
-              <span data-testid={`flag-name-${flag.key}`}>{flag.name}</span>
-              {flag.isOverridden && <OverrideIndicator onClear={() => handleClearOverride(flag.key)} />}
-            </span>
-            <span className={sharedStyles.flagKey} data-testid={`flag-key-${flag.key}`}>
-              {flag.key}
-            </span>
+        <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+          <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+            <div className={sharedStyles.flagHeader} style={{ display: 'flex', flexDirection: 'column' }}>
+              <span className={sharedStyles.flagName} style={{  whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                <span data-testid={`flag-name-${flag.key}`}>{flag.name}</span>
+                {flag.isOverridden && <OverrideIndicator onClear={() => handleClearOverride(flag.key)} />}
+              </span>
+              <span className={sharedStyles.flagKey} data-testid={`flag-key-${flag.key}`}>
+                {flag.key}
+              </span>
+            </div>
+            <div className={sharedStyles.flagOptions}>
+              <LocalObjectFlagControl
+                flag={flag}
+                isEditing={isEditing}
+                handleEdit={handleEdit}
+                handleConfirm={handleConfirm}
+                handleCancel={handleCancel}
+                onOverride={() => handleOverride(flag.key, tempValue)}
+              />
+            </div>
           </div>
 
-          <LocalObjectFlagControl
-            flag={flag}
-            isEditing={isEditing}
-            handleEdit={handleEdit}
-            handleConfirm={handleConfirm}
-            handleCancel={handleCancel}
-            onOverride={() => handleOverride(flag.key, tempValue)}
-          />
-        </div>
-        <AnimatePresence data-testid={`json-editor-${flag.key}`} mode="wait">
-          {isEditing && (
-            <motion.div
-              key={`json-editor-${flag.key}`}
-              initial={{
-                opacity: 0,
-                height: 0,
-                y: -10,
-              }}
-              animate={{
-                opacity: 1,
-                height: 'auto',
-                y: 0,
-              }}
-              exit={{
-                opacity: 0,
-                height: 0,
-                y: -10,
-              }}
-              transition={{
-                duration: 0.25,
-                ease: EASING.smooth,
-                height: {
-                  duration: 0.3,
+          <AnimatePresence data-testid={`json-editor-${flag.key}`} mode="wait">
+            {isEditing && (
+              <motion.div
+                key={`json-editor-${flag.key}`}
+                initial={{
+                  opacity: 0,
+                  height: 0,
+                  y: -10,
+                }}
+                animate={{
+                  opacity: 1,
+                  height: 'auto',
+                  y: 0,
+                }}
+                exit={{
+                  opacity: 0,
+                  height: 0,
+                  y: -10,
+                }}
+                transition={{
+                  duration: 0.25,
                   ease: EASING.smooth,
-                },
-              }}
-              style={{
-                overflow: 'hidden',
-              }}
-            >
-              <JsonEditor
-                docString={tempValue}
-                onChange={handleValueChange}
-                data-testid={`flag-input-${flag.key}`}
-                editorId={`json-editor-${flag.key}`}
-                onEditorHeightChange={handleEditorHeightChange}
-              />
-            </motion.div>
-          )}
-        </AnimatePresence>
+                  height: {
+                    duration: 0.3,
+                    ease: EASING.smooth,
+                  },
+                }}
+                style={{
+                  overflow: 'hidden',
+                }}
+              >
+                <JsonEditor
+                  docString={tempValue}
+                  onChange={handleValueChange}
+                  data-testid={`flag-input-${flag.key}`}
+                  editorId={`json-editor-${flag.key}`}
+                  onEditorHeightChange={handleEditorHeightChange}
+                />
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
       </ListItem>
     </div>
   );
