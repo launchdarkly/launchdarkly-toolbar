@@ -101,6 +101,7 @@ This demo is part of a pnpm monorepo workspace and automatically uses the local 
 1. **Toolbar not appearing**: Check if the dev server URL is correct and accessible
 2. **Connection issues**: Verify your LaunchDarkly dev server is running with CORS enabled
 3. **No flags showing**: Ensure the project key is correct and flags exist in the environment
+4. **Flags are showing, but values are not the same between the toolbar and the app**: Ensure the toolbar is not using the `FlagOverridePlugin` in dev server mode
 
 ### SDK Mode Issues
 
