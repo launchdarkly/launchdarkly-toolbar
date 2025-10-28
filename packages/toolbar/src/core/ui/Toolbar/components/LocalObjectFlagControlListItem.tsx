@@ -46,7 +46,7 @@ export function LocalObjectFlagControlListItem(props: LocalObjectFlagControlList
     handleHeightChange(VIRTUALIZATION.ITEM_HEIGHT);
   };
 
-  const handleEditorExpand = (height: number) => {
+  const handleEditorHeightChange = (height: number) => {
     handleHeightChange(VIRTUALIZATION.ITEM_HEIGHT + height + 20); // 20px for padding
   };
 
@@ -120,7 +120,7 @@ export function LocalObjectFlagControlListItem(props: LocalObjectFlagControlList
                 onChange={handleValueChange}
                 data-testid={`flag-input-${flag.key}`}
                 id={`flag-input-${flag.key}`}
-                onEditorExpand={handleEditorExpand}
+                onEditorHeightChange={handleEditorHeightChange}
               />
             </motion.div>
           )}

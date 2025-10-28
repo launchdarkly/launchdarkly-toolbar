@@ -4,7 +4,6 @@ import { EditIcon, CheckIcon, XIcon } from './icons';
 import { IconButton } from './IconButton';
 import type { LocalFlag } from '../context';
 import { enableShadowDOM } from '@react-stately/flags';
-
 import * as sharedStyles from './FlagControls.css';
 import * as styles from './LocalFlagControls.css';
 import { EnhancedFlag } from '../../../types/devServer';
@@ -142,7 +141,7 @@ export function LocalObjectFlagControl(props: LocalObjectFlagControlProps) {
 
   return (
     <div className={styles.editActionsContainer}>
-      <div className={sharedStyles.customVariantContainer} data-testid={`flag-control-${flag.key}`}>
+      <div className={sharedStyles.jsonEditorContainer} data-testid={`flag-control-${flag.key}`}>
         {!isEditing ? (
           <Button onClick={handleEdit} data-testid={`flag-edit-${flag.key}`}>
             Edit JSON

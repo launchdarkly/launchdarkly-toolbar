@@ -18,11 +18,20 @@ globalStyle(`${switchContainer} label`, {
 export const customVariantContainer = style({
   display: 'flex',
   alignItems: 'center',
-  flexDirection: 'row-reverse',
+  flexDirection: 'row',
   gap: '4px',
   minWidth: '120px',
   maxWidth: '160px',
 });
+
+export const jsonEditorContainer = style({
+  display: 'flex',
+  alignItems: 'center',
+  flexDirection: 'row-reverse',
+  gap: '4px',
+  minWidth: '120px',
+  maxWidth: '160px',
+})
 
 export const currentValueGroup = style({
   display: 'flex',
