@@ -4,6 +4,7 @@ export const TOOLBAR_STORAGE_KEYS = {
   SETTINGS: 'ld-toolbar-settings',
   DISABLED: 'ld-toolbar-disabled',
   PROJECT: 'ld-toolbar-project',
+  STARRED_FLAGS: 'ld-toolbar-starred-flags',
 } as const;
 
 export interface ToolbarSettings {
@@ -97,5 +98,27 @@ export function loadReloadOnFlagChange(): boolean {
   } catch (error) {
     console.warn('Failed to load reload on flag change from localStorage:', error);
     return DEFAULT_SETTINGS.reloadOnFlagChange;
+  }
+}
+
+export function loadStarredFlags(): Set<string> {
+  try {
+    const stored = localStorage.getItem(TOOLBAR_STORAGE_KEYS.STARRED_FLAGS);
+    if (stored) {
+      const parsed = JSON.parse(stored);
+      return new Set(Array.isArray(parsed) ? parsed : []);
+    }
+  } catch (error) {
+    console.error('Error reading starred flags from localStorage:', error);
+  }
+  return new Set();
+}
+
+export function saveStarredFlags(starredFlags: Set<string>): void {
+  try {
+    const value = JSON.stringify(Array.from(starredFlags));
+    localStorage.setItem(TOOLBAR_STORAGE_KEYS.STARRED_FLAGS, value);
+  } catch (error) {
+    console.error('Error saving starred flags to localStorage:', error);
   }
 }

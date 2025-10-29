@@ -9,6 +9,8 @@ import { GenericHelpText } from '../components/GenericHelpText';
 import { BooleanFlagControl, MultivariateFlagControl, StringNumberFlagControl } from '../components/FlagControls';
 import { OverrideIndicator } from '../components/OverrideIndicator';
 import { ActionButtonsContainer } from '../components';
+import { StarButton } from '../components/StarButton';
+import { useStarredFlags } from '../context/StarredFlagsProvider';
 import { VIRTUALIZATION } from '../constants';
 
 import * as styles from './FlagDevServerTabContent.css';
@@ -24,6 +26,7 @@ export function FlagDevServerTabContent(props: FlagDevServerTabContentProps) {
   const { searchTerm } = useSearchContext();
   const { state, setOverride, clearOverride, clearAllOverrides } = useDevServerContext();
   const { flags } = state;
+  const { isStarred, toggleStarred } = useStarredFlags();
 
   const [showOverriddenOnly, setShowOverriddenOnly] = useState(false);
   const parentRef = useRef<HTMLDivElement>(null);
@@ -187,7 +190,10 @@ export function FlagDevServerTabContent(props: FlagDevServerTabContentProps) {
                           <span className={styles.flagKey}>{flag.key}</span>
                         </div>
 
-                        <div className={styles.flagOptions}>{renderFlagControl(flag)}</div>
+                        <div className={styles.flagOptions}>
+                          {renderFlagControl(flag)}
+                          <StarButton flagKey={flag.key} isStarred={isStarred(flag.key)} onToggle={toggleStarred} />
+                        </div>
                       </ListItem>
                     </div>
                   );
