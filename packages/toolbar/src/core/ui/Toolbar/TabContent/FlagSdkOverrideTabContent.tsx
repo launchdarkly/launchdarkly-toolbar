@@ -12,6 +12,8 @@ import {
 } from '../components/LocalFlagControls';
 import { OverrideIndicator } from '../components/OverrideIndicator';
 import { ActionButtonsContainer } from '../components';
+import { StarButton } from '../components/StarButton';
+import { useStarredFlags } from '../context/StarredFlagsProvider';
 import { VIRTUALIZATION } from '../constants';
 import type { LocalFlag } from '../context';
 
@@ -29,6 +31,7 @@ function FlagSdkOverrideTabContentInner(props: FlagSdkOverrideTabContentInnerPro
   const { searchTerm } = useSearchContext();
   const analytics = useAnalytics();
   const { flags, isLoading } = useFlagSdkOverrideContext();
+  const { isStarred, toggleStarred } = useStarredFlags();
   const [showOverriddenOnly, setShowOverriddenOnly] = useState(false);
   const parentRef = useRef<HTMLDivElement>(null);
 
@@ -218,7 +221,10 @@ function FlagSdkOverrideTabContentInner(props: FlagSdkOverrideTabContentInnerPro
                           </span>
                         </div>
 
-                        <div className={sharedStyles.flagOptions}>{renderFlagControl(flag)}</div>
+                        <div className={sharedStyles.flagOptions}>
+                          {renderFlagControl(flag)}
+                          <StarButton flagKey={flagKey} isStarred={isStarred(flagKey)} onToggle={toggleStarred} />
+                        </div>
                       </ListItem>
                     </div>
                   );
