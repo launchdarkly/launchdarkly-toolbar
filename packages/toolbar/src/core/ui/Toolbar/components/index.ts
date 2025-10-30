@@ -7,3 +7,5 @@ export { LaunchDarklyIcon } from './icons/LaunchDarklyIcon';
 export { StatusDot } from './StatusDot';
 export { TabContentRenderer } from './TabContentRenderer';
 export { ErrorMessage } from './ErrorMessage';
+export { type FilterMode, FilterTabsContext, useFilterTabsContext } from './FilterTabs/useFilterTabsContext';
+export { FilterTabs } from './FilterTabs/FilterTabs';
