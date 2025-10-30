@@ -140,8 +140,6 @@ interface LocalObjectFlagControlProps {
 export function LocalObjectFlagControl(props: LocalObjectFlagControlProps) {
   const { flag, isEditing, handleEdit, handleConfirm, handleCancel, hasErrors } = props;
 
-  console.log('hasErrors', hasErrors);
-
   return (
     <div className={styles.editActionsContainer}>
       <div className={sharedStyles.jsonEditorContainer} data-testid={`flag-control-${flag.key}`}>
