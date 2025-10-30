@@ -134,10 +134,13 @@ interface LocalObjectFlagControlProps {
   handleConfirm: () => void;
   handleCancel: () => void;
   onOverride: (value: any) => void;
+  hasErrors: boolean;
 }
 
 export function LocalObjectFlagControl(props: LocalObjectFlagControlProps) {
-  const { flag, isEditing, handleEdit, handleConfirm, handleCancel } = props;
+  const { flag, isEditing, handleEdit, handleConfirm, handleCancel, hasErrors } = props;
+
+  console.log('hasErrors', hasErrors);
 
   return (
     <div className={styles.editActionsContainer}>
@@ -148,7 +151,12 @@ export function LocalObjectFlagControl(props: LocalObjectFlagControlProps) {
           </Button>
         ) : (
           <>
-            <Button variant="primary" onClick={handleConfirm} data-testid={`flag-confirm-${flag.key}`}>
+            <Button
+              variant="primary"
+              onClick={handleConfirm}
+              data-testid={`flag-confirm-${flag.key}`}
+              isDisabled={hasErrors}
+            >
               Save
             </Button>
             <Button onClick={handleCancel} data-testid={`flag-cancel-${flag.key}`}>

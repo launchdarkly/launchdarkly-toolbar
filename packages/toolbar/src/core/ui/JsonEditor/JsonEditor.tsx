@@ -6,7 +6,7 @@ import { useCallback, useEffect, useRef } from 'react';
 import * as styles from './JsonEditor.css';
 import { getThemeForMode } from './theme';
 import { jsonLint } from './linterPlugin';
-import { lintKeymap } from '@codemirror/lint';
+import { lintKeymap, forEachDiagnostic, type Diagnostic } from '@codemirror/lint';
 
 interface JsonEditorProps {
   editorId: string;
@@ -14,6 +14,7 @@ interface JsonEditorProps {
   onFocus?: () => void;
   onBlur?: (e: React.FocusEvent<HTMLDivElement>, value: string) => void;
   onChange?: (value: string, viewUpdate: ViewUpdate) => void;
+  onLintErrors: (errors: Diagnostic[]) => void;
   initialState?: {
     startCursorAtLine?: number;
     autoFocus?: boolean;
@@ -24,7 +25,7 @@ interface JsonEditorProps {
 const External = Annotation.define<boolean>();
 
 export function JsonEditor(props: JsonEditorProps) {
-  const { editorId, docString, onFocus, onBlur, onChange, initialState, onEditorHeightChange } = props;
+  const { editorId, docString, onFocus, onBlur, onChange, onLintErrors, initialState, onEditorHeightChange } = props;
 
   const containerRef = useRef<HTMLDivElement | null>(null);
   const editorRef = useRef<EditorView | null>(null);
@@ -47,6 +48,19 @@ export function JsonEditor(props: JsonEditorProps) {
     [onChange],
   );
 
+  const onLintChangeCallback = useCallback(
+    (viewUpdate: ViewUpdate) => {
+      if (onLintErrors) {
+        const diagnostics: Diagnostic[] = [];
+        forEachDiagnostic(viewUpdate.state, (diagnostic) => {
+          diagnostics.push(diagnostic);
+        });
+        onLintErrors(diagnostics);
+      }
+    },
+    [onLintErrors],
+  );
+
   useEffect(() => {
     if (containerRef.current && !editorRef.current) {
       const theme = getThemeForMode();
@@ -54,6 +68,7 @@ export function JsonEditor(props: JsonEditorProps) {
       const keymaps = [...defaultKeymap, ...lintKeymap, ...historyKeymap, indentWithTab];
       const extensions = [
         EditorView.updateListener.of(onChangeCallback),
+        EditorView.updateListener.of(onLintChangeCallback),
         json(),
         jsonLint(),
         history(),
@@ -72,7 +87,7 @@ export function JsonEditor(props: JsonEditorProps) {
         parent: containerRef.current,
       });
     }
-  }, [docString, initialState, onChangeCallback]);
+  }, [docString, initialState, onChangeCallback, onLintChangeCallback, onLintErrors]);
 
   useEffect(
     () => () => {

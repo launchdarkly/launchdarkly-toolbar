@@ -10,6 +10,7 @@ import { JsonEditor } from '../../JsonEditor/JsonEditor';
 import { EASING } from '../constants/animations';
 import { VIRTUALIZATION } from '../constants';
 import { EnhancedFlag } from '../../../types/devServer';
+import { Diagnostic } from '@codemirror/lint';
 
 interface LocalObjectFlagControlListItemProps {
   handleClearOverride: (key: string) => void;
@@ -25,6 +26,7 @@ export function LocalObjectFlagControlListItem(props: LocalObjectFlagControlList
   const currentValue = JSON.stringify(flag.currentValue, null, 2);
   const [isEditing, setIsEditing] = useState(false);
   const [tempValue, setTempValue] = useState(currentValue);
+  const [hasErrors, setHasErrors] = useState(false);
 
   // Since this is a virtualized item, we need to set the height to the standard item height when the component mounts
   // This happens specifically if the user is editing a JSON flag, scrolls to the point where the item is no longer visible,
@@ -35,6 +37,10 @@ export function LocalObjectFlagControlListItem(props: LocalObjectFlagControlList
 
   const handleValueChange = (value: string) => {
     setTempValue(value);
+  };
+
+  const handleLintErrors = (diagnostics: Diagnostic[]) => {
+    setHasErrors(diagnostics.length > 0);
   };
 
   const handleEdit = () => {
@@ -92,6 +98,7 @@ export function LocalObjectFlagControlListItem(props: LocalObjectFlagControlList
                 handleConfirm={handleConfirm}
                 handleCancel={handleCancel}
                 onOverride={() => handleOverride(flag.key, tempValue)}
+                hasErrors={hasErrors}
               />
             </div>
           </div>
@@ -130,6 +137,7 @@ export function LocalObjectFlagControlListItem(props: LocalObjectFlagControlList
                 <JsonEditor
                   docString={tempValue}
                   onChange={handleValueChange}
+                  onLintErrors={handleLintErrors}
                   data-testid={`flag-input-${flag.key}`}
                   editorId={`json-editor-${flag.key}`}
                   onEditorHeightChange={handleEditorHeightChange}
