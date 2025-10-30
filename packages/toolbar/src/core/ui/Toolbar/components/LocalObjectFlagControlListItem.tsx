@@ -33,7 +33,7 @@ export function LocalObjectFlagControlListItem(props: LocalObjectFlagControlList
   // and then scrolls back to the point where the item is visible again.
   useEffect(() => {
     handleHeightChange(VIRTUALIZATION.ITEM_HEIGHT);
-  }, [handleHeightChange]);
+  }, []);
 
   const handleValueChange = (value: string) => {
     setTempValue(value);
