@@ -2,6 +2,7 @@
   "extends": "./tsconfig.json",
   "compilerOptions": {
     "noUncheckedIndexedAccess": false,
+    "jsx": "react-jsx",
     "types": ["vitest/globals", "@testing-library/jest-dom"]
   },
   "include": ["src/**/*.test.ts", "src/**/*.test.tsx"],
