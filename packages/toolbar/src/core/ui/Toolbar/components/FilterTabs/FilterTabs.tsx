@@ -8,7 +8,7 @@ const FILTER_TABS = [
   { id: 'starred' as const, label: 'Starred' },
 ] satisfies { id: FilterMode; label: string }[];
 
-interface FilterTabsProps {
+export interface FilterTabsProps {
   totalFlags: number;
   filteredFlags: number;
   totalOverriddenFlags: number;
@@ -53,7 +53,12 @@ export function FilterTabs(props: FilterTabsProps) {
             : `Showing ${filteredFlags} of ${totalFlags} flags`}
         </div>
         {isOverridesActive && totalOverriddenFlags > 0 && onClearOverrides && (
-          <ClearButton label="Overrides" count={totalOverriddenFlags} onClick={onClearOverrides} isLoading={isLoading} />
+          <ClearButton
+            label="Overrides"
+            count={totalOverriddenFlags}
+            onClick={onClearOverrides}
+            isLoading={isLoading}
+          />
         )}
         {isStarredActive && starredCount > 0 && onClearStarred && (
           <ClearButton label="Starred" count={starredCount} onClick={onClearStarred} isLoading={isLoading} />
