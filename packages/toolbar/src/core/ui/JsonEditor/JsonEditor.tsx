@@ -1,5 +1,5 @@
 import { EditorState, Annotation } from '@codemirror/state';
-import { defaultKeymap, indentWithTab } from '@codemirror/commands';
+import { defaultKeymap, history, historyKeymap, indentWithTab } from '@codemirror/commands';
 import { EditorView, keymap, ViewUpdate } from '@codemirror/view';
 import { json } from '@codemirror/lang-json';
 import { useCallback, useEffect, useRef } from 'react';
@@ -50,19 +50,16 @@ export function JsonEditor(props: JsonEditorProps) {
   useEffect(() => {
     if (containerRef.current && !editorRef.current) {
       const theme = getThemeForMode();
-      
-      const keymaps = [
-        ...defaultKeymap,
-        ...lintKeymap,
-        indentWithTab,
-      ]
+
+      const keymaps = [...defaultKeymap, ...lintKeymap, ...historyKeymap, indentWithTab];
       const extensions = [
         EditorView.updateListener.of(onChangeCallback),
         json(),
         jsonLint(),
+        history(),
         ...theme,
         EditorView.lineWrapping,
-        keymap.of(keymaps)
+        keymap.of(keymaps),
       ];
       const state = EditorState.create({
         doc: docString,
@@ -73,7 +70,6 @@ export function JsonEditor(props: JsonEditorProps) {
       editorRef.current = new EditorView({
         state,
         parent: containerRef.current,
-        extensions,
       });
     }
   }, [docString, initialState, onChangeCallback]);
