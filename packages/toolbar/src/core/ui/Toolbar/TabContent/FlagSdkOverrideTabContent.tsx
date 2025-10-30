@@ -8,15 +8,15 @@ import { FlagSdkOverrideProvider, useFlagSdkOverrideContext } from '../context';
 import { GenericHelpText } from '../components/GenericHelpText';
 import { LocalBooleanFlagControl, LocalStringNumberFlagControl } from '../components/LocalFlagControls';
 import { OverrideIndicator } from '../components/OverrideIndicator';
-import { ActionButtonsContainer } from '../components';
 import { StarButton } from '../components/StarButton';
 import { useStarredFlags } from '../context/StarredFlagsProvider';
+import { type FilterMode, FilterTabsContext } from '../components/FilterTabs/useFilterTabsContext';
+import { FilterTabs } from '../components/FilterTabs/FilterTabs';
 import { VIRTUALIZATION } from '../constants';
 import { EASING } from '../constants/animations';
 import type { LocalFlag } from '../context';
 
 import * as sharedStyles from './FlagDevServerTabContent.css';
-import * as actionStyles from '../components/ActionButtonsContainer.css';
 import { IFlagOverridePlugin } from '../../../../types';
 import { LocalObjectFlagControlListItem } from '../components/LocalObjectFlagControlListItem';
 
@@ -30,8 +30,8 @@ function FlagSdkOverrideTabContentInner(props: FlagSdkOverrideTabContentInnerPro
   const { searchTerm } = useSearchContext();
   const analytics = useAnalytics();
   const { flags, isLoading } = useFlagSdkOverrideContext();
-  const { isStarred, toggleStarred } = useStarredFlags();
-  const [showOverriddenOnly, setShowOverriddenOnly] = useState(false);
+  const { isStarred, toggleStarred, clearAllStarred, starredCount } = useStarredFlags();
+  const [activeFilter, setActiveFilter] = useState<FilterMode>('all');
   const parentRef = useRef<HTMLDivElement>(null);
 
   const handleClearOverride = useCallback(
@@ -53,23 +53,26 @@ function FlagSdkOverrideTabContentInner(props: FlagSdkOverrideTabContentInnerPro
     return Object.values(flags).filter((flag) => flag.isOverridden).length;
   }, [flags]);
 
-  const showOverridesOnlyChanged = (enabled: boolean) => {
-    setShowOverriddenOnly(enabled);
-    analytics.trackShowOverridesOnlyClick(enabled);
-  };
-
   // Prepare data for virtualizer (must be done before useVirtualizer hook)
   const flagEntries = Object.entries(flags);
-  const filteredFlags = flagEntries.filter(([flagKey, flag]) => {
-    // Apply search filter
-    const matchesSearch =
-      flag.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      flagKey.toLowerCase().includes(searchTerm.trim().toLowerCase());
+  const filteredFlags = useMemo(() => {
+    return flagEntries.filter(([flagKey, flag]) => {
+      // Apply search filter
+      const matchesSearch =
+        flag.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        flagKey.toLowerCase().includes(searchTerm.trim().toLowerCase());
 
-    // Apply override filter if enabled
-    const matchesOverrideFilter = showOverriddenOnly ? flag.isOverridden : true;
-    return matchesSearch && matchesOverrideFilter;
-  });
+      // Apply active filter
+      let matchesFilter = true;
+      if (activeFilter === 'overrides') {
+        matchesFilter = flag.isOverridden;
+      } else if (activeFilter === 'starred') {
+        matchesFilter = isStarred(flagKey);
+      }
+
+      return matchesSearch && matchesFilter;
+    });
+  }, [flagEntries, searchTerm, activeFilter, isStarred]);
 
   const virtualizer = useVirtualizer({
     count: filteredFlags.length,
@@ -105,6 +108,7 @@ function FlagSdkOverrideTabContentInner(props: FlagSdkOverrideTabContentInnerPro
 
     flagOverridePlugin.clearAllOverrides();
     analytics.trackFlagOverride('*', { count: overrideCount }, 'clear_all');
+    setActiveFilter('all');
 
     if (reloadOnFlagChangeIsEnabled) {
       window.location.reload();
@@ -159,118 +163,117 @@ function FlagSdkOverrideTabContentInner(props: FlagSdkOverrideTabContentInnerPro
     );
   }
 
-  const genericHelpTitle = showOverriddenOnly ? 'No overridden flags found' : 'No results found';
-  const genericHelpSubtitle = showOverriddenOnly
-    ? 'No overridden flags match your search'
-    : 'Try adjusting your search or check if flags are available';
+  const getGenericHelpText = () => {
+    if (activeFilter === 'overrides' && totalOverriddenFlags === 0) {
+      return { title: 'No overridden flags found', subtitle: 'You have not set any overrides yet' };
+    }
+    if (activeFilter === 'starred' && starredCount === 0) {
+      return { title: 'No starred flags found', subtitle: 'Star flags to see them here' };
+    }
+    return { title: 'No flags found', subtitle: 'Try adjusting your search' };
+  };
+
+  const { title: genericHelpTitle, subtitle: genericHelpSubtitle } = getGenericHelpText();
 
   return (
-    <div data-testid="flag-sdk-tab-content">
-      <>
-        <ActionButtonsContainer>
-          <button
-            className={`${actionStyles.toggleButton} ${showOverriddenOnly ? actionStyles.active : ''}`}
-            onClick={() => showOverridesOnlyChanged(!showOverriddenOnly)}
-            data-testid="show-overrides-only-button"
-            aria-label={showOverriddenOnly ? 'Show all flags' : 'Show only overridden flags'}
-          >
-            Show overrides only
-          </button>
-          <button
-            className={actionStyles.actionButton}
-            onClick={handleClearAllOverrides}
-            disabled={totalOverriddenFlags === 0}
-            data-testid="clear-all-overrides-button"
-            aria-label={`Clear all ${totalOverriddenFlags} flag overrides`}
-          >
-            Clear all overrides ({totalOverriddenFlags})
-          </button>
-        </ActionButtonsContainer>
+    <FilterTabsContext.Provider value={{ activeFilter, onFilterChange: setActiveFilter }}>
+      <div data-testid="flag-sdk-tab-content">
+        <>
+          <FilterTabs
+            totalFlags={flagEntries.length}
+            filteredFlags={filteredFlags.length}
+            totalOverriddenFlags={totalOverriddenFlags}
+            starredCount={starredCount}
+            onClearOverrides={handleClearAllOverrides}
+            onClearStarred={clearAllStarred}
+            isLoading={isLoading}
+          />
 
-        {filteredFlags.length === 0 && (searchTerm.trim() || showOverriddenOnly) ? (
-          <GenericHelpText title={genericHelpTitle} subtitle={genericHelpSubtitle} />
-        ) : (
-          <div ref={parentRef} className={sharedStyles.virtualContainer}>
-            <List>
-              <div
-                className={sharedStyles.virtualInner}
-                style={{
-                  height: virtualizer.getTotalSize(),
-                }}
-              >
-                {virtualizer.getVirtualItems().map((virtualItem) => {
-                  const entry = filteredFlags[virtualItem.index];
-                  if (!entry) return null;
-                  const [flagKey, flag] = entry;
+          {filteredFlags.length === 0 && (searchTerm.trim() || activeFilter !== 'all') ? (
+            <GenericHelpText title={genericHelpTitle} subtitle={genericHelpSubtitle} />
+          ) : (
+            <div ref={parentRef} className={sharedStyles.virtualContainer}>
+              <List>
+                <div
+                  className={sharedStyles.virtualInner}
+                  style={{
+                    height: virtualizer.getTotalSize(),
+                  }}
+                >
+                  {virtualizer.getVirtualItems().map((virtualItem) => {
+                    const entry = filteredFlags[virtualItem.index];
+                    if (!entry) return null;
+                    const [flagKey, flag] = entry;
 
-                  if (flag.type === 'object') {
-                    return (
-                      <motion.div
-                        key={virtualItem.key}
-                        layout
-                        initial={{ opacity: 0, y: 10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: -10 }}
-                        transition={{
-                          duration: 0.2,
-                          ease: EASING.smooth,
-                          layout: {
-                            duration: 0.25,
-                            ease: EASING.smooth,
-                          },
-                        }}
-                      >
-                        <LocalObjectFlagControlListItem
-                          handleHeightChange={(height) => handleHeightChange(virtualItem.index, height)}
-                          flag={flag}
+                    if (flag.type === 'object') {
+                      return (
+                        <motion.div
                           key={virtualItem.key}
-                          start={virtualItem.start}
-                          size={virtualItem.size}
-                          handleClearOverride={handleClearOverride}
-                          handleOverride={handleSetOverride}
-                        />
-                      </motion.div>
-                    );
-                  }
+                          layout
+                          initial={{ opacity: 0, y: 10 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          exit={{ opacity: 0, y: -10 }}
+                          transition={{
+                            duration: 0.2,
+                            ease: EASING.smooth,
+                            layout: {
+                              duration: 0.25,
+                              ease: EASING.smooth,
+                            },
+                          }}
+                        >
+                          <LocalObjectFlagControlListItem
+                            handleHeightChange={(height) => handleHeightChange(virtualItem.index, height)}
+                            flag={flag}
+                            key={virtualItem.key}
+                            start={virtualItem.start}
+                            size={virtualItem.size}
+                            handleClearOverride={handleClearOverride}
+                            handleOverride={handleSetOverride}
+                          />
+                        </motion.div>
+                      );
+                    }
 
-                  return (
-                    <div
-                      key={virtualItem.key}
-                      className={sharedStyles.virtualItem}
-                      style={{
-                        height: `${virtualItem.size}px`,
-                        transform: `translateY(${virtualItem.start}px)`,
-                        borderBottom: '1px solid var(--lp-color-gray-800)',
-                      }}
-                      data-testid={`flag-row-${flagKey}`}
-                    >
-                      <ListItem className={sharedStyles.flagListItem}>
-                        <div className={sharedStyles.flagHeader}>
-                          <span className={sharedStyles.flagName}>
-                            <span className={sharedStyles.flagNameText} data-testid={`flag-name-${flagKey}`}>
-                              {flag.name}
+                    return (
+                      <div
+                        key={virtualItem.key}
+                        className={sharedStyles.virtualItem}
+                        style={{
+                          height: `${virtualItem.size}px`,
+                          transform: `translateY(${virtualItem.start}px)`,
+                          borderBottom: '1px solid var(--lp-color-gray-800)',
+                        }}
+                        data-testid={`flag-row-${flagKey}`}
+                      >
+                        <ListItem className={sharedStyles.flagListItem}>
+                          <div className={sharedStyles.flagHeader}>
+                            <span className={sharedStyles.flagName}>
+                              <span className={sharedStyles.flagNameText} data-testid={`flag-name-${flagKey}`}>
+                                {flag.name}
+                              </span>
+                              {flag.isOverridden && <OverrideIndicator onClear={() => handleClearOverride(flagKey)} />}
                             </span>
-                            {flag.isOverridden && <OverrideIndicator onClear={() => handleClearOverride(flagKey)} />}
-                          </span>
-                          <span className={sharedStyles.flagKey} data-testid={`flag-key-${flagKey}`}>
-                            {flagKey}
-                          </span>
-                        </div>
+                            <span className={sharedStyles.flagKey} data-testid={`flag-key-${flagKey}`}>
+                              {flagKey}
+                            </span>
+                          </div>
 
-                        <div className={sharedStyles.flagOptions}>
-                          {renderFlagControl(flag)}
-                          <StarButton flagKey={flagKey} isStarred={isStarred(flagKey)} onToggle={toggleStarred} />
-                        </div>
-                      </ListItem>
-                    </div>
-                  );
-                })}
-              </div>
-            </List>
-          </div>
-        )}
-      </>
-    </div>
+                          <div className={sharedStyles.flagOptions}>
+                            {renderFlagControl(flag)}
+                            <StarButton flagKey={flag.key} isStarred={isStarred(flag.key)} onToggle={toggleStarred} />
+                          </div>
+                        </ListItem>
+                      </div>
+                    );
+                  })}
+                </div>
+              </List>
+            </div>
+          )}
+        </>
+      </div>
+    </FilterTabsContext.Provider>
   );
 }
 

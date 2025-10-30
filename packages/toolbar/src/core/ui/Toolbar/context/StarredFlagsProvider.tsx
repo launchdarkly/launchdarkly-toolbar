@@ -4,6 +4,8 @@ import { loadStarredFlags, saveStarredFlags } from '../utils/localStorage';
 type StarredFlagsContextType = {
   toggleStarred: (flagKey: string) => void;
   isStarred: (flagKey: string) => boolean;
+  clearAllStarred: () => void;
+  starredCount: number;
 };
 
 const StarredFlagsContext = createContext<StarredFlagsContextType | null>(null);
@@ -31,8 +33,18 @@ export function StarredFlagsProvider({ children }: { children: React.ReactNode }
     [starredFlags],
   );
 
+  const clearAllStarred = useCallback(() => {
+    const emptySet = new Set<string>();
+    setStarredFlags(emptySet);
+    saveStarredFlags(emptySet);
+  }, []);
+
+  const starredCount = starredFlags.size;
+
   return (
-    <StarredFlagsContext.Provider value={{ toggleStarred, isStarred }}>{children}</StarredFlagsContext.Provider>
+    <StarredFlagsContext.Provider value={{ toggleStarred, isStarred, clearAllStarred, starredCount }}>
+      {children}
+    </StarredFlagsContext.Provider>
   );
 }
 
