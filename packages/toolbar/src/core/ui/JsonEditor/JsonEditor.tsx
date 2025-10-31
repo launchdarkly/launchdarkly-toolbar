@@ -78,14 +78,13 @@ export function JsonEditor(props: JsonEditorProps) {
         tooltips({
           position: 'fixed',
           parent: containerRef.current,
-        })
+        }),
       ];
       const state = EditorState.create({
         doc: docString,
         selection: initialState?.startCursorAtLine ? { anchor: initialState.startCursorAtLine } : undefined,
         extensions,
       });
-      
 
       editorRef.current = new EditorView({
         state,
