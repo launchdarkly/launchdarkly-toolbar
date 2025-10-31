@@ -1,8 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
-import { asyncWithLDProvider } from 'launchdarkly-react-client-sdk';
+import { asyncWithLDProvider, type LDPlugin } from 'launchdarkly-react-client-sdk';
 import { DEMO_CONFIG, demoLog } from '../config/demo';
 import { startMockWorker, stopMockWorker } from '../mocks';
-import { flagOverridePlugin, eventInterceptionPlugin } from '../plugins';
 
 export interface UseLaunchDarklyProviderReturn {
   LDProvider: React.FC<{ children: React.ReactNode }> | null;
@@ -10,7 +9,17 @@ export interface UseLaunchDarklyProviderReturn {
   isLoading: boolean;
 }
 
-export function useLaunchDarklyProvider(): UseLaunchDarklyProviderReturn {
+interface UseLaunchDarklyProviderProps {
+  clientSideID: string;
+  baseUrl: string;
+  streamUrl: string;
+  eventsUrl: string;
+  plugins: LDPlugin[];
+}
+
+export function useLaunchDarklyProvider(props: UseLaunchDarklyProviderProps): UseLaunchDarklyProviderReturn {
+  const { clientSideID, baseUrl, streamUrl, eventsUrl, plugins } = props;
+
   const [LDProvider, setLDProvider] = useState<React.FC<{ children: React.ReactNode }> | null>(null);
   const [isUsingMocks, setIsUsingMocks] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
@@ -29,12 +38,12 @@ export function useLaunchDarklyProvider(): UseLaunchDarklyProviderReturn {
 
         // Initialize LaunchDarkly provider
         const Provider = await asyncWithLDProvider({
-          clientSideID: import.meta.env.VITE_LD_CLIENT_SIDE_ID,
+          clientSideID,
           options: {
-            baseUrl: import.meta.env.VITE_LD_BASE_URL,
-            streamUrl: import.meta.env.VITE_LD_STREAM_URL,
-            eventsUrl: import.meta.env.VITE_LD_EVENTS_URL,
-            plugins: [flagOverridePlugin, eventInterceptionPlugin],
+            baseUrl,
+            streamUrl,
+            eventsUrl,
+            plugins,
           },
         });
 

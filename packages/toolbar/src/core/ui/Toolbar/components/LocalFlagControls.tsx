@@ -1,13 +1,14 @@
-import { useState, useMemo, useRef, useEffect } from 'react';
-import { Switch, TextField, Group, Input } from '@launchpad-ui/components';
+import { useState, useRef, useEffect } from 'react';
+import { Switch, TextField, Group, Input, Button } from '@launchpad-ui/components';
 import { EditIcon, CheckIcon, XIcon } from './icons';
 import { IconButton } from './IconButton';
 import type { LocalFlag } from '../context';
 import { enableShadowDOM } from '@react-stately/flags';
-enableShadowDOM();
-
 import * as sharedStyles from './FlagControls.css';
 import * as styles from './LocalFlagControls.css';
+import { EnhancedFlag } from '../../../types/devServer';
+
+enableShadowDOM();
 
 interface LocalBooleanFlagControlProps {
   flag: LocalFlag;
@@ -127,104 +128,41 @@ export function LocalStringNumberFlagControl(props: LocalStringNumberFlagControl
 }
 
 interface LocalObjectFlagControlProps {
-  flag: LocalFlag;
+  flag: LocalFlag | EnhancedFlag;
+  isEditing: boolean;
+  handleEdit: () => void;
+  handleConfirm: () => void;
+  handleCancel: () => void;
   onOverride: (value: any) => void;
-  disabled?: boolean;
+  hasErrors: boolean;
 }
 
 export function LocalObjectFlagControl(props: LocalObjectFlagControlProps) {
-  const { flag, onOverride, disabled = false } = props;
-  const [isEditing, setIsEditing] = useState(false);
-  const currentValue = JSON.stringify(flag.currentValue, null, 2);
-  const [tempValue, setTempValue] = useState(currentValue);
-  const [parseError, setParseError] = useState<string | null>(null);
-  const textareaRef = useRef<HTMLTextAreaElement>(null);
-
-  const displayValue = useMemo(() => JSON.stringify(flag.currentValue), [flag.currentValue]);
-
-  useEffect(() => {
-    if (isEditing && textareaRef.current) {
-      textareaRef.current?.focus();
-      textareaRef.current?.select();
-    }
-  }, [isEditing]);
-
-  const handleConfirm = () => {
-    try {
-      const parsedValue = JSON.parse(tempValue);
-      onOverride(parsedValue);
-      setIsEditing(false);
-      setParseError(null);
-    } catch {
-      setParseError('Invalid JSON format');
-    }
-  };
-
-  const handleCancel = () => {
-    setIsEditing(false);
-    setParseError(null);
-  };
-
-  const handleValueChange = (value: string) => {
-    setTempValue(value);
-    setParseError(null); // Clear error when user types
-  };
-
-  const handleEdit = () => {
-    setTempValue(currentValue);
-    setIsEditing(true);
-  };
+  const { flag, isEditing, handleEdit, handleConfirm, handleCancel, hasErrors } = props;
 
   return (
-    <div className={sharedStyles.customVariantContainer} data-testid={`flag-control-${flag.key}`}>
-      {!isEditing ? (
-        <div className={sharedStyles.currentValueGroup}>
-          <div className={sharedStyles.currentValueText} data-testid={`flag-value-${flag.key}`}>
-            {displayValue}
-          </div>
-          <IconButton
-            icon={<EditIcon />}
-            label="Edit JSON"
-            onClick={handleEdit}
-            disabled={disabled}
-            data-testid={`flag-edit-${flag.key}`}
-          />
-        </div>
-      ) : (
-        <TextField
-          aria-label={`Enter JSON value for ${flag.name}`}
-          className={sharedStyles.customVariantField}
-          data-theme="dark"
-        >
-          <Group className={sharedStyles.customVariantFieldGroup}>
-            <textarea
-              ref={textareaRef}
-              placeholder="Enter valid JSON"
-              value={tempValue}
-              onChange={(e) => handleValueChange(e.target.value)}
-              rows={4}
-              className={parseError ? `${styles.jsonTextarea} ${styles.jsonTextareaError}` : styles.jsonTextarea}
-              data-testid={`flag-input-${flag.key}`}
-              aria-label={`JSON input for ${flag.name}`}
-            />
-            <div className={styles.jsonButtonGroup}>
-              <IconButton
-                icon={<CheckIcon />}
-                label="Confirm"
-                onClick={handleConfirm}
-                data-testid={`flag-confirm-${flag.key}`}
-              />
-              <IconButton
-                icon={<XIcon />}
-                label="Cancel"
-                onClick={handleCancel}
-                data-testid={`flag-cancel-${flag.key}`}
-              />
-            </div>
-            {parseError && <div className={styles.jsonParseError}>{parseError}</div>}
-          </Group>
-        </TextField>
-      )}
+    <div className={styles.editActionsContainer}>
+      <div className={sharedStyles.jsonEditorContainer} data-testid={`flag-control-${flag.key}`}>
+        {!isEditing ? (
+          <Button onClick={handleEdit} data-testid={`flag-edit-${flag.key}`}>
+            Edit JSON
+          </Button>
+        ) : (
+          <>
+            <Button
+              variant="primary"
+              onClick={handleConfirm}
+              data-testid={`flag-confirm-${flag.key}`}
+              isDisabled={hasErrors}
+            >
+              Save
+            </Button>
+            <Button onClick={handleCancel} data-testid={`flag-cancel-${flag.key}`}>
+              Cancel
+            </Button>
+          </>
+        )}
+      </div>
     </div>
   );
 }

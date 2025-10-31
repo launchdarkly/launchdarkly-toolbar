@@ -1,12 +1,20 @@
 # Changelog
 
-## [1.0.3](https://github.com/launchdarkly/launchdarkly-toolbar/compare/1.0.2-beta.1...1.0.3-beta.1) (2025-10-24)
+## [1.1.0](https://github.com/launchdarkly/launchdarkly-toolbar/compare/1.0.3-beta.1...1.1.0) (2025-10-31)
+
+
+### Features
+
+* [REL-10136] revamp json editing experience ([#233](https://github.com/launchdarkly/launchdarkly-toolbar/issues/233)) ([003e0d7](https://github.com/launchdarkly/launchdarkly-toolbar/commit/003e0d7386ab09e12f966528493703285e7b0713))
+
+## [1.0.3-beta.1](https://github.com/launchdarkly/launchdarkly-toolbar/compare/1.0.2-beta.1...1.0.3-beta.1) (2025-10-28)
 
 
 ### Bug Fixes
 
 * [REL-10230] preserve search term when toggling active tab ([#225](https://github.com/launchdarkly/launchdarkly-toolbar/issues/225)) ([46bc323](https://github.com/launchdarkly/launchdarkly-toolbar/commit/46bc323f4f41d777432b1b877add0eff3461b9b4))
 * preserve search term when toggling active tab ([46bc323](https://github.com/launchdarkly/launchdarkly-toolbar/commit/46bc323f4f41d777432b1b877add0eff3461b9b4))
+* remove unused dependencies and excessive peer dependencies ([#239](https://github.com/launchdarkly/launchdarkly-toolbar/issues/239)) ([82f9235](https://github.com/launchdarkly/launchdarkly-toolbar/commit/82f92356a36203a63066c07b69b6095c90424599))
 
 ## [1.0.2-beta.1](https://github.com/launchdarkly/launchdarkly-toolbar/compare/1.0.1-beta.1...1.0.2-beta.1) (2025-10-23)
 

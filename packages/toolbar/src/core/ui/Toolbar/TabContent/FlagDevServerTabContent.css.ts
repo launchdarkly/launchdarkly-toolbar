@@ -92,3 +92,7 @@ export const virtualItem = style({
 export const flagListItem = style({
   height: '100%',
 });
+
+export const flagListItemBlock = style({
+  display: 'block',
+});

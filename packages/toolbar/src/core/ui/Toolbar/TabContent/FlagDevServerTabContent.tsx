@@ -13,6 +13,7 @@ import { VIRTUALIZATION } from '../constants';
 
 import * as styles from './FlagDevServerTabContent.css';
 import * as actionStyles from '../components/ActionButtonsContainer.css';
+import { LocalObjectFlagControlListItem } from '../components/LocalObjectFlagControlListItem';
 
 interface FlagDevServerTabContentProps {
   reloadOnFlagChangeIsEnabled: boolean;
@@ -51,14 +52,16 @@ export function FlagDevServerTabContent(props: FlagDevServerTabContentProps) {
     return Object.values(flags).filter((flag) => flag.isOverridden).length;
   }, [flags]);
 
-  const renderFlagControl = (flag: EnhancedFlag) => {
-    const handleOverride = (value: any) => {
-      setOverride(flag.key, value);
+  const handleSetOverride = (flagKey: string, value: any) => {
+    setOverride(flagKey, value);
 
-      if (reloadOnFlagChangeIsEnabled) {
-        window.location.reload();
-      }
-    };
+    if (reloadOnFlagChangeIsEnabled) {
+      window.location.reload();
+    }
+  };
+
+  const renderFlagControl = (flag: EnhancedFlag) => {
+    const handleOverride = (value: any) => handleSetOverride(flag.key, value);
 
     switch (flag.type) {
       case 'boolean':
@@ -96,6 +99,19 @@ export function FlagDevServerTabContent(props: FlagDevServerTabContentProps) {
       });
     },
     [totalOverriddenFlags, setShowOverriddenOnly, clearOverride, reloadOnFlagChangeIsEnabled],
+  );
+
+  const handleHeightChange = useCallback(
+    (index: number, height: number) => {
+      if (height > VIRTUALIZATION.ITEM_HEIGHT) {
+        virtualizer.resizeItem(index, height);
+      } else {
+        setTimeout(() => {
+          virtualizer.resizeItem(index, height);
+        }, 125);
+      }
+    },
+    [virtualizer],
   );
 
   const genericHelpTitle = showOverriddenOnly ? 'No overrides found' : 'No flags found';
@@ -136,6 +152,21 @@ export function FlagDevServerTabContent(props: FlagDevServerTabContentProps) {
                   const entry = filteredFlags[virtualItem.index];
                   if (!entry) return null;
                   const [_, flag] = entry;
+
+                  if (flag.type === 'object') {
+                    return (
+                      <div key={virtualItem.key} className={styles.virtualItem}>
+                        <LocalObjectFlagControlListItem
+                          flag={flag}
+                          size={virtualItem.size}
+                          start={virtualItem.start}
+                          handleOverride={handleSetOverride}
+                          handleClearOverride={onClearOverride}
+                          handleHeightChange={(height) => handleHeightChange(virtualItem.index, height)}
+                        />
+                      </div>
+                    );
+                  }
 
                   return (
                     <div
