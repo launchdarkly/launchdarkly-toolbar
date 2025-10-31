@@ -94,10 +94,8 @@ export const theme = {
     border: 'none',
     wordWrap: 'break-word',
     zIndex: Z_INDEX.TOOLTIP,
-    top: '50% !important',
     position: 'fixed !important',
     width: '90%',
-    overflow: 'hidden',
   },
   '.cm-tooltip-empty': {
     display: 'none',
