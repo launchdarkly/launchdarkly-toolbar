@@ -110,10 +110,10 @@ test.describe('LaunchDarkly Toolbar - SDK Mode', () => {
 
       // JSON flag override
       await page.getByTestId('flag-control-json-object-flag').getByRole('button', { name: 'Edit' }).click();
-      const jsonInput = page.getByTestId('flag-input-json-object-flag');
+      const jsonInput = page.getByTestId('json-editor-json-object-flag').getByRole('textbox');
       const customJson = '{"environment": "test", "feature": "enabled", "count": 42}';
       await jsonInput.fill(customJson);
-      await page.getByRole('button', { name: 'Confirm' }).click();
+      await page.getByTestId('flag-confirm-json-object-flag').click();
       await expect(page.getByTestId('flag-row-json-object-flag').getByTestId('override-indicator')).toBeVisible();
       await expect(page.getByText('Clear all overrides (4)')).toBeVisible();
 
@@ -192,13 +192,12 @@ test.describe('LaunchDarkly Toolbar - SDK Mode', () => {
         .getByRole('button', { name: 'Edit' });
 
       await jsonFlagEditButton.click();
-      const jsonInput = page.getByTestId('flag-input-json-object-flag');
+      const jsonInput = page.getByTestId('json-editor-json-object-flag').getByRole('textbox');
 
       const validJson = '{"environment": "test", "enabled": true}';
       await jsonInput.fill(validJson);
 
-      const confirmButton = page.getByRole('button', { name: 'Confirm' });
-      await confirmButton.click();
+      await page.getByTestId('flag-confirm-json-object-flag').click();
 
       // Verify override was created
       await expect(jsonFlagRow.getByTestId('override-indicator')).toBeVisible();

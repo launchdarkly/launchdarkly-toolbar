@@ -11,7 +11,7 @@ export interface EnhancedFlag {
   isOverridden: boolean; // Exists in overrides object
   originalValue: any; // Value from dev server flagsState
   availableVariations: Variation[]; // For UI selection
-  type: 'boolean' | 'multivariate' | 'string' | 'number';
+  type: 'boolean' | 'multivariate' | 'string' | 'number' | 'object';
   sourceEnvironment: string; // e.g., "production", "test"
   enabled: boolean; // Whether flag is active
 }
