@@ -4,13 +4,14 @@ import { LocalObjectFlagControl } from './LocalFlagControls';
 import { OverrideIndicator } from './OverrideIndicator';
 import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-
-import * as sharedStyles from '../TabContent/FlagDevServerTabContent.css';
 import { JsonEditor } from '../../JsonEditor/JsonEditor';
 import { EASING } from '../constants/animations';
 import { VIRTUALIZATION } from '../constants';
 import { EnhancedFlag } from '../../../types/devServer';
 import { Diagnostic } from '@codemirror/lint';
+
+import * as sharedStyles from '../TabContent/FlagDevServerTabContent.css';
+import * as styles from './LocalObjectFlagControlListItem.css';
 
 interface LocalObjectFlagControlListItemProps {
   handleClearOverride: (key: string) => void;
@@ -74,12 +75,12 @@ export function LocalObjectFlagControlListItem(props: LocalObjectFlagControlList
       }}
     >
       <ListItem className={sharedStyles.flagListItemBlock}>
-        <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
-          <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
-            <div className={sharedStyles.flagHeader} style={{ display: 'flex', flexDirection: 'column' }}>
+        <div className={styles.listItemColumn}>
+          <div className={styles.listItemRow}>
+            <div className={sharedStyles.flagHeader}>
               <span className={sharedStyles.flagName}>
                 <span
-                  style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}
+                  className={styles.flagNameText}
                   data-testid={`flag-name-${flag.key}`}
                 >
                   {flag.name}
@@ -140,6 +141,10 @@ export function LocalObjectFlagControlListItem(props: LocalObjectFlagControlList
                   onLintErrors={handleLintErrors}
                   data-testid={`flag-input-${flag.key}`}
                   editorId={`json-editor-${flag.key}`}
+                  initialState={{
+                    startCursorAtLine: 0,
+                    autoFocus: true,
+                  }}
                   onEditorHeightChange={handleEditorHeightChange}
                 />
               </motion.div>

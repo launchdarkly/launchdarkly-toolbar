@@ -1,6 +1,6 @@
 import { EditorState, Annotation } from '@codemirror/state';
 import { defaultKeymap, history, historyKeymap, indentWithTab } from '@codemirror/commands';
-import { EditorView, keymap, ViewUpdate } from '@codemirror/view';
+import { EditorView, keymap, tooltips, ViewUpdate } from '@codemirror/view';
 import { json } from '@codemirror/lang-json';
 import { useCallback, useEffect, useRef } from 'react';
 import * as styles from './JsonEditor.css';
@@ -75,12 +75,17 @@ export function JsonEditor(props: JsonEditorProps) {
         ...theme,
         EditorView.lineWrapping,
         keymap.of(keymaps),
+        tooltips({
+          position: 'fixed',
+          parent: containerRef.current,
+        })
       ];
       const state = EditorState.create({
         doc: docString,
         selection: initialState?.startCursorAtLine ? { anchor: initialState.startCursorAtLine } : undefined,
         extensions,
       });
+      
 
       editorRef.current = new EditorView({
         state,

@@ -3,6 +3,7 @@ import { EditorView } from '@codemirror/view';
 import { tags } from '@lezer/highlight';
 
 import type { SyntaxHighlightingOverrides } from './types';
+import { Z_INDEX } from '../constants/zIndex';
 
 export const theme = {
   '&': {
@@ -80,22 +81,23 @@ export const theme = {
     font: 'var(--lp-text-body-2-regular)',
   },
   '.cm-tooltip': {
-    isolation: 'isolate',
     borderRadius: 'var(--lp-border-radius-medium)',
     color: 'var(--lp-color-text-ui-primary-base)',
-    backgroundColor: 'var(--lp-color-bg-overlay-secondary)',
+    backgroundColor: 'var(--lp-color-bg-overlay-secondary) !important',
     boxShadow: `
         0 0 1px 0 var(--lp-color-shadow-ui-secondary),
         0 0 4px 0 var(--lp-color-shadow-ui-secondary),
         0 4px 8px 0 var(--lp-color-shadow-ui-secondary),
         0 2px 12px 0 var(--lp-color-shadow-ui-secondary)
       `,
-    willChange: 'transform, opacity',
-    transform: 'translate(0)',
-    border: 'none',
     padding: 'var(--lp-size-8)',
-    overflowWrap: 'break-word',
+    border: 'none',
     wordWrap: 'break-word',
+    zIndex: Z_INDEX.TOOLTIP,
+    top: '50% !important',
+    position: 'fixed !important',
+    width: '90%',
+    overflow: 'hidden',
   },
   '.cm-tooltip-empty': {
     display: 'none',
