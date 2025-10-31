@@ -72,7 +72,7 @@
     "@storybook/addon-docs": "^10.0.1",
     "@storybook/addon-essentials": "^9.0.0-alpha.12",
     "@storybook/addon-interactions": "^9.0.0-alpha.10",
-    "@storybook/addon-links": "^9.1.13",
+    "@storybook/addon-links": "^10.0.2",
     "@storybook/addon-onboarding": "^9.0.5",
     "@storybook/blocks": "^9.0.0-alpha.17",
     "@storybook/react": "^9.1.15",
