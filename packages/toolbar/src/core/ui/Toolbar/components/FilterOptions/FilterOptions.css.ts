@@ -21,7 +21,7 @@ export const bottomRow = style({
   gap: '12px',
 });
 
-export const tab = style({
+export const option = style({
   background: 'transparent',
   border: '1px solid var(--lp-color-gray-600)',
   color: 'var(--lp-color-gray-200)',
@@ -50,7 +50,7 @@ export const tab = style({
   },
 });
 
-export const activeTab = style({
+export const activeOption = style({
   background: '#283050',
   borderColor: '#6A78D1',
   color: 'white',

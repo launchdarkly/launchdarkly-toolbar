@@ -1,11 +1,14 @@
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import { expect, test, describe, vi } from 'vitest';
 
-import { FilterTabs, type FilterTabsProps } from '../ui/Toolbar/components/FilterTabs/FilterTabs';
-import { FilterTabsContext, type FilterMode } from '../ui/Toolbar/components/FilterTabs/useFilterTabsContext';
+import { FilterOptions, type FilterOptionsProps } from '../ui/Toolbar/components/FilterOptions/FilterOptions';
+import {
+  FlagFilterOptionsContext,
+  type FlagFilterMode,
+} from '../ui/Toolbar/components/FilterOptions/useFlagFilterOptions';
 
-describe('FilterTabs', () => {
-  const defaultProps: FilterTabsProps = {
+describe('FilterOptions', () => {
+  const defaultProps: FilterOptionsProps = {
     totalFlags: 5,
     filteredFlags: 5,
     totalOverriddenFlags: 2,
@@ -15,15 +18,15 @@ describe('FilterTabs', () => {
     isLoading: false,
   };
 
-  const renderWithContext = (props: FilterTabsProps = defaultProps, activeFilter: FilterMode = 'all') => {
+  const renderWithContext = (props: FilterOptionsProps = defaultProps, activeFilter: FlagFilterMode = 'all') => {
     const onFilterChange = vi.fn();
 
     return {
       onFilterChange,
       ...render(
-        <FilterTabsContext.Provider value={{ activeFilter, onFilterChange }}>
-          <FilterTabs {...props} />
-        </FilterTabsContext.Provider>,
+        <FlagFilterOptionsContext.Provider value={{ activeFilter, onFilterChange }}>
+          <FilterOptions {...props} />
+        </FlagFilterOptionsContext.Provider>,
       ),
     };
   };

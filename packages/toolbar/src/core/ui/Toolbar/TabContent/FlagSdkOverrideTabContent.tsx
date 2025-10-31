@@ -10,8 +10,8 @@ import { LocalBooleanFlagControl, LocalStringNumberFlagControl } from '../compon
 import { OverrideIndicator } from '../components/OverrideIndicator';
 import { StarButton } from '../components/StarButton';
 import { useStarredFlags } from '../context/StarredFlagsProvider';
-import { type FilterMode, FilterTabsContext } from '../components/FilterTabs/useFilterTabsContext';
-import { FilterTabs } from '../components/FilterTabs/FilterTabs';
+import { type FlagFilterMode, FlagFilterOptionsContext } from '../components/FilterOptions/useFlagFilterOptions';
+import { FilterOptions } from '../components/FilterOptions/FilterOptions';
 import { VIRTUALIZATION } from '../constants';
 import { EASING } from '../constants/animations';
 import type { LocalFlag } from '../context';
@@ -31,7 +31,7 @@ function FlagSdkOverrideTabContentInner(props: FlagSdkOverrideTabContentInnerPro
   const analytics = useAnalytics();
   const { flags, isLoading } = useFlagSdkOverrideContext();
   const { isStarred, toggleStarred, clearAllStarred, starredCount } = useStarredFlags();
-  const [activeFilter, setActiveFilter] = useState<FilterMode>('all');
+  const [activeFilter, setActiveFilter] = useState<FlagFilterMode>('all');
   const parentRef = useRef<HTMLDivElement>(null);
 
   const handleClearOverride = useCallback(
@@ -176,10 +176,10 @@ function FlagSdkOverrideTabContentInner(props: FlagSdkOverrideTabContentInnerPro
   const { title: genericHelpTitle, subtitle: genericHelpSubtitle } = getGenericHelpText();
 
   return (
-    <FilterTabsContext.Provider value={{ activeFilter, onFilterChange: setActiveFilter }}>
+    <FlagFilterOptionsContext.Provider value={{ activeFilter, onFilterChange: setActiveFilter }}>
       <div data-testid="flag-sdk-tab-content">
         <>
-          <FilterTabs
+          <FilterOptions
             totalFlags={flagEntries.length}
             filteredFlags={filteredFlags.length}
             totalOverriddenFlags={totalOverriddenFlags}
@@ -273,7 +273,7 @@ function FlagSdkOverrideTabContentInner(props: FlagSdkOverrideTabContentInnerPro
           )}
         </>
       </div>
-    </FilterTabsContext.Provider>
+    </FlagFilterOptionsContext.Provider>
   );
 }
 
