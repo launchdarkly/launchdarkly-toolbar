@@ -1,14 +1,14 @@
-import { useFilterTabsContext, type FilterMode } from './useFilterTabsContext';
+import { useFlagFilterOptions, type FlagFilterMode } from './useFlagFilterOptions';
 import { ClearButton } from './ClearButton';
-import * as styles from './FilterTabs.css';
+import * as styles from './FilterOptions.css';
 
-const FILTER_TABS = [
+const FILTER_OPTIONS = [
   { id: 'all' as const, label: 'All' },
   { id: 'overrides' as const, label: 'Overrides' },
   { id: 'starred' as const, label: 'Starred' },
-] satisfies { id: FilterMode; label: string }[];
+] satisfies { id: FlagFilterMode; label: string }[];
 
-export interface FilterTabsProps {
+export interface FilterOptionsProps {
   totalFlags: number;
   filteredFlags: number;
   totalOverriddenFlags: number;
@@ -18,10 +18,10 @@ export interface FilterTabsProps {
   isLoading?: boolean;
 }
 
-export function FilterTabs(props: FilterTabsProps) {
+export function FilterOptions(props: FilterOptionsProps) {
   const { totalFlags, filteredFlags, totalOverriddenFlags, starredCount, onClearOverrides, onClearStarred, isLoading } =
     props;
-  const { activeFilter, onFilterChange } = useFilterTabsContext();
+  const { activeFilter, onFilterChange } = useFlagFilterOptions();
 
   const isAllActive = activeFilter === 'all';
   const isOverridesActive = activeFilter === 'overrides';
@@ -30,12 +30,12 @@ export function FilterTabs(props: FilterTabsProps) {
   return (
     <div className={styles.container}>
       <div className={styles.topRow}>
-        {FILTER_TABS.map((filter) => {
+        {FILTER_OPTIONS.map((filter) => {
           const isActive = activeFilter === filter.id;
           return (
             <button
               key={filter.id}
-              className={`${styles.tab} ${isActive ? styles.activeTab : ''}`}
+              className={`${styles.option} ${isActive ? styles.activeOption : ''}`}
               onClick={() => onFilterChange(filter.id)}
               data-active={isActive}
               aria-label={`Show ${filter.label.toLowerCase()} flags`}
