@@ -62,12 +62,11 @@ function buildDom() {
   const reactMount = document.createElement('div');
 
   // Collect all toolbar-related styles from injected <style> elements
-  const styleElements = Array.from(document.head.querySelectorAll('style'))
-    .filter((styleEl) => styleEl.textContent?.includes('--lp-') || styleEl.textContent?.includes('_'));
-    
-  const toolbarStyles = styleElements
-    .map((styleEl) => styleEl.textContent || '')
-    .join('\n');
+  const styleElements = Array.from(document.head.querySelectorAll('style')).filter(
+    (styleEl) => styleEl.textContent?.includes('--lp-') || styleEl.textContent?.includes('_'),
+  );
+
+  const toolbarStyles = styleElements.map((styleEl) => styleEl.textContent || '').join('\n');
 
   if (toolbarStyles) {
     style.textContent = toolbarStyles;
