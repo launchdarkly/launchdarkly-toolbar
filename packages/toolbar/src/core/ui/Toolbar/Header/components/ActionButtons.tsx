@@ -70,7 +70,12 @@ export function ActionButtons(props: ActionButtonsProps) {
         </AnimatePresence>
       )}
       {onOpenConfig && (
-        <IconButton icon={<PersonPassword />} label="Configuration" onClick={onOpenConfig} className={styles.actionButton} />
+        <IconButton
+          icon={<PersonPassword />}
+          label="Configuration"
+          onClick={onOpenConfig}
+          className={styles.actionButton}
+        />
       )}
       {showRefreshButton && (
         <IconButton

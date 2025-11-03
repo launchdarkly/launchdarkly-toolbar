@@ -70,7 +70,6 @@ export const ExpandedToolbarContent = React.forwardRef<HTMLDivElement, ExpandedT
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const { state } = useDevServerContext();
 
-
   const headerLabel = getHeaderLabel(state.currentProjectKey, state.sourceEnvironmentKey);
   const { error } = state;
 
@@ -78,13 +77,9 @@ export const ExpandedToolbarContent = React.forwardRef<HTMLDivElement, ExpandedT
 
   const shouldShowError = error && mode === 'dev-server' && state.connectionStatus === 'error';
 
-
   return (
     <>
-      <AuthenticationModal 
-        isOpen={isAuthModalOpen} 
-        onClose={() => setIsAuthModalOpen(false)} 
-      />
+      <AuthenticationModal isOpen={isAuthModalOpen} onClose={() => setIsAuthModalOpen(false)} />
       <FocusScope restoreFocus>
         <motion.div
           ref={ref}

@@ -11,3 +11,4 @@ export { DeleteIcon } from './DeleteIcon';
 export { CancelCircleIcon } from './CancelCircleIcon';
 export { XIcon } from './XIcon';
 export { PersonPassword } from './PersonPassword';
+export { CancelIcon } from './CancelIcon';
