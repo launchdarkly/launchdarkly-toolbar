@@ -19,7 +19,7 @@ vi.mock('../services/DevServerClient', () => {
     this.setOverride = vi.fn();
     this.clearOverride = vi.fn();
   }
-  
+
   return {
     DevServerClient: MockDevServerClient,
   };
@@ -33,7 +33,7 @@ vi.mock('../services/FlagStateManager', () => {
     this.clearOverride = vi.fn();
     this.subscribe = vi.fn().mockReturnValue(() => {});
   }
-  
+
   return {
     FlagStateManager: MockFlagStateManager,
   };

@@ -37,7 +37,7 @@ vi.mock('../services/DevServerClient', () => {
     Object.assign(this, mockDevServerClientInstance);
     return this;
   }
-  
+
   return {
     DevServerClient: MockDevServerClient,
   };
@@ -48,7 +48,7 @@ vi.mock('../services/FlagStateManager', () => {
     Object.assign(this, mockFlagStateManagerInstance);
     return this;
   }
-  
+
   return {
     FlagStateManager: MockFlagStateManager,
   };
@@ -147,7 +147,7 @@ describe('ExpandedToolbarContent - User Interaction Flows', () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
-    
+
     // Reset mock instances to default state
     mockDevServerClientInstance.getAvailableProjects.mockResolvedValue(['test-project']);
     mockDevServerClientInstance.setProjectKey.mockClear();
@@ -159,7 +159,7 @@ describe('ExpandedToolbarContent - User Interaction Flows', () => {
       availableVariations: {},
       _lastSyncedFromSource: Date.now(),
     });
-    
+
     mockFlagStateManagerInstance.getEnhancedFlags.mockResolvedValue({});
     mockFlagStateManagerInstance.subscribe.mockReturnValue(() => {});
   });

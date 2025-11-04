@@ -32,7 +32,7 @@ vi.mock('../services/DevServerClient', () => {
     Object.assign(this, mockDevServerClientInstance);
     return this;
   }
-  
+
   return {
     DevServerClient: MockDevServerClient,
   };
@@ -43,7 +43,7 @@ vi.mock('../services/FlagStateManager', () => {
     Object.assign(this, mockFlagStateManagerInstance);
     return this;
   }
-  
+
   return {
     FlagStateManager: MockFlagStateManager,
   };
@@ -68,7 +68,7 @@ describe('DevServerProvider - Integration Flows', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     localStorage.clear();
-    
+
     // Reset mock instances to default state
     mockDevServerClientInstance.getAvailableProjects.mockResolvedValue(['test-project']);
     mockDevServerClientInstance.setProjectKey.mockClear();
@@ -80,13 +80,12 @@ describe('DevServerProvider - Integration Flows', () => {
       availableVariations: {},
       _lastSyncedFromSource: Date.now(),
     });
-    
+
     mockFlagStateManagerInstance.getEnhancedFlags.mockResolvedValue({});
     mockFlagStateManagerInstance.subscribe.mockReturnValue(() => {});
   });
 
   describe('Developer Setup Flow - Dev Server Mode', () => {
-
     test('developer connects to dev server and gets project auto-detection', async () => {
       // GIVEN: Developer starts up the toolbar pointing to their dev server
       render(
