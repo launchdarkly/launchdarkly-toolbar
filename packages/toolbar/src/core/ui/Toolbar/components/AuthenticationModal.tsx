@@ -13,6 +13,7 @@ interface AuthenticationModalProps {
 export function AuthenticationModal({ isOpen, onClose }: AuthenticationModalProps) {
   const { ref } = useIFrameContext();
 
+  // Handle escape key to close the modal
   useEffect(() => {
     const handleEscape = (event: KeyboardEvent) => {
       if (event.key === 'Escape' && isOpen) {

@@ -5,6 +5,7 @@ import { SearchIcon, SyncIcon, ChevronDownIcon, ChevronUpIcon, PersonPassword } 
 import { useToolbarUIContext } from '../../context/ToolbarUIProvider';
 
 import * as styles from '../Header.css';
+import { useAuthContext } from '../../context/AuthProvider';
 
 interface ActionButtonsProps {
   searchIsExpanded: boolean;
@@ -30,6 +31,8 @@ export function ActionButtons(props: ActionButtonsProps) {
   const [rotationCount, setRotationCount] = useState(0);
   const { position } = useToolbarUIContext();
   const isTop = position.startsWith('top-');
+
+  const { authenticated, loading } = useAuthContext();
 
   const handleRefreshClick = useCallback(() => {
     // Prevent multiple clicks while already spinning
@@ -69,7 +72,7 @@ export function ActionButtons(props: ActionButtonsProps) {
           )}
         </AnimatePresence>
       )}
-      {onOpenConfig && (
+      {onOpenConfig && !authenticated && !loading && (
         <IconButton
           icon={<PersonPassword />}
           label="Configuration"
