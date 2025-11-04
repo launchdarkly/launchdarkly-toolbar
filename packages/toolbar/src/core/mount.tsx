@@ -1,7 +1,6 @@
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { InitializationConfig } from '../types';
-import { LaunchDarklyToolbar } from './ui/Toolbar/LaunchDarklyToolbar';
 
 const TOOLBAR_DOM_ID = 'ld-toolbar';
 
@@ -15,27 +14,34 @@ export default function mount(rootNode: HTMLElement, config: InitializationConfi
     };
   }
 
-  const { host, reactMount } = buildDom();
+  const { host, reactMount, observer } = buildDom();
 
   const reactRoot = createRoot(reactMount);
-  reactRoot.render(
-    <StrictMode>
-      <LaunchDarklyToolbar
-        domId={TOOLBAR_DOM_ID}
-        baseUrl={config.baseUrl}
-        devServerUrl={config.devServerUrl}
-        projectKey={config.projectKey}
-        flagOverridePlugin={config.flagOverridePlugin}
-        eventInterceptionPlugin={config.eventInterceptionPlugin}
-        pollIntervalInMs={config.pollIntervalInMs}
-        position={config.position}
-      />
-    </StrictMode>,
-  );
-  cleanup.push(() =>
+
+  // Dynamically import toolbar to capture style injection timing
+  import('./ui/Toolbar/LaunchDarklyToolbar').then((module) => {
+    const { LaunchDarklyToolbar } = module;
+    reactRoot.render(
+      <StrictMode>
+        <LaunchDarklyToolbar
+          domId={TOOLBAR_DOM_ID}
+          baseUrl={config.baseUrl}
+          devServerUrl={config.devServerUrl}
+          projectKey={config.projectKey}
+          flagOverridePlugin={config.flagOverridePlugin}
+          eventInterceptionPlugin={config.eventInterceptionPlugin}
+          pollIntervalInMs={config.pollIntervalInMs}
+          position={config.position}
+        />
+      </StrictMode>,
+    );
+  });
+
+  cleanup.push(() => {
+    observer.disconnect();
     // `setTimeout` helps to avoid "Attempted to synchronously unmount a root while React was already rendering."
-    setTimeout(() => reactRoot.unmount(), 0),
-  );
+    setTimeout(() => reactRoot.unmount(), 0);
+  });
 
   rootNode.appendChild(host);
   cleanup.push(() => host.remove());
@@ -55,20 +61,23 @@ function buildDom() {
   host.style.zIndex = '2147400100';
 
   const shadowRoot = host.attachShadow({ mode: 'open' });
-
-  // rslib injects styles into <style> tags in the document head.
-  // For shadow DOM compatibility, we need to copy these styles into the shadow root.
-  const style = document.createElement('style');
   const reactMount = document.createElement('div');
 
-  // Collect all toolbar-related styles from injected <style> elements
-  const toolbarStyles = Array.from(document.head.querySelectorAll('style'))
+  // Snapshot existing styles BEFORE the toolbar component loads
+  const existingStylesSnapshot = new Set(
+    Array.from(document.head.querySelectorAll('style')).map((el) => el.textContent || ''),
+  );
+
+  // Copy existing LaunchPad styles (including Gonfalon's) to shadow root
+  // so toolbar has the base styles it needs
+  const existingStyles = Array.from(document.head.querySelectorAll('style'))
     .filter((styleEl) => styleEl.textContent?.includes('--lp-') || styleEl.textContent?.includes('_'))
     .map((styleEl) => styleEl.textContent || '')
     .join('\n');
 
-  if (toolbarStyles) {
-    style.textContent = toolbarStyles;
+  if (existingStyles) {
+    const style = document.createElement('style');
+    style.textContent = existingStyles;
     shadowRoot.appendChild(style);
   }
 
@@ -76,5 +85,42 @@ function buildDom() {
   reactMount.id = 'ld-toolbar-react-mount';
   shadowRoot.appendChild(reactMount);
 
-  return { host, reactMount };
+  // Watch for NEW styles injected by the toolbar and redirect them to shadow root
+  // This prevents toolbar's LaunchPad styles from overriding host app custom styles
+  const observer = new MutationObserver((mutations) => {
+    mutations.forEach((mutation) => {
+      mutation.addedNodes.forEach((node) => {
+        if (node.nodeType === Node.ELEMENT_NODE && (node as Element).tagName === 'STYLE') {
+          const styleEl = node as HTMLStyleElement;
+          const content = styleEl.textContent || '';
+
+          // Check if this is a NEW LaunchPad/toolbar style (not from host app)
+          const isNewToolbarStyle =
+            !existingStylesSnapshot.has(content) && (content.includes('--lp-') || content.includes('_'));
+
+          if (isNewToolbarStyle) {
+            // Copy to shadow root so toolbar still works
+            const shadowStyleEl = document.createElement('style');
+            shadowStyleEl.textContent = content;
+            shadowRoot.insertBefore(shadowStyleEl, reactMount);
+
+            // Remove from document.head to prevent overriding host app styles
+            // We can remove immediately since we've already copied to shadow root
+            try {
+              styleEl.remove();
+            } catch {
+              // Ignore if already removed
+            }
+          }
+        }
+      });
+    });
+  });
+
+  observer.observe(document.head, { childList: true });
+
+  // Stop observing after 500ms (toolbar should be fully loaded by then)
+  setTimeout(() => observer.disconnect(), 500);
+
+  return { host, reactMount, observer };
 }
