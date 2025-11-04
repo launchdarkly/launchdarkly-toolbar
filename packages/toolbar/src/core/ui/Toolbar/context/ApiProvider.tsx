@@ -21,7 +21,11 @@ export function ApiProvider({ children }: { children: React.ReactNode }) {
       throw new Error('Not authenticated');
     }
 
-    ref.current?.contentWindow?.postMessage({
+    if (!ref.current?.contentWindow) {
+      throw new Error('IFrame not found');
+    }
+
+    ref.current.contentWindow.postMessage({
       type: 'get-flag',
       flagKey,
     }, '*');
@@ -29,15 +33,12 @@ export function ApiProvider({ children }: { children: React.ReactNode }) {
     return new Promise((resolve) => {
       const handleMessage = (event: MessageEvent) => {
         if (event.data.type === 'get-flag-response') {
-          resolve(event.data.value);
+          window.removeEventListener('message', handleMessage);
+          resolve(event.data.data);
         }
       };
 
       window.addEventListener('message', handleMessage);
-
-      return () => {
-        window.removeEventListener('message', handleMessage);
-      };
     });
   }, [authenticated, ref]);
 

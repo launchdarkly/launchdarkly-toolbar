@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useState } from "react";
+import { createContext, useCallback, useContext, useEffect, useState } from "react";
 
 type AuthProviderType = {
   authenticated: boolean;
@@ -14,20 +14,22 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [authenticated, setAuthenticated] = useState(false);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    window.addEventListener('message', (event) => {
-      console.log(event);
-
-      if (event.data.type === 'toolbar-authenticated') {
-        setAuthenticated(true);
-        console.log('authenticated');
-        setLoading(false);
-      } else if (event.data.type === 'toolbar-authentication-required') { 
-        setAuthenticated(false);
-        setLoading(false);
-      }
-    });
+  const handleMessage = useCallback((event: MessageEvent) => {
+    if (event.data.type === 'toolbar-authenticated') {
+      setAuthenticated(true);
+      setLoading(false);
+    } else if (event.data.type === 'toolbar-authentication-required') { 
+      setAuthenticated(false);
+      setLoading(false);
+    }
   }, []);
+
+  useEffect(() => {
+    window.addEventListener('message', handleMessage);
+    return () => {
+      window.removeEventListener('message', handleMessage);
+    };
+  }, [handleMessage]);
   
   return <AuthContext.Provider value={{ authenticated, loading }}>{children}</AuthContext.Provider>;
 }
