@@ -1,6 +1,6 @@
 import { createContext, useCallback, useContext } from "react";
 import { useAuthContext } from "./AuthProvider";
-import { useIFrameContext } from "./IFrameProvider";
+import { IFRAME_API_MESSAGES, useIFrameContext } from "./IFrameProvider";
 
 interface ApiProviderContextValue {
   getFlag: (flagKey: string) => Promise<any>;
@@ -26,15 +26,18 @@ export function ApiProvider({ children }: { children: React.ReactNode }) {
     }
 
     ref.current.contentWindow.postMessage({
-      type: 'get-flag',
+      type: IFRAME_API_MESSAGES.GET_FLAG.request,
       flagKey,
     }, '*');
 
-    return new Promise((resolve) => {
+    return new Promise((resolve, reject) => {
       const handleMessage = (event: MessageEvent) => {
-        if (event.data.type === 'get-flag-response') {
+        if (event.data.type === IFRAME_API_MESSAGES.GET_FLAG.response) {
           window.removeEventListener('message', handleMessage);
           resolve(event.data.data);
+        } else if (event.data.type === IFRAME_API_MESSAGES.GET_FLAG.error) {
+          window.removeEventListener('message', handleMessage);
+          reject(new Error(event.data.error));
         }
       };
 

@@ -1,5 +1,18 @@
 import { createContext, RefObject, useContext, useRef } from "react";
 
+export const IFRAME_API_MESSAGES = {
+  AUTHENTICATION: {
+    authenticated: 'toolbar-authenticated',
+    authenticationRequired: 'toolbar-authentication-required',
+    error: 'toolbar-authentication-error',
+  },
+  GET_FLAG: {
+    request: 'get-flag',
+    response: 'get-flag-response',
+    error: 'get-flag-error',
+  },
+}
+
 type IFrameProviderType = {
   ref: RefObject<HTMLIFrameElement | null>;
 }

@@ -1,4 +1,5 @@
 import { createContext, useCallback, useContext, useEffect, useState } from "react";
+import { IFRAME_API_MESSAGES } from "./IFrameProvider";
 
 type AuthProviderType = {
   authenticated: boolean;
@@ -15,12 +16,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [loading, setLoading] = useState(true);
 
   const handleMessage = useCallback((event: MessageEvent) => {
-    if (event.data.type === 'toolbar-authenticated') {
+    if (event.data.type === IFRAME_API_MESSAGES.AUTHENTICATION.authenticated) {
       setAuthenticated(true);
       setLoading(false);
-    } else if (event.data.type === 'toolbar-authentication-required') { 
+    } else if (event.data.type === IFRAME_API_MESSAGES.AUTHENTICATION.authenticationRequired) { 
       setAuthenticated(false);
       setLoading(false);
+    } else if (event.data.type === IFRAME_API_MESSAGES.AUTHENTICATION.error) {
+      setAuthenticated(false);
+      setLoading(false);
+      throw new Error(event.data.error);
     }
   }, []);
 
