@@ -3,6 +3,7 @@ import { motion } from 'motion/react';
 import * as styles from './AuthenticationModal.css';
 import { IconButton } from './IconButton';
 import { CancelIcon } from './icons/CancelIcon';
+import { useIFrameContext } from '../context/IFrameProvider';
 
 interface AuthenticationModalProps {
   isOpen: boolean;
@@ -10,7 +11,8 @@ interface AuthenticationModalProps {
 }
 
 export function AuthenticationModal({ isOpen, onClose }: AuthenticationModalProps) {
-  // Handle ESC key to close modal
+  const { ref } = useIFrameContext();
+
   useEffect(() => {
     const handleEscape = (event: KeyboardEvent) => {
       if (event.key === 'Escape' && isOpen) {
@@ -23,10 +25,6 @@ export function AuthenticationModal({ isOpen, onClose }: AuthenticationModalProp
       return () => document.removeEventListener('keydown', handleEscape);
     }
   }, [isOpen, onClose]);
-
-  window.addEventListener('message', (event) => {
-    console.log(event);
-  });
 
   return (
     <motion.div
@@ -63,6 +61,7 @@ export function AuthenticationModal({ isOpen, onClose }: AuthenticationModalProp
             src="http://localhost:9050/toolbar/configure/index.html"
             className={styles.modalIframe}
             title="LaunchDarkly Authentication"
+            ref={ref}
           />
         </div>
       </motion.div>

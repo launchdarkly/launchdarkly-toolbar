@@ -10,6 +10,9 @@ import { ToolbarMode, ToolbarPosition, getToolbarMode, getDefaultActiveTab } fro
 import * as styles from './LaunchDarklyToolbar.css';
 import { DevServerProvider } from './context';
 import { IEventInterceptionPlugin, IFlagOverridePlugin } from '../../../types';
+import { AuthProvider } from './context/AuthProvider';
+import { ApiProvider } from './context/ApiProvider';
+import { IFrameProvider } from './context/IFrameProvider';
 
 export interface LdToolbarProps {
   mode: ToolbarMode;
@@ -221,13 +224,20 @@ export function LaunchDarklyToolbar(props: LaunchDarklyToolbarProps) {
       >
         <AnalyticsProvider ldClient={flagOverridePlugin?.getClient() ?? eventInterceptionPlugin?.getClient()}>
           <SearchProvider>
-            <LdToolbar
-              domId={domId}
-              mode={mode}
-              baseUrl={baseUrl}
-              flagOverridePlugin={flagOverridePlugin}
-              eventInterceptionPlugin={eventInterceptionPlugin}
-            />
+            <IFrameProvider>
+            <AuthProvider>
+              <ApiProvider>
+                <LdToolbar
+                  domId={domId}
+                  mode={mode}
+                  baseUrl={baseUrl}
+                  flagOverridePlugin={flagOverridePlugin}
+                  eventInterceptionPlugin={eventInterceptionPlugin}
+                />
+              </ApiProvider>
+            </AuthProvider>
+            </IFrameProvider>
+            
           </SearchProvider>
         </AnalyticsProvider>
       </DevServerProvider>

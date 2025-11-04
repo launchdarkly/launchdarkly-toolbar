@@ -18,6 +18,7 @@ import type { LocalFlag } from '../context';
 import * as sharedStyles from './FlagDevServerTabContent.css';
 import * as actionStyles from '../components/ActionButtonsContainer.css';
 import { IFlagOverridePlugin } from '../../../../types';
+import { useApiContext } from '../context/ApiProvider';
 
 interface FlagSdkOverrideTabContentInnerProps {
   flagOverridePlugin: IFlagOverridePlugin;
@@ -26,6 +27,7 @@ interface FlagSdkOverrideTabContentInnerProps {
 
 function FlagSdkOverrideTabContentInner(props: FlagSdkOverrideTabContentInnerProps) {
   const { flagOverridePlugin, reloadOnFlagChangeIsEnabled } = props;
+  const { getFlag } = useApiContext();
   const { searchTerm } = useSearchContext();
   const analytics = useAnalytics();
   const { flags, isLoading } = useFlagSdkOverrideContext();
@@ -196,6 +198,7 @@ function FlagSdkOverrideTabContentInner(props: FlagSdkOverrideTabContentInnerPro
 
                   return (
                     <div
+                      onClick={() => getFlag(flagKey)}
                       key={virtualItem.key}
                       className={sharedStyles.virtualItem}
                       style={{
