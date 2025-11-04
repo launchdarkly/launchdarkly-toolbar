@@ -30,7 +30,7 @@ export function AuthenticationModal({ isOpen, onClose }: AuthenticationModalProp
   }, [isOpen, onClose]);
 
   useEffect(() => {
-    console.log('authenticated', authenticated);
+    // If the user is authenticated and the modal is open, close it (auth flow is complete)
     if (authenticated && isOpen) {
       onClose();
     }
