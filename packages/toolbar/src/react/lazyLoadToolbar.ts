@@ -28,13 +28,13 @@ export default async function lazyLoadToolbar(signal: AbortSignal, url: string):
 async function lazyLoad(signal: AbortSignal, url: string): Promise<void> {
   // Check if a script with this URL already exists
   const existingScript = document.querySelector(`script[src="${url}"]`) as HTMLScriptElement | null;
-  
+
   if (existingScript) {
     // If script already exists and is loaded, return immediately
     if (existingScript.dataset.loaded === 'true') {
       return Promise.resolve();
     }
-    
+
     // If script exists but is still loading, wait for it to complete
     return new Promise<void>((resolve, reject) => {
       existingScript.addEventListener('load', () => {
