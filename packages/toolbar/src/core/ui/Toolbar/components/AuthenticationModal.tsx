@@ -4,6 +4,7 @@ import * as styles from './AuthenticationModal.css';
 import { IconButton } from './IconButton';
 import { CancelIcon } from './icons/CancelIcon';
 import { useIFrameContext } from '../context/IFrameProvider';
+import { useAuthContext } from '../context/AuthProvider';
 
 interface AuthenticationModalProps {
   isOpen: boolean;
@@ -12,7 +13,8 @@ interface AuthenticationModalProps {
 
 export function AuthenticationModal({ isOpen, onClose }: AuthenticationModalProps) {
   const { ref } = useIFrameContext();
-
+  const { authenticated } = useAuthContext();
+  
   // Handle escape key to close the modal
   useEffect(() => {
     const handleEscape = (event: KeyboardEvent) => {
@@ -26,6 +28,13 @@ export function AuthenticationModal({ isOpen, onClose }: AuthenticationModalProp
       return () => document.removeEventListener('keydown', handleEscape);
     }
   }, [isOpen, onClose]);
+
+  useEffect(() => {
+    console.log('authenticated', authenticated);
+    if (authenticated && isOpen) {
+      onClose();
+    }
+  }, [authenticated, onClose, isOpen]);
 
   return (
     <motion.div
