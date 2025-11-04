@@ -1,10 +1,10 @@
+import React from 'react';
 import { render, screen, waitFor } from '@testing-library/react';
-import { expect, test, describe, vi, beforeEach } from 'vitest';
-
+import { expect, test, describe, vi, beforeEach, Mock } from 'vitest';
 import { DevServerProvider, useDevServerContext } from '../ui/Toolbar/context/DevServerProvider';
 
-// Mock the DevServerClient and FlagStateManager
-const mockDevServerClient = {
+// Create mock instances that we can access in tests
+const mockDevServerClientInstance = {
   getAvailableProjects: vi.fn().mockResolvedValue(['test-project']),
   setProjectKey: vi.fn(),
   getProjectKey: vi.fn().mockReturnValue('test-project'),
@@ -17,23 +17,37 @@ const mockDevServerClient = {
   }),
   setOverride: vi.fn(),
   clearOverride: vi.fn(),
-  healthCheck: vi.fn().mockResolvedValue(true),
 };
 
-const mockFlagStateManager = {
+const mockFlagStateManagerInstance = {
   getEnhancedFlags: vi.fn().mockResolvedValue({}),
   setOverride: vi.fn(),
   clearOverride: vi.fn(),
   subscribe: vi.fn().mockReturnValue(() => {}),
 };
 
-vi.mock('../services/DevServerClient', () => ({
-  DevServerClient: vi.fn().mockImplementation(() => mockDevServerClient),
-}));
+vi.mock('../services/DevServerClient', () => {
+  function MockDevServerClient() {
+    // Assign all methods to this instance
+    Object.assign(this, mockDevServerClientInstance);
+    return this;
+  }
+  
+  return {
+    DevServerClient: MockDevServerClient,
+  };
+});
 
-vi.mock('../services/FlagStateManager', () => ({
-  FlagStateManager: vi.fn().mockImplementation(() => mockFlagStateManager),
-}));
+vi.mock('../services/FlagStateManager', () => {
+  function MockFlagStateManager() {
+    Object.assign(this, mockFlagStateManagerInstance);
+    return this;
+  }
+  
+  return {
+    FlagStateManager: MockFlagStateManager,
+  };
+});
 
 // Test component that consumes the context
 function TestConsumer() {
@@ -54,9 +68,25 @@ describe('DevServerProvider - Integration Flows', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     localStorage.clear();
+    
+    // Reset mock instances to default state
+    mockDevServerClientInstance.getAvailableProjects.mockResolvedValue(['test-project']);
+    mockDevServerClientInstance.setProjectKey.mockClear();
+    mockDevServerClientInstance.getProjectKey.mockReturnValue('test-project');
+    mockDevServerClientInstance.getProjectData.mockResolvedValue({
+      sourceEnvironmentKey: 'test-environment',
+      flagsState: {},
+      overrides: {},
+      availableVariations: {},
+      _lastSyncedFromSource: Date.now(),
+    });
+    
+    mockFlagStateManagerInstance.getEnhancedFlags.mockResolvedValue({});
+    mockFlagStateManagerInstance.subscribe.mockReturnValue(() => {});
   });
 
   describe('Developer Setup Flow - Dev Server Mode', () => {
+
     test('developer connects to dev server and gets project auto-detection', async () => {
       // GIVEN: Developer starts up the toolbar pointing to their dev server
       render(
@@ -93,7 +123,7 @@ describe('DevServerProvider - Integration Flows', () => {
 
     test('developer specifies exact project and connects successfully', async () => {
       // GIVEN: Developer knows exactly which project they want to work with
-      mockDevServerClient.getAvailableProjects.mockResolvedValueOnce(['explicit-project', 'test-project']);
+      mockDevServerClientInstance.getAvailableProjects.mockResolvedValueOnce(['explicit-project', 'test-project']);
 
       // WHEN: They configure the toolbar with their specific project
       render(
@@ -114,12 +144,12 @@ describe('DevServerProvider - Integration Flows', () => {
         return connectionStatus.textContent === 'connected';
       });
 
-      expect(mockDevServerClient.setProjectKey).toHaveBeenCalledWith('explicit-project');
+      expect(mockDevServerClientInstance.setProjectKey).toHaveBeenCalledWith('explicit-project');
     });
 
     test('developer handles dev server connection issues gracefully', async () => {
       // GIVEN: Developer's dev server is not running or misconfigured
-      mockDevServerClient.getAvailableProjects.mockRejectedValueOnce(new Error('Connection failed'));
+      mockDevServerClientInstance.getAvailableProjects.mockRejectedValueOnce(new Error('Connection failed'));
 
       // WHEN: They try to connect with the toolbar
       render(
@@ -145,7 +175,7 @@ describe('DevServerProvider - Integration Flows', () => {
 
     test('developer handles network timeout errors during initial connection', async () => {
       // GIVEN: Developer's network connection is slow or unreliable
-      mockDevServerClient.getAvailableProjects.mockRejectedValueOnce(new Error('ETIMEDOUT: connect timeout'));
+      mockDevServerClientInstance.getAvailableProjects.mockRejectedValueOnce(new Error('ETIMEDOUT: connect timeout'));
 
       // WHEN: They attempt to connect with the toolbar
       render(
@@ -198,7 +228,7 @@ describe('DevServerProvider - Integration Flows', () => {
       expect(screen.getByTestId('error')).toHaveTextContent('none');
 
       // AND: Doesn't attempt to make server connections
-      expect(mockDevServerClient.getAvailableProjects).not.toHaveBeenCalled();
+      expect(mockDevServerClientInstance.getAvailableProjects).not.toHaveBeenCalled();
     });
   });
 });
