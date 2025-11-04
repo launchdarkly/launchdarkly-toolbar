@@ -101,7 +101,7 @@
     "storybook-addon-rslib": "^2.1.2",
     "storybook-react-rsbuild": "^2.1.2",
     "typescript": "^5.9.3",
-    "vitest": "^3.2.2"
+    "vitest": "^4.0.7"
   },
   "peerDependencies": {
     "launchdarkly-js-client-sdk": ">=3.9.0 <4.0.0",

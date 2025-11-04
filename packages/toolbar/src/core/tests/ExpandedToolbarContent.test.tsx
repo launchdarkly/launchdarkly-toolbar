@@ -8,33 +8,51 @@ import { SearchProvider } from '../ui/Toolbar/context/SearchProvider';
 import { AnalyticsProvider } from '../ui/Toolbar/context/AnalyticsProvider';
 import { IEventInterceptionPlugin, IFlagOverridePlugin } from '../../types';
 
-// Mock the DevServerClient and FlagStateManager
-vi.mock('../services/DevServerClient', () => ({
-  DevServerClient: vi.fn().mockImplementation(() => ({
-    getAvailableProjects: vi.fn().mockResolvedValue(['test-project']),
-    setProjectKey: vi.fn(),
-    getProjectKey: vi.fn().mockReturnValue('test-project'),
-    getProjectData: vi.fn().mockResolvedValue({
-      sourceEnvironmentKey: 'test-environment',
-      flagsState: {},
-      overrides: {},
-      availableVariations: {},
-      _lastSyncedFromSource: Date.now(),
-    }),
-    setOverride: vi.fn(),
-    clearOverride: vi.fn(),
-    healthCheck: vi.fn().mockResolvedValue(true),
-  })),
-}));
+// Create mock instances that we can access in tests
+const mockDevServerClientInstance = {
+  getAvailableProjects: vi.fn().mockResolvedValue(['test-project']),
+  setProjectKey: vi.fn(),
+  getProjectKey: vi.fn().mockReturnValue('test-project'),
+  getProjectData: vi.fn().mockResolvedValue({
+    sourceEnvironmentKey: 'test-environment',
+    flagsState: {},
+    overrides: {},
+    availableVariations: {},
+    _lastSyncedFromSource: Date.now(),
+  }),
+  setOverride: vi.fn(),
+  clearOverride: vi.fn(),
+};
 
-vi.mock('../services/FlagStateManager', () => ({
-  FlagStateManager: vi.fn().mockImplementation(() => ({
-    getEnhancedFlags: vi.fn().mockResolvedValue({}),
-    setOverride: vi.fn(),
-    clearOverride: vi.fn(),
-    subscribe: vi.fn().mockReturnValue(() => {}),
-  })),
-}));
+const mockFlagStateManagerInstance = {
+  getEnhancedFlags: vi.fn().mockResolvedValue({}),
+  setOverride: vi.fn(),
+  clearOverride: vi.fn(),
+  subscribe: vi.fn().mockReturnValue(() => {}),
+};
+
+// Mock the DevServerClient and FlagStateManager
+vi.mock('../services/DevServerClient', () => {
+  function MockDevServerClient() {
+    Object.assign(this, mockDevServerClientInstance);
+    return this;
+  }
+
+  return {
+    DevServerClient: MockDevServerClient,
+  };
+});
+
+vi.mock('../services/FlagStateManager', () => {
+  function MockFlagStateManager() {
+    Object.assign(this, mockFlagStateManagerInstance);
+    return this;
+  }
+
+  return {
+    FlagStateManager: MockFlagStateManager,
+  };
+});
 
 // Mock the tab content components
 vi.mock('../ui/Toolbar/TabContent/FlagDevServerTabContent', () => ({
@@ -129,6 +147,21 @@ describe('ExpandedToolbarContent - User Interaction Flows', () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
+
+    // Reset mock instances to default state
+    mockDevServerClientInstance.getAvailableProjects.mockResolvedValue(['test-project']);
+    mockDevServerClientInstance.setProjectKey.mockClear();
+    mockDevServerClientInstance.getProjectKey.mockReturnValue('test-project');
+    mockDevServerClientInstance.getProjectData.mockResolvedValue({
+      sourceEnvironmentKey: 'test-environment',
+      flagsState: {},
+      overrides: {},
+      availableVariations: {},
+      _lastSyncedFromSource: Date.now(),
+    });
+
+    mockFlagStateManagerInstance.getEnhancedFlags.mockResolvedValue({});
+    mockFlagStateManagerInstance.subscribe.mockReturnValue(() => {});
   });
 
   describe('Dev Server Mode - Server-Side Flag Management Flow', () => {

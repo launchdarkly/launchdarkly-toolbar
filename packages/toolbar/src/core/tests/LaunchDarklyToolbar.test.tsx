@@ -1,36 +1,43 @@
+import React from 'react';
 import { render, screen, fireEvent, waitFor, waitForElementToBeRemoved } from '@testing-library/react';
 import { expect, test, describe, vi, beforeEach } from 'vitest';
-
 import { LaunchDarklyToolbar } from '../ui/Toolbar/LaunchDarklyToolbar';
 
 // Mock the DevServerClient to avoid actual network calls in tests
-vi.mock('../services/DevServerClient', () => ({
-  DevServerClient: vi.fn().mockImplementation(() => ({
-    getAvailableProjects: vi.fn().mockResolvedValue(['test-project']),
-    setProjectKey: vi.fn(),
-    getProjectKey: vi.fn().mockReturnValue('test-project'),
-    getProjectData: vi.fn().mockResolvedValue({
+vi.mock('../services/DevServerClient', () => {
+  function MockDevServerClient() {
+    this.getAvailableProjects = vi.fn().mockResolvedValue(['test-project']);
+    this.setProjectKey = vi.fn();
+    this.getProjectKey = vi.fn().mockReturnValue('test-project');
+    this.getProjectData = vi.fn().mockResolvedValue({
       sourceEnvironmentKey: 'test-environment',
       flagsState: {},
       overrides: {},
       availableVariations: {},
       _lastSyncedFromSource: Date.now(),
-    }),
-    setOverride: vi.fn(),
-    clearOverride: vi.fn(),
-    healthCheck: vi.fn().mockResolvedValue(true),
-  })),
-}));
+    });
+    this.setOverride = vi.fn();
+    this.clearOverride = vi.fn();
+  }
+
+  return {
+    DevServerClient: MockDevServerClient,
+  };
+});
 
 // Mock the FlagStateManager
-vi.mock('../services/FlagStateManager', () => ({
-  FlagStateManager: vi.fn().mockImplementation(() => ({
-    getEnhancedFlags: vi.fn().mockResolvedValue({}),
-    setOverride: vi.fn(),
-    clearOverride: vi.fn(),
-    subscribe: vi.fn().mockReturnValue(() => {}),
-  })),
-}));
+vi.mock('../services/FlagStateManager', () => {
+  function MockFlagStateManager() {
+    this.getEnhancedFlags = vi.fn().mockResolvedValue({});
+    this.setOverride = vi.fn();
+    this.clearOverride = vi.fn();
+    this.subscribe = vi.fn().mockReturnValue(() => {});
+  }
+
+  return {
+    FlagStateManager: MockFlagStateManager,
+  };
+});
 
 describe('LaunchDarklyToolbar - User Flows', () => {
   beforeEach(() => {
