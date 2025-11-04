@@ -115,13 +115,13 @@ function allowCORS(_req, res, next) {
   next();
 }
 
-app.options('*.js', allowCORS, (_req, res) => {
+app.options('/toolbar.min.js', allowCORS, (_req, res) => {
   res.sendStatus(204);
 });
 
-app.get('*.js', allowCORS, (req, res) => {
+app.get('/toolbar.min.js', allowCORS, (_req, res) => {
   res.set({ 'Content-Type': 'application/javascript' });
-  res.render(`${__dirname}/../toolbar/cdn/${req.url}`);
+  res.render(`${__dirname}/../toolbar/cdn/toolbar.min.js`);
 });
 
 app.listen(port, host, () => {
