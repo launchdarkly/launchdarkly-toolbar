@@ -14,39 +14,28 @@ export default function mount(rootNode: HTMLElement, config: InitializationConfi
     };
   }
 
-  const { host, reactMount, observer, cleanupSnapshot } = buildDom();
+  const { host, reactMount, observer } = buildDom();
 
   const reactRoot = createRoot(reactMount);
 
   // Dynamically import toolbar to capture style injection timing
-  import('./ui/Toolbar/LaunchDarklyToolbar')
-    .then((module) => {
-      const { LaunchDarklyToolbar } = module;
-      reactRoot.render(
-        <StrictMode>
-          <LaunchDarklyToolbar
-            domId={TOOLBAR_DOM_ID}
-            baseUrl={config.baseUrl}
-            devServerUrl={config.devServerUrl}
-            projectKey={config.projectKey}
-            flagOverridePlugin={config.flagOverridePlugin}
-            eventInterceptionPlugin={config.eventInterceptionPlugin}
-            pollIntervalInMs={config.pollIntervalInMs}
-            position={config.position}
-          />
-        </StrictMode>,
-      );
-      // Disconnect observer after toolbar is loaded to prevent unnecessary monitoring
-      observer.disconnect();
-      // Clean up snapshot to free memory
-      cleanupSnapshot();
-    })
-    .catch((error) => {
-      console.error('[LaunchDarkly Toolbar] Failed to load toolbar:', error);
-      observer.disconnect();
-      // Clean up snapshot even on error
-      cleanupSnapshot();
-    });
+  import('./ui/Toolbar/LaunchDarklyToolbar').then((module) => {
+    const { LaunchDarklyToolbar } = module;
+    reactRoot.render(
+      <StrictMode>
+        <LaunchDarklyToolbar
+          domId={TOOLBAR_DOM_ID}
+          baseUrl={config.baseUrl}
+          devServerUrl={config.devServerUrl}
+          projectKey={config.projectKey}
+          flagOverridePlugin={config.flagOverridePlugin}
+          eventInterceptionPlugin={config.eventInterceptionPlugin}
+          pollIntervalInMs={config.pollIntervalInMs}
+          position={config.position}
+        />
+      </StrictMode>,
+    );
+  });
 
   cleanup.push(() => {
     observer.disconnect();
@@ -79,11 +68,9 @@ function buildDom() {
   const reactMount = document.createElement('div');
 
   // Snapshot existing styles BEFORE the toolbar component loads
-  let existingStylesSnapshot: Set<string> | null = new Set();
-  if (document.head) {
-    const headStyles = document.head.querySelectorAll('style');
-    existingStylesSnapshot = new Set(Array.from(headStyles).map((el) => el.textContent || ''));
-  }
+  const existingStylesSnapshot = document.head
+    ? new Set(Array.from(document.head.querySelectorAll('style')).map((el) => el.textContent || ''))
+    : new Set();
 
   // Copy existing LaunchPad styles (including Gonfalon's) to shadow root
   // so toolbar has the base styles it needs
@@ -104,14 +91,6 @@ function buildDom() {
   reactMount.id = 'ld-toolbar-react-mount';
   shadowRoot.appendChild(reactMount);
 
-  // Cleanup function to free memory
-  const cleanupSnapshot = () => {
-    if (existingStylesSnapshot) {
-      existingStylesSnapshot.clear();
-      existingStylesSnapshot = null;
-    }
-  };
-
   // Watch for NEW styles injected by the toolbar and redirect them to shadow root
   // This prevents toolbar's LaunchPad styles from overriding host app custom styles
   const observer = new MutationObserver((mutations) => {
@@ -122,9 +101,8 @@ function buildDom() {
           const content = styleEl.textContent || '';
 
           // Check if this is a NEW LaunchPad/toolbar style (not from host app)
-          const isNewStyle = existingStylesSnapshot ? !existingStylesSnapshot.has(content) : true;
-          const isToolbarStyle = content.includes('--lp-') || content.includes('_');
-          const isNewToolbarStyle = isNewStyle && isToolbarStyle;
+          const isNewToolbarStyle =
+            !existingStylesSnapshot.has(content) && (content.includes('--lp-') || content.includes('_'));
 
           if (isNewToolbarStyle) {
             // Copy to shadow root so toolbar still works
@@ -150,5 +128,5 @@ function buildDom() {
     observer.observe(document.head, { childList: true });
   }
 
-  return { host, reactMount, observer, cleanupSnapshot };
+  return { host, reactMount, observer };
 }
