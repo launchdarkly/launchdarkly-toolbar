@@ -1,5 +1,19 @@
 # Changelog
 
+## [1.1.1](https://github.com/launchdarkly/launchdarkly-toolbar/compare/1.1.0...1.1.1) (2025-11-04)
+
+
+### Bug Fixes
+
+* isolate toolbar LaunchPad styles in shadow root ([#258](https://github.com/launchdarkly/launchdarkly-toolbar/issues/258)) ([6eb2bf0](https://github.com/launchdarkly/launchdarkly-toolbar/commit/6eb2bf0ce4480c7eeeda7421045fa7859342269d))
+
+## [1.1.0](https://github.com/launchdarkly/launchdarkly-toolbar/compare/1.0.3-beta.1...1.1.0) (2025-10-31)
+
+
+### Features
+
+* [REL-10136] revamp json editing experience ([#233](https://github.com/launchdarkly/launchdarkly-toolbar/issues/233)) ([003e0d7](https://github.com/launchdarkly/launchdarkly-toolbar/commit/003e0d7386ab09e12f966528493703285e7b0713))
+
 ## [1.0.3-beta.1](https://github.com/launchdarkly/launchdarkly-toolbar/compare/1.0.2-beta.1...1.0.3-beta.1) (2025-10-28)
 
 

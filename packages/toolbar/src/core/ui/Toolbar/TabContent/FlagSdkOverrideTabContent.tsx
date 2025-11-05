@@ -1,24 +1,23 @@
 import { useRef, useState, useMemo, useCallback } from 'react';
 import { useVirtualizer } from '@tanstack/react-virtual';
+import { motion } from 'motion/react';
 import { List } from '../../List/List';
 import { ListItem } from '../../List/ListItem';
 import { useSearchContext, useAnalytics } from '../context';
 import { FlagSdkOverrideProvider, useFlagSdkOverrideContext } from '../context';
 import { GenericHelpText } from '../components/GenericHelpText';
-import {
-  LocalBooleanFlagControl,
-  LocalStringNumberFlagControl,
-  LocalObjectFlagControl,
-} from '../components/LocalFlagControls';
+import { LocalBooleanFlagControl, LocalStringNumberFlagControl } from '../components/LocalFlagControls';
 import { OverrideIndicator } from '../components/OverrideIndicator';
 import { ActionButtonsContainer } from '../components';
 import { VIRTUALIZATION } from '../constants';
+import { EASING } from '../constants/animations';
 import type { LocalFlag } from '../context';
 
 import * as sharedStyles from './FlagDevServerTabContent.css';
 import * as actionStyles from '../components/ActionButtonsContainer.css';
 import { IFlagOverridePlugin } from '../../../../types';
 import { useApiContext } from '../context/ApiProvider';
+import { LocalObjectFlagControlListItem } from '../components/LocalObjectFlagControlListItem';
 
 interface FlagSdkOverrideTabContentInnerProps {
   flagOverridePlugin: IFlagOverridePlugin;
@@ -117,6 +116,19 @@ function FlagSdkOverrideTabContentInner(props: FlagSdkOverrideTabContentInnerPro
     }
   };
 
+  const handleHeightChange = useCallback(
+    (index: number, height: number) => {
+      if (height > VIRTUALIZATION.ITEM_HEIGHT) {
+        virtualizer.resizeItem(index, height);
+      } else {
+        setTimeout(() => {
+          virtualizer.resizeItem(index, height);
+        }, 125);
+      }
+    },
+    [virtualizer],
+  );
+
   const renderFlagControl = (flag: LocalFlag) => {
     const handleOverride = (value: any) => handleSetOverride(flag.key, value);
 
@@ -127,12 +139,6 @@ function FlagSdkOverrideTabContentInner(props: FlagSdkOverrideTabContentInnerPro
       case 'string':
       case 'number':
         return <LocalStringNumberFlagControl flag={flag} onOverride={handleOverride} />;
-
-      case 'object':
-        return <LocalObjectFlagControl flag={flag} onOverride={handleOverride} />;
-
-      default:
-        return <LocalObjectFlagControl flag={flag} onOverride={handleOverride} />;
     }
   };
 
@@ -201,6 +207,36 @@ function FlagSdkOverrideTabContentInner(props: FlagSdkOverrideTabContentInnerPro
                   const entry = filteredFlags[virtualItem.index];
                   if (!entry) return null;
                   const [flagKey, flag] = entry;
+
+                  if (flag.type === 'object') {
+                    return (
+                      <motion.div
+                        key={virtualItem.key}
+                        layout
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -10 }}
+                        transition={{
+                          duration: 0.2,
+                          ease: EASING.smooth,
+                          layout: {
+                            duration: 0.25,
+                            ease: EASING.smooth,
+                          },
+                        }}
+                      >
+                        <LocalObjectFlagControlListItem
+                          handleHeightChange={(height) => handleHeightChange(virtualItem.index, height)}
+                          flag={flag}
+                          key={virtualItem.key}
+                          start={virtualItem.start}
+                          size={virtualItem.size}
+                          handleClearOverride={handleClearOverride}
+                          handleOverride={handleSetOverride}
+                        />
+                      </motion.div>
+                    );
+                  }
 
                   return (
                     <div
