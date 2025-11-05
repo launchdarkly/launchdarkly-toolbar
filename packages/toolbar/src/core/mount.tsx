@@ -128,5 +128,8 @@ function buildDom() {
     observer.observe(document.head, { childList: true });
   }
 
+  // Stop observing after 500ms (toolbar should be fully loaded by then)
+  setTimeout(() => observer.disconnect(), 500);
+
   return { host, reactMount, observer };
 }
