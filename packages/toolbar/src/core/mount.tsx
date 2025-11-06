@@ -61,24 +61,30 @@ function buildDom() {
   host.style.zIndex = '2147400100';
 
   const shadowRoot = host.attachShadow({ mode: 'open' });
+  if (!shadowRoot) {
+    throw new Error('[LaunchDarkly Toolbar] Failed to create shadow root');
+  }
+
   const reactMount = document.createElement('div');
 
   // Snapshot existing styles BEFORE the toolbar component loads
-  const existingStylesSnapshot = new Set(
-    Array.from(document.head.querySelectorAll('style')).map((el) => el.textContent || ''),
-  );
+  const existingStylesSnapshot = document.head
+    ? new Set(Array.from(document.head.querySelectorAll('style')).map((el) => el.textContent || ''))
+    : new Set();
 
   // Copy existing LaunchPad styles (including Gonfalon's) to shadow root
   // so toolbar has the base styles it needs
-  const existingStyles = Array.from(document.head.querySelectorAll('style'))
-    .filter((styleEl) => styleEl.textContent?.includes('--lp-') || styleEl.textContent?.includes('_'))
-    .map((styleEl) => styleEl.textContent || '')
-    .join('\n');
+  if (document.head) {
+    const existingStyles = Array.from(document.head.querySelectorAll('style'))
+      .filter((styleEl) => styleEl.textContent?.includes('--lp-') || styleEl.textContent?.includes('_'))
+      .map((styleEl) => styleEl.textContent || '')
+      .join('\n');
 
-  if (existingStyles) {
-    const style = document.createElement('style');
-    style.textContent = existingStyles;
-    shadowRoot.appendChild(style);
+    if (existingStyles) {
+      const style = document.createElement('style');
+      style.textContent = existingStyles;
+      shadowRoot.appendChild(style);
+    }
   }
 
   reactMount.dataset.name = 'react-mount';
@@ -108,8 +114,8 @@ function buildDom() {
             // We can remove immediately since we've already copied to shadow root
             try {
               styleEl.remove();
-            } catch {
-              // Ignore if already removed
+            } catch (error) {
+              console.warn('[LaunchDarkly Toolbar] Failed to remove style element from document.head:', error);
             }
           }
         }
@@ -117,7 +123,10 @@ function buildDom() {
     });
   });
 
-  observer.observe(document.head, { childList: true });
+  // Only observe document.head if it exists
+  if (document.head) {
+    observer.observe(document.head, { childList: true });
+  }
 
   // Stop observing after 500ms (toolbar should be fully loaded by then)
   setTimeout(() => observer.disconnect(), 500);
