@@ -65,7 +65,7 @@
     "@codemirror/view": "^6.38.2",
     "@launchpad-ui/components": "^0.16.12",
     "@launchpad-ui/tokens": "^0.15.1",
-    "@lezer/highlight": "^1.2.1",
+    "@lezer/highlight": "^1.2.3",
     "@react-aria/focus": "^3.21.2",
     "@react-stately/flags": "^3.1.2",
     "@rsbuild/core": "^1.6.0",
