@@ -115,8 +115,8 @@ importers:
         specifier: ^6.11.3
         version: 6.11.3
       '@codemirror/lint':
-        specifier: ^6.9.1
-        version: 6.9.1
+        specifier: ^6.9.2
+        version: 6.9.2
       '@codemirror/state':
         specifier: ^6.5.2
         version: 6.5.2
@@ -439,8 +439,8 @@ packages:
   '@codemirror/language@6.11.3':
     resolution: {integrity: sha512-9HBM2XnwDj7fnu0551HkGdrUrrqmYq/WC5iv6nbY2WdicXdGbhR/gfbZOH73Aqj4351alY1+aoG9rCNfiwS1RA==}
 
-  '@codemirror/lint@6.9.1':
-    resolution: {integrity: sha512-te7To1EQHePBQQzasDKWmK2xKINIXpk+xAiSYr9ZN+VB4KaT+/Hi2PEkeErTk5BV3PTz1TLyQL4MtJfPkKZ9sw==}
+  '@codemirror/lint@6.9.2':
+    resolution: {integrity: sha512-sv3DylBiIyi+xKwRCJAAsBZZZWo82shJ/RTMymLabAdtbkV5cSKwWDeCgtUq3v8flTaXS2y1kKkICuRYtUswyQ==}
 
   '@codemirror/state@6.5.2':
     resolution: {integrity: sha512-FVqsPqtPWKVVL3dPSxy8wEF/ymIEuVzF1PK3VbUgrxXpJUSHQWWZz4JMToquRxnkw+36LTamCZG2iua2Ptq0fA==}
@@ -4994,7 +4994,7 @@ snapshots:
       '@lezer/lr': 1.4.2
       style-mod: 4.1.3
 
-  '@codemirror/lint@6.9.1':
+  '@codemirror/lint@6.9.2':
     dependencies:
       '@codemirror/state': 6.5.2
       '@codemirror/view': 6.38.2
