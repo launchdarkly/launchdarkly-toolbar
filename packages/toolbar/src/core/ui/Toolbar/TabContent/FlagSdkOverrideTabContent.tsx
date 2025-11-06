@@ -16,7 +16,7 @@ import type { LocalFlag } from '../context';
 import * as sharedStyles from './FlagDevServerTabContent.css';
 import * as actionStyles from '../components/ActionButtonsContainer.css';
 import { IFlagOverridePlugin } from '../../../../types';
-import { useApiContext } from '../context/ApiProvider';
+import { useApi } from '../context/ApiProvider';
 import { LocalObjectFlagControlListItem } from '../components/LocalObjectFlagControlListItem';
 
 interface FlagSdkOverrideTabContentInnerProps {
@@ -26,7 +26,7 @@ interface FlagSdkOverrideTabContentInnerProps {
 
 function FlagSdkOverrideTabContentInner(props: FlagSdkOverrideTabContentInnerProps) {
   const { flagOverridePlugin, reloadOnFlagChangeIsEnabled } = props;
-  const { getFlag } = useApiContext();
+  const { getFlag } = useApi();
   const { searchTerm } = useSearchContext();
   const analytics = useAnalytics();
   const { flags, isLoading } = useFlagSdkOverrideContext();

@@ -48,10 +48,10 @@ export function ApiProvider({ children }: { children: React.ReactNode }) {
   return <ApiContext.Provider value={{ getFlag }}>{children}</ApiContext.Provider>;
 }
 
-export function useApiContext() {
+export function useApi() {
   const context = useContext(ApiContext);
   if (!context) {
-    throw new Error('useApiContext must be used within an ApiProvider');
+    throw new Error('useApi must be used within an ApiProvider');
   }
   return context;
 }
