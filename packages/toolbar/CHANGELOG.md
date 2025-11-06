@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.2](https://github.com/launchdarkly/launchdarkly-toolbar/compare/1.1.1...1.1.2) (2025-11-05)
+
+
+### Bug Fixes
+
+* [REL-10551] update the react hook so it only loads the toolbar script once ([#262](https://github.com/launchdarkly/launchdarkly-toolbar/issues/262)) ([0705974](https://github.com/launchdarkly/launchdarkly-toolbar/commit/0705974fdac87cf48c0be5e3cf0d1c3c624bd473))
+
 ## [1.1.1](https://github.com/launchdarkly/launchdarkly-toolbar/compare/1.1.0...1.1.1) (2025-11-04)
 
 
