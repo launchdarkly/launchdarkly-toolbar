@@ -35,6 +35,8 @@ interface ExpandedToolbarContentProps {
   onHeaderMouseDown?: (event: React.MouseEvent) => void;
   reloadOnFlagChangeIsEnabled: boolean;
   onToggleReloadOnFlagChange: () => void;
+  optInToNewFeatures: boolean;
+  onToggleOptInToNewFeatures: () => void;
 }
 
 function getHeaderLabel(currentProjectKey: string | null, sourceEnvironmentKey: string | null) {
@@ -65,6 +67,8 @@ export const ExpandedToolbarContent = React.forwardRef<HTMLDivElement, ExpandedT
     onHeaderMouseDown,
     reloadOnFlagChangeIsEnabled,
     onToggleReloadOnFlagChange,
+    optInToNewFeatures,
+    onToggleOptInToNewFeatures,
   } = props;
 
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
@@ -79,7 +83,7 @@ export const ExpandedToolbarContent = React.forwardRef<HTMLDivElement, ExpandedT
 
   return (
     <>
-      <AuthenticationModal isOpen={isAuthModalOpen} onClose={() => setIsAuthModalOpen(false)} />
+      {optInToNewFeatures && <AuthenticationModal isOpen={isAuthModalOpen} onClose={() => setIsAuthModalOpen(false)} />}
       <FocusScope restoreFocus>
         <motion.div
           ref={ref}
@@ -188,6 +192,8 @@ export const ExpandedToolbarContent = React.forwardRef<HTMLDivElement, ExpandedT
                       onToggleReloadOnFlagChange={onToggleReloadOnFlagChange}
                       isAutoCollapseEnabled={isAutoCollapseEnabled}
                       onToggleAutoCollapse={onToggleAutoCollapse}
+                      optInToNewFeatures={optInToNewFeatures}
+                      onToggleOptInToNewFeatures={onToggleOptInToNewFeatures}
                     />
                   )}
                 </AnimatePresence>

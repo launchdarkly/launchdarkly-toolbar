@@ -1,10 +1,10 @@
-import { createContext, useCallback, useContext, useEffect, useState } from "react";
-import { IFRAME_API_MESSAGES } from "./IFrameProvider";
+import { createContext, useCallback, useContext, useEffect, useState } from 'react';
+import { IFRAME_API_MESSAGES } from './IFrameProvider';
 
 type AuthProviderType = {
   authenticated: boolean;
   loading: boolean;
-}
+};
 
 const AuthContext = createContext<AuthProviderType>({
   authenticated: false,
@@ -19,7 +19,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     if (event.data.type === IFRAME_API_MESSAGES.AUTHENTICATION.authenticated) {
       setAuthenticated(true);
       setLoading(false);
-    } else if (event.data.type === IFRAME_API_MESSAGES.AUTHENTICATION.authenticationRequired) { 
+    } else if (event.data.type === IFRAME_API_MESSAGES.AUTHENTICATION.authenticationRequired) {
       setAuthenticated(false);
       setLoading(false);
     } else if (event.data.type === IFRAME_API_MESSAGES.AUTHENTICATION.error) {
@@ -35,7 +35,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       window.removeEventListener('message', handleMessage);
     };
   }, [handleMessage]);
-  
+
   return <AuthContext.Provider value={{ authenticated, loading }}>{children}</AuthContext.Provider>;
 }
 

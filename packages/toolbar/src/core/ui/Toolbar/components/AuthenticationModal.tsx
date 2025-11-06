@@ -14,7 +14,7 @@ interface AuthenticationModalProps {
 export function AuthenticationModal({ isOpen, onClose }: AuthenticationModalProps) {
   const { ref } = useIFrameContext();
   const { authenticated } = useAuthContext();
-  
+
   // Handle escape key to close the modal
   useEffect(() => {
     const handleEscape = (event: KeyboardEvent) => {
@@ -68,7 +68,7 @@ export function AuthenticationModal({ isOpen, onClose }: AuthenticationModalProp
         </div>
         <div className={styles.iframeContainer}>
           <iframe
-            src="http://localhost:9050/toolbar/configure/index.html"
+            src="https://1af34adb3482.ngrok.app/toolbar/index.html"
             className={styles.modalIframe}
             title="LaunchDarkly Authentication"
             ref={ref}

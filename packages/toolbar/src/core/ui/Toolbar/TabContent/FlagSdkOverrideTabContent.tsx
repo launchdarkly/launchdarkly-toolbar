@@ -33,11 +33,14 @@ function FlagSdkOverrideTabContentInner(props: FlagSdkOverrideTabContentInnerPro
   const [showOverriddenOnly, setShowOverriddenOnly] = useState(false);
   const parentRef = useRef<HTMLDivElement>(null);
 
-  const getFlagData = useCallback(async (flagKey: string) => {
-    const flag = await getFlag(flagKey);
-    console.log(flag);
-    return flag;
-  }, [getFlag]);
+  const getFlagData = useCallback(
+    async (flagKey: string) => {
+      const flag = await getFlag(flagKey);
+      console.log(flag);
+      return flag;
+    },
+    [getFlag],
+  );
 
   const handleClearOverride = useCallback(
     (flagKey: string) => {

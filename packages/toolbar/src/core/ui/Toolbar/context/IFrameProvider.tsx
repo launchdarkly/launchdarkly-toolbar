@@ -1,4 +1,4 @@
-import { createContext, RefObject, useContext, useRef } from "react";
+import { createContext, RefObject, useContext, useRef } from 'react';
 
 export const IFRAME_API_MESSAGES = {
   AUTHENTICATION: {
@@ -11,11 +11,11 @@ export const IFRAME_API_MESSAGES = {
     response: 'get-flag-response',
     error: 'get-flag-error',
   },
-}
+};
 
 type IFrameProviderType = {
   ref: RefObject<HTMLIFrameElement | null>;
-}
+};
 
 const IFrameContext = createContext<IFrameProviderType | null>(null);
 

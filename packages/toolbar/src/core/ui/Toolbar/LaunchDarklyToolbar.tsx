@@ -50,6 +50,8 @@ export function LdToolbar(props: LdToolbarProps) {
     isAutoCollapseEnabled,
     setSearchIsExpanded,
     setIsAnimating,
+    optInToNewFeatures,
+    handleToggleOptInToNewFeatures,
   } = toolbarState;
 
   // Focus management for expand/collapse
@@ -175,6 +177,8 @@ export function LdToolbar(props: LdToolbarProps) {
             onHeaderMouseDown={handleMouseDown}
             reloadOnFlagChangeIsEnabled={reloadOnFlagChangeIsEnabled}
             onToggleReloadOnFlagChange={handleToggleReloadOnFlagChange}
+            optInToNewFeatures={optInToNewFeatures}
+            onToggleOptInToNewFeatures={handleToggleOptInToNewFeatures}
           />
         )}
       </AnimatePresence>
@@ -225,19 +229,18 @@ export function LaunchDarklyToolbar(props: LaunchDarklyToolbarProps) {
         <AnalyticsProvider ldClient={flagOverridePlugin?.getClient() ?? eventInterceptionPlugin?.getClient()}>
           <SearchProvider>
             <IFrameProvider>
-            <AuthProvider>
-              <ApiProvider>
-                <LdToolbar
-                  domId={domId}
-                  mode={mode}
-                  baseUrl={baseUrl}
-                  flagOverridePlugin={flagOverridePlugin}
-                  eventInterceptionPlugin={eventInterceptionPlugin}
-                />
-              </ApiProvider>
-            </AuthProvider>
+              <AuthProvider>
+                <ApiProvider>
+                  <LdToolbar
+                    domId={domId}
+                    mode={mode}
+                    baseUrl={baseUrl}
+                    flagOverridePlugin={flagOverridePlugin}
+                    eventInterceptionPlugin={eventInterceptionPlugin}
+                  />
+                </ApiProvider>
+              </AuthProvider>
             </IFrameProvider>
-            
           </SearchProvider>
         </AnalyticsProvider>
       </DevServerProvider>
