@@ -50,6 +50,7 @@ export function AuthenticationModal(props: AuthenticationModalProps) {
       await openOAuthPopup({
         url: `${getIframeUrl()}/toolbar/index.html`,
       });
+      onClose();
       setAuthenticating(false);
     } catch (error) {
       console.error('Popup authentication failed:', error);

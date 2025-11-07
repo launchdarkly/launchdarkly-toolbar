@@ -1,4 +1,4 @@
-const OAUTH_POPUP_WIDTH = 500;
+const OAUTH_POPUP_WIDTH = 800;
 const OAUTH_POPUP_HEIGHT = 600;
 
 export interface OAuthPopupOptions {
