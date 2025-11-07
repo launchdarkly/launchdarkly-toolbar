@@ -60,7 +60,7 @@
     "@codemirror/commands": "^6.10.0",
     "@codemirror/lang-json": "^6.0.2",
     "@codemirror/language": "^6.11.3",
-    "@codemirror/lint": "^6.9.1",
+    "@codemirror/lint": "^6.9.2",
     "@codemirror/state": "^6.5.2",
     "@codemirror/view": "^6.38.2",
     "@launchpad-ui/components": "^0.16.12",
