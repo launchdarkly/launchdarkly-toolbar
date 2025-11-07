@@ -5,30 +5,15 @@ import { useAuthContext } from '../context/AuthProvider';
 import { openOAuthPopup } from '../utils/oauthPopup';
 
 interface AuthenticationModalProps {
-  baseUrl: string;
   isOpen: boolean;
   onClose: () => void;
 }
 
 export function AuthenticationModal(props: AuthenticationModalProps) {
-  const { baseUrl, isOpen, onClose } = props;
+  const { isOpen, onClose } = props;
 
-  const { ref } = useIFrameContext();
+  const { ref, iframeSrc } = useIFrameContext();
   const { authenticated, authenticating, setAuthenticating } = useAuthContext();
-
-  // If running the toolbar + integration server locally, replace the iframe URL as needed.
-  const getIframeUrl = useCallback(() => {
-    switch (baseUrl.toLowerCase()) {
-      case 'https://app.launchdarkly.com':
-        return 'https://integrations.launchdarkly.com';
-      case 'https://ld-stg.launchdarkly.com':
-        return 'https://integrations-stg.launchdarkly.com';
-      case 'https://app.ld.catamorphic.com':
-        return 'https://integrations.ld.catamorphic.com';
-      default:
-        return 'https://integrations.launchdarkly.com';
-    }
-  }, [baseUrl]);
 
   // Handle escape key to close the modal
   useEffect(() => {
@@ -48,7 +33,7 @@ export function AuthenticationModal(props: AuthenticationModalProps) {
     try {
       setAuthenticating(true);
       await openOAuthPopup({
-        url: `${getIframeUrl()}/toolbar/index.html`,
+        url: `${iframeSrc}/toolbar/index.html?originUrl=${window.location.origin}`,
       });
       onClose();
       setAuthenticating(false);
@@ -72,8 +57,8 @@ export function AuthenticationModal(props: AuthenticationModalProps) {
       <iframe
         src={
           authenticating
-            ? `${getIframeUrl()}/toolbar/authenticating.html?originUrl=${window.location.origin}`
-            : `${getIframeUrl()}/toolbar/index.html?originUrl=${window.location.origin}`
+            ? `${iframeSrc}/toolbar/authenticating.html?originUrl=${window.location.origin}`
+            : `${iframeSrc}/toolbar/index.html?originUrl=${window.location.origin}`
         }
         title="LaunchDarkly Toolbar"
         style={{ display: 'none' }}

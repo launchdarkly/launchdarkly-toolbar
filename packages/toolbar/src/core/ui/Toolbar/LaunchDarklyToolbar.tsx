@@ -228,7 +228,7 @@ export function LaunchDarklyToolbar(props: LaunchDarklyToolbarProps) {
       >
         <AnalyticsProvider ldClient={flagOverridePlugin?.getClient() ?? eventInterceptionPlugin?.getClient()}>
           <SearchProvider>
-            <IFrameProvider>
+            <IFrameProvider baseUrl={baseUrl}>
               <AuthProvider>
                 <ApiProvider>
                   <LdToolbar

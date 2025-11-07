@@ -14,7 +14,7 @@ export interface ApiProviderProps {
 
 export function ApiProvider({ children }: { children: React.ReactNode }) {
   const { authenticated } = useAuthContext();
-  const { ref } = useIFrameContext();
+  const { ref, iframeSrc } = useIFrameContext();
 
   const getFlag = useCallback(
     async (flagKey: string) => {
@@ -32,7 +32,7 @@ export function ApiProvider({ children }: { children: React.ReactNode }) {
           type: IFRAME_API_MESSAGES.GET_FLAG.request,
           flagKey,
         },
-        '*',
+        iframeSrc,
       );
 
       return new Promise((resolve, reject) => {
