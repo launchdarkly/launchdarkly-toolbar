@@ -18,7 +18,7 @@ export function AuthenticationModal(props: AuthenticationModalProps) {
 
   // If running the toolbar + integration server locally, replace the iframe URL as needed.
   const getIframeUrl = useCallback(() => {
-    switch (baseUrl) {
+    switch (baseUrl.toLowerCase()) {
       case 'https://app.launchdarkly.com':
         return 'https://integrations.launchdarkly.com'
       case 'https://ld-stg.launchdarkly.com':
