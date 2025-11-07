@@ -1,6 +1,6 @@
 import React from 'react';
 import { render, screen, waitFor } from '@testing-library/react';
-import { expect, test, describe, vi, beforeEach, Mock } from 'vitest';
+import { expect, test, describe, vi, beforeEach } from 'vitest';
 import { DevServerProvider, useDevServerContext } from '../ui/Toolbar/context/DevServerProvider';
 
 // Create mock instances that we can access in tests
