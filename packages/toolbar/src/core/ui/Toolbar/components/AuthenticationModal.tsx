@@ -20,7 +20,7 @@ export function AuthenticationModal(props: AuthenticationModalProps) {
   const getIframeUrl = useCallback(() => {
     switch (baseUrl.toLowerCase()) {
       case 'https://app.launchdarkly.com':
-        return 'https://integrations.launchdarkly.com';
+      return 'https://integrations.launchdarkly.com'
       case 'https://ld-stg.launchdarkly.com':
         return 'https://integrations-stg.launchdarkly.com';
       case 'https://app.ld.catamorphic.com':

@@ -58,7 +58,7 @@ export default function useLaunchDarklyToolbar(args: UseLaunchDarklyToolbarConfi
       controller.abort();
       cleanup();
     };
-  }, [enabled]);
+  }, [enabled, url]);
 }
 
 function versionToCdn(version = 'latest'): string {

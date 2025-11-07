@@ -10,10 +10,11 @@ import { BooleanFlagControl, MultivariateFlagControl, StringNumberFlagControl } 
 import { OverrideIndicator } from '../components/OverrideIndicator';
 import { ActionButtonsContainer } from '../components';
 import { VIRTUALIZATION } from '../constants';
+import { useApi } from '../context/ApiProvider';
+import { LocalObjectFlagControlListItem } from '../components/LocalObjectFlagControlListItem';
 
 import * as styles from './FlagDevServerTabContent.css';
 import * as actionStyles from '../components/ActionButtonsContainer.css';
-import { LocalObjectFlagControlListItem } from '../components/LocalObjectFlagControlListItem';
 
 interface FlagDevServerTabContentProps {
   reloadOnFlagChangeIsEnabled: boolean;
@@ -21,12 +22,22 @@ interface FlagDevServerTabContentProps {
 
 export function FlagDevServerTabContent(props: FlagDevServerTabContentProps) {
   const { reloadOnFlagChangeIsEnabled } = props;
+  const { getFlag } = useApi();
   const { searchTerm } = useSearchContext();
   const { state, setOverride, clearOverride, clearAllOverrides } = useDevServerContext();
   const { flags } = state;
 
   const [showOverriddenOnly, setShowOverriddenOnly] = useState(false);
   const parentRef = useRef<HTMLDivElement>(null);
+
+  const getFlagData = useCallback(
+    async (flagKey: string) => {
+      const flag = await getFlag(flagKey);
+      console.log(flag);
+      return flag;
+    },
+    [getFlag],
+  );
 
   const flagEntries = Object.entries(flags);
   const filteredFlags = flagEntries.filter(([flagKey, flag]) => {
@@ -170,6 +181,7 @@ export function FlagDevServerTabContent(props: FlagDevServerTabContentProps) {
 
                   return (
                     <div
+                      onClick={() => getFlagData(flag.key)}
                       key={virtualItem.key}
                       className={styles.virtualItem}
                       style={{

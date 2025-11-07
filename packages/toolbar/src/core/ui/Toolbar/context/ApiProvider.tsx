@@ -19,7 +19,8 @@ export function ApiProvider({ children }: { children: React.ReactNode }) {
   const getFlag = useCallback(
     async (flagKey: string) => {
       if (!authenticated) {
-        throw new Error('Not authenticated');
+        console.log('Authentication required');
+        return 'authentication required';
       }
 
       if (!ref.current?.contentWindow) {
