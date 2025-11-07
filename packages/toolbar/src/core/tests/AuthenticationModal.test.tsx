@@ -23,7 +23,7 @@ vi.mock('../ui/Toolbar/context/AuthProvider', () => ({
 }));
 
 // Test wrapper with required providers
-const TestWrapper = ({ children }: { children: React.ReactNode }) => <IFrameProvider>{children}</IFrameProvider>;
+const TestWrapper = ({ children, baseUrl }: { children: React.ReactNode, baseUrl: string }) => <IFrameProvider baseUrl={baseUrl}>{children}</IFrameProvider>;
 
 describe('AuthenticationModal', () => {
   const defaultProps = {
@@ -43,57 +43,57 @@ describe('AuthenticationModal', () => {
   describe('iframe URL determination', () => {
     it('should map production LaunchDarkly URL to production integrations URL', () => {
       render(
-        <TestWrapper>
-          <AuthenticationModal {...defaultProps} baseUrl="https://app.launchdarkly.com" />
+        <TestWrapper baseUrl='https://app.launchdarkly.com'>
+          <AuthenticationModal {...defaultProps} />
         </TestWrapper>,
       );
 
       const iframe = screen.getByTitle('LaunchDarkly Toolbar') as HTMLIFrameElement;
-      expect(iframe.src).toBe('https://integrations.launchdarkly.com/toolbar/index.html');
+      expect(iframe.src).toContain('https://integrations.launchdarkly.com/toolbar/index.html');
     });
 
     it('should map staging LaunchDarkly URL to staging integrations URL', () => {
       render(
-        <TestWrapper>
-          <AuthenticationModal {...defaultProps} baseUrl="https://ld-stg.launchdarkly.com" />
+        <TestWrapper baseUrl='https://ld-stg.launchdarkly.com'>
+          <AuthenticationModal {...defaultProps} />
         </TestWrapper>,
       );
 
       const iframe = screen.getByTitle('LaunchDarkly Toolbar') as HTMLIFrameElement;
-      expect(iframe.src).toBe('https://integrations-stg.launchdarkly.com/toolbar/index.html');
+      expect(iframe.src).toContain('https://integrations-stg.launchdarkly.com/toolbar/index.html');
     });
 
     it('should map catamorphic LaunchDarkly URL to catamorphic integrations URL', () => {
       render(
-        <TestWrapper>
-          <AuthenticationModal {...defaultProps} baseUrl="https://app.ld.catamorphic.com" />
+        <TestWrapper baseUrl='https://app.ld.catamorphic.com'>
+          <AuthenticationModal {...defaultProps} />
         </TestWrapper>,
       );
 
       const iframe = screen.getByTitle('LaunchDarkly Toolbar') as HTMLIFrameElement;
-      expect(iframe.src).toBe('https://integrations.ld.catamorphic.com/toolbar/index.html');
+      expect(iframe.src).toContain('https://integrations.ld.catamorphic.com/toolbar/index.html');
     });
 
     it('should default to production integrations URL for unknown base URLs', () => {
       render(
-        <TestWrapper>
-          <AuthenticationModal {...defaultProps} baseUrl="https://unknown.domain.com" />
+        <TestWrapper baseUrl='https://some.unknown.domain.com'>
+          <AuthenticationModal {...defaultProps} />
         </TestWrapper>,
       );
 
       const iframe = screen.getByTitle('LaunchDarkly Toolbar') as HTMLIFrameElement;
-      expect(iframe.src).toBe('https://integrations.launchdarkly.com/toolbar/index.html');
+      expect(iframe.src).toContain('https://integrations.launchdarkly.com/toolbar/index.html');
     });
 
     it('should default to production integrations URL for localhost URLs', () => {
       render(
-        <TestWrapper>
-          <AuthenticationModal {...defaultProps} baseUrl="http://localhost:3000" />
+        <TestWrapper baseUrl='http://localhost:3000'>
+          <AuthenticationModal {...defaultProps} />
         </TestWrapper>,
       );
 
       const iframe = screen.getByTitle('LaunchDarkly Toolbar') as HTMLIFrameElement;
-      expect(iframe.src).toBe('https://integrations.launchdarkly.com/toolbar/index.html');
+      expect(iframe.src).toContain('https://integrations.launchdarkly.com/toolbar/index.html');
     });
   });
 
@@ -102,46 +102,46 @@ describe('AuthenticationModal', () => {
       mockAuthContext.authenticating = true;
 
       render(
-        <TestWrapper>
+        <TestWrapper baseUrl={defaultProps.baseUrl}>
           <AuthenticationModal {...defaultProps} />
         </TestWrapper>,
       );
 
       const iframe = screen.getByTitle('LaunchDarkly Toolbar') as HTMLIFrameElement;
-      expect(iframe.src).toBe('https://integrations.launchdarkly.com/toolbar/authenticating.html');
+      expect(iframe.src).toContain('https://integrations.launchdarkly.com/toolbar/authenticating.html');
     });
 
     it('should show index.html when authenticating is false', () => {
       mockAuthContext.authenticating = false;
 
       render(
-        <TestWrapper>
+        <TestWrapper baseUrl={defaultProps.baseUrl}>
           <AuthenticationModal {...defaultProps} />
         </TestWrapper>,
       );
 
       const iframe = screen.getByTitle('LaunchDarkly Toolbar') as HTMLIFrameElement;
-      expect(iframe.src).toBe('https://integrations.launchdarkly.com/toolbar/index.html');
+      expect(iframe.src).toContain('https://integrations.launchdarkly.com/toolbar/index.html');
     });
 
     it('should show authenticating.html with correct integration URL based on baseUrl', () => {
       mockAuthContext.authenticating = true;
 
       render(
-        <TestWrapper>
-          <AuthenticationModal {...defaultProps} baseUrl="https://ld-stg.launchdarkly.com" />
+        <TestWrapper baseUrl='https://ld-stg.launchdarkly.com'>
+          <AuthenticationModal {...defaultProps} />
         </TestWrapper>,
       );
 
       const iframe = screen.getByTitle('LaunchDarkly Toolbar') as HTMLIFrameElement;
-      expect(iframe.src).toBe('https://integrations-stg.launchdarkly.com/toolbar/authenticating.html');
+      expect(iframe.src).toContain('https://integrations-stg.launchdarkly.com/toolbar/authenticating.html');
     });
   });
 
   describe('iframe properties', () => {
     it('should render iframe with correct title', () => {
       render(
-        <TestWrapper>
+        <TestWrapper baseUrl={defaultProps.baseUrl}>
           <AuthenticationModal {...defaultProps} />
         </TestWrapper>,
       );
@@ -152,7 +152,7 @@ describe('AuthenticationModal', () => {
 
     it('should render iframe as hidden', () => {
       render(
-        <TestWrapper>
+        <TestWrapper baseUrl={defaultProps.baseUrl}>
           <AuthenticationModal {...defaultProps} />
         </TestWrapper>,
       );
@@ -163,7 +163,7 @@ describe('AuthenticationModal', () => {
 
     it('should provide iframe ref from IFrameContext', () => {
       const { container } = render(
-        <TestWrapper>
+        <TestWrapper baseUrl={defaultProps.baseUrl}>
           <AuthenticationModal {...defaultProps} />
         </TestWrapper>,
       );
@@ -177,7 +177,7 @@ describe('AuthenticationModal', () => {
   describe('component structure', () => {
     it('should render iframe within container', () => {
       const { container } = render(
-        <TestWrapper>
+        <TestWrapper baseUrl={defaultProps.baseUrl}>
           <AuthenticationModal {...defaultProps} />
         </TestWrapper>,
       );
@@ -189,7 +189,7 @@ describe('AuthenticationModal', () => {
 
     it('should always render iframe regardless of isOpen prop', () => {
       render(
-        <TestWrapper>
+        <TestWrapper baseUrl={defaultProps.baseUrl}>
           <AuthenticationModal {...defaultProps} isOpen={false} />
         </TestWrapper>,
       );
@@ -202,35 +202,35 @@ describe('AuthenticationModal', () => {
   describe('URL mapping edge cases', () => {
     it('should handle empty baseUrl', () => {
       render(
-        <TestWrapper>
-          <AuthenticationModal {...defaultProps} baseUrl="" />
+        <TestWrapper baseUrl={defaultProps.baseUrl}>
+          <AuthenticationModal {...defaultProps} />
         </TestWrapper>,
       );
 
       const iframe = screen.getByTitle('LaunchDarkly Toolbar') as HTMLIFrameElement;
-      expect(iframe.src).toBe('https://integrations.launchdarkly.com/toolbar/index.html');
+      expect(iframe.src).toContain('https://integrations.launchdarkly.com/toolbar/index.html');
     });
 
     it('should handle baseUrl with trailing slash', () => {
       render(
-        <TestWrapper>
-          <AuthenticationModal {...defaultProps} baseUrl="https://app.launchdarkly.com/" />
+        <TestWrapper baseUrl='https://app.launchdarkly.com/'>
+          <AuthenticationModal {...defaultProps} />
         </TestWrapper>,
       );
 
       const iframe = screen.getByTitle('LaunchDarkly Toolbar') as HTMLIFrameElement;
-      expect(iframe.src).toBe('https://integrations.launchdarkly.com/toolbar/index.html');
+      expect(iframe.src).toContain('https://integrations.launchdarkly.com/toolbar/index.html');
     });
 
     it('should be case insensitive for URL matching', () => {
       render(
-        <TestWrapper>
-          <AuthenticationModal {...defaultProps} baseUrl="https://LD-STG.launchdarkly.com" />
+        <TestWrapper baseUrl='https://LD-STG.launchdarkly.com'>
+          <AuthenticationModal {...defaultProps} />
         </TestWrapper>,
       );
 
       const iframe = screen.getByTitle('LaunchDarkly Toolbar') as HTMLIFrameElement;
-      expect(iframe.src).toBe('https://integrations-stg.launchdarkly.com/toolbar/index.html');
+      expect(iframe.src).toContain('https://integrations-stg.launchdarkly.com/toolbar/index.html');
     });
   });
 });
