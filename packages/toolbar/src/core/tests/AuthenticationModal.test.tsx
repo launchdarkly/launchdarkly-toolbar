@@ -23,11 +23,7 @@ vi.mock('../ui/Toolbar/context/AuthProvider', () => ({
 }));
 
 // Test wrapper with required providers
-const TestWrapper = ({ children }: { children: React.ReactNode }) => (
-  <IFrameProvider>
-    {children}
-  </IFrameProvider>
-);
+const TestWrapper = ({ children }: { children: React.ReactNode }) => <IFrameProvider>{children}</IFrameProvider>;
 
 describe('AuthenticationModal', () => {
   const defaultProps = {
@@ -48,11 +44,8 @@ describe('AuthenticationModal', () => {
     it('should map production LaunchDarkly URL to production integrations URL', () => {
       render(
         <TestWrapper>
-          <AuthenticationModal 
-            {...defaultProps}
-            baseUrl="https://app.launchdarkly.com"
-          />
-        </TestWrapper>
+          <AuthenticationModal {...defaultProps} baseUrl="https://app.launchdarkly.com" />
+        </TestWrapper>,
       );
 
       const iframe = screen.getByTitle('LaunchDarkly Toolbar') as HTMLIFrameElement;
@@ -62,11 +55,8 @@ describe('AuthenticationModal', () => {
     it('should map staging LaunchDarkly URL to staging integrations URL', () => {
       render(
         <TestWrapper>
-          <AuthenticationModal 
-            {...defaultProps}
-            baseUrl="https://ld-stg.launchdarkly.com"
-          />
-        </TestWrapper>
+          <AuthenticationModal {...defaultProps} baseUrl="https://ld-stg.launchdarkly.com" />
+        </TestWrapper>,
       );
 
       const iframe = screen.getByTitle('LaunchDarkly Toolbar') as HTMLIFrameElement;
@@ -76,11 +66,8 @@ describe('AuthenticationModal', () => {
     it('should map catamorphic LaunchDarkly URL to catamorphic integrations URL', () => {
       render(
         <TestWrapper>
-          <AuthenticationModal 
-            {...defaultProps}
-            baseUrl="https://app.ld.catamorphic.com"
-          />
-        </TestWrapper>
+          <AuthenticationModal {...defaultProps} baseUrl="https://app.ld.catamorphic.com" />
+        </TestWrapper>,
       );
 
       const iframe = screen.getByTitle('LaunchDarkly Toolbar') as HTMLIFrameElement;
@@ -90,11 +77,8 @@ describe('AuthenticationModal', () => {
     it('should default to production integrations URL for unknown base URLs', () => {
       render(
         <TestWrapper>
-          <AuthenticationModal 
-            {...defaultProps}
-            baseUrl="https://unknown.domain.com"
-          />
-        </TestWrapper>
+          <AuthenticationModal {...defaultProps} baseUrl="https://unknown.domain.com" />
+        </TestWrapper>,
       );
 
       const iframe = screen.getByTitle('LaunchDarkly Toolbar') as HTMLIFrameElement;
@@ -104,11 +88,8 @@ describe('AuthenticationModal', () => {
     it('should default to production integrations URL for localhost URLs', () => {
       render(
         <TestWrapper>
-          <AuthenticationModal 
-            {...defaultProps}
-            baseUrl="http://localhost:3000"
-          />
-        </TestWrapper>
+          <AuthenticationModal {...defaultProps} baseUrl="http://localhost:3000" />
+        </TestWrapper>,
       );
 
       const iframe = screen.getByTitle('LaunchDarkly Toolbar') as HTMLIFrameElement;
@@ -119,11 +100,11 @@ describe('AuthenticationModal', () => {
   describe('authenticating state behavior', () => {
     it('should show authenticating.html when authenticating is true', () => {
       mockAuthContext.authenticating = true;
-      
+
       render(
         <TestWrapper>
           <AuthenticationModal {...defaultProps} />
-        </TestWrapper>
+        </TestWrapper>,
       );
 
       const iframe = screen.getByTitle('LaunchDarkly Toolbar') as HTMLIFrameElement;
@@ -132,11 +113,11 @@ describe('AuthenticationModal', () => {
 
     it('should show index.html when authenticating is false', () => {
       mockAuthContext.authenticating = false;
-      
+
       render(
         <TestWrapper>
           <AuthenticationModal {...defaultProps} />
-        </TestWrapper>
+        </TestWrapper>,
       );
 
       const iframe = screen.getByTitle('LaunchDarkly Toolbar') as HTMLIFrameElement;
@@ -145,14 +126,11 @@ describe('AuthenticationModal', () => {
 
     it('should show authenticating.html with correct integration URL based on baseUrl', () => {
       mockAuthContext.authenticating = true;
-      
+
       render(
         <TestWrapper>
-          <AuthenticationModal 
-            {...defaultProps}
-            baseUrl="https://ld-stg.launchdarkly.com"
-          />
-        </TestWrapper>
+          <AuthenticationModal {...defaultProps} baseUrl="https://ld-stg.launchdarkly.com" />
+        </TestWrapper>,
       );
 
       const iframe = screen.getByTitle('LaunchDarkly Toolbar') as HTMLIFrameElement;
@@ -165,7 +143,7 @@ describe('AuthenticationModal', () => {
       render(
         <TestWrapper>
           <AuthenticationModal {...defaultProps} />
-        </TestWrapper>
+        </TestWrapper>,
       );
 
       const iframe = screen.getByTitle('LaunchDarkly Toolbar');
@@ -176,7 +154,7 @@ describe('AuthenticationModal', () => {
       render(
         <TestWrapper>
           <AuthenticationModal {...defaultProps} />
-        </TestWrapper>
+        </TestWrapper>,
       );
 
       const iframe = screen.getByTitle('LaunchDarkly Toolbar');
@@ -187,7 +165,7 @@ describe('AuthenticationModal', () => {
       const { container } = render(
         <TestWrapper>
           <AuthenticationModal {...defaultProps} />
-        </TestWrapper>
+        </TestWrapper>,
       );
 
       const iframe = container.querySelector('iframe');
@@ -201,7 +179,7 @@ describe('AuthenticationModal', () => {
       const { container } = render(
         <TestWrapper>
           <AuthenticationModal {...defaultProps} />
-        </TestWrapper>
+        </TestWrapper>,
       );
 
       const iframe = container.querySelector('iframe');
@@ -212,11 +190,8 @@ describe('AuthenticationModal', () => {
     it('should always render iframe regardless of isOpen prop', () => {
       render(
         <TestWrapper>
-          <AuthenticationModal 
-            {...defaultProps}
-            isOpen={false}
-          />
-        </TestWrapper>
+          <AuthenticationModal {...defaultProps} isOpen={false} />
+        </TestWrapper>,
       );
 
       const iframe = screen.getByTitle('LaunchDarkly Toolbar');
@@ -228,11 +203,8 @@ describe('AuthenticationModal', () => {
     it('should handle empty baseUrl', () => {
       render(
         <TestWrapper>
-          <AuthenticationModal 
-            {...defaultProps}
-            baseUrl=""
-          />
-        </TestWrapper>
+          <AuthenticationModal {...defaultProps} baseUrl="" />
+        </TestWrapper>,
       );
 
       const iframe = screen.getByTitle('LaunchDarkly Toolbar') as HTMLIFrameElement;
@@ -242,11 +214,8 @@ describe('AuthenticationModal', () => {
     it('should handle baseUrl with trailing slash', () => {
       render(
         <TestWrapper>
-          <AuthenticationModal 
-            {...defaultProps}
-            baseUrl="https://app.launchdarkly.com/"
-          />
-        </TestWrapper>
+          <AuthenticationModal {...defaultProps} baseUrl="https://app.launchdarkly.com/" />
+        </TestWrapper>,
       );
 
       const iframe = screen.getByTitle('LaunchDarkly Toolbar') as HTMLIFrameElement;
@@ -256,11 +225,8 @@ describe('AuthenticationModal', () => {
     it('should be case insensitive for URL matching', () => {
       render(
         <TestWrapper>
-          <AuthenticationModal 
-            {...defaultProps}
-            baseUrl="https://LD-STG.launchdarkly.com"
-          />
-        </TestWrapper>
+          <AuthenticationModal {...defaultProps} baseUrl="https://LD-STG.launchdarkly.com" />
+        </TestWrapper>,
       );
 
       const iframe = screen.getByTitle('LaunchDarkly Toolbar') as HTMLIFrameElement;
