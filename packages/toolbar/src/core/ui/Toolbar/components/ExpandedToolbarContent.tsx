@@ -83,7 +83,7 @@ export const ExpandedToolbarContent = React.forwardRef<HTMLDivElement, ExpandedT
 
   return (
     <>
-      {optInToNewFeatures && <AuthenticationModal isOpen={isAuthModalOpen} onClose={() => setIsAuthModalOpen(false)} />}
+      {optInToNewFeatures && <AuthenticationModal baseUrl={baseUrl} isOpen={isAuthModalOpen} onClose={() => setIsAuthModalOpen(false)} />}
       <FocusScope restoreFocus>
         <motion.div
           ref={ref}

@@ -5,13 +5,30 @@ import { useAuthContext } from '../context/AuthProvider';
 import { openOAuthPopup } from '../utils/oauthPopup';
 
 interface AuthenticationModalProps {
+  baseUrl: string;
   isOpen: boolean;
   onClose: () => void;
 }
 
-export function AuthenticationModal({ isOpen, onClose }: AuthenticationModalProps) {
+export function AuthenticationModal(props: AuthenticationModalProps) {
+  const { baseUrl, isOpen, onClose } = props;
+
   const { ref } = useIFrameContext();
   const { authenticated, authenticating, setAuthenticating } = useAuthContext();
+
+  // If running the toolbar + integration server locally, replace the iframe URL as needed.
+  const getIframeUrl = useCallback(() => {
+    switch (baseUrl) {
+      case 'https://app.launchdarkly.com':
+        return 'https://integrations.launchdarkly.com'
+      case 'https://ld-stg.launchdarkly.com':
+        return 'https://integrations-stg.launchdarkly.com'
+      case 'https://app.ld.catamorphic.com':
+        return 'https://integrations.ld.catamorphic.com'
+      default:
+        return 'https://integrations.launchdarkly.com'
+    }
+  }, [baseUrl]);
 
   // Handle escape key to close the modal
   useEffect(() => {
@@ -31,7 +48,7 @@ export function AuthenticationModal({ isOpen, onClose }: AuthenticationModalProp
     try {
       setAuthenticating(true);
       await openOAuthPopup({
-        url: 'https://1af34adb3482.ngrok.app/toolbar/index.html',
+        url: `${getIframeUrl()}/toolbar/index.html`,
       });
       setAuthenticating(false);
     } catch (error) {
@@ -54,8 +71,8 @@ export function AuthenticationModal({ isOpen, onClose }: AuthenticationModalProp
       <iframe
         src={
           authenticating
-            ? 'https://1af34adb3482.ngrok.app/toolbar/authenticating.html'
-            : 'https://1af34adb3482.ngrok.app/toolbar/index.html'
+            ? `${getIframeUrl()}/toolbar/authenticating.html`
+            : `${getIframeUrl()}/toolbar/index.html`
         }
         title="LaunchDarkly Toolbar"
         style={{ display: 'none' }}
