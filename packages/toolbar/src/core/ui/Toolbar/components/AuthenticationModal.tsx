@@ -20,7 +20,7 @@ export function AuthenticationModal(props: AuthenticationModalProps) {
   const getIframeUrl = useCallback(() => {
     switch (baseUrl.toLowerCase()) {
       case 'https://app.launchdarkly.com':
-      return 'https://integrations.launchdarkly.com'
+        return 'https://integrations.launchdarkly.com'
       case 'https://ld-stg.launchdarkly.com':
         return 'https://integrations-stg.launchdarkly.com';
       case 'https://app.ld.catamorphic.com':
@@ -70,7 +70,7 @@ export function AuthenticationModal(props: AuthenticationModalProps) {
   return (
     <div className={styles.iframeContainer}>
       <iframe
-        src={authenticating ? `${getIframeUrl()}/toolbar/authenticating.html` : `${getIframeUrl()}/toolbar/index.html`}
+        src={authenticating ? `${getIframeUrl()}/toolbar/authenticating.html?originUrl=${window.location.origin}` : `${getIframeUrl()}/toolbar/index.html?originUrl=${window.location.origin}`}
         title="LaunchDarkly Toolbar"
         style={{ display: 'none' }}
         ref={ref}
