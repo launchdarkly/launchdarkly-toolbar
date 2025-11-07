@@ -1,10 +1,8 @@
-import { useEffect } from 'react';
-import { motion } from 'motion/react';
+import { useCallback, useEffect } from 'react';
 import * as styles from './AuthenticationModal.css';
-import { IconButton } from './IconButton';
-import { CancelIcon } from './icons/CancelIcon';
 import { useIFrameContext } from '../context/IFrameProvider';
 import { useAuthContext } from '../context/AuthProvider';
+import { openOAuthPopup } from '../utils/oauthPopup';
 
 interface AuthenticationModalProps {
   isOpen: boolean;
@@ -13,7 +11,7 @@ interface AuthenticationModalProps {
 
 export function AuthenticationModal({ isOpen, onClose }: AuthenticationModalProps) {
   const { ref } = useIFrameContext();
-  const { authenticated } = useAuthContext();
+  const { authenticated, authenticating, setAuthenticating } = useAuthContext();
 
   // Handle escape key to close the modal
   useEffect(() => {
@@ -29,52 +27,40 @@ export function AuthenticationModal({ isOpen, onClose }: AuthenticationModalProp
     }
   }, [isOpen, onClose]);
 
-  useEffect(() => {
-    // If the user is authenticated and the modal is open, close it (auth flow is complete)
-    if (authenticated && isOpen) {
-      onClose();
+  const handlePopupAuth = useCallback(async () => {
+    try {
+      setAuthenticating(true);
+      await openOAuthPopup({
+        url: 'https://1af34adb3482.ngrok.app/toolbar/index.html',
+      });
+      setAuthenticating(false);
+    } catch (error) {
+      console.error('Popup authentication failed:', error);
     }
-  }, [authenticated, onClose, isOpen]);
+  }, []);
 
+  // Auto-trigger popup authentication when modal opens
+  useEffect(() => {
+    if (isOpen && !authenticated) {
+      handlePopupAuth();
+    }
+  }, [isOpen, authenticated, handlePopupAuth]);
+
+  // Check auth by going to index.html. If that returns a 401, navigate to authenticating.html
+  // while the user authenticates in the popup. This is done because iframe authentication can
+  // have some issues with setting cookies.
   return (
-    <motion.div
-      className={styles.modalOverlay}
-      initial={false}
-      animate={{
-        opacity: isOpen ? 1 : 0,
-        pointerEvents: isOpen ? 'auto' : 'none',
-      }}
-      transition={{ duration: 0.2, ease: [0.4, 0, 0.2, 1] }}
-      onClick={(e) => {
-        if (e.target === e.currentTarget && isOpen) {
-          onClose();
+    <div className={styles.iframeContainer}>
+      <iframe
+        src={
+          authenticating
+            ? 'https://1af34adb3482.ngrok.app/toolbar/authenticating.html'
+            : 'https://1af34adb3482.ngrok.app/toolbar/index.html'
         }
-      }}
-    >
-      <motion.div
-        className={styles.modalContent}
-        initial={false}
-        animate={{
-          opacity: isOpen ? 1 : 0,
-          scale: isOpen ? 1 : 0.95,
-          y: isOpen ? 0 : 20,
-        }}
-        transition={{ duration: 0.2, ease: [0.4, 0, 0.2, 1] }}
-        onClick={(e) => e.stopPropagation()}
-      >
-        <div className={styles.modalHeader}>
-          <h2 className={styles.modalTitle}>Authentication</h2>
-          <IconButton icon={<CancelIcon />} label="Close authentication modal" onClick={onClose} />
-        </div>
-        <div className={styles.iframeContainer}>
-          <iframe
-            src="https://1af34adb3482.ngrok.app/toolbar/index.html"
-            className={styles.modalIframe}
-            title="LaunchDarkly Authentication"
-            ref={ref}
-          />
-        </div>
-      </motion.div>
-    </motion.div>
+        title="LaunchDarkly Toolbar"
+        style={{ display: 'none' }}
+        ref={ref}
+      />
+    </div>
   );
 }
