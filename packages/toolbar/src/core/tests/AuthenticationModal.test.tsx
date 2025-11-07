@@ -23,7 +23,9 @@ vi.mock('../ui/Toolbar/context/AuthProvider', () => ({
 }));
 
 // Test wrapper with required providers
-const TestWrapper = ({ children, baseUrl }: { children: React.ReactNode, baseUrl: string }) => <IFrameProvider baseUrl={baseUrl}>{children}</IFrameProvider>;
+const TestWrapper = ({ children, baseUrl }: { children: React.ReactNode; baseUrl: string }) => (
+  <IFrameProvider baseUrl={baseUrl}>{children}</IFrameProvider>
+);
 
 describe('AuthenticationModal', () => {
   const defaultProps = {
@@ -43,7 +45,7 @@ describe('AuthenticationModal', () => {
   describe('iframe URL determination', () => {
     it('should map production LaunchDarkly URL to production integrations URL', () => {
       render(
-        <TestWrapper baseUrl='https://app.launchdarkly.com'>
+        <TestWrapper baseUrl="https://app.launchdarkly.com">
           <AuthenticationModal {...defaultProps} />
         </TestWrapper>,
       );
@@ -54,7 +56,7 @@ describe('AuthenticationModal', () => {
 
     it('should map staging LaunchDarkly URL to staging integrations URL', () => {
       render(
-        <TestWrapper baseUrl='https://ld-stg.launchdarkly.com'>
+        <TestWrapper baseUrl="https://ld-stg.launchdarkly.com">
           <AuthenticationModal {...defaultProps} />
         </TestWrapper>,
       );
@@ -65,7 +67,7 @@ describe('AuthenticationModal', () => {
 
     it('should map catamorphic LaunchDarkly URL to catamorphic integrations URL', () => {
       render(
-        <TestWrapper baseUrl='https://app.ld.catamorphic.com'>
+        <TestWrapper baseUrl="https://app.ld.catamorphic.com">
           <AuthenticationModal {...defaultProps} />
         </TestWrapper>,
       );
@@ -76,7 +78,7 @@ describe('AuthenticationModal', () => {
 
     it('should default to production integrations URL for unknown base URLs', () => {
       render(
-        <TestWrapper baseUrl='https://some.unknown.domain.com'>
+        <TestWrapper baseUrl="https://some.unknown.domain.com">
           <AuthenticationModal {...defaultProps} />
         </TestWrapper>,
       );
@@ -87,7 +89,7 @@ describe('AuthenticationModal', () => {
 
     it('should default to production integrations URL for localhost URLs', () => {
       render(
-        <TestWrapper baseUrl='http://localhost:3000'>
+        <TestWrapper baseUrl="http://localhost:3000">
           <AuthenticationModal {...defaultProps} />
         </TestWrapper>,
       );
@@ -128,7 +130,7 @@ describe('AuthenticationModal', () => {
       mockAuthContext.authenticating = true;
 
       render(
-        <TestWrapper baseUrl='https://ld-stg.launchdarkly.com'>
+        <TestWrapper baseUrl="https://ld-stg.launchdarkly.com">
           <AuthenticationModal {...defaultProps} />
         </TestWrapper>,
       );
@@ -213,7 +215,7 @@ describe('AuthenticationModal', () => {
 
     it('should handle baseUrl with trailing slash', () => {
       render(
-        <TestWrapper baseUrl='https://app.launchdarkly.com/'>
+        <TestWrapper baseUrl="https://app.launchdarkly.com/">
           <AuthenticationModal {...defaultProps} />
         </TestWrapper>,
       );
@@ -224,7 +226,7 @@ describe('AuthenticationModal', () => {
 
     it('should be case insensitive for URL matching', () => {
       render(
-        <TestWrapper baseUrl='https://LD-STG.launchdarkly.com'>
+        <TestWrapper baseUrl="https://LD-STG.launchdarkly.com">
           <AuthenticationModal {...defaultProps} />
         </TestWrapper>,
       );
