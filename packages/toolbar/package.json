@@ -63,7 +63,7 @@
     "@codemirror/lint": "^6.9.2",
     "@codemirror/state": "^6.5.2",
     "@codemirror/view": "^6.38.6",
-    "@launchpad-ui/components": "^0.16.12",
+    "@launchpad-ui/components": "^0.17.5",
     "@launchpad-ui/tokens": "^0.15.1",
     "@lezer/highlight": "^1.2.3",
     "@react-aria/focus": "^3.21.2",

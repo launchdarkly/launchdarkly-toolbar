@@ -124,8 +124,8 @@ importers:
         specifier: ^6.38.6
         version: 6.38.6
       '@launchpad-ui/components':
-        specifier: ^0.16.12
-        version: 0.16.12(@react-aria/focus@3.21.2(react-dom@19.2.0(react@19.2.0))(react@19.2.0))(@react-aria/interactions@3.25.6(react-dom@19.2.0(react@19.2.0))(react@19.2.0))(@react-aria/utils@3.31.0(react-dom@19.2.0(react@19.2.0))(react@19.2.0))(@react-stately/utils@3.10.8(react@19.2.0))(@react-types/shared@3.32.1(react@19.2.0))(react-aria-components@1.13.0(react-dom@19.2.0(react@19.2.0))(react@19.2.0))(react-aria@3.44.0(react-dom@19.2.0(react@19.2.0))(react@19.2.0))(react-dom@19.2.0(react@19.2.0))(react-hook-form@7.65.0(react@19.2.0))(react-router@7.9.5(react-dom@19.2.0(react@19.2.0))(react@19.2.0))(react-stately@3.42.0(react@19.2.0))(react@19.2.0)
+        specifier: ^0.17.5
+        version: 0.17.5(@react-aria/focus@3.21.2(react-dom@19.2.0(react@19.2.0))(react@19.2.0))(@react-aria/interactions@3.25.6(react-dom@19.2.0(react@19.2.0))(react@19.2.0))(@react-aria/utils@3.31.0(react-dom@19.2.0(react@19.2.0))(react@19.2.0))(@react-stately/utils@3.10.8(react@19.2.0))(@react-types/shared@3.32.1(react@19.2.0))(react-aria-components@1.13.0(react-dom@19.2.0(react@19.2.0))(react@19.2.0))(react-aria@3.44.0(react-dom@19.2.0(react@19.2.0))(react@19.2.0))(react-dom@19.2.0(react@19.2.0))(react-hook-form@7.65.0(react@19.2.0))(react-router@7.9.5(react-dom@19.2.0(react@19.2.0))(react@19.2.0))(react-stately@3.42.0(react@19.2.0))(react@19.2.0)
       '@launchpad-ui/tokens':
         specifier: ^0.15.1
         version: 0.15.1
@@ -990,8 +990,8 @@ packages:
     peerDependencies:
       tslib: '2'
 
-  '@launchpad-ui/components@0.16.12':
-    resolution: {integrity: sha512-ExISYGVpPqO/uSlHRqfUMfvOFmMLfP4ntbQuXdaREXO7nsS5lLMZwoQkGrdfFm+uKBQuKaGb3Bc1g6MYxcfndA==}
+  '@launchpad-ui/components@0.17.5':
+    resolution: {integrity: sha512-XIvjIl8rjRWn8lGyQwHcDSndMaNOKKMQL1Mn9fuj6PR/up2n8Q1KkBV/cewNQ7JIGHdiZ5l5vlKOyDY0O6MfdA==}
     peerDependencies:
       '@react-aria/focus': 3.21.2
       '@react-aria/interactions': 3.25.6
@@ -1006,8 +1006,8 @@ packages:
       react-router: 7.5.2
       react-stately: 3.42.0
 
-  '@launchpad-ui/icons@0.24.7':
-    resolution: {integrity: sha512-d1sobsTvQy0WWC3dt1770elc98DscA1/r1HqWejZtVa0CbWHGW7mfUAqMoHBvEI+rT49iInHYRwJ6SbaWksJTQ==}
+  '@launchpad-ui/icons@0.24.8':
+    resolution: {integrity: sha512-AVVUyHg4qG8WPOzCR3KWdYw4Ubc+0zqfnPvC+xz6++1caPn6y6E43py6Xjlx2VfzKqWXJUvOxvpDpvY5WYfkAw==}
     peerDependencies:
       react: 19.2.0
       react-dom: 19.2.0
@@ -5754,13 +5754,14 @@ snapshots:
       '@jsonjoy.com/codegen': 1.0.0(tslib@2.8.1)
       tslib: 2.8.1
 
-  '@launchpad-ui/components@0.16.12(@react-aria/focus@3.21.2(react-dom@19.2.0(react@19.2.0))(react@19.2.0))(@react-aria/interactions@3.25.6(react-dom@19.2.0(react@19.2.0))(react@19.2.0))(@react-aria/utils@3.31.0(react-dom@19.2.0(react@19.2.0))(react@19.2.0))(@react-stately/utils@3.10.8(react@19.2.0))(@react-types/shared@3.32.1(react@19.2.0))(react-aria-components@1.13.0(react-dom@19.2.0(react@19.2.0))(react@19.2.0))(react-aria@3.44.0(react-dom@19.2.0(react@19.2.0))(react@19.2.0))(react-dom@19.2.0(react@19.2.0))(react-hook-form@7.65.0(react@19.2.0))(react-router@7.9.5(react-dom@19.2.0(react@19.2.0))(react@19.2.0))(react-stately@3.42.0(react@19.2.0))(react@19.2.0)':
+  '@launchpad-ui/components@0.17.5(@react-aria/focus@3.21.2(react-dom@19.2.0(react@19.2.0))(react@19.2.0))(@react-aria/interactions@3.25.6(react-dom@19.2.0(react@19.2.0))(react@19.2.0))(@react-aria/utils@3.31.0(react-dom@19.2.0(react@19.2.0))(react@19.2.0))(@react-stately/utils@3.10.8(react@19.2.0))(@react-types/shared@3.32.1(react@19.2.0))(react-aria-components@1.13.0(react-dom@19.2.0(react@19.2.0))(react@19.2.0))(react-aria@3.44.0(react-dom@19.2.0(react@19.2.0))(react@19.2.0))(react-dom@19.2.0(react@19.2.0))(react-hook-form@7.65.0(react@19.2.0))(react-router@7.9.5(react-dom@19.2.0(react@19.2.0))(react@19.2.0))(react-stately@3.42.0(react@19.2.0))(react@19.2.0)':
     dependencies:
       '@internationalized/date': 3.10.0
-      '@launchpad-ui/icons': 0.24.7(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
+      '@launchpad-ui/icons': 0.24.8(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
       '@launchpad-ui/tokens': 0.15.1
       '@react-aria/focus': 3.21.2(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
       '@react-aria/interactions': 3.25.6(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
+      '@react-aria/live-announcer': 3.4.4
       '@react-aria/utils': 3.31.0(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
       '@react-stately/utils': 3.10.8(react@19.2.0)
       '@react-types/shared': 3.32.1(react@19.2.0)
@@ -5773,7 +5774,7 @@ snapshots:
       react-router: 7.9.5(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
       react-stately: 3.42.0(react@19.2.0)
 
-  '@launchpad-ui/icons@0.24.7(react-dom@19.2.0(react@19.2.0))(react@19.2.0)':
+  '@launchpad-ui/icons@0.24.8(react-dom@19.2.0(react@19.2.0))(react@19.2.0)':
     dependencies:
       '@launchpad-ui/tokens': 0.15.1
       class-variance-authority: 0.7.0
