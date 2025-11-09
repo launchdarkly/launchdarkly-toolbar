@@ -3,8 +3,8 @@ import { createContext, useContext } from 'react';
 export type FlagFilterMode = 'all' | 'overrides' | 'starred';
 
 interface FlagFilterOptionsContextType {
-  activeFilter: FlagFilterMode;
-  onFilterChange: (filter: FlagFilterMode) => void;
+  activeFilters: Set<FlagFilterMode>;
+  onFilterToggle: (filter: FlagFilterMode) => void;
 }
 
 export const FlagFilterOptionsContext = createContext<FlagFilterOptionsContextType | undefined>(undefined);

@@ -28,8 +28,30 @@ export function FlagDevServerTabContent(props: FlagDevServerTabContentProps) {
   const { flags } = state;
   const { isStarred, toggleStarred, clearAllStarred, starredCount } = useStarredFlags();
 
-  const [activeFilter, setActiveFilter] = useState<FlagFilterMode>('all');
+  const [activeFilters, setActiveFilters] = useState<Set<FlagFilterMode>>(new Set(['all']));
   const parentRef = useRef<HTMLDivElement>(null);
+
+  const handleFilterToggle = useCallback((filter: FlagFilterMode) => {
+    setActiveFilters((prev) => {
+      // Clicking "All" resets to default state
+      if (filter === 'all') {
+        return new Set(['all']);
+      }
+
+      const next = new Set(prev);
+      next.delete('all'); // Remove "All" when selecting specific filters
+
+      // Toggle the selected filter
+      if (next.has(filter)) {
+        next.delete(filter);
+      } else {
+        next.add(filter);
+      }
+
+      // Default to "All" if no filters remain
+      return next.size === 0 ? new Set(['all']) : next;
+    });
+  }, []);
 
   const flagEntries = Object.entries(flags);
   const filteredFlags = useMemo(() => {
@@ -39,17 +61,18 @@ export function FlagDevServerTabContent(props: FlagDevServerTabContentProps) {
         flag.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
         flagKey.toLowerCase().includes(searchTerm.trim().toLowerCase());
 
-      // Apply active filter
+      // Apply active filters (OR logic)
       let matchesFilter = true;
-      if (activeFilter === 'overrides') {
-        matchesFilter = flag.isOverridden;
-      } else if (activeFilter === 'starred') {
-        matchesFilter = isStarred(flagKey);
+      if (activeFilters.has('all')) {
+        matchesFilter = true;
+      } else {
+        matchesFilter =
+          (activeFilters.has('overrides') && flag.isOverridden) || (activeFilters.has('starred') && isStarred(flagKey));
       }
 
       return matchesSearch && matchesFilter;
     });
-  }, [flagEntries, searchTerm, activeFilter, isStarred]);
+  }, [flagEntries, searchTerm, activeFilters, isStarred]);
 
   const virtualizer = useVirtualizer({
     count: filteredFlags.length,
@@ -92,7 +115,7 @@ export function FlagDevServerTabContent(props: FlagDevServerTabContentProps) {
 
   const onRemoveAllOverrides = async () => {
     await clearAllOverrides();
-    setActiveFilter('all');
+    setActiveFilters(new Set(['all']));
     if (reloadOnFlagChangeIsEnabled) {
       window.location.reload();
     }
@@ -100,8 +123,8 @@ export function FlagDevServerTabContent(props: FlagDevServerTabContentProps) {
 
   const onClearOverride = useCallback(
     (flagKey: string) => {
-      if (totalOverriddenFlags <= 1 && activeFilter === 'overrides') {
-        setActiveFilter('all');
+      if (totalOverriddenFlags <= 1 && activeFilters.has('overrides') && !activeFilters.has('starred')) {
+        setActiveFilters(new Set(['all']));
       }
       clearOverride(flagKey).then(() => {
         if (reloadOnFlagChangeIsEnabled) {
@@ -109,7 +132,7 @@ export function FlagDevServerTabContent(props: FlagDevServerTabContentProps) {
         }
       });
     },
-    [totalOverriddenFlags, activeFilter, clearOverride, reloadOnFlagChangeIsEnabled],
+    [totalOverriddenFlags, activeFilters, clearOverride, reloadOnFlagChangeIsEnabled],
   );
 
   const handleHeightChange = useCallback(
@@ -126,10 +149,10 @@ export function FlagDevServerTabContent(props: FlagDevServerTabContentProps) {
   );
 
   const getGenericHelpText = () => {
-    if (activeFilter === 'overrides' && totalOverriddenFlags === 0) {
+    if (activeFilters.has('overrides') && !activeFilters.has('starred') && totalOverriddenFlags === 0) {
       return { title: 'No overridden flags found', subtitle: 'You have not set any overrides yet' };
     }
-    if (activeFilter === 'starred' && starredCount === 0) {
+    if (activeFilters.has('starred') && !activeFilters.has('overrides') && starredCount === 0) {
       return { title: 'No starred flags found', subtitle: 'Star flags to see them here' };
     }
     return { title: 'No flags found', subtitle: 'Try adjusting your search' };
@@ -138,7 +161,7 @@ export function FlagDevServerTabContent(props: FlagDevServerTabContentProps) {
   const { title: genericHelpTitle, subtitle: genericHelpSubtitle } = getGenericHelpText();
 
   return (
-    <FlagFilterOptionsContext.Provider value={{ activeFilter, onFilterChange: setActiveFilter }}>
+    <FlagFilterOptionsContext.Provider value={{ activeFilters, onFilterToggle: handleFilterToggle }}>
       <div data-testid="flag-dev-server-tab-content">
         <>
           <FilterOptions
@@ -151,7 +174,7 @@ export function FlagDevServerTabContent(props: FlagDevServerTabContentProps) {
             isLoading={state.isLoading}
           />
 
-          {filteredFlags.length === 0 && (searchTerm.trim() || activeFilter !== 'all') ? (
+          {filteredFlags.length === 0 && (searchTerm.trim() || !activeFilters.has('all')) ? (
             <GenericHelpText title={genericHelpTitle} subtitle={genericHelpSubtitle} />
           ) : (
             <div ref={parentRef} className={styles.virtualContainer}>

@@ -21,22 +21,23 @@ export interface FilterOptionsProps {
 export function FilterOptions(props: FilterOptionsProps) {
   const { totalFlags, filteredFlags, totalOverriddenFlags, starredCount, onClearOverrides, onClearStarred, isLoading } =
     props;
-  const { activeFilter, onFilterChange } = useFlagFilterOptions();
+  const { activeFilters, onFilterToggle } = useFlagFilterOptions();
 
-  const isAllActive = activeFilter === 'all';
-  const isOverridesActive = activeFilter === 'overrides';
-  const isStarredActive = activeFilter === 'starred';
+  const isAllActive = activeFilters.has('all');
+  const isOverridesActive = activeFilters.has('overrides');
+  const isStarredActive = activeFilters.has('starred');
+  const hasMultipleFilters = activeFilters.size > 1;
 
   return (
     <div className={styles.container}>
       <div className={styles.topRow}>
         {FILTER_OPTIONS.map((filter) => {
-          const isActive = activeFilter === filter.id;
+          const isActive = activeFilters.has(filter.id);
           return (
             <button
               key={filter.id}
               className={`${styles.option} ${isActive ? styles.activeOption : ''}`}
-              onClick={() => onFilterChange(filter.id)}
+              onClick={() => onFilterToggle(filter.id)}
               data-active={isActive}
               aria-label={`Show ${filter.label.toLowerCase()} flags`}
             >
@@ -52,7 +53,7 @@ export function FilterOptions(props: FilterOptionsProps) {
             ? `Showing all ${totalFlags} flags`
             : `Showing ${filteredFlags} of ${totalFlags} flags`}
         </div>
-        {isOverridesActive && totalOverriddenFlags > 0 && onClearOverrides && (
+        {!hasMultipleFilters && isOverridesActive && totalOverriddenFlags > 0 && onClearOverrides && (
           <ClearButton
             label="Overrides"
             count={totalOverriddenFlags}
@@ -60,7 +61,7 @@ export function FilterOptions(props: FilterOptionsProps) {
             isLoading={isLoading}
           />
         )}
-        {isStarredActive && starredCount > 0 && onClearStarred && (
+        {!hasMultipleFilters && isStarredActive && starredCount > 0 && onClearStarred && (
           <ClearButton label="Starred" count={starredCount} onClick={onClearStarred} isLoading={isLoading} />
         )}
       </div>

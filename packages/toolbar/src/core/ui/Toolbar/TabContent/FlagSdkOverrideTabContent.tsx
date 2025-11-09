@@ -31,8 +31,30 @@ function FlagSdkOverrideTabContentInner(props: FlagSdkOverrideTabContentInnerPro
   const analytics = useAnalytics();
   const { flags, isLoading } = useFlagSdkOverrideContext();
   const { isStarred, toggleStarred, clearAllStarred, starredCount } = useStarredFlags();
-  const [activeFilter, setActiveFilter] = useState<FlagFilterMode>('all');
+  const [activeFilters, setActiveFilters] = useState<Set<FlagFilterMode>>(new Set(['all']));
   const parentRef = useRef<HTMLDivElement>(null);
+
+  const handleFilterToggle = useCallback((filter: FlagFilterMode) => {
+    setActiveFilters((prev) => {
+      // Clicking "All" resets to default state
+      if (filter === 'all') {
+        return new Set(['all']);
+      }
+
+      const next = new Set(prev);
+      next.delete('all'); // Remove "All" when selecting specific filters
+
+      // Toggle the selected filter
+      if (next.has(filter)) {
+        next.delete(filter);
+      } else {
+        next.add(filter);
+      }
+
+      // Default to "All" if no filters remain
+      return next.size === 0 ? new Set(['all']) : next;
+    });
+  }, []);
 
   const handleClearOverride = useCallback(
     (flagKey: string) => {
@@ -62,17 +84,18 @@ function FlagSdkOverrideTabContentInner(props: FlagSdkOverrideTabContentInnerPro
         flag.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
         flagKey.toLowerCase().includes(searchTerm.trim().toLowerCase());
 
-      // Apply active filter
+      // Apply active filters (OR logic)
       let matchesFilter = true;
-      if (activeFilter === 'overrides') {
-        matchesFilter = flag.isOverridden;
-      } else if (activeFilter === 'starred') {
-        matchesFilter = isStarred(flagKey);
+      if (activeFilters.has('all')) {
+        matchesFilter = true;
+      } else {
+        matchesFilter =
+          (activeFilters.has('overrides') && flag.isOverridden) || (activeFilters.has('starred') && isStarred(flagKey));
       }
 
       return matchesSearch && matchesFilter;
     });
-  }, [flagEntries, searchTerm, activeFilter, isStarred]);
+  }, [flagEntries, searchTerm, activeFilters, isStarred]);
 
   const virtualizer = useVirtualizer({
     count: filteredFlags.length,
@@ -108,7 +131,7 @@ function FlagSdkOverrideTabContentInner(props: FlagSdkOverrideTabContentInnerPro
 
     flagOverridePlugin.clearAllOverrides();
     analytics.trackFlagOverride('*', { count: overrideCount }, 'clear_all');
-    setActiveFilter('all');
+    setActiveFilters(new Set(['all']));
 
     if (reloadOnFlagChangeIsEnabled) {
       window.location.reload();
@@ -164,10 +187,10 @@ function FlagSdkOverrideTabContentInner(props: FlagSdkOverrideTabContentInnerPro
   }
 
   const getGenericHelpText = () => {
-    if (activeFilter === 'overrides' && totalOverriddenFlags === 0) {
+    if (activeFilters.has('overrides') && !activeFilters.has('starred') && totalOverriddenFlags === 0) {
       return { title: 'No overridden flags found', subtitle: 'You have not set any overrides yet' };
     }
-    if (activeFilter === 'starred' && starredCount === 0) {
+    if (activeFilters.has('starred') && !activeFilters.has('overrides') && starredCount === 0) {
       return { title: 'No starred flags found', subtitle: 'Star flags to see them here' };
     }
     return { title: 'No flags found', subtitle: 'Try adjusting your search' };
@@ -176,7 +199,7 @@ function FlagSdkOverrideTabContentInner(props: FlagSdkOverrideTabContentInnerPro
   const { title: genericHelpTitle, subtitle: genericHelpSubtitle } = getGenericHelpText();
 
   return (
-    <FlagFilterOptionsContext.Provider value={{ activeFilter, onFilterChange: setActiveFilter }}>
+    <FlagFilterOptionsContext.Provider value={{ activeFilters, onFilterToggle: handleFilterToggle }}>
       <div data-testid="flag-sdk-tab-content">
         <>
           <FilterOptions
@@ -189,7 +212,7 @@ function FlagSdkOverrideTabContentInner(props: FlagSdkOverrideTabContentInnerPro
             isLoading={isLoading}
           />
 
-          {filteredFlags.length === 0 && (searchTerm.trim() || activeFilter !== 'all') ? (
+          {filteredFlags.length === 0 && (searchTerm.trim() || !activeFilters.has('all')) ? (
             <GenericHelpText title={genericHelpTitle} subtitle={genericHelpSubtitle} />
           ) : (
             <div ref={parentRef} className={sharedStyles.virtualContainer}>
