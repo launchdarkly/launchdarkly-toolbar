@@ -1,4 +1,4 @@
-import { createContext, RefObject, useContext, useEffect, useMemo, useRef } from 'react';
+import { createContext, RefObject, useContext, useMemo, useRef } from 'react';
 
 export const IFRAME_API_MESSAGES = {
   AUTHENTICATION: {
