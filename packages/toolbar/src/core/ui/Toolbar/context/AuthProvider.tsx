@@ -1,5 +1,5 @@
 import { createContext, Dispatch, SetStateAction, useCallback, useContext, useEffect, useState } from 'react';
-import { IFRAME_API_MESSAGES } from './IFrameProvider';
+import { IFRAME_API_MESSAGES, useIFrameContext } from './IFrameProvider';
 
 type AuthProviderType = {
   authenticated: boolean;
@@ -19,8 +19,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [authenticated, setAuthenticated] = useState(false);
   const [loading, setLoading] = useState(true);
   const [authenticating, setAuthenticating] = useState(false);
+  const { iframeSrc } = useIFrameContext();
 
   const handleMessage = useCallback((event: MessageEvent) => {
+    if (event.origin !== iframeSrc) {
+      return;
+    }
+
     if (event.data.type === IFRAME_API_MESSAGES.AUTHENTICATION.authenticated) {
       setAuthenticated(true);
       setLoading(false);

@@ -26,6 +26,7 @@ export default function mount(rootNode: HTMLElement, config: InitializationConfi
         <LaunchDarklyToolbar
           domId={TOOLBAR_DOM_ID}
           baseUrl={config.baseUrl}
+          authUrl={config.authUrl}
           devServerUrl={config.devServerUrl}
           projectKey={config.projectKey}
           flagOverridePlugin={config.flagOverridePlugin}

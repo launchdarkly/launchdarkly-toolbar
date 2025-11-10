@@ -188,6 +188,7 @@ export function LdToolbar(props: LdToolbarProps) {
 
 export interface LaunchDarklyToolbarProps {
   baseUrl?: string; // Optional - will default to https://app.launchdarkly.com
+  authUrl?: string; // Optional - will default to https://integrations.launchdarkly.com
   devServerUrl?: string; // Optional - will default to dev server mode if provided
   projectKey?: string; // Optional - will auto-detect first available project if not provided
   flagOverridePlugin?: IFlagOverridePlugin; // Optional - for flag override functionality
@@ -200,6 +201,7 @@ export interface LaunchDarklyToolbarProps {
 export function LaunchDarklyToolbar(props: LaunchDarklyToolbarProps) {
   const {
     baseUrl = 'https://app.launchdarkly.com',
+    authUrl = 'https://integrations.launchdarkly.com',
     projectKey,
     position,
     devServerUrl,
@@ -228,7 +230,7 @@ export function LaunchDarklyToolbar(props: LaunchDarklyToolbarProps) {
       >
         <AnalyticsProvider ldClient={flagOverridePlugin?.getClient() ?? eventInterceptionPlugin?.getClient()}>
           <SearchProvider>
-            <IFrameProvider baseUrl={baseUrl}>
+            <IFrameProvider authUrl={authUrl}>
               <AuthProvider>
                 <ApiProvider>
                   <LdToolbar

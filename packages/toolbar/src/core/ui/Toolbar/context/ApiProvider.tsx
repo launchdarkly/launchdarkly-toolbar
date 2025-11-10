@@ -37,6 +37,10 @@ export function ApiProvider({ children }: { children: React.ReactNode }) {
 
       return new Promise((resolve, reject) => {
         const handleMessage = (event: MessageEvent) => {
+          if (event.origin !== iframeSrc) {
+            return;
+          }
+
           if (event.data.type === IFRAME_API_MESSAGES.GET_FLAG.response) {
             window.removeEventListener('message', handleMessage);
             resolve(event.data.data);

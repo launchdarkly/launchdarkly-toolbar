@@ -36,11 +36,12 @@ export function AuthenticationModal(props: AuthenticationModalProps) {
         url: `${iframeSrc}/toolbar/index.html?originUrl=${window.location.origin}`,
       });
       onClose();
-      setAuthenticating(false);
     } catch (error) {
       console.error('Popup authentication failed:', error);
+    } finally {
+      setAuthenticating(false);
     }
-  }, []);
+  }, [iframeSrc, onClose, setAuthenticating]);
 
   // Auto-trigger popup authentication when modal opens
   useEffect(() => {

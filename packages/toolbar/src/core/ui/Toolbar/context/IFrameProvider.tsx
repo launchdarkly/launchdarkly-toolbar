@@ -1,4 +1,4 @@
-import { createContext, RefObject, useContext, useMemo, useRef } from 'react';
+import { createContext, RefObject, useContext, useEffect, useMemo, useRef } from 'react';
 
 export const IFRAME_API_MESSAGES = {
   AUTHENTICATION: {
@@ -15,7 +15,7 @@ export const IFRAME_API_MESSAGES = {
 
 interface IFrameProviderProps {
   children: React.ReactNode;
-  baseUrl: string;
+  authUrl: string;
 }
 
 type IFrameProviderType = {
@@ -25,20 +25,9 @@ type IFrameProviderType = {
 
 const IFrameContext = createContext<IFrameProviderType | null>(null);
 
-export function IFrameProvider({ children, baseUrl }: IFrameProviderProps) {
+export function IFrameProvider({ children, authUrl }: IFrameProviderProps) {
   const ref = useRef<HTMLIFrameElement | null>(null);
-  const iframeSrc = useMemo(() => {
-    switch (baseUrl.toLowerCase()) {
-      case 'https://app.launchdarkly.com':
-        return 'https://integrations.launchdarkly.com';
-      case 'https://ld-stg.launchdarkly.com':
-        return 'https://integrations-stg.launchdarkly.com';
-      case 'https://app.ld.catamorphic.com':
-        return 'https://integrations.ld.catamorphic.com';
-      default:
-        return 'https://integrations.launchdarkly.com';
-    }
-  }, [baseUrl]);
+  const iframeSrc = useMemo(() => authUrl, [authUrl]);
 
   return <IFrameContext.Provider value={{ ref, iframeSrc }}>{children}</IFrameContext.Provider>;
 }
