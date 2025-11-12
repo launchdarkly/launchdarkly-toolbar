@@ -30,10 +30,11 @@ const InternalClientContext = createContext<InternalClientContextValue | null>(n
 export interface InternalClientProviderProps {
   children: ReactNode;
   /**
-   * Client-side ID for the internal toolbar client.
-   * This should be LaunchDarkly's internal toolbar client-side ID.
+   * Client-side id for the internal toolbar client.
+   * This should be LaunchDarkly's internal toolbar client-side id.
+   * If not provided, the internal client will not be initialized.
    */
-  clientSideID: string;
+  clientSideId?: string;
   /**
    * Initial context for the internal client.
    * If not provided, an anonymous context will be used.
@@ -59,7 +60,7 @@ export interface InternalClientProviderProps {
  */
 export function InternalClientProvider({
   children,
-  clientSideID,
+  clientSideId,
   initialContext,
   baseUrl,
 }: InternalClientProviderProps) {
@@ -69,6 +70,11 @@ export function InternalClientProvider({
 
   // Initialize internal client
   useEffect(() => {
+    // Skip initialization if no clientSideId provided
+    if (!clientSideId) {
+      return;
+    }
+
     let mounted = true;
     let clientToCleanup: LDClient | null = null;
 
@@ -94,7 +100,7 @@ export function InternalClientProvider({
             }
           : undefined;
 
-        const ldClient = initialize(clientSideID, context, options);
+        const ldClient = initialize(clientSideId, context, options);
         clientToCleanup = ldClient;
 
         await ldClient.waitForInitialization();
@@ -126,7 +132,7 @@ export function InternalClientProvider({
         clientToCleanup.close();
       }
     };
-  }, [clientSideID, initialContext, baseUrl]); // Re-initialize if client-side ID, initial context, or base URL changes
+  }, [clientSideId, initialContext, baseUrl]); // Re-initialize if client-side id, initial context, or base URL changes
 
   const value: InternalClientContextValue = {
     client,

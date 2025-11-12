@@ -211,6 +211,8 @@ export function LaunchDarklyToolbar(props: LaunchDarklyToolbarProps) {
     eventInterceptionPlugin,
     domId,
   } = props;
+
+  const internalClientSideId = import.meta.env.TOOLBAR_INTERNAL_CLIENT_ID;
   const isVisible = useToolbarVisibility();
 
   // Don't render anything if visibility check fails
@@ -234,7 +236,7 @@ export function LaunchDarklyToolbar(props: LaunchDarklyToolbarProps) {
             <IFrameProvider authUrl={authUrl}>
               <AuthProvider>
                 <ApiProvider>
-                  <InternalClientProvider clientSideID="691362959092c809a435f00d" baseUrl={baseUrl}>
+                  <InternalClientProvider clientSideId={internalClientSideId} baseUrl={baseUrl}>
                     <StarredFlagsProvider>
                       <LdToolbar
                         domId={domId}
