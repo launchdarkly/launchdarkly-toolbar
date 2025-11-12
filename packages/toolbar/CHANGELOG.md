@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.0](https://github.com/launchdarkly/launchdarkly-toolbar/compare/1.1.2...1.2.0) (2025-11-12)
+
+
+### Features
+
+* [REL-9741 add starred flags functionality to the toolbar ([#251](https://github.com/launchdarkly/launchdarkly-toolbar/issues/251)) ([86dd6a6](https://github.com/launchdarkly/launchdarkly-toolbar/commit/86dd6a6240355aa86a56042b844a3b37d1824e16))
+
 ## [1.1.2](https://github.com/launchdarkly/launchdarkly-toolbar/compare/1.1.1...1.1.2) (2025-11-05)
 
 
