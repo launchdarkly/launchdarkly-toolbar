@@ -4,7 +4,7 @@ interface IconProps {
   className?: string;
 }
 
-export function XIcon({ className }: IconProps) {
+export function CancelIcon({ className }: IconProps) {
   return (
     <svg
       className={`${styles.icon} ${className}`}

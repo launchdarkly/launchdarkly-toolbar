@@ -1,4 +1,4 @@
-import { XIcon } from '../icons';
+import { CancelIcon } from '../icons';
 import * as styles from './ClearButton.css';
 
 interface ClearButtonProps {
@@ -16,7 +16,7 @@ export function ClearButton({ label, count, onClick, isLoading }: ClearButtonPro
       disabled={isLoading}
       aria-label={`Clear ${label} (${count})`}
     >
-      <XIcon className={styles.smallIcon} />
+      <CancelIcon className={styles.smallIcon} />
       Clear {label} ({count})
     </button>
   );
