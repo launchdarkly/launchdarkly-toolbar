@@ -34,27 +34,39 @@ function FlagSdkOverrideTabContentInner(props: FlagSdkOverrideTabContentInnerPro
   const [activeFilters, setActiveFilters] = useState<Set<FlagFilterMode>>(new Set(['all']));
   const parentRef = useRef<HTMLDivElement>(null);
 
-  const handleFilterToggle = useCallback((filter: FlagFilterMode) => {
-    setActiveFilters((prev) => {
-      // Clicking "All" resets to default state
-      if (filter === 'all') {
-        return new Set(['all']);
-      }
+  const handleFilterToggle = useCallback(
+    (filter: FlagFilterMode) => {
+      setActiveFilters((prev) => {
+        // Clicking "All" resets to default state
+        if (filter === 'all') {
+          analytics.trackFilterChange('all', 'selected');
+          return new Set(['all']);
+        }
 
-      const next = new Set(prev);
-      next.delete('all'); // Remove "All" when selecting specific filters
+        const next = new Set(prev);
+        next.delete('all'); // Remove "All" when selecting specific filters
 
-      // Toggle the selected filter
-      if (next.has(filter)) {
-        next.delete(filter);
-      } else {
-        next.add(filter);
-      }
+        // Toggle the selected filter
+        const wasActive = next.has(filter);
+        if (wasActive) {
+          next.delete(filter);
+          analytics.trackFilterChange(filter, 'deselected');
+        } else {
+          next.add(filter);
+          analytics.trackFilterChange(filter, 'selected');
+        }
 
-      // Default to "All" if no filters remain
-      return next.size === 0 ? new Set(['all']) : next;
-    });
-  }, []);
+        // Default to "All" if no filters remain
+        if (next.size === 0) {
+          analytics.trackFilterChange('all', 'selected');
+          return new Set(['all']);
+        }
+
+        return next;
+      });
+    },
+    [analytics],
+  );
 
   const handleClearOverride = useCallback(
     (flagKey: string) => {
@@ -131,6 +143,7 @@ function FlagSdkOverrideTabContentInner(props: FlagSdkOverrideTabContentInnerPro
 
     flagOverridePlugin.clearAllOverrides();
     analytics.trackFlagOverride('*', { count: overrideCount }, 'clear_all');
+    analytics.trackFilterChange('all', 'selected');
     setActiveFilters(new Set(['all']));
 
     if (reloadOnFlagChangeIsEnabled) {
@@ -139,9 +152,20 @@ function FlagSdkOverrideTabContentInner(props: FlagSdkOverrideTabContentInnerPro
   };
 
   const handleClearAllStarred = () => {
+    analytics.trackStarredFlag('*', 'clear_all');
     clearAllStarred();
+    analytics.trackFilterChange('all', 'selected');
     setActiveFilters(new Set(['all']));
   };
+
+  const handleToggleStarred = useCallback(
+    (flagKey: string) => {
+      const wasPreviouslyStarred = isStarred(flagKey);
+      toggleStarred(flagKey);
+      analytics.trackStarredFlag(flagKey, wasPreviouslyStarred ? 'unstar' : 'star');
+    },
+    [isStarred, toggleStarred, analytics],
+  );
 
   const handleHeightChange = useCallback(
     (index: number, height: number) => {
@@ -258,6 +282,7 @@ function FlagSdkOverrideTabContentInner(props: FlagSdkOverrideTabContentInnerPro
                             size={virtualItem.size}
                             handleClearOverride={handleClearOverride}
                             handleOverride={handleSetOverride}
+                            onToggleStarred={handleToggleStarred}
                           />
                         </motion.div>
                       );
@@ -289,7 +314,11 @@ function FlagSdkOverrideTabContentInner(props: FlagSdkOverrideTabContentInnerPro
 
                           <div className={sharedStyles.flagOptions}>
                             {renderFlagControl(flag)}
-                            <StarButton flagKey={flag.key} isStarred={isStarred(flag.key)} onToggle={toggleStarred} />
+                            <StarButton
+                              flagKey={flag.key}
+                              isStarred={isStarred(flag.key)}
+                              onToggle={handleToggleStarred}
+                            />
                           </div>
                         </ListItem>
                       </div>

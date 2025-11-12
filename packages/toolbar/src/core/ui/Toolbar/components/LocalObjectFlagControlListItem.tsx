@@ -19,14 +19,16 @@ interface LocalObjectFlagControlListItemProps {
   handleClearOverride: (key: string) => void;
   handleOverride: (flagKey: string, value: any) => void;
   handleHeightChange: (height: number) => void;
+  onToggleStarred?: (flagKey: string) => void;
   flag: LocalFlag | EnhancedFlag;
   size: number;
   start: number;
 }
 
 export function LocalObjectFlagControlListItem(props: LocalObjectFlagControlListItemProps) {
-  const { handleClearOverride, handleOverride, handleHeightChange, flag, size, start } = props;
-  const { isStarred, toggleStarred } = useStarredFlags();
+  const { handleClearOverride, handleOverride, handleHeightChange, onToggleStarred, flag, size, start } = props;
+  const { isStarred, toggleStarred: defaultToggleStarred } = useStarredFlags();
+  const toggleStarred = onToggleStarred || defaultToggleStarred;
   const currentValue = JSON.stringify(flag.currentValue, null, 2);
   const [isEditing, setIsEditing] = useState(false);
   const [tempValue, setTempValue] = useState(currentValue);
