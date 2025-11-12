@@ -35,6 +35,7 @@ export function ActionButtons(props: ActionButtonsProps) {
 
   const { authenticated, loading } = useAuthContext();
   // Use toolbar flag function (Gonfalon-style pattern)
+  // TODO: Remove this
   const showSearchIcon = internalClientTest();
   console.log('🚀 ~ ActionButtons ~ showSearchIcon:', showSearchIcon);
 
