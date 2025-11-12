@@ -6,6 +6,7 @@ import { useToolbarUIContext } from '../../context/ToolbarUIProvider';
 
 import * as styles from '../Header.css';
 import { useAuthContext } from '../../context/AuthProvider';
+import { internalClientTest } from '../../../../../flags/toolbarFlags';
 
 interface ActionButtonsProps {
   searchIsExpanded: boolean;
@@ -33,6 +34,9 @@ export function ActionButtons(props: ActionButtonsProps) {
   const isTop = position.startsWith('top-');
 
   const { authenticated, loading } = useAuthContext();
+  // Use toolbar flag function (Gonfalon-style pattern)
+  const showSearchIcon = internalClientTest();
+  console.log('🚀 ~ ActionButtons ~ showSearchIcon:', showSearchIcon);
 
   const handleRefreshClick = useCallback(() => {
     // Prevent multiple clicks while already spinning
@@ -51,7 +55,7 @@ export function ActionButtons(props: ActionButtonsProps) {
 
   return (
     <div className={styles.rightSection}>
-      {showSearchButton && (
+      {showSearchButton && showSearchIcon && (
         <AnimatePresence mode="wait">
           {!searchIsExpanded && (
             <motion.div
