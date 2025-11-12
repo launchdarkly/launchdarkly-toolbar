@@ -13,6 +13,7 @@ import { IEventInterceptionPlugin, IFlagOverridePlugin } from '../../../types';
 import { AuthProvider } from './context/AuthProvider';
 import { ApiProvider } from './context/ApiProvider';
 import { IFrameProvider } from './context/IFrameProvider';
+import { InternalClientProvider } from './context/InternalClientProvider';
 
 export interface LdToolbarProps {
   mode: ToolbarMode;
@@ -233,15 +234,17 @@ export function LaunchDarklyToolbar(props: LaunchDarklyToolbarProps) {
             <IFrameProvider authUrl={authUrl}>
               <AuthProvider>
                 <ApiProvider>
-                  <StarredFlagsProvider>
-                    <LdToolbar
-                      domId={domId}
-                      mode={mode}
-                      baseUrl={baseUrl}
-                      flagOverridePlugin={flagOverridePlugin}
-                      eventInterceptionPlugin={eventInterceptionPlugin}
-                    />
-                  </StarredFlagsProvider>
+                  <InternalClientProvider clientSideID="691362959092c809a435f00d" baseUrl={baseUrl}>
+                    <StarredFlagsProvider>
+                      <LdToolbar
+                        domId={domId}
+                        mode={mode}
+                        baseUrl={baseUrl}
+                        flagOverridePlugin={flagOverridePlugin}
+                        eventInterceptionPlugin={eventInterceptionPlugin}
+                      />
+                    </StarredFlagsProvider>
+                  </InternalClientProvider>
                 </ApiProvider>
               </AuthProvider>
             </IFrameProvider>
