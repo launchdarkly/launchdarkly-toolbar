@@ -22,8 +22,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const { iframeSrc } = useIFrameContext();
 
   const handleMessage = useCallback((event: MessageEvent) => {
-    console.log('event', event);
-    console.log('iframeSrc', iframeSrc);
     if (event.origin !== iframeSrc) {
       return;
     }
