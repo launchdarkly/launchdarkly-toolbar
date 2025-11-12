@@ -118,8 +118,10 @@ test.describe('LaunchDarkly Toolbar - Dev Server Mode', () => {
       await expect(booleanFlagSwitch).toBeVisible();
       await expect(booleanFlagSwitch).not.toBeChecked(); // Default false per mock
 
-      // 3. Verify flag management buttons are present
-      await expect(page.getByText('Remove all overrides (0)')).toBeVisible();
+      // 3. Verify filter buttons are present
+      await expect(page.getByRole('button', { name: 'Show all flags' })).toBeVisible();
+      await expect(page.getByRole('button', { name: 'Show overrides flags' })).toBeVisible();
+      await expect(page.getByRole('button', { name: 'Show starred flags' })).toBeVisible();
     });
   });
 
