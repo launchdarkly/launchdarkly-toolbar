@@ -10,6 +10,13 @@ export interface ToolbarConfig {
   baseUrl?: string;
 
   /**
+   * The LaunchDarkly Auth URL the toolbar should use when authenticating.
+   *
+   * Default `https://integrations.launchdarkly.com`
+   */
+  authUrl?: string;
+
+  /**
    * The Dev Server URL (if you have a local instance of LaunchDarkly running). If
    * provided, will set the toolbar to run in Dev Server mode.
    *

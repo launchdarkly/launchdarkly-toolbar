@@ -21,6 +21,8 @@ export function DevServerMode() {
 
   useLaunchDarklyToolbar({
     toolbarBundleUrl: import.meta.env.DEV ? 'http://localhost:8080/toolbar.min.js' : undefined,
+    baseUrl: import.meta.env.VITE_LD_BASE_URL,
+    authUrl: import.meta.env.VITE_LD_AUTH_URL,
     enabled: true,
     devServerUrl: import.meta.env.VITE_LD_DEV_SERVER_URL,
     eventInterceptionPlugin,

@@ -12,3 +12,4 @@ export { CancelCircleIcon } from './CancelCircleIcon';
 export { CancelIcon } from './CancelIcon';
 export { StarIcon } from './StarIcon';
 export { StarOutlineIcon } from './StarOutlineIcon';
+export { PersonPassword } from './PersonPassword';

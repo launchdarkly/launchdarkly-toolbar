@@ -4,6 +4,7 @@ export const TOOLBAR_STORAGE_KEYS = {
   SETTINGS: 'ld-toolbar-settings',
   DISABLED: 'ld-toolbar-disabled',
   PROJECT: 'ld-toolbar-project',
+  OPT_IN_TO_NEW_FEATURES: 'ld-toolbar-opt-in-to-new-features',
   STARRED_FLAGS: 'ld-toolbar-starred-flags',
 } as const;
 
@@ -11,12 +12,14 @@ export interface ToolbarSettings {
   position: ToolbarPosition;
   reloadOnFlagChange: boolean;
   autoCollapse: boolean;
+  optInToNewFeatures: boolean;
 }
 
 export const DEFAULT_SETTINGS: ToolbarSettings = {
   position: 'bottom-right',
   reloadOnFlagChange: false,
   autoCollapse: false,
+  optInToNewFeatures: false,
 };
 
 /**
@@ -98,6 +101,25 @@ export function loadReloadOnFlagChange(): boolean {
   } catch (error) {
     console.warn('Failed to load reload on flag change from localStorage:', error);
     return DEFAULT_SETTINGS.reloadOnFlagChange;
+  }
+}
+export function saveOptInToNewFeatures(optInToNewFeatures: boolean): void {
+  updateSetting('optInToNewFeatures', optInToNewFeatures);
+}
+
+export function loadOptInToNewFeatures(): boolean {
+  try {
+    const stored = localStorage.getItem(TOOLBAR_STORAGE_KEYS.SETTINGS);
+    if (!stored) {
+      return DEFAULT_SETTINGS.optInToNewFeatures;
+    }
+    const parsed = JSON.parse(stored) as Partial<ToolbarSettings>;
+    return typeof parsed.optInToNewFeatures === 'boolean'
+      ? parsed.optInToNewFeatures
+      : DEFAULT_SETTINGS.optInToNewFeatures;
+  } catch (error) {
+    console.warn('Failed to load opt in to new features from localStorage:', error);
+    return DEFAULT_SETTINGS.optInToNewFeatures;
   }
 }
 

@@ -10,6 +10,9 @@ import { ToolbarMode, ToolbarPosition, getToolbarMode, getDefaultActiveTab } fro
 import * as styles from './LaunchDarklyToolbar.css';
 import { DevServerProvider } from './context';
 import { IEventInterceptionPlugin, IFlagOverridePlugin } from '../../../types';
+import { AuthProvider } from './context/AuthProvider';
+import { ApiProvider } from './context/ApiProvider';
+import { IFrameProvider } from './context/IFrameProvider';
 
 export interface LdToolbarProps {
   mode: ToolbarMode;
@@ -47,6 +50,8 @@ export function LdToolbar(props: LdToolbarProps) {
     isAutoCollapseEnabled,
     setSearchIsExpanded,
     setIsAnimating,
+    optInToNewFeatures,
+    handleToggleOptInToNewFeatures,
   } = toolbarState;
 
   // Focus management for expand/collapse
@@ -172,6 +177,8 @@ export function LdToolbar(props: LdToolbarProps) {
             onHeaderMouseDown={handleMouseDown}
             reloadOnFlagChangeIsEnabled={reloadOnFlagChangeIsEnabled}
             onToggleReloadOnFlagChange={handleToggleReloadOnFlagChange}
+            optInToNewFeatures={optInToNewFeatures}
+            onToggleOptInToNewFeatures={handleToggleOptInToNewFeatures}
           />
         )}
       </AnimatePresence>
@@ -181,6 +188,7 @@ export function LdToolbar(props: LdToolbarProps) {
 
 export interface LaunchDarklyToolbarProps {
   baseUrl?: string; // Optional - will default to https://app.launchdarkly.com
+  authUrl?: string; // Optional - will default to https://integrations.launchdarkly.com
   devServerUrl?: string; // Optional - will default to dev server mode if provided
   projectKey?: string; // Optional - will auto-detect first available project if not provided
   flagOverridePlugin?: IFlagOverridePlugin; // Optional - for flag override functionality
@@ -193,6 +201,7 @@ export interface LaunchDarklyToolbarProps {
 export function LaunchDarklyToolbar(props: LaunchDarklyToolbarProps) {
   const {
     baseUrl = 'https://app.launchdarkly.com',
+    authUrl = 'https://integrations.launchdarkly.com',
     projectKey,
     position,
     devServerUrl,
@@ -221,15 +230,21 @@ export function LaunchDarklyToolbar(props: LaunchDarklyToolbarProps) {
       >
         <AnalyticsProvider ldClient={flagOverridePlugin?.getClient() ?? eventInterceptionPlugin?.getClient()}>
           <SearchProvider>
-            <StarredFlagsProvider>
-              <LdToolbar
-                domId={domId}
-                mode={mode}
-                baseUrl={baseUrl}
-                flagOverridePlugin={flagOverridePlugin}
-                eventInterceptionPlugin={eventInterceptionPlugin}
-              />
-            </StarredFlagsProvider>
+            <IFrameProvider authUrl={authUrl}>
+              <AuthProvider>
+                <ApiProvider>
+                  <StarredFlagsProvider>
+                    <LdToolbar
+                      domId={domId}
+                      mode={mode}
+                      baseUrl={baseUrl}
+                      flagOverridePlugin={flagOverridePlugin}
+                      eventInterceptionPlugin={eventInterceptionPlugin}
+                    />
+                  </StarredFlagsProvider>
+                </ApiProvider>
+              </AuthProvider>
+            </IFrameProvider>
           </SearchProvider>
         </AnalyticsProvider>
       </DevServerProvider>

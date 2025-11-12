@@ -16,10 +16,21 @@ export interface HeaderProps {
   label: string;
   mode: ToolbarMode;
   onMouseDown?: (event: React.MouseEvent) => void;
+  onOpenConfig?: () => void;
 }
 
 export function Header(props: HeaderProps) {
-  const { onClose, onSearch, searchTerm, searchIsExpanded, setSearchIsExpanded, label, mode, onMouseDown } = props;
+  const {
+    onClose,
+    onSearch,
+    searchTerm,
+    searchIsExpanded,
+    setSearchIsExpanded,
+    label,
+    mode,
+    onMouseDown,
+    onOpenConfig,
+  } = props;
 
   const { state, refresh } = useDevServerContext();
   const { connectionStatus } = state;
@@ -83,6 +94,7 @@ export function Header(props: HeaderProps) {
           setSearchIsExpanded={setSearchIsExpanded}
           onClose={onClose}
           onRefresh={refresh}
+          onOpenConfig={onOpenConfig}
           showSearchButton={showSearch}
           showRefreshButton={showRefresh}
         />

@@ -19,6 +19,8 @@ interface TabContentRendererProps {
   onToggleReloadOnFlagChange: () => void;
   isAutoCollapseEnabled: boolean;
   onToggleAutoCollapse: () => void;
+  optInToNewFeatures: boolean;
+  onToggleOptInToNewFeatures: () => void;
 }
 
 export function TabContentRenderer(props: TabContentRendererProps) {
@@ -33,6 +35,8 @@ export function TabContentRenderer(props: TabContentRendererProps) {
     onToggleReloadOnFlagChange,
     isAutoCollapseEnabled,
     onToggleAutoCollapse,
+    optInToNewFeatures,
+    onToggleOptInToNewFeatures,
   } = props;
 
   const renderContent = () => {
@@ -56,6 +60,8 @@ export function TabContentRenderer(props: TabContentRendererProps) {
             onToggleReloadOnFlagChange={onToggleReloadOnFlagChange}
             isAutoCollapseEnabled={isAutoCollapseEnabled}
             onToggleAutoCollapse={onToggleAutoCollapse}
+            optInToNewFeatures={optInToNewFeatures}
+            onToggleOptInToNewFeatures={onToggleOptInToNewFeatures}
           />
         );
       default:

@@ -1,26 +1,38 @@
 import { Dispatch, SetStateAction, useCallback, useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { IconButton } from '../../components/IconButton';
-import { SearchIcon, SyncIcon, ChevronDownIcon, ChevronUpIcon } from '../../components/icons';
+import { SearchIcon, SyncIcon, ChevronDownIcon, ChevronUpIcon, PersonPassword } from '../../components/icons';
 import { useToolbarUIContext } from '../../context/ToolbarUIProvider';
 
 import * as styles from '../Header.css';
+import { useAuthContext } from '../../context/AuthProvider';
 
 interface ActionButtonsProps {
   searchIsExpanded: boolean;
   setSearchIsExpanded: Dispatch<SetStateAction<boolean>>;
   onClose: () => void;
   onRefresh: () => void;
+  onOpenConfig?: () => void;
   showSearchButton: boolean;
   showRefreshButton: boolean;
 }
 
 export function ActionButtons(props: ActionButtonsProps) {
-  const { searchIsExpanded, setSearchIsExpanded, onClose, onRefresh, showSearchButton, showRefreshButton } = props;
+  const {
+    searchIsExpanded,
+    setSearchIsExpanded,
+    onClose,
+    onRefresh,
+    onOpenConfig,
+    showSearchButton,
+    showRefreshButton,
+  } = props;
   const [isSpinning, setIsSpinning] = useState(false);
   const [rotationCount, setRotationCount] = useState(0);
   const { position } = useToolbarUIContext();
   const isTop = position.startsWith('top-');
+
+  const { authenticated, loading } = useAuthContext();
 
   const handleRefreshClick = useCallback(() => {
     // Prevent multiple clicks while already spinning
@@ -59,6 +71,14 @@ export function ActionButtons(props: ActionButtonsProps) {
             </motion.div>
           )}
         </AnimatePresence>
+      )}
+      {onOpenConfig && !authenticated && !loading && (
+        <IconButton
+          icon={<PersonPassword />}
+          label="Configuration"
+          onClick={onOpenConfig}
+          className={styles.actionButton}
+        />
       )}
       {showRefreshButton && (
         <IconButton
