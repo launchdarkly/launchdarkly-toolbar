@@ -138,6 +138,11 @@ function FlagSdkOverrideTabContentInner(props: FlagSdkOverrideTabContentInnerPro
     }
   };
 
+  const handleClearAllStarred = () => {
+    clearAllStarred();
+    setActiveFilters(new Set(['all']));
+  };
+
   const handleHeightChange = useCallback(
     (index: number, height: number) => {
       if (height > VIRTUALIZATION.ITEM_HEIGHT) {
@@ -208,7 +213,7 @@ function FlagSdkOverrideTabContentInner(props: FlagSdkOverrideTabContentInnerPro
             totalOverriddenFlags={totalOverriddenFlags}
             starredCount={starredCount}
             onClearOverrides={handleClearAllOverrides}
-            onClearStarred={clearAllStarred}
+            onClearStarred={handleClearAllStarred}
             isLoading={isLoading}
           />
 

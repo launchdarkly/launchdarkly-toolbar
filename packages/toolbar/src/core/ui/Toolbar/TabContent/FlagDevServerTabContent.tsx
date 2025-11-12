@@ -121,6 +121,11 @@ export function FlagDevServerTabContent(props: FlagDevServerTabContentProps) {
     }
   };
 
+  const onClearAllStarred = () => {
+    clearAllStarred();
+    setActiveFilters(new Set(['all']));
+  };
+
   const onClearOverride = useCallback(
     (flagKey: string) => {
       if (totalOverriddenFlags <= 1 && activeFilters.has('overrides') && !activeFilters.has('starred')) {
@@ -170,7 +175,7 @@ export function FlagDevServerTabContent(props: FlagDevServerTabContentProps) {
             totalOverriddenFlags={totalOverriddenFlags}
             starredCount={starredCount}
             onClearOverrides={onRemoveAllOverrides}
-            onClearStarred={clearAllStarred}
+            onClearStarred={onClearAllStarred}
             isLoading={state.isLoading}
           />
 
