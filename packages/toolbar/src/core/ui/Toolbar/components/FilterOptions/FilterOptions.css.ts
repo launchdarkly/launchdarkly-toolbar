@@ -8,10 +8,30 @@ export const container = style({
   borderBottom: '1px solid var(--lp-color-gray-800)',
 });
 
-export const topRow = style({
-  display: 'flex',
-  alignItems: 'center',
-  gap: '8px',
+export const filterButton = style({
+  background: 'transparent',
+  border: '1px solid var(--lp-color-gray-600)',
+  color: 'var(--lp-color-gray-200)',
+  fontSize: '13px',
+  fontWeight: 500,
+  transition: 'all 0.2s ease',
+
+  ':hover': {
+    background: 'var(--lp-color-gray-800)',
+    borderColor: 'var(--lp-color-gray-500)',
+  },
+
+  selectors: {
+    '&[aria-pressed="true"]': {
+      background: '#283050',
+      borderColor: '#6A78D1',
+      color: 'white',
+    },
+    '&[aria-pressed="true"]:hover': {
+      background: '#2d3858',
+      borderColor: '#7583e0',
+    },
+  },
 });
 
 export const bottomRow = style({
@@ -19,48 +39,6 @@ export const bottomRow = style({
   justifyContent: 'space-between',
   alignItems: 'center',
   gap: '12px',
-});
-
-export const option = style({
-  background: 'transparent',
-  border: '1px solid var(--lp-color-gray-600)',
-  color: 'var(--lp-color-gray-200)',
-  padding: '6px 20px',
-  borderRadius: '8px',
-  fontSize: '13px',
-  fontWeight: 500,
-  cursor: 'pointer',
-  transition: 'all 0.2s ease',
-  whiteSpace: 'nowrap',
-
-  ':focus': {
-    outline: 'none',
-  },
-
-  ':focus-visible': {
-    outline: '2px solid var(--lp-color-shadow-interactive-focus)',
-    outlineOffset: '2px',
-  },
-
-  selectors: {
-    '&:hover:not([data-active="true"])': {
-      background: 'var(--lp-color-gray-800)',
-      borderColor: 'var(--lp-color-gray-500)',
-    },
-  },
-});
-
-export const activeOption = style({
-  background: '#283050',
-  borderColor: '#6A78D1',
-  color: 'white',
-
-  selectors: {
-    '&:hover': {
-      background: '#2d3858',
-      borderColor: '#7583e0',
-    },
-  },
 });
 
 export const statusText = style({

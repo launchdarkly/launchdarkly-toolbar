@@ -1,3 +1,4 @@
+import { ButtonGroup, Button } from '@launchpad-ui/components';
 import { useFlagFilterOptions, type FlagFilterMode, FILTER_MODES } from './useFlagFilterOptions';
 import { ClearButton } from './ClearButton';
 import * as styles from './FilterOptions.css';
@@ -30,22 +31,22 @@ export function FilterOptions(props: FilterOptionsProps) {
 
   return (
     <div className={styles.container}>
-      <div className={styles.topRow}>
+      <ButtonGroup>
         {FILTER_OPTIONS.map((filter) => {
           const isActive = activeFilters.has(filter.id);
           return (
-            <button
+            <Button
               key={filter.id}
-              className={`${styles.option} ${isActive ? styles.activeOption : ''}`}
-              onClick={() => onFilterToggle(filter.id)}
-              data-active={isActive}
+              className={styles.filterButton}
+              onPress={() => onFilterToggle(filter.id)}
               aria-label={`Show ${filter.label.toLowerCase()} flags`}
+              aria-pressed={isActive}
             >
               {filter.label}
-            </button>
+            </Button>
           );
         })}
-      </div>
+      </ButtonGroup>
 
       <div className={styles.bottomRow}>
         <div className={styles.statusText}>
