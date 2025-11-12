@@ -69,7 +69,7 @@
     "@react-aria/focus": "^3.21.2",
     "@react-stately/flags": "^3.1.2",
     "@rsbuild/core": "^1.6.3",
-    "@rsbuild/plugin-react": "^1.4.1",
+    "@rsbuild/plugin-react": "^1.4.2",
     "@rslib/core": "^0.17.0",
     "@storybook/addon-docs": "^10.0.5",
     "@storybook/addon-essentials": "^9.0.0-alpha.12",
