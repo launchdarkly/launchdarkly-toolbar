@@ -12,9 +12,10 @@ const EVENTS = {
   TOGGLE: 'toggle',
   TOGGLE_FLAG: 'toggle.flag',
   OPEN_FLAG_DEEPLINK: 'open.flag.deeplink',
-  SHOW_OVERRIDES_ONLY: 'show.overrides.only',
   EVENT_CLICK: 'event.click',
   RELOAD_ON_FLAG_CHANGE_TOGGLE: 'reload.on.flag.change.toggle',
+  STAR_FLAG: 'star.flag',
+  FILTER_CHANGED: 'filter.changed',
 } as const;
 
 /**
@@ -128,21 +129,32 @@ export class ToolbarAnalytics {
   }
 
   /**
+   * Track starred flag events
+   */
+  trackStarredFlag(flagKey: string, action: 'star' | 'unstar' | 'clear_all'): void {
+    this.track(EVENTS.STAR_FLAG, {
+      flagKey,
+      action,
+    });
+  }
+
+  /**
+   * Track filter changes
+   */
+  trackFilterChange(filter: 'all' | 'overrides' | 'starred', action: 'selected' | 'deselected'): void {
+    this.track(EVENTS.FILTER_CHANGED, {
+      filter,
+      action,
+    });
+  }
+
+  /**
    * Track opening a flag deeplink
    */
   trackOpenFlagDeeplink(flagKey: string, baseUrl: string): void {
     this.track(EVENTS.OPEN_FLAG_DEEPLINK, {
       flagKey,
       baseUrl,
-    });
-  }
-
-  /**
-   * Track 'Show overrides only' clicks
-   */
-  trackShowOverridesOnlyClick(enabled: boolean): void {
-    this.track(EVENTS.SHOW_OVERRIDES_ONLY, {
-      enabled,
     });
   }
 

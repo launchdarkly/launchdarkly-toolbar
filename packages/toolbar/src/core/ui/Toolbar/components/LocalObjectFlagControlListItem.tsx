@@ -2,6 +2,8 @@ import { ListItem } from '../../List/ListItem';
 import { LocalFlag } from '../context';
 import { LocalObjectFlagControl } from './LocalFlagControls';
 import { OverrideIndicator } from './OverrideIndicator';
+import { StarButton } from './StarButton';
+import { useStarredFlags } from '../context/StarredFlagsProvider';
 import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { JsonEditor } from '../../JsonEditor/JsonEditor';
@@ -17,13 +19,16 @@ interface LocalObjectFlagControlListItemProps {
   handleClearOverride: (key: string) => void;
   handleOverride: (flagKey: string, value: any) => void;
   handleHeightChange: (height: number) => void;
+  onToggleStarred?: (flagKey: string) => void;
   flag: LocalFlag | EnhancedFlag;
   size: number;
   start: number;
 }
 
 export function LocalObjectFlagControlListItem(props: LocalObjectFlagControlListItemProps) {
-  const { handleClearOverride, handleOverride, handleHeightChange, flag, size, start } = props;
+  const { handleClearOverride, handleOverride, handleHeightChange, onToggleStarred, flag, size, start } = props;
+  const { isStarred, toggleStarred: defaultToggleStarred } = useStarredFlags();
+  const toggleStarred = onToggleStarred || defaultToggleStarred;
   const currentValue = JSON.stringify(flag.currentValue, null, 2);
   const [isEditing, setIsEditing] = useState(false);
   const [tempValue, setTempValue] = useState(currentValue);
@@ -98,6 +103,7 @@ export function LocalObjectFlagControlListItem(props: LocalObjectFlagControlList
                 onOverride={() => handleOverride(flag.key, tempValue)}
                 hasErrors={hasErrors}
               />
+              <StarButton flagKey={flag.key} isStarred={isStarred(flag.key)} onToggle={toggleStarred} />
             </div>
           </div>
 

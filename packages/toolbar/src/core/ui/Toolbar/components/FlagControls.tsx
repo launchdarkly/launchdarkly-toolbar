@@ -11,7 +11,7 @@ import {
   Group,
   Input,
 } from '@launchpad-ui/components';
-import { ChevronDownIcon, EditIcon, CheckIcon, XIcon } from './icons';
+import { ChevronDownIcon, EditIcon, CheckIcon, CancelIcon } from './icons';
 import { IconButton } from './IconButton';
 import { EnhancedFlag } from '../../../types/devServer';
 import { deepEqual } from '../../../utils';
@@ -136,7 +136,7 @@ export function StringNumberFlagControl(props: StringNumberFlagControlProps) {
               type={flag.type === 'number' ? 'number' : 'text'}
             />
             <IconButton icon={<CheckIcon />} label="Confirm" onClick={handleConfirm} />
-            <IconButton icon={<XIcon />} label="Cancel" onClick={handleCancel} />
+            <IconButton icon={<CancelIcon />} label="Cancel" onClick={handleCancel} />
           </Group>
         </TextField>
       )}

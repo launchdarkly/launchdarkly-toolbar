@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { Switch, TextField, Group, Input, Button } from '@launchpad-ui/components';
-import { EditIcon, CheckIcon, XIcon } from './icons';
+import { EditIcon, CheckIcon, CancelIcon } from './icons';
 import { IconButton } from './IconButton';
 import type { LocalFlag } from '../context';
 import { enableShadowDOM } from '@react-stately/flags';
@@ -115,7 +115,7 @@ export function LocalStringNumberFlagControl(props: LocalStringNumberFlagControl
               data-testid={`flag-confirm-${flag.key}`}
             />
             <IconButton
-              icon={<XIcon />}
+              icon={<CancelIcon />}
               label="Cancel"
               onClick={handleCancel}
               data-testid={`flag-cancel-${flag.key}`}
