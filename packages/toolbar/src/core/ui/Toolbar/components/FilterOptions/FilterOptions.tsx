@@ -1,11 +1,11 @@
-import { useFlagFilterOptions, type FlagFilterMode } from './useFlagFilterOptions';
+import { useFlagFilterOptions, type FlagFilterMode, FILTER_MODES } from './useFlagFilterOptions';
 import { ClearButton } from './ClearButton';
 import * as styles from './FilterOptions.css';
 
 const FILTER_OPTIONS = [
-  { id: 'all' as const, label: 'All' },
-  { id: 'overrides' as const, label: 'Overrides' },
-  { id: 'starred' as const, label: 'Starred' },
+  { id: FILTER_MODES.ALL, label: 'All' },
+  { id: FILTER_MODES.OVERRIDES, label: 'Overrides' },
+  { id: FILTER_MODES.STARRED, label: 'Starred' },
 ] satisfies { id: FlagFilterMode; label: string }[];
 
 export interface FilterOptionsProps {
@@ -23,9 +23,9 @@ export function FilterOptions(props: FilterOptionsProps) {
     props;
   const { activeFilters, onFilterToggle } = useFlagFilterOptions();
 
-  const isAllActive = activeFilters.has('all');
-  const isOverridesActive = activeFilters.has('overrides');
-  const isStarredActive = activeFilters.has('starred');
+  const isAllActive = activeFilters.has(FILTER_MODES.ALL);
+  const isOverridesActive = activeFilters.has(FILTER_MODES.OVERRIDES);
+  const isStarredActive = activeFilters.has(FILTER_MODES.STARRED);
   const hasMultipleFilters = activeFilters.size > 1;
 
   return (

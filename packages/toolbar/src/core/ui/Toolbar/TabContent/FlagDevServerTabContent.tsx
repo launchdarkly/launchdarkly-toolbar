@@ -10,7 +10,11 @@ import { BooleanFlagControl, MultivariateFlagControl, StringNumberFlagControl } 
 import { OverrideIndicator } from '../components/OverrideIndicator';
 import { StarButton } from '../components/StarButton';
 import { useStarredFlags } from '../context/StarredFlagsProvider';
-import { type FlagFilterMode, FlagFilterOptionsContext } from '../components/FilterOptions/useFlagFilterOptions';
+import {
+  type FlagFilterMode,
+  FlagFilterOptionsContext,
+  FILTER_MODES,
+} from '../components/FilterOptions/useFlagFilterOptions';
 import { FilterOptions } from '../components/FilterOptions/FilterOptions';
 import { VIRTUALIZATION } from '../constants';
 
@@ -28,18 +32,18 @@ export function FlagDevServerTabContent(props: FlagDevServerTabContentProps) {
   const { flags } = state;
   const { isStarred, toggleStarred, clearAllStarred, starredCount } = useStarredFlags();
 
-  const [activeFilters, setActiveFilters] = useState<Set<FlagFilterMode>>(new Set(['all']));
+  const [activeFilters, setActiveFilters] = useState<Set<FlagFilterMode>>(new Set([FILTER_MODES.ALL]));
   const parentRef = useRef<HTMLDivElement>(null);
 
   const handleFilterToggle = useCallback((filter: FlagFilterMode) => {
     setActiveFilters((prev) => {
       // Clicking "All" resets to default state
-      if (filter === 'all') {
-        return new Set(['all']);
+      if (filter === FILTER_MODES.ALL) {
+        return new Set([FILTER_MODES.ALL]);
       }
 
       const next = new Set(prev);
-      next.delete('all'); // Remove "All" when selecting specific filters
+      next.delete(FILTER_MODES.ALL); // Remove "All" when selecting specific filters
 
       // Toggle the selected filter
       if (next.has(filter)) {
@@ -49,7 +53,7 @@ export function FlagDevServerTabContent(props: FlagDevServerTabContentProps) {
       }
 
       // Default to "All" if no filters remain
-      return next.size === 0 ? new Set(['all']) : next;
+      return next.size === 0 ? new Set([FILTER_MODES.ALL]) : next;
     });
   }, []);
 
@@ -63,11 +67,12 @@ export function FlagDevServerTabContent(props: FlagDevServerTabContentProps) {
 
       // Apply active filters (OR logic)
       let matchesFilter = true;
-      if (activeFilters.has('all')) {
+      if (activeFilters.has(FILTER_MODES.ALL)) {
         matchesFilter = true;
       } else {
         matchesFilter =
-          (activeFilters.has('overrides') && flag.isOverridden) || (activeFilters.has('starred') && isStarred(flagKey));
+          (activeFilters.has(FILTER_MODES.OVERRIDES) && flag.isOverridden) ||
+          (activeFilters.has(FILTER_MODES.STARRED) && isStarred(flagKey));
       }
 
       return matchesSearch && matchesFilter;
@@ -115,7 +120,7 @@ export function FlagDevServerTabContent(props: FlagDevServerTabContentProps) {
 
   const onRemoveAllOverrides = async () => {
     await clearAllOverrides();
-    setActiveFilters(new Set(['all']));
+    setActiveFilters(new Set([FILTER_MODES.ALL]));
     if (reloadOnFlagChangeIsEnabled) {
       window.location.reload();
     }
@@ -123,13 +128,17 @@ export function FlagDevServerTabContent(props: FlagDevServerTabContentProps) {
 
   const onClearAllStarred = () => {
     clearAllStarred();
-    setActiveFilters(new Set(['all']));
+    setActiveFilters(new Set([FILTER_MODES.ALL]));
   };
 
   const onClearOverride = useCallback(
     (flagKey: string) => {
-      if (totalOverriddenFlags <= 1 && activeFilters.has('overrides') && !activeFilters.has('starred')) {
-        setActiveFilters(new Set(['all']));
+      if (
+        totalOverriddenFlags <= 1 &&
+        activeFilters.has(FILTER_MODES.OVERRIDES) &&
+        !activeFilters.has(FILTER_MODES.STARRED)
+      ) {
+        setActiveFilters(new Set([FILTER_MODES.ALL]));
       }
       clearOverride(flagKey).then(() => {
         if (reloadOnFlagChangeIsEnabled) {
@@ -154,10 +163,14 @@ export function FlagDevServerTabContent(props: FlagDevServerTabContentProps) {
   );
 
   const getGenericHelpText = () => {
-    if (activeFilters.has('overrides') && !activeFilters.has('starred') && totalOverriddenFlags === 0) {
+    if (
+      activeFilters.has(FILTER_MODES.OVERRIDES) &&
+      !activeFilters.has(FILTER_MODES.STARRED) &&
+      totalOverriddenFlags === 0
+    ) {
       return { title: 'No overridden flags found', subtitle: 'You have not set any overrides yet' };
     }
-    if (activeFilters.has('starred') && !activeFilters.has('overrides') && starredCount === 0) {
+    if (activeFilters.has(FILTER_MODES.STARRED) && !activeFilters.has(FILTER_MODES.OVERRIDES) && starredCount === 0) {
       return { title: 'No starred flags found', subtitle: 'Star flags to see them here' };
     }
     return { title: 'No flags found', subtitle: 'Try adjusting your search' };
@@ -179,7 +192,7 @@ export function FlagDevServerTabContent(props: FlagDevServerTabContentProps) {
             isLoading={state.isLoading}
           />
 
-          {filteredFlags.length === 0 && (searchTerm.trim() || !activeFilters.has('all')) ? (
+          {filteredFlags.length === 0 && (searchTerm.trim() || !activeFilters.has(FILTER_MODES.ALL)) ? (
             <GenericHelpText title={genericHelpTitle} subtitle={genericHelpSubtitle} />
           ) : (
             <div ref={parentRef} className={styles.virtualContainer}>
