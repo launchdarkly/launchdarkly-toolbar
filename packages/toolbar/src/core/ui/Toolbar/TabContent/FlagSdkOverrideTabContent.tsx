@@ -48,7 +48,7 @@ function FlagSdkOverrideTabContentInner(props: FlagSdkOverrideTabContentInnerPro
     },
     [getFlag],
   );
-  
+
   const handleFilterToggle = useCallback(
     (filter: FlagFilterMode) => {
       setActiveFilters((prev) => {
