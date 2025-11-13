@@ -17,7 +17,6 @@ import {
 } from '../components/FilterOptions/useFlagFilterOptions';
 import { FilterOptions } from '../components/FilterOptions/FilterOptions';
 import { VIRTUALIZATION } from '../constants';
-import { useApi } from '../context/ApiProvider';
 import { LocalObjectFlagControlListItem } from '../components/LocalObjectFlagControlListItem';
 
 import * as styles from './FlagDevServerTabContent.css';
@@ -28,7 +27,6 @@ interface FlagDevServerTabContentProps {
 
 export function FlagDevServerTabContent(props: FlagDevServerTabContentProps) {
   const { reloadOnFlagChangeIsEnabled } = props;
-  const { getFlag } = useApi();
   const { searchTerm } = useSearchContext();
   const { state, setOverride, clearOverride, clearAllOverrides } = useDevServerContext();
   const { flags } = state;
@@ -36,15 +34,6 @@ export function FlagDevServerTabContent(props: FlagDevServerTabContentProps) {
 
   const [activeFilters, setActiveFilters] = useState<Set<FlagFilterMode>>(new Set([FILTER_MODES.ALL]));
   const parentRef = useRef<HTMLDivElement>(null);
-
-  const getFlagData = useCallback(
-    async (flagKey: string) => {
-      const flag = await getFlag(flagKey);
-      console.log(flag);
-      return flag;
-    },
-    [getFlag],
-  );
 
   const handleFilterToggle = useCallback((filter: FlagFilterMode) => {
     setActiveFilters((prev) => {
@@ -221,7 +210,7 @@ export function FlagDevServerTabContent(props: FlagDevServerTabContentProps) {
 
                     if (flag.type === 'object') {
                       return (
-                        <div key={virtualItem.key} className={styles.virtualItem} onClick={() => getFlagData(flag.key)}>
+                        <div key={virtualItem.key} className={styles.virtualItem}>
                           <LocalObjectFlagControlListItem
                             flag={flag}
                             size={virtualItem.size}
