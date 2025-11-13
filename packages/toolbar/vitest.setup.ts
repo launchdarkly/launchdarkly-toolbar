@@ -1,5 +1,33 @@
 import '@testing-library/jest-dom/vitest';
 import '@vanilla-extract/css/disableRuntimeStyles';
+import { vi } from 'vitest';
+
+// Mock localStorage with actual storage behavior
+const storage: Record<string, string> = {};
+const localStorageMock = {
+  getItem: vi.fn((key: string) => storage[key] || null),
+  setItem: vi.fn((key: string, value: string) => {
+    storage[key] = value;
+  }),
+  removeItem: vi.fn((key: string) => {
+    delete storage[key];
+  }),
+  clear: vi.fn(() => {
+    Object.keys(storage).forEach((key) => delete storage[key]);
+  }),
+  key: vi.fn((index: number) => {
+    const keys = Object.keys(storage);
+    return keys[index] || null;
+  }),
+  get length() {
+    return Object.keys(storage).length;
+  },
+};
+
+Object.defineProperty(window, 'localStorage', {
+  value: localStorageMock,
+  writable: true,
+});
 
 // Mock browser APIs that aren't implemented in JSDOM
 Object.defineProperty(window, 'scrollTo', {

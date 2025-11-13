@@ -50,7 +50,6 @@ export function Select(props: SelectProps) {
 
   const handleSelect = useCallback(
     (optionId: string) => {
-      console.log('handleSelect called', { optionId });
       onSelectionChange?.(optionId);
       setIsOpen(false);
       setFocusedIndex(-1);
