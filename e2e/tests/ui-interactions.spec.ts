@@ -227,7 +227,7 @@ test.describe('LaunchDarkly Toolbar - UI Interactions', () => {
       // 2. Verify toolbar expands correctly
       await page.getByRole('img', { name: 'LaunchDarkly' }).click();
       await expect(page.getByRole('tab', { name: 'Flags' })).toBeVisible();
-      
+
       // Wait for expansion animation to complete (0.25s duration)
       await page.waitForTimeout(300);
 
@@ -238,7 +238,7 @@ test.describe('LaunchDarkly Toolbar - UI Interactions', () => {
       // 3. Verify toolbar collapses correctly
       await page.getByRole('button', { name: 'Close toolbar' }).click();
       await expect(page.getByRole('tab', { name: 'Flags' })).not.toBeVisible();
-      
+
       // Wait for collapse animation to complete (0.35s duration)
       await page.waitForTimeout(400);
 
