@@ -121,6 +121,11 @@ export function Select(props: SelectProps) {
   }, [isOpen, listRef]);
 
   const displayValue = selectedOption?.label || placeholder || 'Select option';
+  
+  // Create accessible name that combines selected value with aria-label for compatibility with e2e tests
+  const accessibleName = selectedOption?.label && ariaLabel 
+    ? `${selectedOption.label} ${ariaLabel}` 
+    : ariaLabel || displayValue;
 
   return (
     <div
@@ -135,10 +140,9 @@ export function Select(props: SelectProps) {
         className={`${styles.trigger} ${isDisabled ? styles.disabled : ''}`}
         onClick={handleToggle}
         onKeyDown={handleKeyDown}
-        aria-label={ariaLabel}
+        aria-label={accessibleName}
         aria-haspopup="listbox"
         aria-expanded={isOpen}
-        aria-labelledby={selectedOption ? undefined : 'select-placeholder'}
         disabled={isDisabled}
       >
         <span className={`${styles.value} ${!selectedOption ? styles.placeholder : ''}`}>{displayValue}</span>
