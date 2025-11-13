@@ -6,6 +6,7 @@ import { useDevServerContext } from '../context/DevServerProvider';
 import { ConnectionStatus } from '../components';
 import { ToolbarMode } from '../types/toolbar';
 import { useAnalytics } from '../context';
+import { useProjectContext } from '../context/ProjectProvider';
 
 export interface HeaderProps {
   searchTerm: string;
@@ -13,7 +14,6 @@ export interface HeaderProps {
   onClose: () => void;
   searchIsExpanded: boolean;
   setSearchIsExpanded: Dispatch<SetStateAction<boolean>>;
-  label: string;
   mode: ToolbarMode;
   onMouseDown?: (event: React.MouseEvent) => void;
   onOpenConfig?: () => void;
@@ -26,7 +26,6 @@ export function Header(props: HeaderProps) {
     searchTerm,
     searchIsExpanded,
     setSearchIsExpanded,
-    label,
     mode,
     onMouseDown,
     onOpenConfig,
@@ -38,10 +37,11 @@ export function Header(props: HeaderProps) {
   const analytics = useAnalytics();
 
   const isDevServer = mode === 'dev-server';
-  const showEnvironment = isDevServer && isConnected;
   const showSearch = isDevServer ? isConnected : true;
   const showRefresh = isDevServer;
   const showConnectionStatus = isDevServer;
+
+  const { projectKey, loading: loadingProjectKey } = useProjectContext();
 
   const handleSearch = (term: string) => {
     onSearch(term);
@@ -54,10 +54,10 @@ export function Header(props: HeaderProps) {
         <LogoSection onMouseDown={onMouseDown} />
 
         <div className={styles.centerSection}>
-          {(showEnvironment || showSearch) && (
+          {(projectKey || showSearch) && (
             <AnimatePresence mode="wait">
               {!searchIsExpanded ? (
-                showEnvironment ? (
+                projectKey || loadingProjectKey ? (
                   <motion.div
                     key="environment"
                     className={styles.environmentWrapper}
@@ -66,7 +66,7 @@ export function Header(props: HeaderProps) {
                     exit={{ opacity: 0, scale: 0.9 }}
                     transition={{ duration: 0.2 }}
                   >
-                    <EnvironmentLabel label={label} />
+                    <EnvironmentLabel label={loadingProjectKey ? 'Loading Project...' : projectKey} />
                   </motion.div>
                 ) : null
               ) : (

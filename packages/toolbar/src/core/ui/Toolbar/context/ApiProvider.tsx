@@ -21,7 +21,7 @@ export function ApiProvider({ children }: { children: React.ReactNode }) {
     async (flagKey: string) => {
       if (!authenticated) {
         console.log('Authentication required');
-        return 'authentication required';
+        return null;
       }
 
       if (!ref.current?.contentWindow) {
@@ -60,7 +60,7 @@ export function ApiProvider({ children }: { children: React.ReactNode }) {
   const getProjects = useCallback(async () => {
     if (!authenticated) {
       console.log('Authentication required');
-      return 'authentication required';
+      return null;
     }
 
     if (!ref.current?.contentWindow) {
