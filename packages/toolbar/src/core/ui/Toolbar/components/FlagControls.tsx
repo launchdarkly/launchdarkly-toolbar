@@ -1,22 +1,16 @@
 import { useState, useRef, useEffect } from 'react';
 import {
-  Button,
-  ListBox,
-  Popover,
-  Select,
-  SelectValue,
   Switch,
-  ListBoxItem,
   TextField,
   Group,
   Input,
 } from '@launchpad-ui/components';
-import { ChevronDownIcon, EditIcon, CheckIcon, CancelIcon } from './icons';
+import { EditIcon, CheckIcon, CancelIcon } from './icons';
 import { IconButton } from './IconButton';
 import { EnhancedFlag } from '../../../types/devServer';
 import { deepEqual } from '../../../utils';
+import { Select, SelectOption } from './Select';
 
-import * as popoverStyles from '../components/Popover.css';
 import * as styles from './FlagControls.css';
 
 interface BooleanFlagControlProps {
@@ -51,13 +45,21 @@ export function MultivariateFlagControl(props: MultivariateFlagControlProps) {
   const { flag, onOverride, disabled = false } = props;
   const currentVariation = flag.availableVariations.find((v) => deepEqual(v.value, flag.currentValue));
 
+  const options: SelectOption[] = flag.availableVariations.map((variation) => ({
+    id: variation._id,
+    label: variation.name,
+    value: variation.value,
+  }));
+
   return (
     <Select
-      selectedKey={currentVariation?._id}
+      selectedKey={currentVariation?._id || null}
       onSelectionChange={(key) => {
-        const variation = flag.availableVariations.find((v) => v._id === key);
-        if (variation) {
-          onOverride(variation.value);
+        if (key) {
+          const variation = flag.availableVariations.find((v) => v._id === key);
+          if (variation) {
+            onOverride(variation.value);
+          }
         }
       }}
       aria-label="Select variant"
@@ -65,21 +67,8 @@ export function MultivariateFlagControl(props: MultivariateFlagControlProps) {
       data-theme="dark"
       className={styles.select}
       isDisabled={disabled}
-    >
-      <Button>
-        <SelectValue className={styles.selectedValue} />
-        <ChevronDownIcon className={styles.icon} />
-      </Button>
-      <Popover data-theme="dark" className={popoverStyles.popover}>
-        <ListBox>
-          {flag.availableVariations.map((variation) => (
-            <ListBoxItem id={variation._id} key={variation._id}>
-              {variation.name}
-            </ListBoxItem>
-          ))}
-        </ListBox>
-      </Popover>
-    </Select>
+      options={options}
+    />
   );
 }
 
