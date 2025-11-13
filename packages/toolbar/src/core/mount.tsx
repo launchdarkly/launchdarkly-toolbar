@@ -24,6 +24,7 @@ export default function mount(rootNode: HTMLElement, config: InitializationConfi
     reactRoot.render(
       <StrictMode>
         <LaunchDarklyToolbar
+          clientSideId={config.clientSideId}
           domId={TOOLBAR_DOM_ID}
           baseUrl={config.baseUrl}
           authUrl={config.authUrl}

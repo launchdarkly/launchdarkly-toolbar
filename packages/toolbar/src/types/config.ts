@@ -3,6 +3,14 @@ import type { ToolbarPosition } from './position';
 
 export interface ToolbarConfig {
   /**
+   * The client side ID of the LaunchDarkly project.
+   *
+   * Default `undefined`. Either `clientSideId` or `projectKey` must be provided to make requests to the LaunchDarkly API.
+   * If both are provided, `projectKey` will take precedence.
+   */
+  clientSideId?: string;
+
+  /**
    * The base LaunchDarkly URL the toolbar should use when creating deep links.
    *
    * Default `https://app.launchdarkly.com`
@@ -25,10 +33,13 @@ export interface ToolbarConfig {
   devServerUrl?: string;
 
   /**
+   * General: Used by the toolbar when making requests to the LaunchDarkly API.
+   *
    * Dev Server Mode: The project key that the toolbar should use. If left blank, will
    * auto-detect the first available project.
    *
-   * Default `undefined`
+   * Default `undefined`. Either `clientSideId` or `projectKey` must be provided to make requests to the LaunchDarkly API.
+   * If both are provided, `projectKey` will take precedence.
    */
   projectKey?: string;
 

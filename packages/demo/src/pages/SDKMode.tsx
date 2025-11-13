@@ -25,6 +25,7 @@ export function SDKMode() {
     flagOverridePlugin,
     eventInterceptionPlugin,
     position: 'bottom-right',
+    clientSideId: import.meta.env.VITE_LD_CLIENT_SIDE_ID,
   });
 
   if (!LDProvider) {

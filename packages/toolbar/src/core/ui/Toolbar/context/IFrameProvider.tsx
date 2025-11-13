@@ -1,6 +1,11 @@
 import { createContext, RefObject, useContext, useMemo, useRef } from 'react';
 
 export const IFRAME_API_MESSAGES = {
+  GET_PROJECTS: {
+    request: 'get-projects',
+    response: 'get-projects-response',
+    error: 'get-projects-error',
+  },
   AUTHENTICATION: {
     authenticated: 'toolbar-authenticated',
     authenticationRequired: 'toolbar-authentication-required',

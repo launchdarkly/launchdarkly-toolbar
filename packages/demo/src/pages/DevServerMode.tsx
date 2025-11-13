@@ -27,6 +27,7 @@ export function DevServerMode() {
     devServerUrl: import.meta.env.VITE_LD_DEV_SERVER_URL,
     eventInterceptionPlugin,
     position: 'bottom-right',
+    projectKey: import.meta.env.VITE_LD_DEV_SERVER_PROJECT_KEY,
   });
 
   if (!LDProvider) {

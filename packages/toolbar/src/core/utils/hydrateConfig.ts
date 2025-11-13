@@ -10,5 +10,6 @@ export default function hydrateProps(config: InitializationConfig): Initializati
     eventInterceptionPlugin: config.eventInterceptionPlugin ?? undefined,
     pollIntervalInMs: config.pollIntervalInMs ?? undefined,
     position: config.position ?? TOOLBAR_POSITIONS[3],
+    clientSideId: config.clientSideId ?? undefined,
   };
 }

@@ -13,6 +13,7 @@ import { IEventInterceptionPlugin, IFlagOverridePlugin } from '../../../types';
 import { AuthProvider } from './context/AuthProvider';
 import { ApiProvider } from './context/ApiProvider';
 import { IFrameProvider } from './context/IFrameProvider';
+import { ProjectProvider } from './context/ProjectProvider';
 
 export interface LdToolbarProps {
   mode: ToolbarMode;
@@ -196,6 +197,7 @@ export interface LaunchDarklyToolbarProps {
   pollIntervalInMs?: number; // Optional - will default to 5000ms
   position?: ToolbarPosition; // Optional - will default to 'bottom-right'
   domId: string;
+  clientSideId?: string; // Optional - either clientSideId or projectKey must be provided to make requests to the LaunchDarkly API
 }
 
 export function LaunchDarklyToolbar(props: LaunchDarklyToolbarProps) {
@@ -209,6 +211,7 @@ export function LaunchDarklyToolbar(props: LaunchDarklyToolbarProps) {
     flagOverridePlugin,
     eventInterceptionPlugin,
     domId,
+    clientSideId,
   } = props;
   const isVisible = useToolbarVisibility();
 
@@ -233,15 +236,17 @@ export function LaunchDarklyToolbar(props: LaunchDarklyToolbarProps) {
             <IFrameProvider authUrl={authUrl}>
               <AuthProvider>
                 <ApiProvider>
-                  <StarredFlagsProvider>
-                    <LdToolbar
-                      domId={domId}
-                      mode={mode}
-                      baseUrl={baseUrl}
-                      flagOverridePlugin={flagOverridePlugin}
-                      eventInterceptionPlugin={eventInterceptionPlugin}
-                    />
-                  </StarredFlagsProvider>
+                  <ProjectProvider clientSideId={clientSideId} providedProjectKey={projectKey}>
+                    <StarredFlagsProvider>
+                      <LdToolbar
+                        domId={domId}
+                        mode={mode}
+                        baseUrl={baseUrl}
+                        flagOverridePlugin={flagOverridePlugin}
+                        eventInterceptionPlugin={eventInterceptionPlugin}
+                      />
+                    </StarredFlagsProvider>
+                  </ProjectProvider>
                 </ApiProvider>
               </AuthProvider>
             </IFrameProvider>
