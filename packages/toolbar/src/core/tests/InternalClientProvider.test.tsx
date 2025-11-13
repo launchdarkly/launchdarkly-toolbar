@@ -19,7 +19,11 @@ vi.mock('launchdarkly-js-client-sdk', () => ({
   initialize: mockInitialize,
 }));
 
-import { InternalClientProvider, useInternalClient, useInternalClientInstance } from '../ui/Toolbar/context/InternalClientProvider';
+import {
+  InternalClientProvider,
+  useInternalClient,
+  useInternalClientInstance,
+} from '../ui/Toolbar/context/InternalClientProvider';
 import { setToolbarFlagClient } from '../../flags/createToolbarFlagFunction';
 import * as toolbarFlagClient from '../../flags/createToolbarFlagFunction';
 
@@ -199,15 +203,11 @@ describe('InternalClientProvider', () => {
       );
 
       await waitFor(() => {
-        expect(mockInitialize).toHaveBeenCalledWith(
-          'test-client-id-123',
-          expect.any(Object),
-          {
-            baseUrl: 'https://app.ld.catamorphic.com',
-            streamUrl: 'https://clientstream.ld.catamorphic.com',
-            eventsUrl: 'https://events.ld.catamorphic.com',
-          },
-        );
+        expect(mockInitialize).toHaveBeenCalledWith('test-client-id-123', expect.any(Object), {
+          baseUrl: 'https://app.ld.catamorphic.com',
+          streamUrl: 'https://clientstream.ld.catamorphic.com',
+          eventsUrl: 'https://events.ld.catamorphic.com',
+        });
       });
     });
 
@@ -296,5 +296,4 @@ describe('InternalClientProvider', () => {
       expect(screen.getByTestId('client-instance')).toHaveTextContent('null');
     });
   });
-
 });
