@@ -1,10 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
-import {
-  Switch,
-  TextField,
-  Group,
-  Input,
-} from '@launchpad-ui/components';
+import { Switch, TextField, Group, Input } from '@launchpad-ui/components';
 import { EditIcon, CheckIcon, CancelIcon } from './icons';
 import { IconButton } from './IconButton';
 import { EnhancedFlag } from '../../../types/devServer';

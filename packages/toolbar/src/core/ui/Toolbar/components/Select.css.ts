@@ -99,16 +99,16 @@ export const list = style({
   '::-webkit-scrollbar': {
     width: '6px',
   },
-  
+
   '::-webkit-scrollbar-track': {
     background: 'transparent',
   },
-  
+
   '::-webkit-scrollbar-thumb': {
     background: 'var(--lp-color-gray-600)',
     borderRadius: '3px',
   },
-  
+
   // Note: webkit scrollbar hover styles are handled by browser defaults
 });
 
