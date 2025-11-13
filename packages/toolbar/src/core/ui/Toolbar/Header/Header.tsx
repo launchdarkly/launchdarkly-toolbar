@@ -20,16 +20,8 @@ export interface HeaderProps {
 }
 
 export function Header(props: HeaderProps) {
-  const {
-    onClose,
-    onSearch,
-    searchTerm,
-    searchIsExpanded,
-    setSearchIsExpanded,
-    mode,
-    onMouseDown,
-    onOpenConfig,
-  } = props;
+  const { onClose, onSearch, searchTerm, searchIsExpanded, setSearchIsExpanded, mode, onMouseDown, onOpenConfig } =
+    props;
 
   const { state, refresh } = useDevServerContext();
   const { connectionStatus } = state;

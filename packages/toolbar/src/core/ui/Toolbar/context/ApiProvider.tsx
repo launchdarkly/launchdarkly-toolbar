@@ -1,10 +1,12 @@
-import { createContext, useCallback, useContext } from 'react';
+import { createContext, useCallback, useContext, useEffect, useState } from 'react';
 import { useAuthContext } from './AuthProvider';
 import { IFRAME_API_MESSAGES, useIFrameContext } from './IFrameProvider';
 
 interface ApiProviderContextValue {
+  apiReady: boolean;
   getFlag: (flagKey: string) => Promise<any>;
   getProjects: () => Promise<any>;
+  getFlags: (projectKey: string) => Promise<any>;
 }
 
 const ApiContext = createContext<ApiProviderContextValue | null>(null);
@@ -16,6 +18,27 @@ export interface ApiProviderProps {
 export function ApiProvider({ children }: { children: React.ReactNode }) {
   const { authenticated } = useAuthContext();
   const { ref, iframeSrc } = useIFrameContext();
+  const [apiReady, setApiReady] = useState(false);
+
+  const handleMessage = useCallback(
+    (event: MessageEvent) => {
+      if (event.origin !== iframeSrc) {
+        return;
+      }
+
+      if (event.data.type === IFRAME_API_MESSAGES.API_READY) {
+        setApiReady(true);
+      }
+    },
+    [iframeSrc],
+  );
+
+  useEffect(() => {
+    window.addEventListener('message', handleMessage);
+    return () => {
+      window.removeEventListener('message', handleMessage);
+    };
+  }, [handleMessage]);
 
   const getFlag = useCallback(
     async (flagKey: string) => {
@@ -93,7 +116,47 @@ export function ApiProvider({ children }: { children: React.ReactNode }) {
     });
   }, [authenticated, ref]);
 
-  return <ApiContext.Provider value={{ getFlag, getProjects }}>{children}</ApiContext.Provider>;
+  const getFlags = useCallback(
+    async (projectKey: string) => {
+      if (!authenticated) {
+        console.log('Authentication required');
+        return null;
+      }
+
+      if (!ref.current?.contentWindow) {
+        throw new Error('IFrame not found');
+      }
+
+      ref.current.contentWindow.postMessage(
+        {
+          type: IFRAME_API_MESSAGES.GET_FLAGS.request,
+          projectKey,
+        },
+        iframeSrc,
+      );
+
+      return new Promise<any>((resolve, reject) => {
+        const handleMessage = (event: MessageEvent) => {
+          if (event.origin !== iframeSrc) {
+            return;
+          }
+
+          if (event.data.type === IFRAME_API_MESSAGES.GET_FLAGS.response) {
+            window.removeEventListener('message', handleMessage);
+            resolve(event.data.data.items);
+          } else if (event.data.type === IFRAME_API_MESSAGES.GET_FLAGS.error) {
+            window.removeEventListener('message', handleMessage);
+            reject(new Error(event.data.error));
+          }
+        };
+
+        window.addEventListener('message', handleMessage);
+      });
+    },
+    [authenticated, ref],
+  );
+
+  return <ApiContext.Provider value={{ apiReady, getFlag, getProjects, getFlags }}>{children}</ApiContext.Provider>;
 }
 
 export function useApi() {

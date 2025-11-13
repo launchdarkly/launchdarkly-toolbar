@@ -1,5 +1,6 @@
 import { IFlagOverridePlugin } from '../../../../types';
 import { createContext, useContext, useState, useEffect, useCallback } from 'react';
+import { useFlagsContext } from './FlagsProvider';
 
 interface LocalFlag {
   key: string;
@@ -23,6 +24,7 @@ interface FlagSdkOverrideProviderProps {
 
 export function FlagSdkOverrideProvider({ children, flagOverridePlugin }: FlagSdkOverrideProviderProps) {
   const [flags, setFlags] = useState<Record<string, LocalFlag>>({});
+  const { flags: apiFlags, loading: loadingApiFlags } = useFlagsContext();
   const [isLoading, setIsLoading] = useState(true);
 
   const ldClient = flagOverridePlugin.getClient();
@@ -53,8 +55,8 @@ export function FlagSdkOverrideProvider({ children, flagOverridePlugin }: FlagSd
         .forEach((flagKey) => {
           const currentValue = allFlags[flagKey];
           result[flagKey] = {
-            key: flagKey,
-            name: formatFlagName(flagKey),
+            key: currentValue.key || flagKey,
+            name: currentValue.name || formatFlagName(flagKey),
             currentValue,
             isOverridden: flagKey in overrides,
             type: inferFlagType(currentValue),
@@ -73,8 +75,13 @@ export function FlagSdkOverrideProvider({ children, flagOverridePlugin }: FlagSd
       return;
     }
 
+    if (loadingApiFlags) {
+      setIsLoading(true);
+      return;
+    }
+
     // Get initial flags
-    const initialFlags = ldClient.allFlags();
+    const initialFlags = apiFlags || ldClient.allFlags();
     const initialFlagState = buildFlags(initialFlags);
     setFlags(initialFlagState);
     setIsLoading(false);
@@ -114,7 +121,7 @@ export function FlagSdkOverrideProvider({ children, flagOverridePlugin }: FlagSd
     return () => {
       ldClient.off('change', handleChange);
     };
-  }, [ldClient, buildFlags]);
+  }, [ldClient, buildFlags, apiFlags, loadingApiFlags]);
 
   return <FlagSdkOverrideContext.Provider value={{ flags, isLoading }}>{children}</FlagSdkOverrideContext.Provider>;
 }

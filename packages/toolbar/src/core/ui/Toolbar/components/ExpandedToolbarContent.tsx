@@ -12,7 +12,6 @@ import { useDevServerContext } from '../context/DevServerProvider';
 import * as styles from '../LaunchDarklyToolbar.css';
 import { GearIcon, SyncIcon, ToggleOffIcon } from './icons';
 import { ErrorMessage } from './ErrorMessage';
-import { AuthenticationModal } from './AuthenticationModal';
 import { FocusScope } from '@react-aria/focus';
 import { IEventInterceptionPlugin, IFlagOverridePlugin } from '../../../../types';
 
@@ -32,19 +31,12 @@ interface ExpandedToolbarContentProps {
   defaultActiveTab: ActiveTabId;
   flagOverridePlugin?: IFlagOverridePlugin;
   eventInterceptionPlugin?: IEventInterceptionPlugin;
+  setIsAuthModalOpen: Dispatch<SetStateAction<boolean>>;
   onHeaderMouseDown?: (event: React.MouseEvent) => void;
   reloadOnFlagChangeIsEnabled: boolean;
   onToggleReloadOnFlagChange: () => void;
   optInToNewFeatures: boolean;
   onToggleOptInToNewFeatures: () => void;
-}
-
-function getHeaderLabel(currentProjectKey: string | null, sourceEnvironmentKey: string | null) {
-  let label = '';
-  if (currentProjectKey && sourceEnvironmentKey) {
-    label = `${currentProjectKey} - ${sourceEnvironmentKey}`;
-  }
-  return label;
 }
 
 export const ExpandedToolbarContent = React.forwardRef<HTMLDivElement, ExpandedToolbarContentProps>((props, ref) => {
@@ -69,12 +61,11 @@ export const ExpandedToolbarContent = React.forwardRef<HTMLDivElement, ExpandedT
     onToggleReloadOnFlagChange,
     optInToNewFeatures,
     onToggleOptInToNewFeatures,
+    setIsAuthModalOpen,
   } = props;
 
-  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const { state } = useDevServerContext();
 
-  const headerLabel = getHeaderLabel(state.currentProjectKey, state.sourceEnvironmentKey);
   const { error } = state;
 
   const availableTabs = getTabsForMode(mode, !!flagOverridePlugin, !!eventInterceptionPlugin);
@@ -83,7 +74,6 @@ export const ExpandedToolbarContent = React.forwardRef<HTMLDivElement, ExpandedT
 
   return (
     <>
-      {optInToNewFeatures && <AuthenticationModal isOpen={isAuthModalOpen} onClose={() => setIsAuthModalOpen(false)} />}
       <FocusScope restoreFocus>
         <motion.div
           ref={ref}
@@ -162,7 +152,6 @@ export const ExpandedToolbarContent = React.forwardRef<HTMLDivElement, ExpandedT
               onClose={onClose}
               searchIsExpanded={searchIsExpanded}
               setSearchIsExpanded={setSearchIsExpanded}
-              label={headerLabel}
               mode={mode}
               onMouseDown={onHeaderMouseDown}
               onOpenConfig={() => setIsAuthModalOpen(true)}

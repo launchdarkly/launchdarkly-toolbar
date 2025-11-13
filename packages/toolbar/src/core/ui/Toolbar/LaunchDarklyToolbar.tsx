@@ -1,5 +1,5 @@
 import { AnimatePresence, motion } from 'motion/react';
-import { useCallback, useRef } from 'react';
+import { useCallback, useRef, useState } from 'react';
 
 import { SearchProvider, useSearchContext, AnalyticsProvider, useAnalytics, StarredFlagsProvider } from './context';
 import { CircleLogo, ExpandedToolbarContent } from './components';
@@ -14,6 +14,8 @@ import { AuthProvider } from './context/AuthProvider';
 import { ApiProvider } from './context/ApiProvider';
 import { IFrameProvider } from './context/IFrameProvider';
 import { ProjectProvider } from './context/ProjectProvider';
+import { FlagsProvider } from './context/FlagsProvider';
+import { AuthenticationModal } from './components/AuthenticationModal';
 
 export interface LdToolbarProps {
   mode: ToolbarMode;
@@ -110,6 +112,8 @@ export function LdToolbar(props: LdToolbarProps) {
     onCollapseComplete: focusCollapsedToolbar,
   });
 
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+
   // Prevent clicks from expanding toolbar if user was dragging
   const handleCircleClickWithDragCheck = useCallback(() => {
     if (!isDragging()) {
@@ -170,6 +174,7 @@ export function LdToolbar(props: LdToolbarProps) {
             isAutoCollapseEnabled={isAutoCollapseEnabled}
             onTabChange={handleTabChange}
             setSearchIsExpanded={setSearchIsExpanded}
+            setIsAuthModalOpen={setIsAuthModalOpen}
             flagOverridePlugin={flagOverridePlugin}
             eventInterceptionPlugin={eventInterceptionPlugin}
             mode={mode}
@@ -183,6 +188,7 @@ export function LdToolbar(props: LdToolbarProps) {
           />
         )}
       </AnimatePresence>
+      {optInToNewFeatures && <AuthenticationModal isOpen={isAuthModalOpen} onClose={() => setIsAuthModalOpen(false)} />}
     </motion.div>
   );
 }
@@ -237,15 +243,17 @@ export function LaunchDarklyToolbar(props: LaunchDarklyToolbarProps) {
               <AuthProvider>
                 <ApiProvider>
                   <ProjectProvider clientSideId={clientSideId} providedProjectKey={projectKey}>
-                    <StarredFlagsProvider>
-                      <LdToolbar
-                        domId={domId}
-                        mode={mode}
-                        baseUrl={baseUrl}
-                        flagOverridePlugin={flagOverridePlugin}
-                        eventInterceptionPlugin={eventInterceptionPlugin}
-                      />
-                    </StarredFlagsProvider>
+                    <FlagsProvider>
+                      <StarredFlagsProvider>
+                        <LdToolbar
+                          domId={domId}
+                          mode={mode}
+                          baseUrl={baseUrl}
+                          flagOverridePlugin={flagOverridePlugin}
+                          eventInterceptionPlugin={eventInterceptionPlugin}
+                        />
+                      </StarredFlagsProvider>
+                    </FlagsProvider>
                   </ProjectProvider>
                 </ApiProvider>
               </AuthProvider>

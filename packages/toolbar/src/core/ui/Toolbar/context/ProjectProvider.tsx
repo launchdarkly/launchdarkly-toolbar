@@ -20,12 +20,18 @@ interface ProjectProviderProps {
 
 export const ProjectProvider = ({ children, clientSideId, providedProjectKey }: ProjectProviderProps) => {
   const { getProjects } = useApi();
-  const { authenticated } = useAuthContext();
+  const { apiReady } = useApi();
   const [projectKey, setProjectKey] = useState<string>('');
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    if (!apiReady) {
+      setLoading(false);
+      return;
+    }
+
     if (!clientSideId && !providedProjectKey) {
+      setLoading(false);
       throw new Error('Either clientSideId or projectKey must be provided to make requests to the LaunchDarkly API');
     }
 
@@ -33,7 +39,7 @@ export const ProjectProvider = ({ children, clientSideId, providedProjectKey }: 
 
     if (providedProjectKey) {
       setProjectKey(providedProjectKey);
-    } else if (clientSideId && authenticated) {
+    } else if (clientSideId && apiReady) {
       getProjects().then((projects) => {
         const matchingProject = projects.find((project: any) =>
           project.environments.some((environment: any) => environment._id === clientSideId),
@@ -46,8 +52,10 @@ export const ProjectProvider = ({ children, clientSideId, providedProjectKey }: 
         setProjectKey(matchingProject.key);
         setLoading(false);
       });
+    } else {
+      setLoading(false);
     }
-  }, [providedProjectKey, clientSideId, getProjects, authenticated]);
+  }, [providedProjectKey, clientSideId, getProjects, apiReady]);
 
   return <ProjectContext.Provider value={{ projectKey, loading }}>{children}</ProjectContext.Provider>;
 };

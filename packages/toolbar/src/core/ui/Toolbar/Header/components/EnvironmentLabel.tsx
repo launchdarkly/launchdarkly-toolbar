@@ -45,11 +45,7 @@ export function EnvironmentLabel(props: EnvironmentLabelProps) {
         title={isTextClipped ? label : undefined}
       >
         {label}
-        {showTooltip && (
-          <div className={styles.environmentTooltip}>
-            {label}
-          </div>
-        )}
+        {showTooltip && <div className={styles.environmentTooltip}>{label}</div>}
       </span>
     </div>
   );

@@ -6,6 +6,11 @@ export const IFRAME_API_MESSAGES = {
     response: 'get-projects-response',
     error: 'get-projects-error',
   },
+  GET_FLAGS: {
+    request: 'get-flags',
+    response: 'get-flags-response',
+    error: 'get-flags-error',
+  },
   AUTHENTICATION: {
     authenticated: 'toolbar-authenticated',
     authenticationRequired: 'toolbar-authentication-required',
@@ -16,6 +21,7 @@ export const IFRAME_API_MESSAGES = {
     response: 'get-flag-response',
     error: 'get-flag-error',
   },
+  API_READY: 'api-ready',
 };
 
 interface IFrameProviderProps {
