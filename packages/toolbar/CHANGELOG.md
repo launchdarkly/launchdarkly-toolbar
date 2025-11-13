@@ -1,5 +1,18 @@
 # Changelog
 
+## [1.3.0](https://github.com/launchdarkly/launchdarkly-toolbar/compare/1.2.0...1.3.0) (2025-11-13)
+
+
+### Features
+
+* [REL-10443] Developer Toolbar authentication ([#273](https://github.com/launchdarkly/launchdarkly-toolbar/issues/273)) ([b5b44d4](https://github.com/launchdarkly/launchdarkly-toolbar/commit/b5b44d4f7cb4a928ab5c1f5af05017a355bef99f))
+
+
+### Bug Fixes
+
+* [REL-10721] update 'body' to '#ld-toolbar' to be more specific ([#295](https://github.com/launchdarkly/launchdarkly-toolbar/issues/295)) ([be1673f](https://github.com/launchdarkly/launchdarkly-toolbar/commit/be1673f8df375c015a0d98c41db46bc37ed33edd))
+* update 'body' to '#ld-toolbar' to be more specific ([be1673f](https://github.com/launchdarkly/launchdarkly-toolbar/commit/be1673f8df375c015a0d98c41db46bc37ed33edd))
+
 ## [1.2.0](https://github.com/launchdarkly/launchdarkly-toolbar/compare/1.1.2...1.2.0) (2025-11-12)
 
 
