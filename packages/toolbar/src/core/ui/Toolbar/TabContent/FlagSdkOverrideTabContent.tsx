@@ -22,7 +22,6 @@ import type { LocalFlag } from '../context';
 
 import * as sharedStyles from './FlagDevServerTabContent.css';
 import { IFlagOverridePlugin } from '../../../../types';
-import { useApi } from '../context/ApiProvider';
 import { LocalObjectFlagControlListItem } from '../components/LocalObjectFlagControlListItem';
 
 interface FlagSdkOverrideTabContentInnerProps {
@@ -32,22 +31,12 @@ interface FlagSdkOverrideTabContentInnerProps {
 
 function FlagSdkOverrideTabContentInner(props: FlagSdkOverrideTabContentInnerProps) {
   const { flagOverridePlugin, reloadOnFlagChangeIsEnabled } = props;
-  const { getFlag } = useApi();
   const { searchTerm } = useSearchContext();
   const analytics = useAnalytics();
   const { flags, isLoading } = useFlagSdkOverrideContext();
   const { isStarred, toggleStarred, clearAllStarred, starredCount } = useStarredFlags();
   const [activeFilters, setActiveFilters] = useState<Set<FlagFilterMode>>(new Set([FILTER_MODES.ALL]));
   const parentRef = useRef<HTMLDivElement>(null);
-
-  const getFlagData = useCallback(
-    async (flagKey: string) => {
-      const flag = await getFlag(flagKey);
-      console.log(flag);
-      return flag;
-    },
-    [getFlag],
-  );
 
   const handleFilterToggle = useCallback(
     (filter: FlagFilterMode) => {
@@ -311,7 +300,6 @@ function FlagSdkOverrideTabContentInner(props: FlagSdkOverrideTabContentInnerPro
                     return (
                       <div
                         key={virtualItem.key}
-                        onClick={() => getFlagData(flagKey)}
                         className={sharedStyles.virtualItem}
                         style={{
                           height: `${virtualItem.size}px`,
