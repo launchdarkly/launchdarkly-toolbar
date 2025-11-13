@@ -38,7 +38,7 @@ export function Select(props: SelectProps) {
   const triggerRef = useRef<HTMLButtonElement>(null);
   const listRef = useRef<HTMLUListElement>(null);
 
-  const selectedOption = options.find(option => option.id === selectedKey);
+  const selectedOption = options.find((option) => option.id === selectedKey);
 
   const handleToggle = useCallback(() => {
     if (isDisabled) return;
@@ -48,55 +48,61 @@ export function Select(props: SelectProps) {
     }
   }, [isDisabled, isOpen]);
 
-  const handleSelect = useCallback((optionId: string) => {
-    console.log('handleSelect called', { optionId });
-    onSelectionChange?.(optionId);
-    setIsOpen(false);
-    setFocusedIndex(-1);
-    // Return focus to trigger
-    triggerRef.current?.focus();
-  }, [onSelectionChange]);
+  const handleSelect = useCallback(
+    (optionId: string) => {
+      console.log('handleSelect called', { optionId });
+      onSelectionChange?.(optionId);
+      setIsOpen(false);
+      setFocusedIndex(-1);
+      // Return focus to trigger
+      triggerRef.current?.focus();
+    },
+    [onSelectionChange],
+  );
 
-  const handleKeyDown = useCallback((event: React.KeyboardEvent) => {
-    if (isDisabled) return;
+  const handleKeyDown = useCallback(
+    (event: React.KeyboardEvent) => {
+      if (isDisabled) return;
 
-    switch (event.key) {
-      case 'ArrowDown':
-        event.preventDefault();
-        if (!isOpen) {
-          setIsOpen(true);
-          setFocusedIndex(0);
-        } else {
-          setFocusedIndex(prev => (prev + 1) % options.length);
-        }
-        break;
-      case 'ArrowUp':
-        event.preventDefault();
-        if (!isOpen) {
-          setIsOpen(true);
-          setFocusedIndex(options.length - 1);
-        } else {
-          setFocusedIndex(prev => prev <= 0 ? options.length - 1 : prev - 1);
-        }
-        break;
-      case 'Enter':
-      case ' ':
-        event.preventDefault();
-        if (!isOpen) {
-          setIsOpen(true);
-          setFocusedIndex(0);
-        } else if (focusedIndex >= 0 && options[focusedIndex]) {
-          handleSelect(options[focusedIndex].id);
-        }
-        break;
-      case 'Escape':
-        event.preventDefault();
-        setIsOpen(false);
-        setFocusedIndex(-1);
-        triggerRef.current?.focus();
-        break;
-    }
-  }, [isDisabled, isOpen, focusedIndex, options, handleSelect]);
+      switch (event.key) {
+        case 'ArrowDown':
+          event.preventDefault();
+          if (!isOpen) {
+            setIsOpen(true);
+            setFocusedIndex(0);
+          } else {
+            setFocusedIndex((prev) => (prev + 1) % options.length);
+          }
+          break;
+        case 'ArrowUp':
+          event.preventDefault();
+          if (!isOpen) {
+            setIsOpen(true);
+            setFocusedIndex(options.length - 1);
+          } else {
+            setFocusedIndex((prev) => (prev <= 0 ? options.length - 1 : prev - 1));
+          }
+          break;
+        case 'Enter':
+        case ' ':
+          event.preventDefault();
+          if (!isOpen) {
+            setIsOpen(true);
+            setFocusedIndex(0);
+          } else if (focusedIndex >= 0 && options[focusedIndex]) {
+            handleSelect(options[focusedIndex].id);
+          }
+          break;
+        case 'Escape':
+          event.preventDefault();
+          setIsOpen(false);
+          setFocusedIndex(-1);
+          triggerRef.current?.focus();
+          break;
+      }
+    },
+    [isDisabled, isOpen, focusedIndex, options, handleSelect],
+  );
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -118,7 +124,7 @@ export function Select(props: SelectProps) {
   const displayValue = selectedOption?.label || placeholder || 'Select option';
 
   return (
-    <div 
+    <div
       ref={selectRef}
       id="select-container"
       className={`${styles.selectContainer} ${className || ''}`}
@@ -136,26 +142,17 @@ export function Select(props: SelectProps) {
         aria-labelledby={selectedOption ? undefined : 'select-placeholder'}
         disabled={isDisabled}
       >
-        <span className={`${styles.value} ${!selectedOption ? styles.placeholder : ''}`}>
-          {displayValue}
-        </span>
+        <span className={`${styles.value} ${!selectedOption ? styles.placeholder : ''}`}>{displayValue}</span>
         <ChevronDownIcon className={`${styles.icon} ${isOpen ? styles.iconOpen : ''}`} />
       </button>
 
       {isOpen && (
         <div className={styles.dropdown}>
-          <ul
-            ref={listRef}
-            className={styles.list}
-            role="listbox"
-            aria-label={ariaLabel}
-          >
+          <ul ref={listRef} className={styles.list} role="listbox" aria-label={ariaLabel}>
             {options.map((option, index) => (
               <li
                 key={option.id}
-                className={`${styles.option} ${
-                  focusedIndex === index ? styles.focused : ''
-                } ${
+                className={`${styles.option} ${focusedIndex === index ? styles.focused : ''} ${
                   selectedKey === option.id ? styles.selected : ''
                 }`}
                 role="option"
