@@ -18,7 +18,7 @@ export const FlagsProvider = ({ children }: { children: React.ReactNode }) => {
   const { authenticated } = useAuthContext();
   const { getFlags } = useApi();
   const [flags, setFlags] = useState<Record<string, any>[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     if (!authenticated) {
@@ -30,6 +30,7 @@ export const FlagsProvider = ({ children }: { children: React.ReactNode }) => {
       return;
     }
 
+    setLoading(true);
     getFlags(projectKey).then((flags) => {
       setFlags(flags);
       setLoading(false);

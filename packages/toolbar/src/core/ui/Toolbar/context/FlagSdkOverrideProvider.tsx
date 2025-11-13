@@ -46,7 +46,7 @@ export function FlagSdkOverrideProvider({ children, flagOverridePlugin }: FlagSd
 
   // Build flags from raw values and overrides
   const buildFlags = useCallback(
-    (allFlags: Record<string, any>): Record<string, LocalFlag> => {
+    (allFlags: Record<string, any>, apiFlags: Record<string, any>[]): Record<string, LocalFlag> => {
       const overrides = flagOverridePlugin.getAllOverrides();
       const result: Record<string, LocalFlag> = {};
 
@@ -54,9 +54,10 @@ export function FlagSdkOverrideProvider({ children, flagOverridePlugin }: FlagSd
         .sort()
         .forEach((flagKey) => {
           const currentValue = allFlags[flagKey];
+          const apiFlag = apiFlags.find((flag: any) => flag.key === flagKey);
           result[flagKey] = {
             key: currentValue.key || flagKey,
-            name: currentValue.name || formatFlagName(flagKey),
+            name: apiFlag?.name || formatFlagName(flagKey),
             currentValue,
             isOverridden: flagKey in overrides,
             type: inferFlagType(currentValue),
@@ -76,13 +77,15 @@ export function FlagSdkOverrideProvider({ children, flagOverridePlugin }: FlagSd
     }
 
     if (loadingApiFlags) {
+      console.log('loadingApiFlags', loadingApiFlags);
       setIsLoading(true);
       return;
     }
 
     // Get initial flags
-    const initialFlags = apiFlags || ldClient.allFlags();
-    const initialFlagState = buildFlags(initialFlags);
+    const initialFlags = ldClient.allFlags();
+    console.log('initialFlags', initialFlags);
+    const initialFlagState = buildFlags(initialFlags, apiFlags);
     setFlags(initialFlagState);
     setIsLoading(false);
 
@@ -90,7 +93,7 @@ export function FlagSdkOverrideProvider({ children, flagOverridePlugin }: FlagSd
     const handleChange = (changes: Record<string, { current: any }>) => {
       setFlags((prevFlags) => {
         const updatedRawFlags = ldClient.allFlags();
-        const newFlags = buildFlags(updatedRawFlags);
+        const newFlags = buildFlags(updatedRawFlags, apiFlags);
 
         // Only update the flags that actually changed for better performance
         const updatedFlags = { ...prevFlags };
