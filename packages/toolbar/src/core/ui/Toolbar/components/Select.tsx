@@ -160,6 +160,14 @@ export function Select(props: SelectProps) {
                 role="option"
                 aria-selected={selectedKey === option.id}
                 onClick={() => handleSelect(option.id)}
+                tabIndex={0}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    handleSelect(option.id);
+                  }
+                }}
+                onFocus={() => setFocusedIndex(index)}
                 onMouseEnter={() => setFocusedIndex(index)}
               >
                 {option.label}
