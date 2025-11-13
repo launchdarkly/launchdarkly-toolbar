@@ -60,6 +60,20 @@ LaunchDarkly Client-Side ID of the project/environment you would like to test ag
 The other values in `env.example` are most likely fine as-is. If you are planning on developing features for/testing using
 a local dev-server, ensure you also update `VITE_LD_DEV_SERVER_URL` and `VITE_LD_DEV_SERVER_URL_PROJECT_KEY` to valid values.
 
+### Toolbar Internal Configuration (Optional)
+
+The toolbar package has its own internal LaunchDarkly client for toolbar feature flags and analytics. This is separate from the demo application configuration:
+
+1. Navigate to the toolbar package directory: `packages/toolbar/`
+2. Copy the values from `.env.example` into a new `.env` (or `.env.local`) file in that same directory
+3. Configure the following environment variables:
+   - `TOOLBAR_INTERNAL_CLIENT_ID` - Your LaunchDarkly Client-Side ID for toolbar features (required)
+   - `TOOLBAR_INTERNAL_BASE_URL` - LaunchDarkly base URL (defaults to `https://app.launchdarkly.com`)
+   - `TOOLBAR_INTERNAL_STREAM_URL` - LaunchDarkly stream URL (defaults to `https://clientstream.launchdarkly.com`)
+   - `TOOLBAR_INTERNAL_EVENTS_URL` - LaunchDarkly events URL (defaults to `https://events.launchdarkly.com`)
+
+**Note:** This configuration is optional and only needed if you're developing or testing toolbar-specific feature flags. If not provided, the toolbar's internal client will not be initialized, and the toolbar will function normally without it. The URL configurations are only needed if you're using a custom LaunchDarkly instance.
+
 ## Toolbar Integration Modes
 
 The LaunchDarkly Toolbar supports two integration modes:
