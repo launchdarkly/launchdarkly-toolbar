@@ -237,17 +237,17 @@ export function LaunchDarklyToolbar(props: LaunchDarklyToolbarProps) {
           pollIntervalInMs,
         }}
       >
-        <AnalyticsProvider>
-          <SearchProvider>
-            <IFrameProvider authUrl={authUrl}>
-              <AuthProvider>
-                <ApiProvider>
-                  <InternalClientProvider
-                    clientSideId={internalClientConfig.clientSideId}
-                    baseUrl={internalClientConfig.baseUrl}
-                    streamUrl={internalClientConfig.streamUrl}
-                    eventsUrl={internalClientConfig.eventsUrl}
-                  >
+        <InternalClientProvider
+          clientSideId={internalClientConfig.clientSideId}
+          baseUrl={internalClientConfig.baseUrl}
+          streamUrl={internalClientConfig.streamUrl}
+          eventsUrl={internalClientConfig.eventsUrl}
+        >
+          <AnalyticsProvider>
+            <SearchProvider>
+              <IFrameProvider authUrl={authUrl}>
+                <AuthProvider>
+                  <ApiProvider>
                     <StarredFlagsProvider>
                       <LdToolbar
                         domId={domId}
@@ -257,12 +257,12 @@ export function LaunchDarklyToolbar(props: LaunchDarklyToolbarProps) {
                         eventInterceptionPlugin={eventInterceptionPlugin}
                       />
                     </StarredFlagsProvider>
-                  </InternalClientProvider>
-                </ApiProvider>
-              </AuthProvider>
-            </IFrameProvider>
-          </SearchProvider>
-        </AnalyticsProvider>
+                  </ApiProvider>
+                </AuthProvider>
+              </IFrameProvider>
+            </SearchProvider>
+          </AnalyticsProvider>
+        </InternalClientProvider>
       </DevServerProvider>
     </ToolbarUIProvider>
   );
