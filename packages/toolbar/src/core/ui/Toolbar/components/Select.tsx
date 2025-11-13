@@ -121,11 +121,10 @@ export function Select(props: SelectProps) {
   }, [isOpen, listRef]);
 
   const displayValue = selectedOption?.label || placeholder || 'Select option';
-  
+
   // Create accessible name that combines selected value with aria-label for compatibility with e2e tests
-  const accessibleName = selectedOption?.label && ariaLabel 
-    ? `${selectedOption.label} ${ariaLabel}` 
-    : ariaLabel || displayValue;
+  const accessibleName =
+    selectedOption?.label && ariaLabel ? `${selectedOption.label} ${ariaLabel}` : ariaLabel || displayValue;
 
   return (
     <div
