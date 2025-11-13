@@ -237,7 +237,7 @@ export function LaunchDarklyToolbar(props: LaunchDarklyToolbarProps) {
           pollIntervalInMs,
         }}
       >
-        <AnalyticsProvider ldClient={flagOverridePlugin?.getClient() ?? eventInterceptionPlugin?.getClient()}>
+        <AnalyticsProvider>
           <SearchProvider>
             <IFrameProvider authUrl={authUrl}>
               <AuthProvider>
