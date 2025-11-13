@@ -46,6 +46,18 @@ export interface InternalClientProviderProps {
    * Set this if using a custom LaunchDarkly instance.
    */
   baseUrl?: string;
+  /**
+   * Stream URL for the LaunchDarkly instance.
+   * Defaults to standard LaunchDarkly production environment.
+   * Set this if using a custom LaunchDarkly instance.
+   */
+  streamUrl?: string;
+  /**
+   * Events URL for the LaunchDarkly instance.
+   * Defaults to standard LaunchDarkly production environment.
+   * Set this if using a custom LaunchDarkly instance.
+   */
+  eventsUrl?: string;
 }
 
 /**
@@ -63,6 +75,8 @@ export function InternalClientProvider({
   clientSideId,
   initialContext,
   baseUrl,
+  streamUrl,
+  eventsUrl,
 }: InternalClientProviderProps) {
   const [client, setClient] = useState<LDClient | null>(null);
   const [loading, setLoading] = useState(false);
@@ -91,12 +105,13 @@ export function InternalClientProvider({
           anonymous: true,
         };
 
-        // Configure SDK options for custom base URL if provided
-        const options = baseUrl
+        // Configure SDK options for custom URLs if provided
+        const hasCustomUrls = baseUrl || streamUrl || eventsUrl;
+        const options = hasCustomUrls
           ? {
-              baseUrl: baseUrl,
-              streamUrl: baseUrl.replace(/\/\/app\./, '//clientstream.'),
-              eventsUrl: baseUrl.replace(/\/\/app\./, '//events.'),
+              ...(baseUrl && { baseUrl }),
+              ...(streamUrl && { streamUrl }),
+              ...(eventsUrl && { eventsUrl }),
             }
           : undefined;
 
@@ -132,7 +147,7 @@ export function InternalClientProvider({
         clientToCleanup.close();
       }
     };
-  }, [clientSideId, initialContext, baseUrl]); // Re-initialize if client-side id, initial context, or base URL changes
+  }, [clientSideId, initialContext, baseUrl, streamUrl, eventsUrl]); // Re-initialize if any config changes
 
   const value: InternalClientContextValue = {
     client,

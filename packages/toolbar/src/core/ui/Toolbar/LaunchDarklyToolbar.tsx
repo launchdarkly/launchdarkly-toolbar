@@ -212,7 +212,13 @@ export function LaunchDarklyToolbar(props: LaunchDarklyToolbarProps) {
     domId,
   } = props;
 
-  const internalClientSideId = import.meta.env.TOOLBAR_INTERNAL_CLIENT_ID;
+  const internalClientConfig = {
+    clientSideId: import.meta.env.TOOLBAR_INTERNAL_CLIENT_ID,
+    baseUrl: import.meta.env.TOOLBAR_INTERNAL_BASE_URL,
+    streamUrl: import.meta.env.TOOLBAR_INTERNAL_STREAM_URL,
+    eventsUrl: import.meta.env.TOOLBAR_INTERNAL_EVENTS_URL,
+  };
+
   const isVisible = useToolbarVisibility();
 
   // Don't render anything if visibility check fails
@@ -236,7 +242,12 @@ export function LaunchDarklyToolbar(props: LaunchDarklyToolbarProps) {
             <IFrameProvider authUrl={authUrl}>
               <AuthProvider>
                 <ApiProvider>
-                  <InternalClientProvider clientSideId={internalClientSideId} baseUrl={baseUrl}>
+                  <InternalClientProvider
+                    clientSideId={internalClientConfig.clientSideId}
+                    baseUrl={internalClientConfig.baseUrl}
+                    streamUrl={internalClientConfig.streamUrl}
+                    eventsUrl={internalClientConfig.eventsUrl}
+                  >
                     <StarredFlagsProvider>
                       <LdToolbar
                         domId={domId}
