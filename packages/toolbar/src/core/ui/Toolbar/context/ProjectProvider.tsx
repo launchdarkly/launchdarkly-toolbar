@@ -24,16 +24,9 @@ export const ProjectProvider = ({ children, clientSideId, providedProjectKey }: 
   const { getProjects } = useApi();
   const { apiReady } = useApi();
   const [projectKey, setProjectKey] = useState<string>('');
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    if (!apiReady) {
-      setLoading(false);
-      return;
-    }
-
-    setLoading(true);
-
     const savedProjectKey = localStorage.getItem(STORAGE_KEY);
 
     if (savedProjectKey) {
@@ -41,6 +34,13 @@ export const ProjectProvider = ({ children, clientSideId, providedProjectKey }: 
     } else if (providedProjectKey) {
       setProjectKey(providedProjectKey);
     } else if (apiReady) {
+      setLoading(true);
+
+      if (!apiReady) {
+        setLoading(false);
+        return;
+      }
+
       getProjects().then((projects) => {
         if (projects.length === 0) {
           throw new Error('No projects found');
