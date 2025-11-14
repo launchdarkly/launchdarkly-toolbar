@@ -85,7 +85,7 @@ describe('InternalClientProvider', () => {
   describe('Initialization', () => {
     test('initializes client successfully with valid clientSideID', async () => {
       render(
-        <InternalClientProvider clientSideID="test-client-id-123">
+        <InternalClientProvider clientSideId="test-client-id-123">
           <TestConsumer />
         </InternalClientProvider>,
       );
@@ -105,7 +105,7 @@ describe('InternalClientProvider', () => {
 
     test('calls setToolbarFlagClient on successful initialization', async () => {
       render(
-        <InternalClientProvider clientSideID="test-client-id-123">
+        <InternalClientProvider clientSideId="test-client-id-123">
           <TestConsumer />
         </InternalClientProvider>,
       );
@@ -117,7 +117,7 @@ describe('InternalClientProvider', () => {
 
     test('initializes with default anonymous context when no initialContext provided', async () => {
       render(
-        <InternalClientProvider clientSideID="test-client-id-123">
+        <InternalClientProvider clientSideId="test-client-id-123">
           <TestConsumer />
         </InternalClientProvider>,
       );
@@ -143,7 +143,7 @@ describe('InternalClientProvider', () => {
       };
 
       render(
-        <InternalClientProvider clientSideID="test-client-id-123" initialContext={customContext}>
+        <InternalClientProvider clientSideId="test-client-id-123" initialContext={customContext}>
           <TestConsumer />
         </InternalClientProvider>,
       );
@@ -159,7 +159,7 @@ describe('InternalClientProvider', () => {
       mockLDClient.waitForInitialization.mockRejectedValueOnce(initError);
 
       render(
-        <InternalClientProvider clientSideID="invalid-client-id">
+        <InternalClientProvider clientSideId="invalid-client-id">
           <TestConsumer />
         </InternalClientProvider>,
       );
@@ -179,7 +179,7 @@ describe('InternalClientProvider', () => {
       mockLDClient.waitForInitialization.mockRejectedValueOnce(new Error('Init failed'));
 
       render(
-        <InternalClientProvider clientSideID="invalid-client-id">
+        <InternalClientProvider clientSideId="invalid-client-id">
           <TestConsumer />
         </InternalClientProvider>,
       );
@@ -197,7 +197,7 @@ describe('InternalClientProvider', () => {
   describe('Custom Base URL Configuration', () => {
     test('configures SDK with custom baseUrl when provided', async () => {
       render(
-        <InternalClientProvider clientSideID="test-client-id-123" baseUrl="https://app.ld.catamorphic.com">
+        <InternalClientProvider clientSideId="test-client-id-123" baseUrl="https://app.ld.catamorphic.com">
           <TestConsumer />
         </InternalClientProvider>,
       );
@@ -205,15 +205,13 @@ describe('InternalClientProvider', () => {
       await waitFor(() => {
         expect(mockInitialize).toHaveBeenCalledWith('test-client-id-123', expect.any(Object), {
           baseUrl: 'https://app.ld.catamorphic.com',
-          streamUrl: 'https://clientstream.ld.catamorphic.com',
-          eventsUrl: 'https://events.ld.catamorphic.com',
         });
       });
     });
 
     test('does not provide options when baseUrl is not specified', async () => {
       render(
-        <InternalClientProvider clientSideID="test-client-id-123">
+        <InternalClientProvider clientSideId="test-client-id-123">
           <TestConsumer />
         </InternalClientProvider>,
       );
@@ -227,7 +225,7 @@ describe('InternalClientProvider', () => {
   describe('Cleanup', () => {
     test('clears singleton and closes client on unmount', async () => {
       const { unmount } = render(
-        <InternalClientProvider clientSideID="test-client-id-123">
+        <InternalClientProvider clientSideId="test-client-id-123">
           <TestConsumer />
         </InternalClientProvider>,
       );
@@ -246,7 +244,7 @@ describe('InternalClientProvider', () => {
   describe('useInternalClient Hook', () => {
     test('returns client, loading, and error state', async () => {
       render(
-        <InternalClientProvider clientSideID="test-client-id-123">
+        <InternalClientProvider clientSideId="test-client-id-123">
           <TestConsumer />
         </InternalClientProvider>,
       );
@@ -276,7 +274,7 @@ describe('InternalClientProvider', () => {
   describe('useInternalClientInstance Hook', () => {
     test('returns client instance when initialized', async () => {
       render(
-        <InternalClientProvider clientSideID="test-client-id-123">
+        <InternalClientProvider clientSideId="test-client-id-123">
           <TestClientInstanceConsumer />
         </InternalClientProvider>,
       );
@@ -288,7 +286,7 @@ describe('InternalClientProvider', () => {
 
     test('returns null before initialization', () => {
       render(
-        <InternalClientProvider clientSideID="test-client-id-123">
+        <InternalClientProvider clientSideId="test-client-id-123">
           <TestClientInstanceConsumer />
         </InternalClientProvider>,
       );
