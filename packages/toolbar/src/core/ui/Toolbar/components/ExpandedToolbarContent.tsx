@@ -8,6 +8,9 @@ import { TabContentRenderer } from './TabContentRenderer';
 import { ANIMATION_CONFIG, EASING } from '../constants';
 import { ActiveTabId, ToolbarMode, getTabsForMode, TAB_ORDER } from '../types';
 import { useDevServerContext } from '../context/DevServerProvider';
+import { useAuthContext } from '../context/AuthProvider';
+import { LoginScreen } from './LoginScreen';
+import { AuthenticationModal } from './AuthenticationModal';
 
 import * as styles from '../LaunchDarklyToolbar.css';
 import { GearIcon, SyncIcon, ToggleOffIcon } from './icons';
@@ -31,7 +34,6 @@ interface ExpandedToolbarContentProps {
   defaultActiveTab: ActiveTabId;
   flagOverridePlugin?: IFlagOverridePlugin;
   eventInterceptionPlugin?: IEventInterceptionPlugin;
-  setIsAuthModalOpen: Dispatch<SetStateAction<boolean>>;
   onHeaderMouseDown?: (event: React.MouseEvent) => void;
   reloadOnFlagChangeIsEnabled: boolean;
   onToggleReloadOnFlagChange: () => void;
@@ -61,10 +63,11 @@ export const ExpandedToolbarContent = React.forwardRef<HTMLDivElement, ExpandedT
     onToggleReloadOnFlagChange,
     optInToNewFeatures,
     onToggleOptInToNewFeatures,
-    setIsAuthModalOpen,
   } = props;
 
+  const { authenticated, authenticating } = useAuthContext();
   const { state } = useDevServerContext();
+  const [isAuthModalOpen, setIsAuthModalOpen] = React.useState(false);
 
   const { error } = state;
 
@@ -72,6 +75,28 @@ export const ExpandedToolbarContent = React.forwardRef<HTMLDivElement, ExpandedT
 
   const shouldShowError = error && mode === 'dev-server' && state.connectionStatus === 'error';
 
+  // Show login screen if not authenticated
+  if (!authenticated || authenticating) {
+    return (
+      <>
+        <AuthenticationModal isOpen={isAuthModalOpen} onClose={() => setIsAuthModalOpen(false)} />
+        <motion.div
+          ref={ref}
+          className={styles.toolbarContent}
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          exit={{ opacity: 0, scale: 0.95 }}
+          transition={ANIMATION_CONFIG.container}
+          tabIndex={-1}
+          style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+        >
+          <LoginScreen onClose={onClose} onLogin={() => setIsAuthModalOpen(true)} onMouseDown={onHeaderMouseDown} />
+        </motion.div>
+      </>
+    );
+  }
+
+  // Show normal toolbar content if authenticated
   return (
     <>
       <FocusScope restoreFocus>
@@ -154,7 +179,6 @@ export const ExpandedToolbarContent = React.forwardRef<HTMLDivElement, ExpandedT
               setSearchIsExpanded={setSearchIsExpanded}
               mode={mode}
               onMouseDown={onHeaderMouseDown}
-              onOpenConfig={() => setIsAuthModalOpen(true)}
             />
             {shouldShowError && <ErrorMessage error={error} />}
             {!shouldShowError && (

@@ -1,5 +1,5 @@
 import { AnimatePresence, motion } from 'motion/react';
-import { useCallback, useRef, useState } from 'react';
+import { useCallback, useRef } from 'react';
 
 import { SearchProvider, useSearchContext, AnalyticsProvider, useAnalytics, StarredFlagsProvider } from './context';
 import { CircleLogo, ExpandedToolbarContent } from './components';
@@ -112,8 +112,6 @@ export function LdToolbar(props: LdToolbarProps) {
     onCollapseComplete: focusCollapsedToolbar,
   });
 
-  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
-
   // Prevent clicks from expanding toolbar if user was dragging
   const handleCircleClickWithDragCheck = useCallback(() => {
     if (!isDragging()) {
@@ -174,7 +172,6 @@ export function LdToolbar(props: LdToolbarProps) {
             isAutoCollapseEnabled={isAutoCollapseEnabled}
             onTabChange={handleTabChange}
             setSearchIsExpanded={setSearchIsExpanded}
-            setIsAuthModalOpen={setIsAuthModalOpen}
             flagOverridePlugin={flagOverridePlugin}
             eventInterceptionPlugin={eventInterceptionPlugin}
             mode={mode}
@@ -188,7 +185,7 @@ export function LdToolbar(props: LdToolbarProps) {
           />
         )}
       </AnimatePresence>
-      {optInToNewFeatures && <AuthenticationModal isOpen={isAuthModalOpen} onClose={() => setIsAuthModalOpen(false)} />}
+      <AuthenticationModal isOpen={false} onClose={() => {}} />
     </motion.div>
   );
 }
