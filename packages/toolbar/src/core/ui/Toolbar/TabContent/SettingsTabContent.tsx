@@ -1,4 +1,4 @@
-import { Button, ListBox, Popover, Select, SelectValue, ListBoxItem, Switch } from '@launchpad-ui/components';
+import { Switch } from '@launchpad-ui/components';
 import { List } from '../../List/List';
 import { ListItem } from '../../List/ListItem';
 import { useSearchContext } from '../context/SearchProvider';
@@ -7,11 +7,10 @@ import { useToolbarUIContext } from '../context/ToolbarUIProvider';
 import { useAnalytics } from '../context/AnalyticsProvider';
 import { StatusDot } from '../components/StatusDot';
 import { GenericHelpText } from '../components/GenericHelpText';
-import { ChevronDownIcon } from '../components/icons';
 import { TOOLBAR_POSITIONS, type ToolbarPosition, type ToolbarMode } from '../types/toolbar';
+import { Select, SelectOption } from '../components/Select';
 
 import * as styles from './SettingsTab.css';
-import * as popoverStyles from '../components/Popover.css';
 
 interface SettingsItem {
   id: string;
@@ -42,14 +41,16 @@ interface ProjectSelectorProps {
 function ProjectSelector(props: ProjectSelectorProps) {
   const { availableProjects, currentProject, onProjectChange, isLoading } = props;
 
-  const handleProjectSelect = (key: React.Key | null) => {
-    if (key && typeof key === 'string') {
-      const projectKey = key;
-      if (projectKey !== currentProject && !isLoading) {
-        onProjectChange(projectKey);
-      }
+  const handleProjectSelect = (key: string | null) => {
+    if (key && key !== currentProject && !isLoading) {
+      onProjectChange(key);
     }
   };
+
+  const options: SelectOption[] = availableProjects.map((projectKey) => ({
+    id: projectKey,
+    label: projectKey,
+  }));
 
   return (
     <Select
@@ -60,21 +61,8 @@ function ProjectSelector(props: ProjectSelectorProps) {
       data-theme="dark"
       className={styles.select}
       isDisabled={isLoading}
-    >
-      <Button>
-        <SelectValue />
-        <ChevronDownIcon className={styles.icon} />
-      </Button>
-      <Popover data-theme="dark" className={popoverStyles.popover}>
-        <ListBox>
-          {availableProjects.map((projectKey) => (
-            <ListBoxItem id={projectKey} key={projectKey}>
-              {projectKey}
-            </ListBoxItem>
-          ))}
-        </ListBox>
-      </Popover>
-    </Select>
+      options={options}
+    />
   );
 }
 
@@ -94,14 +82,17 @@ function PositionSelector(props: PositionSelectorProps) {
       .join(' ');
   }
 
-  const handlePositionSelect = (key: React.Key | null) => {
-    if (key && typeof key === 'string') {
+  const handlePositionSelect = (key: string | null) => {
+    if (key && key !== currentPosition) {
       const position = key as ToolbarPosition;
-      if (position !== currentPosition) {
-        onPositionChange(position);
-      }
+      onPositionChange(position);
     }
   };
+
+  const options: SelectOption[] = TOOLBAR_POSITIONS.map((position) => ({
+    id: position,
+    label: getPositionsDisplayName(position),
+  }));
 
   return (
     <Select
@@ -111,21 +102,8 @@ function PositionSelector(props: PositionSelectorProps) {
       placeholder="Select position"
       data-theme="dark"
       className={styles.select}
-    >
-      <Button>
-        <SelectValue />
-        <ChevronDownIcon className={styles.icon} />
-      </Button>
-      <Popover data-theme="dark" className={popoverStyles.popover}>
-        <ListBox>
-          {TOOLBAR_POSITIONS.map((position) => (
-            <ListBoxItem id={position} key={position}>
-              {getPositionsDisplayName(position)}
-            </ListBoxItem>
-          ))}
-        </ListBox>
-      </Popover>
-    </Select>
+      options={options}
+    />
   );
 }
 
