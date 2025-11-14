@@ -34,7 +34,7 @@ export function LoginScreen(props: LoginScreenProps) {
       <div className={styles.loginHeader}>
         <LaunchDarklyLogo className={styles.headerLogo} onMouseDown={onMouseDown} />
         <motion.div
-        whileHover={{ scale: 1.05 }}
+          whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
           transition={{ duration: 0.1 }}
           className={styles.closeButtonArea}
@@ -46,16 +46,13 @@ export function LoginScreen(props: LoginScreenProps) {
             onClick={onClose}
             className={styles.actionButton}
           />
-      </motion.div>
+        </motion.div>
       </div>
-      
+
       <div className={styles.loginMainContent}>
         <div className={styles.loginContent}>
-          
           <h2 className={styles.title}>Welcome!</h2>
-          <p className={styles.description}>
-            Get started with the LaunchDarkly Developer Toolbar.
-          </p>
+          <p className={styles.description}>Get started with the LaunchDarkly Developer Toolbar.</p>
 
           <motion.button
             className={styles.loginButton}
@@ -77,9 +74,9 @@ export function LoginScreen(props: LoginScreenProps) {
 
           <p className={styles.helpText}>
             Don't have a LaunchDarkly account?{' '}
-            <a 
-              href="https://launchdarkly.com/start-trial" 
-              target="_blank" 
+            <a
+              href="https://launchdarkly.com/start-trial"
+              target="_blank"
               rel="noopener noreferrer"
               className={styles.helpLink}
             >

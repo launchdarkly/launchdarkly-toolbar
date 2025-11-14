@@ -29,9 +29,12 @@ export const FlagsProvider = ({ children }: { children: React.ReactNode }) => {
         return [];
       }
 
-      return await getFlags(projectKey);
+      await getFlags(projectKey);
+      setFlags(flags);
+      setLoading(false);
+      return flags;
     },
-    [authenticated, getFlags],
+    [apiReady, getFlags],
   );
 
   useEffect(() => {
@@ -45,10 +48,7 @@ export const FlagsProvider = ({ children }: { children: React.ReactNode }) => {
     }
 
     setLoading(true);
-    getProjectFlags(projectKey).then((flags) => {
-      setFlags(flags);
-      setLoading(false);
-    });
+    getProjectFlags(projectKey);
   }, [projectKey, getProjectFlags, authenticated, apiReady]);
 
   return <FlagsContext.Provider value={{ flags, loading, getProjectFlags }}>{children}</FlagsContext.Provider>;

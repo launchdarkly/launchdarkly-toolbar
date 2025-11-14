@@ -133,7 +133,7 @@ export const loginButton = style({
   minHeight: '2.5rem',
   width: '100%',
   marginBottom: '1rem',
-  
+
   ':disabled': {
     opacity: 0.7,
     cursor: 'not-allowed',
@@ -166,7 +166,7 @@ export const helpLink = style({
   color: 'var(--lp-color-gray-100)',
   textDecoration: 'none',
   fontWeight: '500',
-  
+
   selectors: {
     '&:hover': {
       color: 'var(--lp-color-gray-50)',

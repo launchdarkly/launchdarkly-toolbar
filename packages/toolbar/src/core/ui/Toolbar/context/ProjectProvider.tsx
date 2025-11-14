@@ -1,16 +1,23 @@
-import { createContext, useContext, useEffect, useState } from 'react';
+import { createContext, useCallback, useContext, useEffect, useState } from 'react';
 import { useApi } from './ApiProvider';
 import { TOOLBAR_STORAGE_KEYS } from '../utils/localStorage';
+import { ApiProject } from '../types/ldApi';
 
 const STORAGE_KEY = TOOLBAR_STORAGE_KEYS.PROJECT;
 
 type ProjectContextType = {
   projectKey: string;
+  setProjectKey: (projectKey: string) => void;
+  getProjects: () => Promise<ApiProject[]>;
+  projects: ApiProject[];
   loading: boolean;
 };
 
 const ProjectContext = createContext<ProjectContextType>({
   projectKey: '',
+  setProjectKey: () => {},
+  getProjects: async () => [],
+  projects: [],
   loading: false,
 });
 
@@ -21,10 +28,22 @@ interface ProjectProviderProps {
 }
 
 export const ProjectProvider = ({ children, clientSideId, providedProjectKey }: ProjectProviderProps) => {
-  const { getProjects } = useApi();
+  const { getProjects: getApiProjects } = useApi();
   const { apiReady } = useApi();
+  const [projects, setProjects] = useState<ApiProject[]>([]);
   const [projectKey, setProjectKey] = useState<string>('');
   const [loading, setLoading] = useState(false);
+
+  const getProjects = useCallback(async () => {
+    if (!apiReady) {
+      return [];
+    }
+    console.log('getProjects');
+
+    const projects = await getApiProjects();
+    setProjects(projects);
+    return projects;
+  }, [apiReady, getApiProjects]);
 
   useEffect(() => {
     const savedProjectKey = localStorage.getItem(STORAGE_KEY);
@@ -71,7 +90,11 @@ export const ProjectProvider = ({ children, clientSideId, providedProjectKey }: 
     }
   }, [providedProjectKey, clientSideId, getProjects, apiReady]);
 
-  return <ProjectContext.Provider value={{ projectKey, loading }}>{children}</ProjectContext.Provider>;
+  return (
+    <ProjectContext.Provider value={{ projectKey, setProjectKey, getProjects, projects, loading }}>
+      {children}
+    </ProjectContext.Provider>
+  );
 };
 
 export function useProjectContext() {

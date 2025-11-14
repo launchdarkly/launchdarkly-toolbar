@@ -11,6 +11,8 @@ import { TOOLBAR_POSITIONS, type ToolbarPosition, type ToolbarMode } from '../ty
 import { Select, SelectOption } from '../components/Select';
 
 import * as styles from './SettingsTab.css';
+import { useProjectContext } from '../context/ProjectProvider';
+import { useEffect, useMemo } from 'react';
 
 interface SettingsItem {
   id: string;
@@ -31,37 +33,38 @@ interface SettingsGroup {
   items: SettingsItem[];
 }
 
-interface ProjectSelectorProps {
-  availableProjects: string[];
-  currentProject: string | null;
-  onProjectChange: (projectKey: string) => void;
-  isLoading: boolean;
-}
+function ProjectSelector() {
+  const { projectKey, setProjectKey, projects, loading, getProjects } = useProjectContext();
 
-function ProjectSelector(props: ProjectSelectorProps) {
-  const { availableProjects, currentProject, onProjectChange, isLoading } = props;
+  useEffect(() => {
+    if (projects.length === 0) {
+      getProjects();
+    }
+  }, [projects]);
+
+  const projectOptions = useMemo(() => {
+    return projects.map((project) => ({
+      id: project.key,
+      label: project.name,
+    }));
+  }, [projects]);
 
   const handleProjectSelect = (key: string | null) => {
-    if (key && key !== currentProject && !isLoading) {
-      onProjectChange(key);
+    if (key && key !== projectKey && !loading) {
+      setProjectKey(key);
     }
   };
 
-  const options: SelectOption[] = availableProjects.map((projectKey) => ({
-    id: projectKey,
-    label: projectKey,
-  }));
-
   return (
     <Select
-      selectedKey={currentProject}
+      selectedKey={projectKey}
       onSelectionChange={handleProjectSelect}
       aria-label="Select project"
       placeholder="Select project"
       data-theme="dark"
       className={styles.select}
-      isDisabled={isLoading}
-      options={options}
+      isDisabled={loading}
+      options={projectOptions}
     />
   );
 }
@@ -401,12 +404,7 @@ export function SettingsTabContent(props: SettingsTabContentProps) {
                           {item.description && <span className={styles.settingDescription}>{item.description}</span>}
                         </div>
                         {item.isProjectSelector ? (
-                          <ProjectSelector
-                            availableProjects={state.availableProjects}
-                            currentProject={state.currentProjectKey}
-                            onProjectChange={handleProjectSwitch}
-                            isLoading={state.isLoading}
-                          />
+                          <ProjectSelector />
                         ) : item.isPositionSelector ? (
                           <PositionSelector currentPosition={position} onPositionChange={handlePositionSelect} />
                         ) : item.isAutoCollapseToggle ? (
