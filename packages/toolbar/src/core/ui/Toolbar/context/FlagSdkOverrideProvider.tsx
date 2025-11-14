@@ -56,7 +56,7 @@ export function FlagSdkOverrideProvider({ children, flagOverridePlugin }: FlagSd
           const currentValue = allFlags[flagKey];
           const apiFlag = apiFlags.find((flag: any) => flag.key === flagKey);
           result[flagKey] = {
-            key: currentValue.key || flagKey,
+            key: apiFlag?.key || flagKey,
             name: apiFlag?.name || formatFlagName(flagKey),
             currentValue,
             isOverridden: flagKey in overrides,
@@ -77,14 +77,12 @@ export function FlagSdkOverrideProvider({ children, flagOverridePlugin }: FlagSd
     }
 
     if (loadingApiFlags) {
-      console.log('loadingApiFlags', loadingApiFlags);
       setIsLoading(true);
       return;
     }
 
     // Get initial flags
     const initialFlags = ldClient.allFlags();
-    console.log('initialFlags', initialFlags);
     const initialFlagState = buildFlags(initialFlags, apiFlags);
     setFlags(initialFlagState);
     setIsLoading(false);

@@ -1,6 +1,5 @@
 import { createContext, useContext, useEffect, useState } from 'react';
 import { useApi } from './ApiProvider';
-import { useAuthContext } from './AuthProvider';
 
 type ProjectContextType = {
   projectKey: string;
@@ -41,8 +40,8 @@ export const ProjectProvider = ({ children, clientSideId, providedProjectKey }: 
       setProjectKey(providedProjectKey);
     } else if (clientSideId && apiReady) {
       getProjects().then((projects) => {
-        const matchingProject = projects.find((project: any) =>
-          project.environments.some((environment: any) => environment._id === clientSideId),
+        const matchingProject = projects.find((project) =>
+          project.environments.some((environment) => environment._id === clientSideId),
         );
 
         if (!matchingProject) {

@@ -2,9 +2,10 @@ import { createContext, useContext, useEffect, useState } from 'react';
 import { useProjectContext } from './ProjectProvider';
 import { useApi } from './ApiProvider';
 import { useAuthContext } from './AuthProvider';
+import { ApiFlag } from '../types/ldApi';
 
 type FlagsContextType = {
-  flags: Record<string, any>[];
+  flags: ApiFlag[];
   loading: boolean;
 };
 
@@ -17,7 +18,7 @@ export const FlagsProvider = ({ children }: { children: React.ReactNode }) => {
   const { projectKey } = useProjectContext();
   const { authenticated } = useAuthContext();
   const { getFlags } = useApi();
-  const [flags, setFlags] = useState<Record<string, any>[]>([]);
+  const [flags, setFlags] = useState<ApiFlag[]>([]);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {

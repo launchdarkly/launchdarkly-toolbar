@@ -1,4 +1,4 @@
-import React, { Dispatch, SetStateAction, useState } from 'react';
+import React, { Dispatch, SetStateAction } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 
 import { Header } from '../Header/Header';

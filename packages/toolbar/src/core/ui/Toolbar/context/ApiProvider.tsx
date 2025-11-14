@@ -1,11 +1,12 @@
 import { createContext, useCallback, useContext, useEffect, useState } from 'react';
 import { useAuthContext } from './AuthProvider';
 import { IFRAME_API_MESSAGES, useIFrameContext } from './IFrameProvider';
+import { ApiProject } from '../types/ldApi';
 
 interface ApiProviderContextValue {
   apiReady: boolean;
   getFlag: (flagKey: string) => Promise<any>;
-  getProjects: () => Promise<any>;
+  getProjects: () => Promise<ApiProject[]>;
   getFlags: (projectKey: string) => Promise<any>;
 }
 
@@ -83,7 +84,7 @@ export function ApiProvider({ children }: { children: React.ReactNode }) {
   const getProjects = useCallback(async () => {
     if (!authenticated) {
       console.log('Authentication required');
-      return null;
+      return [];
     }
 
     if (!ref.current?.contentWindow) {
@@ -97,7 +98,7 @@ export function ApiProvider({ children }: { children: React.ReactNode }) {
       iframeSrc,
     );
 
-    return new Promise<any>((resolve, reject) => {
+    return new Promise<ApiProject[]>((resolve, reject) => {
       const handleMessage = (event: MessageEvent) => {
         if (event.origin !== iframeSrc) {
           return;
