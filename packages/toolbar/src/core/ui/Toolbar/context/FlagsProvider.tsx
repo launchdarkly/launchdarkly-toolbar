@@ -19,7 +19,7 @@ const FlagsContext = createContext<FlagsContextType | null>({
 export const FlagsProvider = ({ children }: { children: React.ReactNode }) => {
   const { projectKey } = useProjectContext();
   const { authenticated } = useAuthContext();
-  const { getFlags } = useApi();
+  const { getFlags, apiReady } = useApi();
   const [flags, setFlags] = useState<ApiFlag[]>([]);
   const [loading, setLoading] = useState(false);
 
@@ -35,7 +35,7 @@ export const FlagsProvider = ({ children }: { children: React.ReactNode }) => {
   );
 
   useEffect(() => {
-    if (!authenticated) {
+    if (!authenticated || !apiReady) {
       return;
     }
 
@@ -49,7 +49,7 @@ export const FlagsProvider = ({ children }: { children: React.ReactNode }) => {
       setFlags(flags);
       setLoading(false);
     });
-  }, [projectKey, getProjectFlags, authenticated]);
+  }, [projectKey, getProjectFlags, authenticated, apiReady]);
 
   return <FlagsContext.Provider value={{ flags, loading, getProjectFlags }}>{children}</FlagsContext.Provider>;
 };

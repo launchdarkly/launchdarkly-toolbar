@@ -99,6 +99,7 @@ export const ExpandedToolbarContent = React.forwardRef<HTMLDivElement, ExpandedT
   // Show normal toolbar content if authenticated
   return (
     <>
+      <AuthenticationModal isOpen={isAuthModalOpen} onClose={() => setIsAuthModalOpen(false)} />
       <FocusScope restoreFocus>
         <motion.div
           ref={ref}
