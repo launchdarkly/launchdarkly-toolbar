@@ -83,7 +83,7 @@ export function LoginScreen(props: LoginScreenProps) {
               rel="noopener noreferrer"
               className={styles.helpLink}
             >
-              Start your free trial
+              Start your free trial!
             </a>
           </p>
         </div>
