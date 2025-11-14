@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.3.1](https://github.com/launchdarkly/launchdarkly-toolbar/compare/1.3.0...1.3.1) (2025-11-14)
+
+
+### Bug Fixes
+
+* [REL-10746] add handrolled Select component to avoid react-aria oddities ([#297](https://github.com/launchdarkly/launchdarkly-toolbar/issues/297)) ([0117db5](https://github.com/launchdarkly/launchdarkly-toolbar/commit/0117db5868828ba747cf897595cdf7b21600316e))
+
 ## [1.3.0](https://github.com/launchdarkly/launchdarkly-toolbar/compare/1.2.0...1.3.0) (2025-11-13)
 
 
