@@ -7,7 +7,15 @@ on:
       - main
 
 jobs:
+  install-npm:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+      - run: npm install -g npm@latest
+
   release-package:
+    needs: install-npm
     runs-on: ubuntu-latest
     permissions:
       id-token: write
@@ -25,20 +33,11 @@ jobs:
         with:
           fetch-depth: 0 # If you only need the current version remove this line.
 
-      - uses: launchdarkly/gh-actions/actions/release-secrets@release-secrets-v1.2.0
-        if: ${{ fromJson(steps.release.outputs.releases_created) }}
-        name: 'Get npm token'
-        with:
-          aws_assume_role: ${{ vars.AWS_ROLE_ARN }}
-          # This gets the npm release token and sets it into the NODE_AUTH_TOKEN environment variable
-          ssm_parameter_pairs: '/production/common/releasing/npm/token = NODE_AUTH_TOKEN'
-
       - uses: ./.github/actions/ci
         if: ${{ fromJson(steps.release.outputs.releases_created) }}
 
       - uses: ./.github/actions/publish
         if: ${{ fromJson(steps.release.outputs.releases_created) }}
         with:
-          token: ${{ env.NODE_AUTH_TOKEN }}
           prerelease: ${{ contains(steps.release.outputs.tag_name, '-') }}
           dry_run: 'false'
