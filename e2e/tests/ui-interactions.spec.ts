@@ -228,6 +228,9 @@ test.describe('LaunchDarkly Toolbar - UI Interactions', () => {
       await page.getByRole('img', { name: 'LaunchDarkly' }).click();
       await expect(page.getByRole('tab', { name: 'Flags' })).toBeVisible();
 
+      // Wait for expansion animation to complete (0.25s duration)
+      await page.waitForTimeout(300);
+
       const expandedBox = await toolbar.boundingBox();
       expect(expandedBox!.width).toBeGreaterThanOrEqual(initialBox!.width);
       expect(expandedBox!.height).toBeGreaterThanOrEqual(initialBox!.height);
@@ -235,6 +238,9 @@ test.describe('LaunchDarkly Toolbar - UI Interactions', () => {
       // 3. Verify toolbar collapses correctly
       await page.getByRole('button', { name: 'Close toolbar' }).click();
       await expect(page.getByRole('tab', { name: 'Flags' })).not.toBeVisible();
+
+      // Wait for collapse animation to complete (0.35s duration)
+      await page.waitForTimeout(400);
 
       const collapsedBox = await toolbar.boundingBox();
       expect(collapsedBox!.width).toBeLessThan(expandedBox!.width);
@@ -244,10 +250,12 @@ test.describe('LaunchDarkly Toolbar - UI Interactions', () => {
       for (let i = 0; i < 3; i++) {
         await page.getByRole('img', { name: 'LaunchDarkly' }).click();
         await expect(page.getByRole('tab', { name: 'Flags' })).toBeVisible();
+        await page.waitForTimeout(300); // Wait for expand animation
         const layoutCloseBtn = page.getByRole('button', { name: 'Close toolbar' });
         await expect(layoutCloseBtn).toBeVisible();
         await layoutCloseBtn.click();
         await expect(page.getByRole('tab', { name: 'Flags' })).not.toBeVisible();
+        await page.waitForTimeout(400); // Wait for collapse animation
       }
 
       // Final verification - toolbar should still be functional
