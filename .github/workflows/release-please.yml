@@ -7,7 +7,6 @@ on:
       - main
 
 jobs:
-
   release-package:
     runs-on: ubuntu-latest
     permissions:
