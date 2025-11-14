@@ -38,7 +38,6 @@ export const ProjectProvider = ({ children, clientSideId, providedProjectKey }: 
     if (!apiReady) {
       return [];
     }
-    console.log('getProjects');
 
     const projects = await getApiProjects();
     setProjects(projects);
