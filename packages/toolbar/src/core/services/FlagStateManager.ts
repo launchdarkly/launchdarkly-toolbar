@@ -1,15 +1,18 @@
 import { DevServerClient, Variation } from './DevServerClient';
 import { EnhancedFlag } from '../types/devServer';
+import { ApiFlag } from '../ui/Toolbar/types/ldApi';
 
 export class FlagStateManager {
   private devServerClient: DevServerClient;
   private listeners: Set<(flags: Record<string, EnhancedFlag>) => void> = new Set();
+  private apiFlags: ApiFlag[] = [];
 
   constructor(devServerClient: DevServerClient) {
     this.devServerClient = devServerClient;
   }
 
-  async getEnhancedFlags(): Promise<Record<string, EnhancedFlag>> {
+  async getEnhancedFlags(apiFlags: ApiFlag[]): Promise<Record<string, EnhancedFlag>> {
+    this.apiFlags = apiFlags;
     const devServerData = await this.devServerClient.getProjectData();
 
     const enhancedFlags: Record<string, EnhancedFlag> = {};
@@ -24,6 +27,7 @@ export class FlagStateManager {
 
       // Current value is override if exists, otherwise original value
       const currentValue = override ? override.value : flagState.value;
+      const apiFlag = apiFlags.find((flag) => flag.key === flagKey);
 
       enhancedFlags[flagKey] = {
         key: flagKey,
@@ -32,7 +36,7 @@ export class FlagStateManager {
         isOverridden: !!override,
         originalValue: flagState.value,
         availableVariations: variations,
-        type: this.determineFlagType(variations, currentValue),
+        type: apiFlag?.kind || this.determineFlagType(variations, currentValue),
         sourceEnvironment: devServerData.sourceEnvironmentKey,
         enabled: flagState.value !== null && flagState.value !== undefined,
       };
@@ -99,7 +103,7 @@ export class FlagStateManager {
 
   private async notifyListeners(): Promise<void> {
     try {
-      const flags = await this.getEnhancedFlags();
+      const flags = await this.getEnhancedFlags(this.apiFlags);
       this.listeners.forEach((listener) => listener(flags));
     } catch (error) {
       console.error('Error notifying listeners:', error);

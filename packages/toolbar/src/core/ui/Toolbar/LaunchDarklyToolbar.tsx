@@ -230,20 +230,20 @@ export function LaunchDarklyToolbar(props: LaunchDarklyToolbarProps) {
 
   return (
     <ToolbarUIProvider initialPosition={position}>
-      <DevServerProvider
-        config={{
-          projectKey,
-          devServerUrl,
-          pollIntervalInMs,
-        }}
-      >
-        <AnalyticsProvider ldClient={flagOverridePlugin?.getClient() ?? eventInterceptionPlugin?.getClient()}>
-          <SearchProvider>
-            <IFrameProvider authUrl={authUrl}>
-              <AuthProvider>
-                <ApiProvider>
-                  <ProjectProvider clientSideId={clientSideId} providedProjectKey={projectKey}>
-                    <FlagsProvider>
+      <IFrameProvider authUrl={authUrl}>
+        <AuthProvider>
+          <ApiProvider>
+            <ProjectProvider clientSideId={clientSideId} providedProjectKey={projectKey}>
+              <FlagsProvider>
+                <DevServerProvider
+                  config={{
+                    projectKey,
+                    devServerUrl,
+                    pollIntervalInMs,
+                  }}
+                >
+                  <AnalyticsProvider ldClient={flagOverridePlugin?.getClient() ?? eventInterceptionPlugin?.getClient()}>
+                    <SearchProvider>
                       <StarredFlagsProvider>
                         <LdToolbar
                           domId={domId}
@@ -253,14 +253,14 @@ export function LaunchDarklyToolbar(props: LaunchDarklyToolbarProps) {
                           eventInterceptionPlugin={eventInterceptionPlugin}
                         />
                       </StarredFlagsProvider>
-                    </FlagsProvider>
-                  </ProjectProvider>
-                </ApiProvider>
-              </AuthProvider>
-            </IFrameProvider>
-          </SearchProvider>
-        </AnalyticsProvider>
-      </DevServerProvider>
+                    </SearchProvider>
+                  </AnalyticsProvider>
+                </DevServerProvider>
+              </FlagsProvider>
+            </ProjectProvider>
+          </ApiProvider>
+        </AuthProvider>
+      </IFrameProvider>
     </ToolbarUIProvider>
   );
 }

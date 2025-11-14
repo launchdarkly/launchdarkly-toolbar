@@ -4,6 +4,8 @@ import { DevServerClient } from '../../../services/DevServerClient';
 import { FlagStateManager } from '../../../services/FlagStateManager';
 import { LdToolbarConfig, ToolbarState } from '../../../types/devServer';
 import { TOOLBAR_STORAGE_KEYS } from '../utils/localStorage';
+import { useFlagsContext } from './FlagsProvider';
+import { useProjectContext } from './ProjectProvider';
 
 const STORAGE_KEY = TOOLBAR_STORAGE_KEYS.PROJECT;
 
@@ -35,6 +37,8 @@ export interface DevServerProviderProps {
 }
 
 export const DevServerProvider: FC<DevServerProviderProps> = ({ children, config }) => {
+  const { getProjectFlags } = useFlagsContext();
+  const { projectKey } = useProjectContext();
   const [toolbarState, setToolbarState] = useState<
     ToolbarState & {
       availableProjects: string[];
@@ -56,10 +60,10 @@ export const DevServerProvider: FC<DevServerProviderProps> = ({ children, config
   const devServerClient = useMemo(() => {
     // Only create devServerClient if devServerUrl is provided (dev-server mode)
     if (config.devServerUrl) {
-      return new DevServerClient(config.devServerUrl, config.projectKey);
+      return new DevServerClient(config.devServerUrl, projectKey);
     }
     return null;
-  }, [config.devServerUrl, config.projectKey]);
+  }, [config.devServerUrl, projectKey]);
 
   const flagStateManager = useMemo(() => {
     // Only create flagStateManager if we have a devServerClient
@@ -109,11 +113,8 @@ export const DevServerProvider: FC<DevServerProviderProps> = ({ children, config
     // Save the selected project to localStorage
     localStorage.setItem(STORAGE_KEY, projectKeyToUse);
 
-    // Set the project key in the dev server client
-    devServerClient.setProjectKey(projectKeyToUse);
-
     return { availableProjects, projectKeyToUse };
-  }, [devServerClient, config.projectKey]);
+  }, [devServerClient, projectKey]);
 
   useEffect(() => {
     const setupProjectConnection = async () => {
@@ -168,7 +169,9 @@ export const DevServerProvider: FC<DevServerProviderProps> = ({ children, config
       try {
         setToolbarState((prev) => ({ ...prev, isLoading: true }));
         const projectData = await devServerClient.getProjectData();
-        const flags = await flagStateManager.getEnhancedFlags();
+        const apiFlags = await getProjectFlags(toolbarState.currentProjectKey);
+        const flags = await flagStateManager.getEnhancedFlags(apiFlags);
+
         setToolbarState((prev) => ({
           ...prev,
           flags,
@@ -220,9 +223,8 @@ export const DevServerProvider: FC<DevServerProviderProps> = ({ children, config
     const checkConnectionAndRecover = async () => {
       try {
         // If no project key is set (initial connection failed), attempt recovery
-        if (!devServerClient.getProjectKey()) {
+        if (!projectKey) {
           const { availableProjects, projectKeyToUse } = await initializeProjectSelection();
-
           setToolbarState((prev) => ({
             ...prev,
             availableProjects,
@@ -231,7 +233,8 @@ export const DevServerProvider: FC<DevServerProviderProps> = ({ children, config
         }
 
         const projectData = await devServerClient.getProjectData();
-        const flags = await flagStateManager.getEnhancedFlags();
+        const apiFlags = await getProjectFlags(projectKey);
+        const flags = await flagStateManager.getEnhancedFlags(apiFlags);
         setToolbarState((prev) => ({
           ...prev,
           connectionStatus: 'connected',
@@ -343,7 +346,8 @@ export const DevServerProvider: FC<DevServerProviderProps> = ({ children, config
       }
       setToolbarState((prev) => ({ ...prev, isLoading: true }));
       const projectData = await devServerClient.getProjectData();
-      const flags = await flagStateManager.getEnhancedFlags();
+      const apiFlags = await getProjectFlags(toolbarState.currentProjectKey);
+      const flags = await flagStateManager.getEnhancedFlags(apiFlags);
       setToolbarState((prev) => ({
         ...prev,
         connectionStatus: 'connected',
@@ -386,10 +390,9 @@ export const DevServerProvider: FC<DevServerProviderProps> = ({ children, config
 
         localStorage.setItem(STORAGE_KEY, projectKey);
 
-        devServerClient.setProjectKey(projectKey);
-
         const projectData = await devServerClient.getProjectData();
-        const flags = await flagStateManager.getEnhancedFlags();
+        const apiFlags = await getProjectFlags(projectKey);
+        const flags = await flagStateManager.getEnhancedFlags(apiFlags);
 
         setToolbarState((prev) => ({
           ...prev,

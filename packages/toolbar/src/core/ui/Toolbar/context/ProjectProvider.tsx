@@ -29,26 +29,33 @@ export const ProjectProvider = ({ children, clientSideId, providedProjectKey }: 
       return;
     }
 
-    if (!clientSideId && !providedProjectKey) {
-      setLoading(false);
-      throw new Error('Either clientSideId or projectKey must be provided to make requests to the LaunchDarkly API');
-    }
-
     setLoading(true);
 
     if (providedProjectKey) {
       setProjectKey(providedProjectKey);
-    } else if (clientSideId && apiReady) {
+    } else if (apiReady) {
       getProjects().then((projects) => {
-        const matchingProject = projects.find((project) =>
-          project.environments.some((environment) => environment._id === clientSideId),
-        );
-
-        if (!matchingProject) {
-          throw new Error('No matching project found');
+        if (projects.length === 0) {
+          throw new Error('No projects found');
         }
 
-        setProjectKey(matchingProject.key);
+        let project = projects[0];
+
+        if (clientSideId) {
+          project = projects.find((project) =>
+            project.environments.some((environment) => environment._id === clientSideId),
+          );
+
+          if (!project) {
+            throw new Error(`No project found for clientSideId: ${clientSideId}`);
+          }
+        }
+
+        if (!project) {
+          throw new Error('No project found');
+        }
+
+        setProjectKey(project.key);
         setLoading(false);
       });
     } else {

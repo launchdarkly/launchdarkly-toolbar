@@ -20,7 +20,7 @@ export interface ApiFlag {
   customProperties: Record<string, any>;
   description: string;
   key: string;
-  kind: "boolean" | "string" | "number" | "object" | "multivariate";
+  kind: 'boolean' | 'string' | 'number' | 'object' | 'multivariate';
   name: string;
   variations: ApiVariation[];
 }

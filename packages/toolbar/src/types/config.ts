@@ -5,8 +5,8 @@ export interface ToolbarConfig {
   /**
    * The client side ID of the LaunchDarkly project.
    *
-   * Default `undefined`. Either `clientSideId` or `projectKey` must be provided to make requests to the LaunchDarkly API.
-   * If both are provided, `projectKey` will take precedence.
+   * Default `undefined`. If both `clientSideId` and `projectKey` are provided, `projectKey` will take precedence.
+   * If neither are provided, the toolbar will auto-detect the first available project.
    */
   clientSideId?: string;
 
@@ -38,8 +38,8 @@ export interface ToolbarConfig {
    * Dev Server Mode: The project key that the toolbar should use. If left blank, will
    * auto-detect the first available project.
    *
-   * Default `undefined`. Either `clientSideId` or `projectKey` must be provided to make requests to the LaunchDarkly API.
-   * If both are provided, `projectKey` will take precedence.
+   * Default `undefined`. If both `clientSideId` and `projectKey` are provided, `projectKey` will take precedence.
+   * If neither are provided, the toolbar will auto-detect the first available project.
    */
   projectKey?: string;
 
