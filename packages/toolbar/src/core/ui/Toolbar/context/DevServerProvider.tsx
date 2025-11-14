@@ -3,11 +3,8 @@ import type { FC, ReactNode } from 'react';
 import { DevServerClient } from '../../../services/DevServerClient';
 import { FlagStateManager } from '../../../services/FlagStateManager';
 import { LdToolbarConfig, ToolbarState } from '../../../types/devServer';
-import { TOOLBAR_STORAGE_KEYS } from '../utils/localStorage';
 import { useFlagsContext } from './FlagsProvider';
 import { useProjectContext } from './ProjectProvider';
-
-const STORAGE_KEY = TOOLBAR_STORAGE_KEYS.PROJECT;
 
 interface DevServerContextValue {
   state: ToolbarState & {
@@ -86,34 +83,7 @@ export const DevServerProvider: FC<DevServerProviderProps> = ({ children, config
       throw new Error('No projects found on dev server');
     }
 
-    // Determine which project to use
-    let projectKeyToUse: string;
-
-    // First, check for saved project in localStorage
-    const savedProjectKey = localStorage.getItem(STORAGE_KEY);
-    if (savedProjectKey && availableProjects.includes(savedProjectKey)) {
-      projectKeyToUse = savedProjectKey;
-    } else if (config.projectKey) {
-      // Use provided project key
-      if (!availableProjects.includes(config.projectKey)) {
-        throw new Error(
-          `Project "${config.projectKey}" not found. Available projects: ${availableProjects.join(', ')}`,
-        );
-      }
-      projectKeyToUse = config.projectKey;
-    } else {
-      // Auto-detect: use first available project
-      const firstProject = availableProjects[0];
-      if (!firstProject) {
-        throw new Error('No projects available');
-      }
-      projectKeyToUse = firstProject;
-    }
-
-    // Save the selected project to localStorage
-    localStorage.setItem(STORAGE_KEY, projectKeyToUse);
-
-    return { availableProjects, projectKeyToUse };
+    return { availableProjects, projectKeyToUse: projectKey };
   }, [devServerClient, projectKey]);
 
   useEffect(() => {
@@ -387,8 +357,6 @@ export const DevServerProvider: FC<DevServerProviderProps> = ({ children, config
         if (!toolbarState.availableProjects.includes(projectKey)) {
           throw new Error(`Project "${projectKey}" not found in available projects`);
         }
-
-        localStorage.setItem(STORAGE_KEY, projectKey);
 
         const projectData = await devServerClient.getProjectData();
         const apiFlags = await getProjectFlags(projectKey);

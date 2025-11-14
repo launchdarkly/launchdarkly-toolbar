@@ -1,5 +1,8 @@
 import { createContext, useContext, useEffect, useState } from 'react';
 import { useApi } from './ApiProvider';
+import { TOOLBAR_STORAGE_KEYS } from '../utils/localStorage';
+
+const STORAGE_KEY = TOOLBAR_STORAGE_KEYS.PROJECT;
 
 type ProjectContextType = {
   projectKey: string;
@@ -31,7 +34,11 @@ export const ProjectProvider = ({ children, clientSideId, providedProjectKey }: 
 
     setLoading(true);
 
-    if (providedProjectKey) {
+    const savedProjectKey = localStorage.getItem(STORAGE_KEY);
+
+    if (savedProjectKey) {
+      setProjectKey(savedProjectKey);
+    } else if (providedProjectKey) {
       setProjectKey(providedProjectKey);
     } else if (apiReady) {
       getProjects().then((projects) => {
@@ -56,6 +63,7 @@ export const ProjectProvider = ({ children, clientSideId, providedProjectKey }: 
         }
 
         setProjectKey(project.key);
+        localStorage.setItem(STORAGE_KEY, project.key);
         setLoading(false);
       });
     } else {
