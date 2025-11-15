@@ -24,6 +24,11 @@ jobs:
         # Build using the same steps from CI.
         name: Build and Test
         uses: ./.github/actions/ci
+        env:
+          TOOLBAR_INTERNAL_CLIENT_ID: ${{ vars.TOOLBAR_INTERNAL_CLIENT_ID }}
+          TOOLBAR_INTERNAL_BASE_URL: ${{ vars.TOOLBAR_INTERNAL_BASE_URL }}
+          TOOLBAR_INTERNAL_STREAM_URL: ${{ vars.TOOLBAR_INTERNAL_STREAM_URL }}
+          TOOLBAR_INTERNAL_EVENTS_URL: ${{ vars.TOOLBAR_INTERNAL_EVENTS_URL }}
 
       - uses: launchdarkly/gh-actions/actions/release-secrets@release-secrets-v1.2.0
         name: 'Get npm token'

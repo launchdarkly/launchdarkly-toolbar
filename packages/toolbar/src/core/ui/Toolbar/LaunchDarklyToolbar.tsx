@@ -13,6 +13,7 @@ import { IEventInterceptionPlugin, IFlagOverridePlugin } from '../../../types';
 import { AuthProvider } from './context/AuthProvider';
 import { ApiProvider } from './context/ApiProvider';
 import { IFrameProvider } from './context/IFrameProvider';
+import { InternalClientProvider } from './context/InternalClientProvider';
 
 export interface LdToolbarProps {
   mode: ToolbarMode;
@@ -210,6 +211,14 @@ export function LaunchDarklyToolbar(props: LaunchDarklyToolbarProps) {
     eventInterceptionPlugin,
     domId,
   } = props;
+
+  const internalClientConfig = {
+    clientSideId: import.meta.env.TOOLBAR_INTERNAL_CLIENT_ID,
+    baseUrl: import.meta.env.TOOLBAR_INTERNAL_BASE_URL,
+    streamUrl: import.meta.env.TOOLBAR_INTERNAL_STREAM_URL,
+    eventsUrl: import.meta.env.TOOLBAR_INTERNAL_EVENTS_URL,
+  };
+
   const isVisible = useToolbarVisibility();
 
   // Don't render anything if visibility check fails
@@ -228,25 +237,32 @@ export function LaunchDarklyToolbar(props: LaunchDarklyToolbarProps) {
           pollIntervalInMs,
         }}
       >
-        <AnalyticsProvider ldClient={flagOverridePlugin?.getClient() ?? eventInterceptionPlugin?.getClient()}>
-          <SearchProvider>
-            <IFrameProvider authUrl={authUrl}>
-              <AuthProvider>
-                <ApiProvider>
-                  <StarredFlagsProvider>
-                    <LdToolbar
-                      domId={domId}
-                      mode={mode}
-                      baseUrl={baseUrl}
-                      flagOverridePlugin={flagOverridePlugin}
-                      eventInterceptionPlugin={eventInterceptionPlugin}
-                    />
-                  </StarredFlagsProvider>
-                </ApiProvider>
-              </AuthProvider>
-            </IFrameProvider>
-          </SearchProvider>
-        </AnalyticsProvider>
+        <InternalClientProvider
+          clientSideId={internalClientConfig.clientSideId}
+          baseUrl={internalClientConfig.baseUrl}
+          streamUrl={internalClientConfig.streamUrl}
+          eventsUrl={internalClientConfig.eventsUrl}
+        >
+          <AnalyticsProvider>
+            <SearchProvider>
+              <IFrameProvider authUrl={authUrl}>
+                <AuthProvider>
+                  <ApiProvider>
+                    <StarredFlagsProvider>
+                      <LdToolbar
+                        domId={domId}
+                        mode={mode}
+                        baseUrl={baseUrl}
+                        flagOverridePlugin={flagOverridePlugin}
+                        eventInterceptionPlugin={eventInterceptionPlugin}
+                      />
+                    </StarredFlagsProvider>
+                  </ApiProvider>
+                </AuthProvider>
+              </IFrameProvider>
+            </SearchProvider>
+          </AnalyticsProvider>
+        </InternalClientProvider>
       </DevServerProvider>
     </ToolbarUIProvider>
   );
