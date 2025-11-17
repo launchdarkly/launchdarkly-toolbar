@@ -1,12 +1,13 @@
 import { render, screen } from '@testing-library/react';
 import { expect, test, describe, vi, beforeEach } from 'vitest';
-
 import { ExpandedToolbarContent } from '../ui/Toolbar/components/ExpandedToolbarContent';
 import { DevServerProvider } from '../ui/Toolbar/context/DevServerProvider';
 import { ToolbarUIProvider } from '../ui/Toolbar/context/ToolbarUIProvider';
 import { SearchProvider } from '../ui/Toolbar/context/SearchProvider';
 import { AnalyticsProvider } from '../ui/Toolbar/context/AnalyticsProvider';
 import { IEventInterceptionPlugin, IFlagOverridePlugin } from '../../types';
+import '@testing-library/jest-dom/vitest';
+import React from 'react';
 
 // Create mock instances that we can access in tests
 const mockDevServerClientInstance = {
@@ -115,6 +116,8 @@ describe('ExpandedToolbarContent - User Interaction Flows', () => {
     onTabChange: vi.fn(),
     setSearchIsExpanded: vi.fn(),
     defaultActiveTab: 'settings' as const,
+    optInToNewFeatures: false,
+    onToggleOptInToNewFeatures: vi.fn(),
   };
 
   const createMockFlagOverridePlugin = (): IFlagOverridePlugin & {
@@ -170,6 +173,7 @@ describe('ExpandedToolbarContent - User Interaction Flows', () => {
       render(
         <TestWrapper devServerUrl="http://localhost:8765">
           <ExpandedToolbarContent
+            
             baseUrl="http://localhost:3002"
             {...defaultProps}
             mode="dev-server"

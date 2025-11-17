@@ -73,7 +73,7 @@ export const ExpandedToolbarContent = React.forwardRef<HTMLDivElement, ExpandedT
 
   const availableTabs = getTabsForMode(mode, !!flagOverridePlugin, !!eventInterceptionPlugin);
 
-  const shouldShowError = error && mode === 'dev-server' && state.connectionStatus === 'error';
+  const shouldShowError = error && mode === 'dev-server' && state.connectionStatus === 'error' && activeTab !== 'settings';
 
   // Show login screen if not authenticated
   if (!authenticated || authenticating) {
@@ -183,16 +183,7 @@ export const ExpandedToolbarContent = React.forwardRef<HTMLDivElement, ExpandedT
             />
             {shouldShowError && <ErrorMessage error={error} />}
             {!shouldShowError && (
-              <motion.div
-                className={styles.scrollableContent}
-                initial={{ opacity: 0, y: -10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{
-                  duration: 0.25,
-                  ease: EASING.smooth,
-                  delay: 0.05,
-                }}
-              >
+              <motion.div className={styles.scrollableContent} initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.25, ease: EASING.smooth, delay: 0.05 }}>
                 <AnimatePresence mode="wait">
                   {activeTab && (
                     <TabContentRenderer

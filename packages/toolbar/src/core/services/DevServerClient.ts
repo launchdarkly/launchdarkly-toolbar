@@ -93,21 +93,4 @@ export class DevServerClient {
       throw error;
     }
   }
-
-  async getAvailableProjects(): Promise<string[]> {
-    try {
-      const response = await fetch(`${this.baseUrl}/dev/projects`);
-
-      if (!response.ok) {
-        throw new Error(`Failed to fetch projects: ${response.status} ${response.statusText}`);
-      }
-
-      return await response.json();
-    } catch (error) {
-      if (error instanceof TypeError) {
-        throw new Error(`Failed to connect to dev server at ${this.baseUrl}. Is ldcli dev-server running?`);
-      }
-      throw error;
-    }
-  }
 }

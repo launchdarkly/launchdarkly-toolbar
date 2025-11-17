@@ -1,7 +1,8 @@
 import { describe, test, expect, vi, beforeEach } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { Select, SelectOption } from '../ui/Toolbar/components/Select';
-import '@testing-library/jest-dom';
+import '@testing-library/jest-dom/vitest';
+import React from 'react';
 
 describe('Select', () => {
   const mockOptions: SelectOption[] = [

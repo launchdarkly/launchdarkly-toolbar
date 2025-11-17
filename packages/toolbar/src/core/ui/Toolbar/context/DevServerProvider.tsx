@@ -7,15 +7,11 @@ import { useFlagsContext } from './FlagsProvider';
 import { useProjectContext } from './ProjectProvider';
 
 interface DevServerContextValue {
-  state: ToolbarState & {
-    availableProjects: string[];
-    currentProjectKey: string | null;
-  };
+  state: ToolbarState;
   setOverride: (flagKey: string, value: any) => Promise<void>;
   clearOverride: (flagKey: string) => Promise<void>;
   clearAllOverrides: () => Promise<void>;
   refresh: () => Promise<void>;
-  switchProject: (projectKey: string) => Promise<void>;
 }
 
 const DevServerContext = createContext<DevServerContextValue | null>(null);
@@ -34,14 +30,9 @@ export interface DevServerProviderProps {
 }
 
 export const DevServerProvider: FC<DevServerProviderProps> = ({ children, config }) => {
-  const { getProjectFlags } = useFlagsContext();
-  const { projectKey } = useProjectContext();
-  const [toolbarState, setToolbarState] = useState<
-    ToolbarState & {
-      availableProjects: string[];
-      currentProjectKey: string | null;
-    }
-  >(() => {
+  const { getProjectFlags, flags: apiFlags } = useFlagsContext();
+  const { projectKey, projects, getProjects } = useProjectContext();
+  const [toolbarState, setToolbarState] = useState<ToolbarState>(() => {
     return {
       flags: {},
       connectionStatus: 'disconnected',
@@ -49,8 +40,6 @@ export const DevServerProvider: FC<DevServerProviderProps> = ({ children, config
       isLoading: true,
       error: null,
       sourceEnvironmentKey: null,
-      availableProjects: [],
-      currentProjectKey: null,
     };
   });
 
@@ -77,14 +66,14 @@ export const DevServerProvider: FC<DevServerProviderProps> = ({ children, config
     }
 
     // Get available projects
-    const availableProjects = await devServerClient.getAvailableProjects();
+    const projects = await getProjects();
 
-    if (availableProjects.length === 0) {
-      throw new Error('No projects found on dev server');
+    if (projects.length === 0) {
+      throw new Error('No projects found. Please create a project in the LaunchDarkly dashboard.');
     }
 
-    return { availableProjects, projectKeyToUse: projectKey };
-  }, [devServerClient, projectKey]);
+    return { projectKeyToUse: projectKey };
+  }, [devServerClient, projectKey, getProjects]);
 
   useEffect(() => {
     const setupProjectConnection = async () => {
@@ -102,12 +91,10 @@ export const DevServerProvider: FC<DevServerProviderProps> = ({ children, config
       try {
         setToolbarState((prev) => ({ ...prev, isLoading: true, error: null }));
 
-        const { availableProjects, projectKeyToUse } = await initializeProjectSelection();
+        await initializeProjectSelection();
 
         setToolbarState((prev) => ({
           ...prev,
-          availableProjects,
-          currentProjectKey: projectKeyToUse,
           connectionStatus: 'connected',
         }));
       } catch (error) {
@@ -128,7 +115,7 @@ export const DevServerProvider: FC<DevServerProviderProps> = ({ children, config
   useEffect(() => {
     const loadProjectData = async () => {
       if (
-        !toolbarState.currentProjectKey ||
+        !projectKey ||
         toolbarState.connectionStatus !== 'connected' ||
         !devServerClient ||
         !flagStateManager
@@ -139,7 +126,7 @@ export const DevServerProvider: FC<DevServerProviderProps> = ({ children, config
       try {
         setToolbarState((prev) => ({ ...prev, isLoading: true }));
         const projectData = await devServerClient.getProjectData();
-        const apiFlags = await getProjectFlags(toolbarState.currentProjectKey);
+        const apiFlags = await getProjectFlags(projectKey);
         const flags = await flagStateManager.getEnhancedFlags(apiFlags);
 
         setToolbarState((prev) => ({
@@ -162,7 +149,7 @@ export const DevServerProvider: FC<DevServerProviderProps> = ({ children, config
     };
 
     loadProjectData();
-  }, [toolbarState.currentProjectKey, toolbarState.connectionStatus, devServerClient, flagStateManager]);
+  }, [projectKey, toolbarState.connectionStatus, devServerClient, flagStateManager]);
 
   // Setup real-time updates
   useEffect(() => {
@@ -192,19 +179,16 @@ export const DevServerProvider: FC<DevServerProviderProps> = ({ children, config
 
     const checkConnectionAndRecover = async () => {
       try {
+        let initialApiFlags = apiFlags;
         // If no project key is set (initial connection failed), attempt recovery
         if (!projectKey) {
-          const { availableProjects, projectKeyToUse } = await initializeProjectSelection();
-          setToolbarState((prev) => ({
-            ...prev,
-            availableProjects,
-            currentProjectKey: projectKeyToUse,
-          }));
+          await initializeProjectSelection();
+          await getProjectFlags(projectKey);
+          initialApiFlags = apiFlags;
         }
 
         const projectData = await devServerClient.getProjectData();
-        const apiFlags = await getProjectFlags(projectKey);
-        const flags = await flagStateManager.getEnhancedFlags(apiFlags);
+        const flags = await flagStateManager.getEnhancedFlags(initialApiFlags);
         setToolbarState((prev) => ({
           ...prev,
           connectionStatus: 'connected',
@@ -307,7 +291,7 @@ export const DevServerProvider: FC<DevServerProviderProps> = ({ children, config
       // If no project is selected, or the connection is not established, do not refresh
       // This helps prevent unhelpful errors from being shown to the user
       if (
-        !toolbarState.currentProjectKey ||
+        !projectKey ||
         toolbarState.connectionStatus !== 'connected' ||
         !devServerClient ||
         !flagStateManager
@@ -316,7 +300,7 @@ export const DevServerProvider: FC<DevServerProviderProps> = ({ children, config
       }
       setToolbarState((prev) => ({ ...prev, isLoading: true }));
       const projectData = await devServerClient.getProjectData();
-      const apiFlags = await getProjectFlags(toolbarState.currentProjectKey);
+      const apiFlags = await getProjectFlags(projectKey);
       const flags = await flagStateManager.getEnhancedFlags(apiFlags);
       setToolbarState((prev) => ({
         ...prev,
@@ -336,53 +320,38 @@ export const DevServerProvider: FC<DevServerProviderProps> = ({ children, config
         isLoading: false,
       }));
     }
-  }, [flagStateManager, devServerClient, toolbarState.currentProjectKey, toolbarState.connectionStatus]);
+  }, [flagStateManager, devServerClient, projectKey, toolbarState.connectionStatus]);
 
-  const switchProject = useCallback(
-    async (projectKey: string) => {
-      if (!devServerClient || !flagStateManager) {
-        const errorMessage = 'Dev server client and flag state manager not available - not in dev-server mode';
-        setToolbarState((prev) => ({
-          ...prev,
-          connectionStatus: 'error',
-          error: errorMessage,
-          isLoading: false,
-        }));
-        return;
+  useEffect(() => {
+    if (!devServerClient || !flagStateManager) {
+      const errorMessage = 'Dev server client and flag state manager not available - not in dev-server mode';
+      setToolbarState((prev) => ({
+        ...prev,
+        connectionStatus: 'error',
+        error: errorMessage,
+        isLoading: false,
+      }));
+      return;
+    }
+
+    try {
+      setToolbarState((prev) => ({ ...prev, isLoading: true }));
+
+      if (!projects.some((project) => project.key === projectKey)) {
+        throw new Error(`Project "${projectKey}" not found in available projects`);
       }
 
-      try {
-        setToolbarState((prev) => ({ ...prev, isLoading: true }));
-
-        if (!toolbarState.availableProjects.includes(projectKey)) {
-          throw new Error(`Project "${projectKey}" not found in available projects`);
-        }
-
-        const projectData = await devServerClient.getProjectData();
-        const apiFlags = await getProjectFlags(projectKey);
-        const flags = await flagStateManager.getEnhancedFlags(apiFlags);
-
-        setToolbarState((prev) => ({
-          ...prev,
-          currentProjectKey: projectKey,
-          flags,
-          sourceEnvironmentKey: projectData.sourceEnvironmentKey,
-          lastSyncTime: Date.now(),
-          error: null,
-          isLoading: false,
-        }));
-      } catch (error) {
-        const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-        setToolbarState((prev) => ({
-          ...prev,
-          connectionStatus: 'error',
-          error: errorMessage,
-          isLoading: false,
-        }));
-      }
-    },
-    [devServerClient, flagStateManager, toolbarState.availableProjects],
-  );
+      refresh();
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      setToolbarState((prev) => ({
+        ...prev,
+        connectionStatus: 'error',
+        error: errorMessage,
+        isLoading: false,
+      }));
+    }
+  }, [devServerClient, flagStateManager, projectKey, projects, refresh]);
 
   const value = useMemo(
     () => ({
@@ -391,9 +360,8 @@ export const DevServerProvider: FC<DevServerProviderProps> = ({ children, config
       clearOverride,
       clearAllOverrides,
       refresh,
-      switchProject,
     }),
-    [toolbarState, setOverride, clearOverride, clearAllOverrides, refresh, switchProject],
+    [toolbarState, setOverride, clearOverride, clearAllOverrides, refresh],
   );
 
   return <DevServerContext.Provider value={value}>{children}</DevServerContext.Provider>;

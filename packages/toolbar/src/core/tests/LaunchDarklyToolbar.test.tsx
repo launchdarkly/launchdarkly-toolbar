@@ -2,6 +2,7 @@ import React from 'react';
 import { render, screen, fireEvent, waitFor, waitForElementToBeRemoved } from '@testing-library/react';
 import { expect, test, describe, vi, beforeEach } from 'vitest';
 import { LaunchDarklyToolbar } from '../ui/Toolbar/LaunchDarklyToolbar';
+import '@testing-library/jest-dom/vitest';
 
 // Mock the DevServerClient to avoid actual network calls in tests
 vi.mock('../services/DevServerClient', () => {

@@ -56,7 +56,6 @@ function TestConsumer() {
   return (
     <div>
       <div data-testid="connection-status">{state.connectionStatus}</div>
-      <div data-testid="current-project">{state.currentProjectKey || 'none'}</div>
       <div data-testid="source-environment">{state.sourceEnvironmentKey || 'none'}</div>
       <div data-testid="is-loading">{state.isLoading.toString()}</div>
       <div data-testid="error">{state.error || 'none'}</div>

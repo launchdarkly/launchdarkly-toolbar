@@ -1,8 +1,10 @@
 import { render, screen, act } from '@testing-library/react';
 import { expect, test, describe, vi, beforeEach } from 'vitest';
-
 import { FlagSdkOverrideProvider, useFlagSdkOverrideContext } from '../ui/Toolbar/context/FlagSdkOverrideProvider';
 import { IFlagOverridePlugin } from '../../types';
+import '@testing-library/jest-dom/vitest';
+import React from 'react';
+
 
 // Test component that uses the context
 function TestConsumer() {

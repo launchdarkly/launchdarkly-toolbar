@@ -45,6 +45,12 @@ export const ProjectProvider = ({ children, clientSideId, providedProjectKey }: 
   }, [apiReady, getApiProjects]);
 
   useEffect(() => {
+    if (projects.length === 0) {
+      getProjects();
+    }
+  }, [projects, getProjects]);
+
+  useEffect(() => {
     const savedProjectKey = localStorage.getItem(STORAGE_KEY);
 
     if (savedProjectKey) {

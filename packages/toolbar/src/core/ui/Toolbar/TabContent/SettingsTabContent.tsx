@@ -230,18 +230,10 @@ export function SettingsTabContent(props: SettingsTabContentProps) {
     optInToNewFeatures,
     onToggleOptInToNewFeatures,
   } = props;
-  const { state, switchProject } = useDevServerContext();
+  const { state } = useDevServerContext();
   const { position, handlePositionChange } = useToolbarUIContext();
   const { searchTerm } = useSearchContext();
   const analytics = useAnalytics();
-
-  const handleProjectSwitch = async (projectKey: string) => {
-    try {
-      await switchProject(projectKey);
-    } catch (error) {
-      console.error('Failed to switch project:', error);
-    }
-  };
 
   const handlePositionSelect = (newPosition: ToolbarPosition) => {
     // Track position change

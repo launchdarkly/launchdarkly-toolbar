@@ -1,8 +1,9 @@
 import { render, screen, fireEvent } from '@testing-library/react';
 import { expect, test, describe, vi } from 'vitest';
-
 import { Tabs } from '../ui/Tabs/Tabs';
 import { TabButton } from '../ui/Tabs/TabButton';
+import '@testing-library/jest-dom/vitest';
+import React from 'react';
 
 describe('Tabs', () => {
   test('renders children correctly', () => {
