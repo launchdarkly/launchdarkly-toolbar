@@ -66,13 +66,7 @@ export const DevServerProvider: FC<DevServerProviderProps> = ({ children, config
     }
 
     // Get available projects
-    const projects = await getProjects();
-
-    if (projects.length === 0) {
-      throw new Error('No projects found. Please create a project in the LaunchDarkly dashboard.');
-    }
-
-    return { projectKeyToUse: projectKey };
+    await getProjects();
   }, [devServerClient, projectKey, getProjects]);
 
   useEffect(() => {
@@ -109,7 +103,7 @@ export const DevServerProvider: FC<DevServerProviderProps> = ({ children, config
     };
 
     setupProjectConnection();
-  }, [initializeProjectSelection, config.devServerUrl]);
+  }, [config.devServerUrl, projectKey]);
 
   // Load project data after project is set
   useEffect(() => {
@@ -144,7 +138,7 @@ export const DevServerProvider: FC<DevServerProviderProps> = ({ children, config
     };
 
     loadProjectData();
-  }, [projectKey, toolbarState.connectionStatus, devServerClient, flagStateManager]);
+  }, [toolbarState.connectionStatus, devServerClient, flagStateManager, projectKey]);
 
   // Setup real-time updates
   useEffect(() => {
@@ -204,7 +198,7 @@ export const DevServerProvider: FC<DevServerProviderProps> = ({ children, config
 
     const interval = setInterval(checkConnectionAndRecover, pollInterval);
     return () => clearInterval(interval);
-  }, [devServerClient, flagStateManager, config.pollIntervalInMs, initializeProjectSelection, config.devServerUrl]);
+  }, [devServerClient, flagStateManager, config.pollIntervalInMs, initializeProjectSelection, config.devServerUrl, projectKey]);
 
   const setOverride = useCallback(
     async (flagKey: string, value: any) => {
