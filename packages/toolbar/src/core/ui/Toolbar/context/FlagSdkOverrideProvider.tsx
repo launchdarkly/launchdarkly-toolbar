@@ -1,6 +1,7 @@
 import { IFlagOverridePlugin } from '../../../../types';
 import { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import { useFlagsContext } from './FlagsProvider';
+import { ApiFlag } from '../types/ldApi';
 
 interface LocalFlag {
   key: string;
@@ -45,23 +46,20 @@ export function FlagSdkOverrideProvider({ children, flagOverridePlugin }: FlagSd
 
   // Build flags from raw values and overrides
   const buildFlags = useCallback(
-    (allFlags: Record<string, any>, apiFlags: Record<string, any>[]): Record<string, LocalFlag> => {
+    (allFlags: Record<string, any>, apiFlags: ApiFlag[]): Record<string, LocalFlag> => {
       const overrides = flagOverridePlugin.getAllOverrides();
       const result: Record<string, LocalFlag> = {};
 
-      Object.keys(allFlags)
-        .sort()
-        .forEach((flagKey) => {
-          const currentValue = allFlags[flagKey];
-          const apiFlag = apiFlags.find((flag: any) => flag.key === flagKey);
-          result[flagKey] = {
-            key: apiFlag?.key || flagKey,
-            name: apiFlag?.name || formatFlagName(flagKey),
-            currentValue,
-            isOverridden: flagKey in overrides,
-            type: inferFlagType(currentValue),
-          };
-        });
+      apiFlags.forEach((apiFlag) => {
+        const currentValue = allFlags[apiFlag.key];
+        result[apiFlag.key] = {
+          key: apiFlag.key,
+          name: apiFlag.name,
+          currentValue,
+          isOverridden: apiFlag.key in overrides,
+          type: inferFlagType(currentValue),
+        };
+      });
 
       return result;
     },

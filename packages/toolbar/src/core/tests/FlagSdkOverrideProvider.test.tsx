@@ -19,6 +19,26 @@ const API_FLAGS = [
     key: 'number-flag',
     name: 'Number Flag',
   },
+  {
+    key: 'object-flag',
+    name: 'Object Flag',
+  },
+  {
+    key: 'boolean-flag',
+    name: 'Boolean Flag',
+  },
+  {
+    key: 'string-flag',
+    name: 'String Flag',
+  },
+  {
+    key: 'dynamic-flag',
+    name: 'Dynamic Flag',
+  },
+  {
+    key: 'normal-flag',
+    name: 'Normal Flag',
+  },
 ];
 
 // Mock the FlagsProvider with stable references
