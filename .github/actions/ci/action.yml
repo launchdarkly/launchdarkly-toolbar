@@ -34,6 +34,10 @@ runs:
       shell: bash
       run: pnpm demo:build
       env:
+        VITE_LD_CLIENT_SIDE_ID: 68e6a6a8d57c6b098d135c94
+        VITE_LD_BASE_URL: https://app.launchdarkly.com
+        VITE_LD_STREAM_URL: https://clientstream.launchdarkly.com
+        VITE_LD_EVENTS_URL: https://events.launchdarkly.com
         TOOLBAR_INTERNAL_CLIENT_ID: ${{ env.TOOLBAR_INTERNAL_CLIENT_ID }}
         TOOLBAR_INTERNAL_BASE_URL: ${{ env.TOOLBAR_INTERNAL_BASE_URL }}
         TOOLBAR_INTERNAL_STREAM_URL: ${{ env.TOOLBAR_INTERNAL_STREAM_URL }}
@@ -89,6 +93,10 @@ runs:
       id: playwright
       run: pnpm test:e2e:ci
       env:
+        VITE_LD_CLIENT_SIDE_ID: 68e6a6a8d57c6b098d135c94
+        VITE_LD_BASE_URL: https://app.launchdarkly.com
+        VITE_LD_STREAM_URL: https://clientstream.launchdarkly.com
+        VITE_LD_EVENTS_URL: https://events.launchdarkly.com
         TOOLBAR_INTERNAL_CLIENT_ID: ${{ env.TOOLBAR_INTERNAL_CLIENT_ID }}
         TOOLBAR_INTERNAL_BASE_URL: ${{ env.TOOLBAR_INTERNAL_BASE_URL }}
         TOOLBAR_INTERNAL_STREAM_URL: ${{ env.TOOLBAR_INTERNAL_STREAM_URL }}
