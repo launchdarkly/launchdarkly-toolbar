@@ -15,14 +15,14 @@ jobs:
       pull-requests: write
       issues: write
     steps:
-      - name: Install npm
-        if: ${{ fromJson(steps.release.outputs.releases_created) }}
-        run: npm install -g npm@latest
-
       - uses: googleapis/release-please-action@16a9c90856f42705d54a6fda1823352bdc62cf38 # v4.4.0
         id: release
         with:
           token: ${{secrets.GITHUB_TOKEN}}
+
+      - name: Install npm
+        if: ${{ fromJson(steps.release.outputs.releases_created) }}
+        run: npm install -g npm@latest
 
       - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
         if: ${{ fromJson(steps.release.outputs.releases_created) }}
