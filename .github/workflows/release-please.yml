@@ -15,6 +15,10 @@ jobs:
       pull-requests: write
       issues: write
     steps:
+      - name: Install npm
+        if: ${{ fromJson(steps.release.outputs.releases_created) }}
+        run: npm install -g npm@latest
+
       - uses: googleapis/release-please-action@16a9c90856f42705d54a6fda1823352bdc62cf38 # v4.4.0
         id: release
         with:
@@ -25,20 +29,11 @@ jobs:
         with:
           fetch-depth: 0 # If you only need the current version remove this line.
 
-      - uses: launchdarkly/gh-actions/actions/release-secrets@release-secrets-v1.2.0
-        if: ${{ fromJson(steps.release.outputs.releases_created) }}
-        name: 'Get npm token'
-        with:
-          aws_assume_role: ${{ vars.AWS_ROLE_ARN }}
-          # This gets the npm release token and sets it into the NODE_AUTH_TOKEN environment variable
-          ssm_parameter_pairs: '/production/common/releasing/npm/token = NODE_AUTH_TOKEN'
-
       - uses: ./.github/actions/ci
         if: ${{ fromJson(steps.release.outputs.releases_created) }}
 
       - uses: ./.github/actions/publish
         if: ${{ fromJson(steps.release.outputs.releases_created) }}
         with:
-          token: ${{ env.NODE_AUTH_TOKEN }}
           prerelease: ${{ contains(steps.release.outputs.tag_name, '-') }}
           dry_run: 'false'
