@@ -227,7 +227,6 @@ describe('ExpandedToolbarContent - User Interaction Flows', () => {
       render(
         <TestWrapper devServerUrl="http://localhost:8765">
           <ExpandedToolbarContent
-            
             baseUrl="http://localhost:3002"
             {...defaultProps}
             mode="dev-server"

@@ -114,12 +114,7 @@ export const DevServerProvider: FC<DevServerProviderProps> = ({ children, config
   // Load project data after project is set
   useEffect(() => {
     const loadProjectData = async () => {
-      if (
-        !projectKey ||
-        toolbarState.connectionStatus !== 'connected' ||
-        !devServerClient ||
-        !flagStateManager
-      ) {
+      if (!projectKey || toolbarState.connectionStatus !== 'connected' || !devServerClient || !flagStateManager) {
         return;
       }
 
@@ -290,12 +285,7 @@ export const DevServerProvider: FC<DevServerProviderProps> = ({ children, config
     try {
       // If no project is selected, or the connection is not established, do not refresh
       // This helps prevent unhelpful errors from being shown to the user
-      if (
-        !projectKey ||
-        toolbarState.connectionStatus !== 'connected' ||
-        !devServerClient ||
-        !flagStateManager
-      ) {
+      if (!projectKey || toolbarState.connectionStatus !== 'connected' || !devServerClient || !flagStateManager) {
         return;
       }
       setToolbarState((prev) => ({ ...prev, isLoading: true }));

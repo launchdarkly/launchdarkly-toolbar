@@ -65,31 +65,37 @@ export const ProjectProvider = ({ children, clientSideId, providedProjectKey }: 
         return;
       }
 
-      getProjects().then((projects) => {
-        if (projects.length === 0) {
-          throw new Error('No projects found');
-        }
+      getProjects()
+        .then((projects) => {
+          if (projects.length === 0) {
+            throw new Error('No projects found');
+          }
 
-        let project = projects[0];
+          let project = projects[0];
 
-        if (clientSideId) {
-          project = projects.find((project) =>
-            project.environments.some((environment) => environment._id === clientSideId),
-          );
+          if (clientSideId) {
+            project = projects.find((project) =>
+              project.environments.some((environment) => environment._id === clientSideId),
+            );
+
+            if (!project) {
+              throw new Error(`No project found for clientSideId: ${clientSideId}`);
+            }
+          }
 
           if (!project) {
-            throw new Error(`No project found for clientSideId: ${clientSideId}`);
+            throw new Error('No project found');
           }
-        }
 
-        if (!project) {
-          throw new Error('No project found');
-        }
-
-        setProjectKey(project.key);
-        localStorage.setItem(STORAGE_KEY, project.key);
-        setLoading(false);
-      });
+          setProjectKey(project.key);
+          localStorage.setItem(STORAGE_KEY, project.key);
+          setLoading(false);
+        })
+        .catch((error) => {
+          console.error('Error loading project:', error);
+          setLoading(false);
+          // Don't crash - just leave project unselected
+        });
     } else {
       setLoading(false);
     }

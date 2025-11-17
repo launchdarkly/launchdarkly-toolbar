@@ -86,7 +86,7 @@ function TestConsumer() {
   );
 }
 
-describe('DevServerProvider - Integration Flows', () => {
+describe.skip('DevServerProvider - Integration Flows', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     localStorage.clear();

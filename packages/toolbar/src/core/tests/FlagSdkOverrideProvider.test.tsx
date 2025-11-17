@@ -6,16 +6,20 @@ import '@testing-library/jest-dom/vitest';
 import React from 'react';
 
 // Create a stable flags array to avoid reference changes
-const API_FLAGS = [{
-  key: 'feature-flag-1',
-  name: 'Feature Flag 1',
-}, {
-  key: 'test-string-flag',
-  name: 'Test String Flag',
-}, {
-  key: 'number-flag',
-  name: 'Number Flag',
-}];
+const API_FLAGS = [
+  {
+    key: 'feature-flag-1',
+    name: 'Feature Flag 1',
+  },
+  {
+    key: 'test-string-flag',
+    name: 'Test String Flag',
+  },
+  {
+    key: 'number-flag',
+    name: 'Number Flag',
+  },
+];
 
 // Mock the FlagsProvider with stable references
 vi.mock('../ui/Toolbar/context/FlagsProvider', () => ({

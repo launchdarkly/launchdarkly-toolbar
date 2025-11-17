@@ -25,14 +25,14 @@ export const FlagsProvider = ({ children }: { children: React.ReactNode }) => {
 
   const getProjectFlags = useCallback(
     async (projectKey: string) => {
-      if (!authenticated) {
+      if (!apiReady) {
         return [];
       }
 
-      await getFlags(projectKey);
-      setFlags(flags);
+      const fetchedFlags = await getFlags(projectKey);
+      setFlags(fetchedFlags);
       setLoading(false);
-      return flags;
+      return fetchedFlags;
     },
     [apiReady, getFlags],
   );
