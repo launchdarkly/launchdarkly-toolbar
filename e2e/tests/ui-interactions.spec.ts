@@ -6,12 +6,24 @@ test.describe('LaunchDarkly Toolbar - UI Interactions', () => {
   test.beforeEach(async ({ page }: { page: Page }) => {
     await page.goto('/sdk');
     await page.waitForSelector('[data-testid="launchdarkly-toolbar"]');
+    
+    // Wait for authentication to complete (login screen should not be visible)
+    await page.waitForFunction(() => {
+      const loginScreen = document.querySelector('[data-testid="login-screen"]');
+      return !loginScreen;
+    }, { timeout: 10000 });
   });
 
   test.describe('Toolbar Interaction Workflows', () => {
     test.beforeEach(async ({ page }: { page: Page }) => {
       await page.goto('/sdk');
       await page.waitForSelector('[data-testid="launchdarkly-toolbar"]');
+      
+      // Wait for authentication to complete (login screen should not be visible)
+      await page.waitForFunction(() => {
+        const loginScreen = document.querySelector('[data-testid="login-screen"]');
+        return !loginScreen;
+      }, { timeout: 10000 });
     });
 
     test('should support complete expand/collapse/navigate/search workflow', async ({ page }: { page: Page }) => {

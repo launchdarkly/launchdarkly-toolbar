@@ -6,6 +6,12 @@ test.describe('LaunchDarkly Toolbar - SDK Mode', () => {
     await page.goto('/sdk');
     await page.waitForSelector('[data-testid="launchdarkly-toolbar"]');
     await expect(page.getByText('LaunchDarkly Toolbar Demo (sdk mode)')).toBeVisible();
+    
+    // Wait for authentication to complete (login screen should not be visible)
+    await page.waitForFunction(() => {
+      const loginScreen = document.querySelector('[data-testid="login-screen"]');
+      return !loginScreen;
+    }, { timeout: 10000 });
   });
 
   test.describe('SDK Integration', () => {
@@ -205,7 +211,7 @@ test.describe('LaunchDarkly Toolbar - SDK Mode', () => {
       await page.getByTestId('flag-confirm-json-object-flag').click();
 
       // Wait for the JSON editor to close
-      await expect(jsonInput).not.toBeVisible();
+      await expect(jsonInput).not.toBeVisible({ timeout: 10000 });
 
       // Verify override was created
       await expect(jsonFlagRow.getByTestId('override-indicator')).toBeVisible();

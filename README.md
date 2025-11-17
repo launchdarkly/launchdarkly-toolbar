@@ -13,7 +13,9 @@ This is a monorepo containing the following packages:
   - `dist/` - NPM package output (ES + CommonJS)
   - `cdn/` - CDN bundle output (IIFE for script tag usage)
 - **[demo](./packages/demo/)**: Demo application showcasing the toolbar
-- **[mock-server](./packages/mock-server/)**: (for development purposes) Simple express HTTP application that will serve a minified javascript file of compiled toolbar code
+- **[mock-server](./packages/mock-server/)**: Development and testing server that:
+  - Serves compiled toolbar bundle with hot-reload (port 8080)
+  - Provides mock authentication server for e2e tests (port 9090)
 
 ## Quickstart
 

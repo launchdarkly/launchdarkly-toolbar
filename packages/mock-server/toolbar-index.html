@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>LaunchDarkly Toolbar Auth</title>
+</head>
+<body>
+  <script>
+    (function() {
+      const originUrl = new URLSearchParams(window.location.search).get('originUrl');
+      
+      // Mock authentication - always authenticated in test mode
+      console.log('[Mock Auth] Sending authenticated message to:', originUrl || window.parent);
+      
+      const targetOrigin = originUrl || '*';
+      const message = {
+        type: 'toolbar-authenticated',
+        timestamp: Date.now()
+      };
+      
+      // Send to parent window (iframe context)
+      if (window.parent && window.parent !== window) {
+        window.parent.postMessage(message, targetOrigin);
+      }
+      
+      // Send to opener (popup context)
+      if (window.opener) {
+        window.opener.postMessage(message, targetOrigin);
+      }
+      
+      // Listen for API requests via postMessage
+      window.addEventListener('message', function(event) {
+        console.log('[Mock Auth] Received message:', event.data);
+        
+        const { type, requestId } = event.data;
+        
+        if (type === 'get-projects') {
+          // Return mock projects
+          event.source.postMessage({
+            type: 'get-projects-response',
+            requestId: requestId,
+            data: [
+              { key: 'test-project', name: 'Test Project' },
+              { key: 'demo-project', name: 'Demo Project' }
+            ]
+          }, event.origin);
+        } else if (type === 'get-flags') {
+          // Return mock flags for a project
+          const { projectKey } = event.data;
+          event.source.postMessage({
+            type: 'get-flags-response',
+            requestId: requestId,
+            data: {
+              items: [
+                {
+                  key: 'test-flag-1',
+                  name: 'Test Flag 1',
+                  kind: 'boolean',
+                  description: 'A test boolean flag',
+                  environments: {
+                    production: {
+                      on: true,
+                      fallthrough: { variation: 0 }
+                    }
+                  }
+                },
+                {
+                  key: 'test-flag-2',
+                  name: 'Test Flag 2',
+                  kind: 'multivariate',
+                  description: 'A test multivariate flag',
+                  environments: {
+                    production: {
+                      on: true,
+                      fallthrough: { variation: 0 }
+                    }
+                  }
+                },
+                {
+                  key: 'numeric-flag',
+                  name: 'Numeric Flag',
+                  kind: 'multivariate',
+                  description: 'A numeric flag',
+                  environments: {
+                    production: {
+                      on: true,
+                      fallthrough: { variation: 0 }
+                    }
+                  }
+                }
+              ]
+            }
+          }, event.origin);
+        } else if (type === 'get-flag') {
+          // Return detailed mock flag info
+          const { flagKey } = event.data;
+          event.source.postMessage({
+            type: 'get-flag-response',
+            requestId: requestId,
+            data: {
+              key: flagKey,
+              name: flagKey.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' '),
+              kind: flagKey.includes('boolean') ? 'boolean' : 'multivariate',
+              description: `Mock flag: ${flagKey}`,
+              variations: [
+                { _id: 'var-1', value: true },
+                { _id: 'var-2', value: false }
+              ],
+              environments: {
+                production: {
+                  on: true,
+                  fallthrough: { variation: 0 },
+                  rules: []
+                }
+              }
+            }
+          }, event.origin);
+        }
+      });
+    })();
+  </script>
+</body>
+</html>
+
