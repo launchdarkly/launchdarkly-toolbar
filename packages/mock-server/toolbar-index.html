@@ -48,51 +48,55 @@
               event.origin,
             );
           } else if (type === 'get-flags') {
-            // Return mock flags for a project
-            const { projectKey } = event.data;
+            // Return mock flags for a project with pagination
+            const { projectKey, limit = 20, offset = 0 } = event.data;
+
+            // Generate a larger set of mock flags for pagination testing
+            const totalFlags = 50;
+            const allFlags = [];
+
+            for (let i = 1; i <= totalFlags; i++) {
+              allFlags.push({
+                key: `flag-${i}`,
+                name: `Flag ${i}`,
+                kind: i % 3 === 0 ? 'boolean' : i % 3 === 1 ? 'multivariate' : 'string',
+                description: `Mock flag ${i}`,
+                archived: false,
+                clientSideAvailability: {
+                  usingEnvironmentId: false,
+                  usingMobileKey: false,
+                },
+                customProperties: {},
+                variations: [],
+                environments: {
+                  production: {
+                    on: true,
+                    fallthrough: { variation: 0 },
+                  },
+                },
+              });
+            }
+
+            // Paginate the flags
+            const paginatedFlags = allFlags.slice(offset, offset + limit);
+            const hasMore = offset + limit < totalFlags;
+
             event.source.postMessage(
               {
                 type: 'get-flags-response',
                 requestId: requestId,
                 data: {
-                  items: [
-                    {
-                      key: 'test-flag-1',
-                      name: 'Test Flag 1',
-                      kind: 'boolean',
-                      description: 'A test boolean flag',
-                      environments: {
-                        production: {
-                          on: true,
-                          fallthrough: { variation: 0 },
-                        },
-                      },
-                    },
-                    {
-                      key: 'test-flag-2',
-                      name: 'Test Flag 2',
-                      kind: 'multivariate',
-                      description: 'A test multivariate flag',
-                      environments: {
-                        production: {
-                          on: true,
-                          fallthrough: { variation: 0 },
-                        },
-                      },
-                    },
-                    {
-                      key: 'numeric-flag',
-                      name: 'Numeric Flag',
-                      kind: 'multivariate',
-                      description: 'A numeric flag',
-                      environments: {
-                        production: {
-                          on: true,
-                          fallthrough: { variation: 0 },
-                        },
-                      },
-                    },
-                  ],
+                  items: paginatedFlags,
+                  _links: {
+                    self: { href: `/api/v2/flags/${projectKey}?limit=${limit}&offset=${offset}` },
+                    ...(hasMore && {
+                      next: { href: `/api/v2/flags/${projectKey}?limit=${limit}&offset=${offset + limit}` },
+                    }),
+                    ...(offset > 0 && {
+                      first: { href: `/api/v2/flags/${projectKey}?limit=${limit}&offset=0` },
+                    }),
+                  },
+                  totalCount: totalFlags,
                 },
               },
               event.origin,

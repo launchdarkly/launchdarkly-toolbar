@@ -7,7 +7,7 @@ interface ApiProviderContextValue {
   apiReady: boolean;
   getFlag: (flagKey: string) => Promise<any>;
   getProjects: () => Promise<ApiProject[]>;
-  getFlags: (projectKey: string) => Promise<any>;
+  getFlags: (projectKey: string, params?: { limit?: number; offset?: number }) => Promise<any>;
 }
 
 const ApiContext = createContext<ApiProviderContextValue | null>(null);
@@ -118,7 +118,7 @@ export function ApiProvider({ children }: { children: React.ReactNode }) {
   }, [authenticated, ref]);
 
   const getFlags = useCallback(
-    async (projectKey: string) => {
+    async (projectKey: string, params?: { limit?: number; offset?: number }) => {
       if (!authenticated) {
         console.log('Authentication required');
         return null;
@@ -132,6 +132,8 @@ export function ApiProvider({ children }: { children: React.ReactNode }) {
         {
           type: IFRAME_API_MESSAGES.GET_FLAGS.request,
           projectKey,
+          limit: params?.limit,
+          offset: params?.offset,
         },
         iframeSrc,
       );
@@ -144,7 +146,7 @@ export function ApiProvider({ children }: { children: React.ReactNode }) {
 
           if (event.data.type === IFRAME_API_MESSAGES.GET_FLAGS.response) {
             window.removeEventListener('message', handleMessage);
-            resolve(event.data.data.items);
+            resolve(event.data.data);
           } else if (event.data.type === IFRAME_API_MESSAGES.GET_FLAGS.error) {
             window.removeEventListener('message', handleMessage);
             reject(new Error(event.data.error));
@@ -154,7 +156,7 @@ export function ApiProvider({ children }: { children: React.ReactNode }) {
         window.addEventListener('message', handleMessage);
       });
     },
-    [authenticated, ref],
+    [authenticated, ref, iframeSrc],
   );
 
   return <ApiContext.Provider value={{ apiReady, getFlag, getProjects, getFlags }}>{children}</ApiContext.Provider>;

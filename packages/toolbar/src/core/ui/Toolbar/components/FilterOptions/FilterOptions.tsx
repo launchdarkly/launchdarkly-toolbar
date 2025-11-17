@@ -2,6 +2,7 @@ import { ButtonGroup, Button } from '@launchpad-ui/components';
 import { useFlagFilterOptions, type FlagFilterMode, FILTER_MODES } from './useFlagFilterOptions';
 import { ClearButton } from './ClearButton';
 import * as styles from './FilterOptions.css';
+import { useFlagsContext } from '../../context/FlagsProvider';
 
 const FILTER_OPTIONS = [
   { id: FILTER_MODES.ALL, label: 'All' },
@@ -28,6 +29,7 @@ export function FilterOptions(props: FilterOptionsProps) {
   const isOverridesActive = activeFilters.has(FILTER_MODES.OVERRIDES);
   const isStarredActive = activeFilters.has(FILTER_MODES.STARRED);
   const hasMultipleFilters = activeFilters.size > 1;
+  const { totalCount } = useFlagsContext();
 
   return (
     <div className={styles.container}>
@@ -51,8 +53,8 @@ export function FilterOptions(props: FilterOptionsProps) {
       <div className={styles.bottomRow}>
         <div className={styles.statusText}>
           {isAllActive && filteredFlags === totalFlags
-            ? `Showing all ${totalFlags} flags`
-            : `Showing ${filteredFlags} of ${totalFlags} flags`}
+            ? `Showing ${totalFlags} of ${totalCount} flags`
+            : `Showing ${filteredFlags} of ${totalCount} flags`}
         </div>
         {!hasMultipleFilters && isOverridesActive && totalOverriddenFlags > 0 && onClearOverrides && (
           <ClearButton

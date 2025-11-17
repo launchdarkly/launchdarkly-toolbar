@@ -16,24 +16,21 @@ export class FlagStateManager {
     const devServerData = await this.devServerClient.getProjectData();
 
     const enhancedFlags: Record<string, EnhancedFlag> = {};
-
-    // Process each flag from dev server data
-    Object.keys(devServerData.flagsState).forEach((flagKey) => {
-      const flagState = devServerData.flagsState[flagKey];
+    apiFlags.forEach((apiFlag) => {
+      const flagState = devServerData.flagsState[apiFlag.key];
       if (!flagState) return;
 
-      const override = devServerData.overrides[flagKey];
-      const variations = devServerData.availableVariations[flagKey] || [];
+      const override = devServerData.overrides[apiFlag.key];
+      const variations = devServerData.availableVariations[apiFlag.key] || [];
 
       // Current value is override if exists, otherwise original value
       const currentValue = override ? override.value : flagState.value;
-      const apiFlag = apiFlags.find((flag) => flag.key === flagKey);
 
-      enhancedFlags[flagKey] = {
-        key: flagKey,
-        name: this.formatFlagName(flagKey),
+      enhancedFlags[apiFlag.key] = {
+        key: apiFlag.key,
+        name: this.formatFlagName(apiFlag.key),
         currentValue,
-        isOverridden: !!override,
+        isOverridden: false,
         originalValue: flagState.value,
         availableVariations: variations,
         type: apiFlag?.kind || this.determineFlagType(variations, currentValue),

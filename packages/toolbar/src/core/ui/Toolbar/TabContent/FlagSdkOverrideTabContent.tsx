@@ -1,4 +1,4 @@
-import { useRef, useState, useMemo, useCallback } from 'react';
+import { useState, useMemo, useCallback } from 'react';
 import { useVirtualizer } from '@tanstack/react-virtual';
 import { motion } from 'motion/react';
 import { List } from '../../List/List';
@@ -19,6 +19,7 @@ import { FilterOptions } from '../components/FilterOptions/FilterOptions';
 import { VIRTUALIZATION } from '../constants';
 import { EASING } from '../constants/animations';
 import type { LocalFlag } from '../context';
+import { useInfiniteScroll } from '../hooks/useInfiniteScroll';
 
 import * as sharedStyles from './FlagDevServerTabContent.css';
 import { IFlagOverridePlugin } from '../../../../types';
@@ -33,10 +34,18 @@ function FlagSdkOverrideTabContentInner(props: FlagSdkOverrideTabContentInnerPro
   const { flagOverridePlugin, reloadOnFlagChangeIsEnabled } = props;
   const { searchTerm } = useSearchContext();
   const analytics = useAnalytics();
-  const { flags, isLoading } = useFlagSdkOverrideContext();
+  const { flags, isLoading, loadMoreFlags, hasMoreFlags, loadingMoreFlags } = useFlagSdkOverrideContext();
   const { isStarred, toggleStarred, clearAllStarred, starredCount } = useStarredFlags();
   const [activeFilters, setActiveFilters] = useState<Set<FlagFilterMode>>(new Set([FILTER_MODES.ALL]));
-  const parentRef = useRef<HTMLDivElement>(null);
+
+  // Set up infinite scroll
+  const { ref: infiniteScrollRef, getElement: getScrollElement } = useInfiniteScroll<HTMLDivElement>({
+    onLoadMore: loadMoreFlags,
+    hasMore: hasMoreFlags,
+    isLoading: loadingMoreFlags,
+    threshold: 200,
+    enabled: true,
+  });
 
   const handleFilterToggle = useCallback(
     (filter: FlagFilterMode) => {
@@ -116,7 +125,7 @@ function FlagSdkOverrideTabContentInner(props: FlagSdkOverrideTabContentInnerPro
 
   const virtualizer = useVirtualizer({
     count: filteredFlags.length,
-    getScrollElement: () => parentRef.current,
+    getScrollElement,
     estimateSize: () => VIRTUALIZATION.ITEM_HEIGHT,
     overscan: VIRTUALIZATION.OVERSCAN,
   });
@@ -253,7 +262,7 @@ function FlagSdkOverrideTabContentInner(props: FlagSdkOverrideTabContentInnerPro
           {filteredFlags.length === 0 && (searchTerm.trim() || !activeFilters.has(FILTER_MODES.ALL)) ? (
             <GenericHelpText title={genericHelpTitle} subtitle={genericHelpSubtitle} />
           ) : (
-            <div ref={parentRef} className={sharedStyles.virtualContainer}>
+            <div ref={infiniteScrollRef} className={sharedStyles.virtualContainer}>
               <List>
                 <div
                   className={sharedStyles.virtualInner}
@@ -333,6 +342,11 @@ function FlagSdkOverrideTabContentInner(props: FlagSdkOverrideTabContentInnerPro
                       </div>
                     );
                   })}
+                  {loadingMoreFlags && (
+                    <div className={sharedStyles.loadingMoreIndicator}>
+                      <span>Loading more flags...</span>
+                    </div>
+                  )}
                 </div>
               </List>
             </div>

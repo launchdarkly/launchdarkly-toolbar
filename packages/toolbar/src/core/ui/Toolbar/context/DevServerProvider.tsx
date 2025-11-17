@@ -12,6 +12,9 @@ interface DevServerContextValue {
   clearOverride: (flagKey: string) => Promise<void>;
   clearAllOverrides: () => Promise<void>;
   refresh: () => Promise<void>;
+  loadMoreFlags: () => Promise<void>;
+  hasMoreFlags: boolean;
+  loadingMoreFlags: boolean;
 }
 
 const DevServerContext = createContext<DevServerContextValue | null>(null);
@@ -30,7 +33,7 @@ export interface DevServerProviderProps {
 }
 
 export const DevServerProvider: FC<DevServerProviderProps> = ({ children, config }) => {
-  const { getProjectFlags, flags: apiFlags } = useFlagsContext();
+  const { getProjectFlags, flags: apiFlags, loadMoreFlags: loadMoreApiFlags, hasMore, loadingMore } = useFlagsContext();
   const { projectKey, getProjects } = useProjectContext();
   const [toolbarState, setToolbarState] = useState<ToolbarState>(() => {
     return {
@@ -116,7 +119,10 @@ export const DevServerProvider: FC<DevServerProviderProps> = ({ children, config
         setToolbarState((prev) => ({ ...prev, isLoading: true }));
         const projectData = await devServerClient.getProjectData();
         const apiFlags = await getProjectFlags(projectKey);
+        console.log('apiFlags', apiFlags);
         const flags = await flagStateManager.getEnhancedFlags(apiFlags);
+
+        console.log('flags', flags);
 
         setToolbarState((prev) => ({
           ...prev,
@@ -313,6 +319,25 @@ export const DevServerProvider: FC<DevServerProviderProps> = ({ children, config
     }
   }, [flagStateManager, devServerClient, projectKey, toolbarState.connectionStatus]);
 
+  const loadMoreFlags = useCallback(async () => {
+    if (!flagStateManager || !hasMore || loadingMore) {
+      return;
+    }
+
+    try {
+      await loadMoreApiFlags();
+      // After loading more API flags, re-process all flags through the state manager
+      const flags = await flagStateManager.getEnhancedFlags(apiFlags);
+      setToolbarState((prev) => ({
+        ...prev,
+        flags,
+        lastSyncTime: Date.now(),
+      }));
+    } catch (error) {
+      console.error('Error loading more flags:', error);
+    }
+  }, [flagStateManager, hasMore, loadingMore, loadMoreApiFlags, apiFlags]);
+
   const value = useMemo(
     () => ({
       state: toolbarState,
@@ -320,8 +345,11 @@ export const DevServerProvider: FC<DevServerProviderProps> = ({ children, config
       clearOverride,
       clearAllOverrides,
       refresh,
+      loadMoreFlags,
+      hasMoreFlags: hasMore,
+      loadingMoreFlags: loadingMore,
     }),
-    [toolbarState, setOverride, clearOverride, clearAllOverrides, refresh],
+    [toolbarState, setOverride, clearOverride, clearAllOverrides, refresh, loadMoreFlags, hasMore, loadingMore],
   );
 
   return <DevServerContext.Provider value={value}>{children}</DevServerContext.Provider>;

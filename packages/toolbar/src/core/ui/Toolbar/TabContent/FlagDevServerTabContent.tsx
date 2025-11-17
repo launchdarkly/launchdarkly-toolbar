@@ -1,4 +1,4 @@
-import { useRef, useState, useMemo, useCallback } from 'react';
+import { useState, useMemo, useCallback } from 'react';
 import { useVirtualizer } from '@tanstack/react-virtual';
 import { List } from '../../List/List';
 import { ListItem } from '../../List/ListItem';
@@ -18,6 +18,7 @@ import {
 import { FilterOptions } from '../components/FilterOptions/FilterOptions';
 import { VIRTUALIZATION } from '../constants';
 import { LocalObjectFlagControlListItem } from '../components/LocalObjectFlagControlListItem';
+import { useInfiniteScroll } from '../hooks/useInfiniteScroll';
 
 import * as styles from './FlagDevServerTabContent.css';
 
@@ -28,12 +29,21 @@ interface FlagDevServerTabContentProps {
 export function FlagDevServerTabContent(props: FlagDevServerTabContentProps) {
   const { reloadOnFlagChangeIsEnabled } = props;
   const { searchTerm } = useSearchContext();
-  const { state, setOverride, clearOverride, clearAllOverrides } = useDevServerContext();
+  const { state, setOverride, clearOverride, clearAllOverrides, loadMoreFlags, hasMoreFlags, loadingMoreFlags } =
+    useDevServerContext();
   const { flags } = state;
   const { isStarred, toggleStarred, clearAllStarred, starredCount } = useStarredFlags();
 
   const [activeFilters, setActiveFilters] = useState<Set<FlagFilterMode>>(new Set([FILTER_MODES.ALL]));
-  const parentRef = useRef<HTMLDivElement>(null);
+
+  // Set up infinite scroll
+  const { ref: infiniteScrollRef, getElement: getScrollElement } = useInfiniteScroll<HTMLDivElement>({
+    onLoadMore: loadMoreFlags,
+    hasMore: hasMoreFlags,
+    isLoading: loadingMoreFlags,
+    threshold: 200,
+    enabled: true,
+  });
 
   const handleFilterToggle = useCallback((filter: FlagFilterMode) => {
     setActiveFilters((prev) => {
@@ -81,7 +91,7 @@ export function FlagDevServerTabContent(props: FlagDevServerTabContentProps) {
 
   const virtualizer = useVirtualizer({
     count: filteredFlags.length,
-    getScrollElement: () => parentRef.current,
+    getScrollElement,
     estimateSize: () => VIRTUALIZATION.ITEM_HEIGHT,
     overscan: VIRTUALIZATION.OVERSCAN,
   });
@@ -195,7 +205,7 @@ export function FlagDevServerTabContent(props: FlagDevServerTabContentProps) {
           {filteredFlags.length === 0 && (searchTerm.trim() || !activeFilters.has(FILTER_MODES.ALL)) ? (
             <GenericHelpText title={genericHelpTitle} subtitle={genericHelpSubtitle} />
           ) : (
-            <div ref={parentRef} className={styles.virtualContainer}>
+            <div ref={infiniteScrollRef} className={styles.virtualContainer}>
               <List>
                 <div
                   className={styles.virtualInner}
@@ -250,6 +260,11 @@ export function FlagDevServerTabContent(props: FlagDevServerTabContentProps) {
                       </div>
                     );
                   })}
+                  {loadingMoreFlags && (
+                    <div className={styles.loadingMoreIndicator}>
+                      <span>Loading more flags...</span>
+                    </div>
+                  )}
                 </div>
               </List>
             </div>
