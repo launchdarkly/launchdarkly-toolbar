@@ -306,6 +306,12 @@ export function SettingsTabContent(props: SettingsTabContentProps) {
           title: 'Toolbar Settings',
           items: [
             {
+              id: 'project',
+              name: 'Project',
+              icon: 'folder',
+              isProjectSelector: true,
+            },
+            {
               id: 'position',
               name: 'Position',
               icon: 'move',

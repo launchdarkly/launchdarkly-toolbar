@@ -26,7 +26,6 @@ export function FlagSdkOverrideProvider({ children, flagOverridePlugin }: FlagSd
   const [flags, setFlags] = useState<Record<string, LocalFlag>>({});
   const { flags: apiFlags, loading: loadingApiFlags } = useFlagsContext();
   const [isLoading, setIsLoading] = useState(true);
-
   const ldClient = flagOverridePlugin.getClient();
 
   // Helper functions - memoized to prevent unnecessary re-renders
