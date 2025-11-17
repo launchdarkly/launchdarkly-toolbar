@@ -61,6 +61,7 @@ authUrl: import.meta.env.VITE_LD_AUTH_URL || 'http://localhost:9090',
 ```
 
 This means:
+
 - ✅ E2E tests automatically use the mock auth server
 - ✅ Local development uses the mock auth server by default
 - ✅ Can override by setting `VITE_LD_AUTH_URL` environment variable if needed

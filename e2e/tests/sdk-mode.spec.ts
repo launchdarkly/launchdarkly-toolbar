@@ -6,12 +6,15 @@ test.describe('LaunchDarkly Toolbar - SDK Mode', () => {
     await page.goto('/sdk');
     await page.waitForSelector('[data-testid="launchdarkly-toolbar"]');
     await expect(page.getByText('LaunchDarkly Toolbar Demo (sdk mode)')).toBeVisible();
-    
+
     // Wait for authentication to complete (login screen should not be visible)
-    await page.waitForFunction(() => {
-      const loginScreen = document.querySelector('[data-testid="login-screen"]');
-      return !loginScreen;
-    }, { timeout: 10000 });
+    await page.waitForFunction(
+      () => {
+        const loginScreen = document.querySelector('[data-testid="login-screen"]');
+        return !loginScreen;
+      },
+      { timeout: 10000 },
+    );
   });
 
   test.describe('SDK Integration', () => {

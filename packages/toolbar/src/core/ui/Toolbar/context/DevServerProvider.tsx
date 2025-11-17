@@ -198,7 +198,14 @@ export const DevServerProvider: FC<DevServerProviderProps> = ({ children, config
 
     const interval = setInterval(checkConnectionAndRecover, pollInterval);
     return () => clearInterval(interval);
-  }, [devServerClient, flagStateManager, config.pollIntervalInMs, initializeProjectSelection, config.devServerUrl, projectKey]);
+  }, [
+    devServerClient,
+    flagStateManager,
+    config.pollIntervalInMs,
+    initializeProjectSelection,
+    config.devServerUrl,
+    projectKey,
+  ]);
 
   const setOverride = useCallback(
     async (flagKey: string, value: any) => {

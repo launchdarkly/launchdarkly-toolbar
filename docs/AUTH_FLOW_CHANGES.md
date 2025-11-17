@@ -11,7 +11,7 @@ possible new features.
 
 ## Overview
 
-To provide a unified experience, both from a usage perspective and from a development perspective, we have opted to enforce an auth-first experience for the 
+To provide a unified experience, both from a usage perspective and from a development perspective, we have opted to enforce an auth-first experience for the
 Developer Toolbar. What this means is that moving from v1.x -> v2.0 will require users to first authenticate + authorize the Developer Toolbar in order to use it. Functionally, this means that we can simplify the code we are developing for the toolbar so we don't need to handle both the authenticated experience as well as the unauthenticated experience, instead providing and supporting one experience.
 
 ### Project Selection
@@ -23,6 +23,7 @@ the user's LaunchDarkly account.
 
 To help ensure an easy, intuitive experience, we have added two props to the toolbar so user's can help ensure the toolbar auto-selects the correct project
 based on the configuration of their LD Client SDK:
+
 1. `projectKey` - The Project Key. If provided, the toolbar will find the matching project from `getProjects` API call. Takes precedence over `clientSideId`.
 2. `clientSideId` - The Client-Side ID used by the LD Client SDK. If provided, the toolbar will find the corresponding project and select it.
 
@@ -34,18 +35,21 @@ and the toolbar does not select the correct project, user's will have to navigat
 
 Another new change we have unlocked with adding authentication is the ability to fetch feature flag data from the API. A simple change this allows us to do
 is to get the exact name for a Feature Flag, instead of inferring it based on the key. It will also soon empower us to do things like:
-* get other variations for flags and turn those into selectable options, rather than open inputs
-* show why flags evaluated they way they did
+
+- get other variations for flags and turn those into selectable options, rather than open inputs
+- show why flags evaluated they way they did
 
 This, however, introduces two places where flag data is loaded, meaning we can potentially have conflicting sources of truth. To help ameliorate this, we are
 going to explain distinct boundaries/ownership between the LD Client flags and the API flags.
 
 **LD Client flags**
+
 - Determines the current value of the flag
 - If a flag is override, determines the evaluation reason (i.e. evaluated as true because it's overriden)
 - all other read data, aside from name (currently). this will change over time
 
 **API flags**
+
 - Evaluation reason (if the flag is not overriden)
 - Flag name
 - Variations (eventually)

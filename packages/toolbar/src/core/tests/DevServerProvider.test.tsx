@@ -238,7 +238,7 @@ describe('DevServerProvider - Integration Flows', () => {
       // GIVEN: Developer wants to use toolbar without a dev server (client-side only)
       // Set empty project key for SDK mode
       mockProjectKey.current = '';
-      
+
       render(
         <DevServerProvider
           config={{

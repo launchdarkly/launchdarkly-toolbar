@@ -11,17 +11,20 @@ The mock-server package has been enhanced to act as an authentication server dur
 ### 1. Enhanced Mock Server (`packages/mock-server/index.js`)
 
 **New Features:**
+
 - Added a second Express server on port 9090 for authentication
 - Serves authentication iframe pages required by the toolbar
 - Handles OAuth flow simulation via postMessage
 - Provides mock API responses for projects and flags
 
 **Endpoints Added:**
+
 - `GET /toolbar/index.html` - Main authentication iframe page
-- `GET /toolbar/authenticating.html` - OAuth loading page  
+- `GET /toolbar/authenticating.html` - OAuth loading page
 - `GET /health` - Health check endpoint
 
 **PostMessage API:**
+
 - Responds to `get-projects` requests with mock project list
 - Responds to `get-flags` requests with mock flag data
 - Responds to `get-flag` requests with detailed flag info
@@ -32,11 +35,13 @@ The mock-server package has been enhanced to act as an authentication server dur
 **Updated both SDKMode.tsx and DevServerMode.tsx:**
 
 Changed from:
+
 ```typescript
 authUrl: import.meta.env.VITE_LD_AUTH_URL,
 ```
 
 To:
+
 ```typescript
 authUrl: import.meta.env.VITE_LD_AUTH_URL || 'http://localhost:9090',
 ```
@@ -46,6 +51,7 @@ This ensures the demo app **defaults to the mock auth server** (`http://localhos
 ### 3. Playwright Configuration (`e2e/playwright.config.ts`)
 
 **Updated to use array of web servers:**
+
 ```typescript
 webServer: [
   {
@@ -56,7 +62,7 @@ webServer: [
     command: 'pnpm dev:server',
     url: 'http://localhost:9090/health',
   },
-]
+];
 ```
 
 This starts both the demo app and mock auth server. No environment variables needed since the demo now defaults to `localhost:9090`.
@@ -64,11 +70,13 @@ This starts both the demo app and mock auth server. No environment variables nee
 ### 4. Documentation
 
 **Created:**
+
 - `packages/mock-server/README.md` - Comprehensive mock server documentation
 - `packages/mock-server/TESTING.md` - Testing guide with troubleshooting
 - `E2E_AUTH_SETUP.md` - Summary of how authentication works
 
 **Updated:**
+
 - `e2e/README.md` - Added mock auth server section
 - `README.md` - Updated mock-server package description
 
@@ -119,6 +127,7 @@ pnpm test:e2e:local
 ```
 
 The Playwright config automatically:
+
 - Starts the mock server (both CDN and auth)
 - Sets the correct environment variable
 - Configures the demo app to use the mock auth server
@@ -126,11 +135,13 @@ The Playwright config automatically:
 ### For Local Development (Manual)
 
 1. Start the mock server:
+
 ```bash
 pnpm dev:server
 ```
 
 2. Start the demo with the mock auth URL:
+
 ```bash
 VITE_LD_AUTH_URL=http://localhost:9090 pnpm demo
 ```
@@ -140,11 +151,13 @@ VITE_LD_AUTH_URL=http://localhost:9090 pnpm demo
 ### Configuration
 
 **Environment Variables:**
+
 - `PORT` - CDN server port (default: 8080)
 - `AUTH_PORT` - Auth server port (default: 9090)
 - `VITE_LD_AUTH_URL` - Auth server URL for demo app
 
 **Example:**
+
 ```bash
 AUTH_PORT=4000 pnpm dev:server
 VITE_LD_AUTH_URL=http://localhost:4000 pnpm demo
@@ -153,21 +166,25 @@ VITE_LD_AUTH_URL=http://localhost:4000 pnpm demo
 ## Benefits
 
 ### 1. No Real Credentials Required
+
 - E2E tests run without LaunchDarkly account
 - No API rate limits or quota concerns
 - Faster test execution
 
 ### 2. Deterministic Testing
+
 - Consistent mock data across test runs
 - No network flakiness
 - Predictable authentication flow
 
 ### 3. Offline Development
+
 - Work without internet connection
 - No dependency on external services
 - Complete local development environment
 
 ### 4. Simplified CI/CD
+
 - No secrets management in CI
 - Faster pipeline execution
 - More reliable test results
@@ -175,35 +192,37 @@ VITE_LD_AUTH_URL=http://localhost:4000 pnpm demo
 ## Mock Data Provided
 
 ### Projects
+
 ```javascript
 [
   { key: 'test-project', name: 'Test Project' },
-  { key: 'demo-project', name: 'Demo Project' }
-]
+  { key: 'demo-project', name: 'Demo Project' },
+];
 ```
 
 ### Flags (per project)
+
 ```javascript
 [
   {
     key: 'test-flag-1',
     name: 'Test Flag 1',
     kind: 'boolean',
-    description: 'A test boolean flag'
+    description: 'A test boolean flag',
   },
   {
     key: 'test-flag-2',
     name: 'Test Flag 2',
     kind: 'multivariate',
-    description: 'A test multivariate flag'
+    description: 'A test multivariate flag',
   },
   {
     key: 'numeric-flag',
     name: 'Numeric Flag',
     kind: 'multivariate',
-    description: 'A numeric flag'
-  }
-]
+    description: 'A numeric flag',
+  },
+];
 ```
 
 ## Testing
@@ -288,4 +307,3 @@ If you encounter issues or have questions:
 2. Review the test output and logs
 3. Check browser console and network tabs
 4. Review Playwright traces for visual debugging
-
