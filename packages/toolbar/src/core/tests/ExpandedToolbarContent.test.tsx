@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import { expect, test, describe, vi, beforeEach } from 'vitest';
 import { ExpandedToolbarContent } from '../ui/Toolbar/components/ExpandedToolbarContent';
 import { DevServerProvider } from '../ui/Toolbar/context/DevServerProvider';
@@ -55,6 +55,49 @@ vi.mock('../services/FlagStateManager', () => {
   };
 });
 
+// Mock the AuthProvider to return authenticated state
+vi.mock('../ui/Toolbar/context/AuthProvider', () => ({
+  AuthProvider: ({ children }: { children: React.ReactNode }) => <>{children}</>,
+  useAuthContext: () => ({
+    authenticated: true,
+    authenticating: false,
+    loading: false,
+    setAuthenticating: vi.fn(),
+  }),
+}));
+
+// Mock the IFrameProvider
+vi.mock('../ui/Toolbar/context/IFrameProvider', () => ({
+  IFrameProvider: ({ children }: { children: React.ReactNode }) => <>{children}</>,
+  useIFrameContext: () => ({
+    ref: { current: null },
+    iframeSrc: 'https://integrations.launchdarkly.com',
+  }),
+}));
+
+// Mock the ProjectProvider
+vi.mock('../ui/Toolbar/context/ProjectProvider', () => ({
+  ProjectProvider: ({ children }: { children: React.ReactNode }) => <>{children}</>,
+  useProjectContext: () => ({
+    projectKey: 'test-project',
+    projects: ['test-project'],
+    getProjects: vi.fn().mockResolvedValue(['test-project']),
+    loading: false,
+    error: null,
+  }),
+}));
+
+// Mock the FlagsProvider
+vi.mock('../ui/Toolbar/context/FlagsProvider', () => ({
+  FlagsProvider: ({ children }: { children: React.ReactNode }) => <>{children}</>,
+  useFlagsContext: () => ({
+    flags: {},
+    getProjectFlags: vi.fn().mockResolvedValue({}),
+    loading: false,
+    error: null,
+  }),
+}));
+
 // Mock the tab content components
 vi.mock('../ui/Toolbar/TabContent/FlagDevServerTabContent', () => ({
   FlagDevServerTabContent: () => <div data-testid="flag-dev-server-tab-content">Flag Tab Content</div>,
@@ -74,10 +117,28 @@ vi.mock('../ui/Toolbar/TabContent/SettingsTabContent', () => ({
   ),
 }));
 
+// Mock the DevServerProvider to return a controlled state
+vi.mock('../ui/Toolbar/context/DevServerProvider', () => ({
+  DevServerProvider: ({ children }: { children: React.ReactNode }) => <>{children}</>,
+  useDevServerContext: () => ({
+    state: {
+      flags: {},
+      connectionStatus: 'connected',
+      lastSyncTime: Date.now(),
+      isLoading: false,
+      error: null,
+      sourceEnvironmentKey: 'test-environment',
+    },
+    setOverride: vi.fn().mockResolvedValue(undefined),
+    clearOverride: vi.fn().mockResolvedValue(undefined),
+    clearAllOverrides: vi.fn().mockResolvedValue(undefined),
+    refresh: vi.fn().mockResolvedValue(undefined),
+  }),
+}));
+
 // Helper component to wrap ExpandedToolbarContent with necessary providers
 function TestWrapper({
   children,
-  devServerUrl,
   initialPosition = 'bottom-right',
 }: {
   children: React.ReactNode;
@@ -86,16 +147,9 @@ function TestWrapper({
 }) {
   return (
     <ToolbarUIProvider initialPosition={initialPosition}>
-      <DevServerProvider
-        config={{
-          devServerUrl,
-          pollIntervalInMs: 5000,
-        }}
-      >
-        <AnalyticsProvider>
-          <SearchProvider>{children}</SearchProvider>
-        </AnalyticsProvider>
-      </DevServerProvider>
+      <AnalyticsProvider>
+        <SearchProvider>{children}</SearchProvider>
+      </AnalyticsProvider>
     </ToolbarUIProvider>
   );
 }
@@ -195,7 +249,7 @@ describe('ExpandedToolbarContent - User Interaction Flows', () => {
       expect(screen.getByTestId('settings-tab-content')).toHaveTextContent('Settings Tab Content - dev-server');
     });
 
-    test('developer navigates to server-side flags view', () => {
+    test('developer navigates to server-side flags view', async () => {
       // GIVEN: Developer wants to work with server-side flags
       render(
         <TestWrapper devServerUrl="http://localhost:8765">
@@ -210,7 +264,9 @@ describe('ExpandedToolbarContent - User Interaction Flows', () => {
 
       // WHEN: They select the flags tab
       // THEN: They see the server-side flag management interface
-      expect(screen.getByTestId('flag-dev-server-tab-content')).toBeInTheDocument();
+      await waitFor(() => {
+        expect(screen.getByTestId('flag-dev-server-tab-content')).toBeInTheDocument();
+      });
     });
 
     test('developer with event interception plugin can access events tab in dev-server mode', () => {

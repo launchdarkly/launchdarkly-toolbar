@@ -31,7 +31,7 @@ export interface DevServerProviderProps {
 
 export const DevServerProvider: FC<DevServerProviderProps> = ({ children, config }) => {
   const { getProjectFlags, flags: apiFlags } = useFlagsContext();
-  const { projectKey, projects, getProjects } = useProjectContext();
+  const { projectKey, getProjects } = useProjectContext();
   const [toolbarState, setToolbarState] = useState<ToolbarState>(() => {
     return {
       flags: {},
@@ -321,37 +321,6 @@ export const DevServerProvider: FC<DevServerProviderProps> = ({ children, config
       }));
     }
   }, [flagStateManager, devServerClient, projectKey, toolbarState.connectionStatus]);
-
-  useEffect(() => {
-    if (!devServerClient || !flagStateManager) {
-      const errorMessage = 'Dev server client and flag state manager not available - not in dev-server mode';
-      setToolbarState((prev) => ({
-        ...prev,
-        connectionStatus: 'error',
-        error: errorMessage,
-        isLoading: false,
-      }));
-      return;
-    }
-
-    try {
-      setToolbarState((prev) => ({ ...prev, isLoading: true }));
-
-      if (!projects.some((project) => project.key === projectKey)) {
-        throw new Error(`Project "${projectKey}" not found in available projects`);
-      }
-
-      refresh();
-    } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-      setToolbarState((prev) => ({
-        ...prev,
-        connectionStatus: 'error',
-        error: errorMessage,
-        isLoading: false,
-      }));
-    }
-  }, [devServerClient, flagStateManager, projectKey, projects, refresh]);
 
   const value = useMemo(
     () => ({

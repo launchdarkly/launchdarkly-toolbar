@@ -40,6 +40,26 @@ vi.mock('../services/FlagStateManager', () => {
   };
 });
 
+// Mock the AuthProvider to return authenticated state
+vi.mock('../ui/Toolbar/context/AuthProvider', () => ({
+  AuthProvider: ({ children }: { children: React.ReactNode }) => <>{children}</>,
+  useAuthContext: () => ({
+    authenticated: true,
+    authenticating: false,
+    loading: false,
+    setAuthenticating: vi.fn(),
+  }),
+}));
+
+// Mock the IFrameProvider
+vi.mock('../ui/Toolbar/context/IFrameProvider', () => ({
+  IFrameProvider: ({ children }: { children: React.ReactNode }) => <>{children}</>,
+  useIFrameContext: () => ({
+    ref: { current: null },
+    iframeSrc: 'https://integrations.launchdarkly.com',
+  }),
+}));
+
 describe('LaunchDarklyToolbar - User Flows', () => {
   beforeEach(() => {
     vi.clearAllMocks();

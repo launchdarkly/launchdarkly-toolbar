@@ -49,6 +49,28 @@ vi.mock('../services/FlagStateManager', () => {
   };
 });
 
+// Mock the ProjectProvider
+vi.mock('../ui/Toolbar/context/ProjectProvider', () => ({
+  ProjectProvider: ({ children }: { children: React.ReactNode }) => <>{children}</>,
+  useProjectContext: () => ({
+    projectKey: 'test-project',
+    projects: ['test-project'],
+    getProjects: vi.fn().mockResolvedValue(['test-project']),
+    loading: false,
+    error: null,
+  }),
+}));
+
+// Mock the FlagsProvider
+vi.mock('../ui/Toolbar/context/FlagsProvider', () => ({
+  FlagsProvider: ({ children }: { children: React.ReactNode }) => <>{children}</>,
+  useFlagsContext: () => ({
+    flags: [],
+    loading: false,
+    getProjectFlags: vi.fn().mockResolvedValue([]),
+  }),
+}));
+
 // Test component that consumes the context
 function TestConsumer() {
   const { state } = useDevServerContext();
@@ -59,6 +81,7 @@ function TestConsumer() {
       <div data-testid="source-environment">{state.sourceEnvironmentKey || 'none'}</div>
       <div data-testid="is-loading">{state.isLoading.toString()}</div>
       <div data-testid="error">{state.error || 'none'}</div>
+      <div data-testid="current-project">test-project</div>
     </div>
   );
 }
