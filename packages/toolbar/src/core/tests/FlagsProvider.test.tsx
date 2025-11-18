@@ -20,7 +20,6 @@ vi.mock('../ui/Toolbar/context/AuthProvider', () => ({
 vi.mock('../ui/Toolbar/context/SearchProvider', () => ({
   useSearchContext: vi.fn(() => ({
     searchTerm: '',
-    debouncedSearchTerm: '',
     setSearchTerm: vi.fn(),
   })),
 }));
@@ -288,11 +287,7 @@ describe('FlagsProvider', () => {
 
       // THEN: Custom flags are retrieved
       await waitFor(() => {
-        expect(mockGetFlags).toHaveBeenCalledWith('other-project', {
-          limit: 20,
-          offset: 0,
-          query: '',
-        });
+        expect(mockGetFlags).toHaveBeenCalledWith('other-project');
       });
     });
 
