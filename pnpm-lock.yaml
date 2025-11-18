@@ -157,8 +157,8 @@ importers:
         specifier: ^9.0.0-alpha.10
         version: 9.0.0-alpha.10(storybook@9.1.16(@testing-library/dom@10.4.0)(msw@2.11.6(@types/node@24.10.1)(typescript@5.9.3))(prettier@3.6.2)(vite@7.2.2(@types/node@24.10.1)(jiti@2.6.1)(terser@5.44.1)(tsx@4.20.6)(yaml@2.8.1)))
       '@storybook/addon-links':
-        specifier: ^10.0.7
-        version: 10.0.7(react@19.2.0)(storybook@9.1.16(@testing-library/dom@10.4.0)(msw@2.11.6(@types/node@24.10.1)(typescript@5.9.3))(prettier@3.6.2)(vite@7.2.2(@types/node@24.10.1)(jiti@2.6.1)(terser@5.44.1)(tsx@4.20.6)(yaml@2.8.1)))
+        specifier: ^10.0.8
+        version: 10.0.8(react@19.2.0)(storybook@9.1.16(@testing-library/dom@10.4.0)(msw@2.11.6(@types/node@24.10.1)(typescript@5.9.3))(prettier@3.6.2)(vite@7.2.2(@types/node@24.10.1)(jiti@2.6.1)(terser@5.44.1)(tsx@4.20.6)(yaml@2.8.1)))
       '@storybook/addon-onboarding':
         specifier: ^10.0.8
         version: 10.0.8(storybook@9.1.16(@testing-library/dom@10.4.0)(msw@2.11.6(@types/node@24.10.1)(typescript@5.9.3))(prettier@3.6.2)(vite@7.2.2(@types/node@24.10.1)(jiti@2.6.1)(terser@5.44.1)(tsx@4.20.6)(yaml@2.8.1)))
@@ -1980,11 +1980,11 @@ packages:
     peerDependencies:
       storybook: ^9.0.0-alpha.10
 
-  '@storybook/addon-links@10.0.7':
-    resolution: {integrity: sha512-fsstlcBuvxULuExqDs7RHcuf7TXxfL1PY92uPQdB9EEdZCjbf9ZzoGD/soZK1wkBH3yPe2PMPk2aggMXvJUpsQ==}
+  '@storybook/addon-links@10.0.8':
+    resolution: {integrity: sha512-LnakruogdN5ND0cF0SOKyhzbEeIGDe1njkufX2aR9LOXQ0mMj5S2P86TdP87dR5R9bJjYYPPg/F7sjsAiI1Lqg==}
     peerDependencies:
       react: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
-      storybook: ^10.0.7
+      storybook: ^10.0.8
     peerDependenciesMeta:
       react:
         optional: true
@@ -6961,7 +6961,7 @@ snapshots:
       storybook: 9.1.16(@testing-library/dom@10.4.0)(msw@2.11.6(@types/node@24.10.1)(typescript@5.9.3))(prettier@3.6.2)(vite@7.2.2(@types/node@24.10.1)(jiti@2.6.1)(terser@5.44.1)(tsx@4.20.6)(yaml@2.8.1))
       ts-dedent: 2.2.0
 
-  '@storybook/addon-links@10.0.7(react@19.2.0)(storybook@9.1.16(@testing-library/dom@10.4.0)(msw@2.11.6(@types/node@24.10.1)(typescript@5.9.3))(prettier@3.6.2)(vite@7.2.2(@types/node@24.10.1)(jiti@2.6.1)(terser@5.44.1)(tsx@4.20.6)(yaml@2.8.1)))':
+  '@storybook/addon-links@10.0.8(react@19.2.0)(storybook@9.1.16(@testing-library/dom@10.4.0)(msw@2.11.6(@types/node@24.10.1)(typescript@5.9.3))(prettier@3.6.2)(vite@7.2.2(@types/node@24.10.1)(jiti@2.6.1)(terser@5.44.1)(tsx@4.20.6)(yaml@2.8.1)))':
     dependencies:
       '@storybook/global': 5.0.0
       storybook: 9.1.16(@testing-library/dom@10.4.0)(msw@2.11.6(@types/node@24.10.1)(typescript@5.9.3))(prettier@3.6.2)(vite@7.2.2(@types/node@24.10.1)(jiti@2.6.1)(terser@5.44.1)(tsx@4.20.6)(yaml@2.8.1))
