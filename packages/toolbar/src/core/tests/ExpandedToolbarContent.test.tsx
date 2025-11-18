@@ -98,6 +98,15 @@ vi.mock('../ui/Toolbar/context/FlagsProvider', () => ({
   }),
 }));
 
+// Mock the ActiveTabProvider
+vi.mock('../ui/Toolbar/context/ActiveTabProvider', () => ({
+  ActiveTabProvider: ({ children }: { children: React.ReactNode }) => <>{children}</>,
+  useActiveTabContext: () => ({
+    activeTab: 'settings',
+    setActiveTab: vi.fn(),
+  }),
+}));
+
 // Mock the tab content components
 vi.mock('../ui/Toolbar/TabContent/FlagDevServerTabContent', () => ({
   FlagDevServerTabContent: () => <div data-testid="flag-dev-server-tab-content">Flag Tab Content</div>,

@@ -9,6 +9,7 @@ import {
   loadReloadOnFlagChange,
   saveReloadOnFlagChange,
 } from '../utils/localStorage';
+import { useActiveTabContext } from '../context/ActiveTabProvider';
 
 export interface UseToolbarStateProps {
   defaultActiveTab: ActiveTabId;
@@ -18,7 +19,6 @@ export interface UseToolbarStateProps {
 export interface UseToolbarStateReturn {
   // State values
   isExpanded: boolean;
-  activeTab: ActiveTabId;
   previousTab: ActiveTabId;
   isAnimating: boolean;
   searchIsExpanded: boolean;
@@ -45,9 +45,8 @@ export function useToolbarState(props: UseToolbarStateProps): UseToolbarStateRet
   const { defaultActiveTab, domId } = props;
   const { setSearchTerm } = useSearchContext();
   const analytics = useAnalytics();
-
+  const { activeTab, setActiveTab } = useActiveTabContext();
   const [isExpanded, setIsExpanded] = useState(false);
-  const [activeTab, setActiveTab] = useState<ActiveTabId>();
   const [previousTab, setPreviousTab] = useState<ActiveTabId>();
   const [isAnimating, setIsAnimating] = useState(false);
   const [searchIsExpanded, setSearchIsExpanded] = useState(false);
@@ -130,13 +129,9 @@ export function useToolbarState(props: UseToolbarStateProps): UseToolbarStateRet
 
   const handleCircleClick = useCallback(() => {
     if (!isExpanded) {
-      // Only set default tab if no tab is currently selected
-      if (!activeTab) {
-        setActiveTab(defaultActiveTab);
-      }
       setIsExpanded(true);
     }
-  }, [isExpanded, activeTab, defaultActiveTab]);
+  }, [isExpanded]);
 
   // Update hasBeenExpanded ref when toolbar shows
   useEffect(() => {
@@ -144,6 +139,13 @@ export function useToolbarState(props: UseToolbarStateProps): UseToolbarStateRet
       hasBeenExpandedRef.current = true;
     }
   }, [isExpanded]);
+
+  // Set default active tab when toolbar expands (if no tab is selected)
+  useEffect(() => {
+    if (isExpanded && !activeTab) {
+      setActiveTab(defaultActiveTab);
+    }
+  }, [isExpanded, activeTab, defaultActiveTab]);
 
   // Handle click outside to close toolbar (only when auto-collapse is enabled)
   useEffect(() => {
@@ -174,7 +176,6 @@ export function useToolbarState(props: UseToolbarStateProps): UseToolbarStateRet
   return {
     // State values
     isExpanded,
-    activeTab,
     previousTab,
     isAnimating,
     searchIsExpanded,

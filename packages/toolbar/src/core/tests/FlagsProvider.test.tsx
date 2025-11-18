@@ -17,9 +17,27 @@ vi.mock('../ui/Toolbar/context/AuthProvider', () => ({
   useAuthContext: vi.fn(),
 }));
 
+vi.mock('../ui/Toolbar/context/SearchProvider', () => ({
+  useSearchContext: vi.fn(() => ({
+    searchTerm: '',
+    debouncedSearchTerm: '',
+    setSearchTerm: vi.fn(),
+  })),
+}));
+
+vi.mock('../ui/Toolbar/context/ActiveTabProvider', () => ({
+  ActiveTabProvider: ({ children }: { children: React.ReactNode }) => <>{children}</>,
+  useActiveTabContext: vi.fn(() => ({
+    activeTab: 'flag-sdk', // Default to flag tab active for tests
+    setActiveTab: vi.fn(),
+  })),
+}));
+
 import { useProjectContext } from '../ui/Toolbar/context/ProjectProvider';
 import { useApi } from '../ui/Toolbar/context/ApiProvider';
 import { useAuthContext } from '../ui/Toolbar/context/AuthProvider';
+import { useActiveTabContext } from '../ui/Toolbar/context/ActiveTabProvider';
+import { ActiveTabProvider } from '../ui/Toolbar/context/ActiveTabProvider';
 
 // Test component
 function TestConsumer() {
@@ -36,6 +54,20 @@ function TestConsumer() {
       ))}
     </div>
   );
+}
+
+// Wrapper for tests
+function TestWrapper({ children }: { children: React.ReactNode }) {
+  return <ActiveTabProvider>{children}</ActiveTabProvider>;
+}
+
+// Helper to create proper paginated response
+function createPaginatedResponse(items: any[], hasMore = false) {
+  return {
+    items,
+    totalCount: items.length,
+    ...(hasMore && { _links: { next: { href: '/next' } } }),
+  };
 }
 
 describe('FlagsProvider', () => {
@@ -61,16 +93,20 @@ describe('FlagsProvider', () => {
   describe('Flags Loading - Developer Workflow', () => {
     test('automatically fetches flags when project is selected', async () => {
       // GIVEN: Developer has selected a project
-      mockGetFlags.mockResolvedValue([
-        { key: 'feature-1', name: 'Feature 1', kind: 'boolean' },
-        { key: 'feature-2', name: 'Feature 2', kind: 'multivariate' },
-      ]);
+      mockGetFlags.mockResolvedValue(
+        createPaginatedResponse([
+          { key: 'feature-1', name: 'Feature 1', kind: 'boolean' },
+          { key: 'feature-2', name: 'Feature 2', kind: 'multivariate' },
+        ]),
+      );
 
       // WHEN: FlagsProvider initializes
       render(
-        <FlagsProvider>
-          <TestConsumer />
-        </FlagsProvider>,
+        <TestWrapper>
+          <FlagsProvider>
+            <TestConsumer />
+          </FlagsProvider>
+        </TestWrapper>,
       );
 
       // THEN: Shows loading state initially
@@ -98,9 +134,11 @@ describe('FlagsProvider', () => {
 
       // WHEN: Provider tries to initialize
       render(
-        <FlagsProvider>
-          <TestConsumer />
-        </FlagsProvider>,
+        <TestWrapper>
+          <FlagsProvider>
+            <TestConsumer />
+          </FlagsProvider>
+        </TestWrapper>,
       );
 
       // THEN: No API call is made
@@ -121,9 +159,11 @@ describe('FlagsProvider', () => {
 
       // WHEN: Provider tries to initialize
       render(
-        <FlagsProvider>
-          <TestConsumer />
-        </FlagsProvider>,
+        <TestWrapper>
+          <FlagsProvider>
+            <TestConsumer />
+          </FlagsProvider>
+        </TestWrapper>,
       );
 
       // THEN: Waits for API to be ready
@@ -155,12 +195,16 @@ describe('FlagsProvider', () => {
   describe('Project Switching - Dynamic Updates', () => {
     test('refetches flags when project changes', async () => {
       // GIVEN: Developer is viewing flags for project-1
-      mockGetFlags.mockResolvedValue([{ key: 'flag-a', name: 'Flag A', kind: 'boolean' }]);
+      mockGetFlags.mockResolvedValue(
+        createPaginatedResponse([{ key: 'flag-a', name: 'Flag A', kind: 'boolean' }]),
+      );
 
       const { rerender } = render(
-        <FlagsProvider>
-          <TestConsumer />
-        </FlagsProvider>,
+        <TestWrapper>
+          <FlagsProvider>
+            <TestConsumer />
+          </FlagsProvider>
+        </TestWrapper>,
       );
 
       await waitFor(() => {
@@ -172,15 +216,19 @@ describe('FlagsProvider', () => {
         projectKey: 'project-2',
       });
 
-      mockGetFlags.mockResolvedValue([
-        { key: 'flag-x', name: 'Flag X', kind: 'boolean' },
-        { key: 'flag-y', name: 'Flag Y', kind: 'boolean' },
-      ]);
+      mockGetFlags.mockResolvedValue(
+        createPaginatedResponse([
+          { key: 'flag-x', name: 'Flag X', kind: 'boolean' },
+          { key: 'flag-y', name: 'Flag Y', kind: 'boolean' },
+        ]),
+      );
 
       rerender(
-        <FlagsProvider>
-          <TestConsumer />
-        </FlagsProvider>,
+        <TestWrapper>
+          <FlagsProvider>
+            <TestConsumer />
+          </FlagsProvider>
+        </TestWrapper>,
       );
 
       // THEN: New flags are loaded for project-2
@@ -193,7 +241,9 @@ describe('FlagsProvider', () => {
   describe('Manual Flag Fetching', () => {
     test('allows manual flag fetching for specific projects', async () => {
       // GIVEN: Developer wants to fetch flags for a different project temporarily
-      mockGetFlags.mockResolvedValue([{ key: 'default-flag', name: 'Default Flag', kind: 'boolean' }]);
+      mockGetFlags.mockResolvedValue(
+        createPaginatedResponse([{ key: 'default-flag', name: 'Default Flag', kind: 'boolean' }]),
+      );
 
       const TestWithManualFetch = () => {
         const { getProjectFlags } = useFlagsContext();
@@ -216,9 +266,11 @@ describe('FlagsProvider', () => {
       };
 
       render(
-        <FlagsProvider>
-          <TestWithManualFetch />
-        </FlagsProvider>,
+        <TestWrapper>
+          <FlagsProvider>
+            <TestWithManualFetch />
+          </FlagsProvider>
+        </TestWrapper>,
       );
 
       await waitFor(() => {
@@ -227,16 +279,22 @@ describe('FlagsProvider', () => {
 
       // WHEN: They manually fetch flags for another project
       const fetchButton = screen.getByTestId('fetch-custom');
-      mockGetFlags.mockResolvedValue([
-        { key: 'custom-1', name: 'Custom 1', kind: 'boolean' },
-        { key: 'custom-2', name: 'Custom 2', kind: 'boolean' },
-      ]);
+      mockGetFlags.mockResolvedValue(
+        createPaginatedResponse([
+          { key: 'custom-1', name: 'Custom 1', kind: 'boolean' },
+          { key: 'custom-2', name: 'Custom 2', kind: 'boolean' },
+        ]),
+      );
 
       fetchButton.click();
 
       // THEN: Custom flags are retrieved
       await waitFor(() => {
-        expect(mockGetFlags).toHaveBeenCalledWith('other-project');
+        expect(mockGetFlags).toHaveBeenCalledWith('other-project', {
+          limit: 20,
+          offset: 0,
+          query: '',
+        });
       });
     });
 
@@ -267,9 +325,11 @@ describe('FlagsProvider', () => {
       };
 
       render(
-        <FlagsProvider>
-          <TestManualFetch />
-        </FlagsProvider>,
+        <TestWrapper>
+          <FlagsProvider>
+            <TestManualFetch />
+          </FlagsProvider>
+        </TestWrapper>,
       );
 
       // WHEN: They try to fetch flags
@@ -309,9 +369,11 @@ describe('FlagsProvider', () => {
       };
 
       render(
-        <FlagsProvider>
-          <TestManualFetch />
-        </FlagsProvider>,
+        <TestWrapper>
+          <FlagsProvider>
+            <TestManualFetch />
+          </FlagsProvider>
+        </TestWrapper>,
       );
 
       // WHEN: They try to fetch flags
@@ -328,13 +390,15 @@ describe('FlagsProvider', () => {
   describe('Empty States', () => {
     test('handles project with no flags gracefully', async () => {
       // GIVEN: Project exists but has no feature flags yet
-      mockGetFlags.mockResolvedValue([]);
+      mockGetFlags.mockResolvedValue(createPaginatedResponse([]));
 
       // WHEN: Flags are loaded
       render(
-        <FlagsProvider>
-          <TestConsumer />
-        </FlagsProvider>,
+        <TestWrapper>
+          <FlagsProvider>
+            <TestConsumer />
+          </FlagsProvider>
+        </TestWrapper>,
       );
 
       // THEN: Shows no flags (but doesn't error)
@@ -349,8 +413,8 @@ describe('FlagsProvider', () => {
   });
 
   describe('Context Hook - useFlagsContext', () => {
-    test('provides default empty state when used without explicit provider', () => {
-      // GIVEN: Component uses context (has default value, so doesn't throw)
+    test('provides default values when used without FlagsProvider', () => {
+      // GIVEN: Component uses context without provider
       const TestDefault = () => {
         const { flags, loading } = useFlagsContext();
         return (
@@ -361,12 +425,101 @@ describe('FlagsProvider', () => {
         );
       };
 
-      // WHEN: Rendered without provider
-      render(<TestDefault />);
+      // WHEN: Rendered without FlagsProvider uses default context value
+      render(
+        <TestWrapper>
+          <TestDefault />
+        </TestWrapper>,
+      );
 
       // THEN: Uses default values from context creation
       expect(screen.getByTestId('default-flags')).toHaveTextContent('0');
       expect(screen.getByTestId('default-loading')).toHaveTextContent('true');
+    });
+  });
+
+  describe('Active Tab Optimization', () => {
+    test('only fetches flags when a flag tab is active', async () => {
+      // GIVEN: Settings tab is active (not a flag tab)
+      (useActiveTabContext as any).mockReturnValue({
+        activeTab: 'settings',
+        setActiveTab: vi.fn(),
+      });
+
+      mockGetFlags.mockResolvedValue(
+        createPaginatedResponse([{ key: 'flag-1', name: 'Flag 1', kind: 'boolean' }]),
+      );
+
+      // WHEN: Provider initializes
+      render(
+        <FlagsProvider>
+          <TestConsumer />
+        </FlagsProvider>,
+      );
+
+      // THEN: No API call is made (tab is not active)
+      await waitFor(() => {
+        expect(mockGetFlags).not.toHaveBeenCalled();
+      });
+
+      // AND: No flags are loaded
+      expect(screen.getByTestId('flags-count')).toHaveTextContent('0');
+    });
+
+    test('fetches flags when flag-sdk tab is active', async () => {
+      // GIVEN: Flag SDK tab is active
+      (useActiveTabContext as any).mockReturnValue({
+        activeTab: 'flag-sdk',
+        setActiveTab: vi.fn(),
+      });
+
+      mockGetFlags.mockResolvedValue(
+        createPaginatedResponse([{ key: 'flag-1', name: 'Flag 1', kind: 'boolean' }]),
+      );
+
+      // WHEN: Provider initializes
+      render(
+        <FlagsProvider>
+          <TestConsumer />
+        </FlagsProvider>,
+      );
+
+      // THEN: Flags are fetched
+      await waitFor(() => {
+        expect(mockGetFlags).toHaveBeenCalled();
+      });
+
+      await waitFor(() => {
+        expect(screen.getByTestId('flags-count')).toHaveTextContent('1');
+      });
+    });
+
+    test('fetches flags when flag-dev-server tab is active', async () => {
+      // GIVEN: Flag dev-server tab is active
+      (useActiveTabContext as any).mockReturnValue({
+        activeTab: 'flag-dev-server',
+        setActiveTab: vi.fn(),
+      });
+
+      mockGetFlags.mockResolvedValue(
+        createPaginatedResponse([{ key: 'flag-1', name: 'Flag 1', kind: 'boolean' }]),
+      );
+
+      // WHEN: Provider initializes
+      render(
+        <FlagsProvider>
+          <TestConsumer />
+        </FlagsProvider>,
+      );
+
+      // THEN: Flags are fetched
+      await waitFor(() => {
+        expect(mockGetFlags).toHaveBeenCalled();
+      });
+
+      await waitFor(() => {
+        expect(screen.getByTestId('flags-count')).toHaveTextContent('1');
+      });
     });
   });
 
@@ -381,9 +534,11 @@ describe('FlagsProvider', () => {
 
       // WHEN: Provider starts loading
       render(
-        <FlagsProvider>
-          <TestConsumer />
-        </FlagsProvider>,
+        <TestWrapper>
+          <FlagsProvider>
+            <TestConsumer />
+          </FlagsProvider>
+        </TestWrapper>,
       );
 
       // THEN: Loading is true
@@ -392,7 +547,7 @@ describe('FlagsProvider', () => {
       });
 
       // WHEN: Flags finish loading
-      resolveFlags([{ key: 'flag-1', name: 'Flag 1', kind: 'boolean' }]);
+      resolveFlags(createPaginatedResponse([{ key: 'flag-1', name: 'Flag 1', kind: 'boolean' }]));
 
       // THEN: Loading becomes false
       await waitFor(() => {
@@ -414,9 +569,11 @@ describe('FlagsProvider', () => {
       (useApi as any).mockReturnValue({ getFlags: mockGetFlags, apiReady: false });
 
       const { rerender } = render(
-        <FlagsProvider>
-          <TestConsumer />
-        </FlagsProvider>,
+        <TestWrapper>
+          <FlagsProvider>
+            <TestConsumer />
+          </FlagsProvider>
+        </TestWrapper>,
       );
 
       // No flags loaded yet
@@ -427,9 +584,11 @@ describe('FlagsProvider', () => {
       (useApi as any).mockReturnValue({ getFlags: mockGetFlags, apiReady: true });
 
       rerender(
-        <FlagsProvider>
-          <TestConsumer />
-        </FlagsProvider>,
+        <TestWrapper>
+          <FlagsProvider>
+            <TestConsumer />
+          </FlagsProvider>
+        </TestWrapper>,
       );
 
       // Still waiting for project
@@ -439,16 +598,20 @@ describe('FlagsProvider', () => {
 
       // WHEN: Project is selected
       (useProjectContext as any).mockReturnValue({ projectKey: 'my-project' });
-      mockGetFlags.mockResolvedValue([
-        { key: 'feature-1', name: 'Feature 1', kind: 'boolean' },
-        { key: 'feature-2', name: 'Feature 2', kind: 'multivariate' },
-        { key: 'feature-3', name: 'Feature 3', kind: 'boolean' },
-      ]);
+      mockGetFlags.mockResolvedValue(
+        createPaginatedResponse([
+          { key: 'feature-1', name: 'Feature 1', kind: 'boolean' },
+          { key: 'feature-2', name: 'Feature 2', kind: 'multivariate' },
+          { key: 'feature-3', name: 'Feature 3', kind: 'boolean' },
+        ]),
+      );
 
       rerender(
-        <FlagsProvider>
-          <TestConsumer />
-        </FlagsProvider>,
+        <TestWrapper>
+          <FlagsProvider>
+            <TestConsumer />
+          </FlagsProvider>
+        </TestWrapper>,
       );
 
       // THEN: Flags are loaded

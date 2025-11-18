@@ -4,6 +4,7 @@ import { useApi } from './ApiProvider';
 import { useAuthContext } from './AuthProvider';
 import { ApiFlag, PaginatedFlagsResponse } from '../types/ldApi';
 import { useSearchContext } from './SearchProvider';
+import { useActiveTabContext } from './ActiveTabProvider';
 
 const PAGE_SIZE = 20;
 
@@ -40,6 +41,7 @@ export const FlagsProvider = ({ children }: { children: React.ReactNode }) => {
   const [offset, setOffset] = useState(0);
   const [totalCount, setTotalCount] = useState(0);
   const { debouncedSearchTerm } = useSearchContext();
+  const { activeTab } = useActiveTabContext();
 
   const resetFlags = useCallback(() => {
     setFlags([]);
@@ -104,6 +106,13 @@ export const FlagsProvider = ({ children }: { children: React.ReactNode }) => {
   }, [projectKey, apiReady, getFlags, loadingMore, hasMore, offset, debouncedSearchTerm]);
 
   useEffect(() => {
+    // Only fetch flags when a flag tab is active
+    const isFlagTabActive = activeTab === 'flag-sdk' || activeTab === 'flag-dev-server';
+    
+    if (!isFlagTabActive) {
+      return;
+    }
+
     if (!authenticated || !apiReady) {
       return;
     }
@@ -116,7 +125,7 @@ export const FlagsProvider = ({ children }: { children: React.ReactNode }) => {
     setLoading(true);
     resetFlags();
     getProjectFlags(projectKey);
-  }, [projectKey, authenticated, apiReady, getProjectFlags, resetFlags]);
+  }, [projectKey, authenticated, apiReady, getProjectFlags, resetFlags, activeTab]);
 
   return (
     <FlagsContext.Provider

@@ -1,7 +1,15 @@
 import { AnimatePresence, motion } from 'motion/react';
-import { useCallback, useRef } from 'react';
+import { useCallback, useRef, useEffect } from 'react';
 
-import { SearchProvider, useSearchContext, AnalyticsProvider, useAnalytics, StarredFlagsProvider } from './context';
+import {
+  SearchProvider,
+  useSearchContext,
+  AnalyticsProvider,
+  useAnalytics,
+  StarredFlagsProvider,
+  ActiveTabProvider,
+  useActiveTabContext,
+} from './context';
 import { CircleLogo, ExpandedToolbarContent } from './components';
 import { useToolbarAnimations, useToolbarVisibility, useToolbarDrag, useToolbarState } from './hooks';
 import { ToolbarUIProvider, useToolbarUIContext } from './context';
@@ -30,6 +38,7 @@ export function LdToolbar(props: LdToolbarProps) {
   const { searchTerm } = useSearchContext();
   const { position, handlePositionChange } = useToolbarUIContext();
   const analytics = useAnalytics();
+  const { activeTab, setActiveTab } = useActiveTabContext();
 
   const defaultActiveTab = getDefaultActiveTab(mode, !!flagOverridePlugin, !!eventInterceptionPlugin);
 
@@ -38,7 +47,6 @@ export function LdToolbar(props: LdToolbarProps) {
   const expandedContentRef = useRef<HTMLDivElement>(null);
 
   const {
-    activeTab,
     slideDirection,
     searchIsExpanded,
     isExpanded,
@@ -109,6 +117,12 @@ export function LdToolbar(props: LdToolbarProps) {
     onExpandComplete: focusExpandedToolbar,
     onCollapseComplete: focusCollapsedToolbar,
   });
+
+  useEffect(() => {
+    if (!activeTab) {
+      setActiveTab(defaultActiveTab);
+    }
+  }, [activeTab, setActiveTab, defaultActiveTab]);
 
   // Prevent clicks from expanding toolbar if user was dragging
   const handleCircleClickWithDragCheck = useCallback(() => {
@@ -228,29 +242,31 @@ export function LaunchDarklyToolbar(props: LaunchDarklyToolbarProps) {
           <SearchProvider>
             <ApiProvider>
               <ProjectProvider clientSideId={clientSideId} providedProjectKey={projectKey}>
-                <FlagsProvider>
-                  <DevServerProvider
-                    config={{
-                      projectKey,
-                      devServerUrl,
-                      pollIntervalInMs,
-                    }}
-                  >
-                    <AnalyticsProvider
-                      ldClient={flagOverridePlugin?.getClient() ?? eventInterceptionPlugin?.getClient()}
+                <ActiveTabProvider>
+                  <FlagsProvider>
+                    <DevServerProvider
+                      config={{
+                        projectKey,
+                        devServerUrl,
+                        pollIntervalInMs,
+                      }}
                     >
-                      <StarredFlagsProvider>
-                        <LdToolbar
-                          domId={domId}
-                          mode={mode}
-                          baseUrl={baseUrl}
-                          flagOverridePlugin={flagOverridePlugin}
-                          eventInterceptionPlugin={eventInterceptionPlugin}
-                        />
-                      </StarredFlagsProvider>
-                    </AnalyticsProvider>
-                  </DevServerProvider>
-                </FlagsProvider>
+                      <AnalyticsProvider
+                        ldClient={flagOverridePlugin?.getClient() ?? eventInterceptionPlugin?.getClient()}
+                      >
+                        <StarredFlagsProvider>
+                          <LdToolbar
+                            domId={domId}
+                            mode={mode}
+                            baseUrl={baseUrl}
+                            flagOverridePlugin={flagOverridePlugin}
+                            eventInterceptionPlugin={eventInterceptionPlugin}
+                          />
+                        </StarredFlagsProvider>
+                      </AnalyticsProvider>
+                    </DevServerProvider>
+                  </FlagsProvider>
+                </ActiveTabProvider>
               </ProjectProvider>
             </ApiProvider>
           </SearchProvider>
