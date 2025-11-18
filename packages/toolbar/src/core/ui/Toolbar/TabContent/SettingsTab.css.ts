@@ -90,3 +90,27 @@ export const selectedValue = style({
   whiteSpace: 'nowrap',
   flex: 1,
 });
+
+export const logoutButton = style({
+  width: '100%',
+  background: 'none',
+  border: 'none',
+  padding: 0,
+  margin: 0,
+  textAlign: 'left',
+  cursor: 'pointer',
+  color: 'inherit',
+  font: 'inherit',
+  display: 'flex',
+  alignItems: 'center',
+
+  ':hover': {
+    opacity: 0.8,
+  },
+
+  ':focus-visible': {
+    outline: '2px solid var(--lp-color-blue-500)',
+    outlineOffset: '2px',
+    borderRadius: '4px',
+  },
+});

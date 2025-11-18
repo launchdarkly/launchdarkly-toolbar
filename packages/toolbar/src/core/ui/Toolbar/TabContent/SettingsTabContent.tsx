@@ -1,10 +1,11 @@
-import { Switch } from '@launchpad-ui/components';
+import { Button, Switch } from '@launchpad-ui/components';
 import { List } from '../../List/List';
 import { ListItem } from '../../List/ListItem';
 import { useSearchContext } from '../context/SearchProvider';
 import { useDevServerContext } from '../context/DevServerProvider';
 import { useToolbarUIContext } from '../context/ToolbarUIProvider';
 import { useAnalytics } from '../context/AnalyticsProvider';
+import { useAuthContext } from '../context/AuthProvider';
 import { StatusDot } from '../components/StatusDot';
 import { GenericHelpText } from '../components/GenericHelpText';
 import { TOOLBAR_POSITIONS, type ToolbarPosition, type ToolbarMode } from '../types/toolbar';
@@ -24,6 +25,7 @@ interface SettingsItem {
   isConnectionStatus?: boolean;
   isReloadOnFlagChangeToggle?: boolean;
   isAutoCollapseToggle?: boolean;
+  isLogoutButton?: boolean;
   value?: string;
 }
 
@@ -204,6 +206,7 @@ export function SettingsTabContent(props: SettingsTabContentProps) {
   const { position, handlePositionChange } = useToolbarUIContext();
   const { searchTerm } = useSearchContext();
   const analytics = useAnalytics();
+  const { logout } = useAuthContext();
 
   const handlePositionSelect = (newPosition: ToolbarPosition) => {
     // Track position change
@@ -262,6 +265,18 @@ export function SettingsTabContent(props: SettingsTabContentProps) {
             },
           ],
         },
+        {
+          title: 'Account',
+          items: [
+            {
+              id: 'logout',
+              name: 'Log out',
+              description: 'Sign the Toolbar out of LaunchDarkly',
+              icon: 'logout',
+              isLogoutButton: true,
+            },
+          ],
+        },
       ];
     } else {
       // SDK Mode
@@ -293,6 +308,18 @@ export function SettingsTabContent(props: SettingsTabContentProps) {
               name: 'Reload on flag change',
               icon: 'refresh',
               isReloadOnFlagChangeToggle: true,
+            },
+          ],
+        },
+        {
+          title: 'Account',
+          items: [
+            {
+              id: 'logout',
+              name: 'Log out',
+              description: 'Sign the Toolbar out of LaunchDarkly',
+              icon: 'logout',
+              isLogoutButton: true,
             },
           ],
         },
@@ -347,6 +374,22 @@ export function SettingsTabContent(props: SettingsTabContentProps) {
                             <span className={styles.settingName}>{item.name}</span>
                           </div>
                           <ConnectionStatusDisplay status={state.connectionStatus} />
+                        </div>
+                      </ListItem>
+                    );
+                  }
+
+                  if (item.isLogoutButton) {
+                    return (
+                      <ListItem key={item.id}>
+                        <div className={styles.settingInfo}>
+                          <div className={styles.settingDetails}>
+                            <span className={styles.settingName}>{item.name}</span>
+                            {item.description && <span className={styles.settingDescription}>{item.description}</span>}
+                          </div>
+                          <Button aria-label="Log out" data-testid="logout-button" onClick={logout}>
+                            Log out
+                          </Button>
                         </div>
                       </ListItem>
                     );

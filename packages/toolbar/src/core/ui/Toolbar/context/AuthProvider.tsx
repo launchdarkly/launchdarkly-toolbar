@@ -6,6 +6,7 @@ type AuthProviderType = {
   authenticating: boolean;
   loading: boolean;
   setAuthenticating: Dispatch<SetStateAction<boolean>>;
+  logout: () => void;
 };
 
 const AuthContext = createContext<AuthProviderType>({
@@ -13,13 +14,14 @@ const AuthContext = createContext<AuthProviderType>({
   authenticating: false,
   setAuthenticating: () => {},
   loading: true,
+  logout: () => {},
 });
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [authenticated, setAuthenticated] = useState(false);
   const [loading, setLoading] = useState(true);
   const [authenticating, setAuthenticating] = useState(false);
-  const { iframeSrc } = useIFrameContext();
+  const { iframeSrc, ref } = useIFrameContext();
 
   const handleMessage = useCallback((event: MessageEvent) => {
     if (event.origin !== iframeSrc) {
@@ -36,8 +38,22 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setAuthenticated(false);
       setLoading(false);
       throw new Error(event.data.error);
+    } else if (event.data.type === IFRAME_API_MESSAGES.LOGOUT.response) {
+      setAuthenticated(false);
+      setLoading(false);
+    } else if (event.data.type === IFRAME_API_MESSAGES.LOGOUT.error) {
+      setAuthenticated(false);
+      setLoading(false);
+      throw new Error(event.data.error);
     }
   }, []);
+
+  const logout = useCallback(() => {
+    const iframe = ref.current;
+    if (iframe?.contentWindow) {
+      iframe.contentWindow.postMessage({ type: IFRAME_API_MESSAGES.LOGOUT.request }, iframeSrc);
+    }
+  }, [ref, iframeSrc]);
 
   useEffect(() => {
     window.addEventListener('message', handleMessage);
@@ -47,7 +63,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, [handleMessage]);
 
   return (
-    <AuthContext.Provider value={{ authenticated, loading, authenticating, setAuthenticating }}>
+    <AuthContext.Provider value={{ authenticated, loading, authenticating, setAuthenticating, logout }}>
       {children}
     </AuthContext.Provider>
   );

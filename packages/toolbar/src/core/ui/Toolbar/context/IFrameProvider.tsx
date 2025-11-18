@@ -21,6 +21,11 @@ export const IFRAME_API_MESSAGES = {
     response: 'get-flag-response',
     error: 'get-flag-error',
   },
+  LOGOUT: {
+    request: 'logout',
+    response: 'logout-success',
+    error: 'logout-error',
+  },
   API_READY: 'api-ready',
 };
 

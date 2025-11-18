@@ -19,7 +19,8 @@ export async function delayApiResponses(page: Page, delayMs: number) {
             data &&
             data.type &&
             (data.type.includes('response') || data.type.includes('error')) &&
-            !data.type.includes('authenticated')
+            !data.type.includes('authenticated') &&
+            !data.type.includes('logout')
           ) {
             console.log('[Test] Delaying API response:', data.type, `by ${delay}ms`);
             setTimeout(() => {
@@ -55,7 +56,8 @@ export async function blockApiResponses(page: Page) {
             data &&
             data.type &&
             (data.type.includes('response') || data.type.includes('error')) &&
-            !data.type.includes('authenticated')
+            !data.type.includes('authenticated') &&
+            !data.type.includes('logout')
           ) {
             console.log('[Test] Blocked API response:', data.type);
             return; // Don't call the listener
