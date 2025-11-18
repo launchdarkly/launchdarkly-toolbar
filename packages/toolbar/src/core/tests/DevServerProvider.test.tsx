@@ -22,6 +22,7 @@ const mockDevServerClientInstance = {
 
 const mockFlagStateManagerInstance = {
   getEnhancedFlags: vi.fn().mockResolvedValue({}),
+  setApiFlags: vi.fn(),
   setOverride: vi.fn(),
   clearOverride: vi.fn(),
   subscribe: vi.fn().mockReturnValue(() => {}),

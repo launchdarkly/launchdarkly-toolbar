@@ -38,13 +38,10 @@ export const FlagsProvider = ({ children }: { children: React.ReactNode }) => {
       }
 
       try {
-        let allFlags: ApiFlag[] = [];
-
         const response: FlagsResponse | null = await getFlags(projectKey);
-
         setFlags(response?.items || []);
         setLoading(false);
-        return allFlags;
+        return response?.items || [];
       } catch (error) {
         console.error('Error loading flags:', error);
         setFlags([]);

@@ -32,6 +32,7 @@ export interface DevServerProviderProps {
 export const DevServerProvider: FC<DevServerProviderProps> = ({ children, config }) => {
   const { getProjectFlags, flags: apiFlags } = useFlagsContext();
   const { projectKey, getProjects } = useProjectContext();
+
   const [toolbarState, setToolbarState] = useState<ToolbarState>(() => {
     return {
       flags: {},
@@ -116,8 +117,8 @@ export const DevServerProvider: FC<DevServerProviderProps> = ({ children, config
         setToolbarState((prev) => ({ ...prev, isLoading: true }));
         const projectData = await devServerClient.getProjectData();
         const apiFlags = await getProjectFlags(projectKey);
-        const flags = await flagStateManager.getEnhancedFlags(apiFlags);
-
+        flagStateManager.setApiFlags(apiFlags);
+        const flags = await flagStateManager.getEnhancedFlags();
         setToolbarState((prev) => ({
           ...prev,
           flags,
@@ -138,7 +139,7 @@ export const DevServerProvider: FC<DevServerProviderProps> = ({ children, config
     };
 
     loadProjectData();
-  }, [toolbarState.connectionStatus, devServerClient, flagStateManager, projectKey]);
+  }, [toolbarState.connectionStatus, devServerClient, flagStateManager, projectKey, getProjectFlags]);
 
   // Setup real-time updates
   useEffect(() => {
@@ -168,16 +169,15 @@ export const DevServerProvider: FC<DevServerProviderProps> = ({ children, config
 
     const checkConnectionAndRecover = async () => {
       try {
-        let initialApiFlags = apiFlags;
         // If no project key is set (initial connection failed), attempt recovery
         if (!projectKey) {
           await initializeProjectSelection();
-          await getProjectFlags(projectKey);
-          initialApiFlags = apiFlags;
+          const apiFlags = await getProjectFlags(projectKey);
+          flagStateManager.setApiFlags(apiFlags);
         }
 
         const projectData = await devServerClient.getProjectData();
-        const flags = await flagStateManager.getEnhancedFlags(initialApiFlags);
+        const flags = await flagStateManager.getEnhancedFlags();
         setToolbarState((prev) => ({
           ...prev,
           connectionStatus: 'connected',
@@ -292,7 +292,8 @@ export const DevServerProvider: FC<DevServerProviderProps> = ({ children, config
       setToolbarState((prev) => ({ ...prev, isLoading: true }));
       const projectData = await devServerClient.getProjectData();
       const apiFlags = await getProjectFlags(projectKey);
-      const flags = await flagStateManager.getEnhancedFlags(apiFlags);
+      flagStateManager.setApiFlags(apiFlags);
+      const flags = await flagStateManager.getEnhancedFlags();
       setToolbarState((prev) => ({
         ...prev,
         connectionStatus: 'connected',

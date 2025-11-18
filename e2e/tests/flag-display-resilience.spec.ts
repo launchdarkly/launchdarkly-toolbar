@@ -17,7 +17,6 @@ import { blockApiResponses, delayApiResponses, waitForToolbarReady } from '../ut
  * Note: These tests rely on flags from the LD SDK client, not the API iframe.
  * The iframe API only provides flag name enhancements.
  */
-
 test.describe('LaunchDarkly Toolbar - Flag Display Resilience', () => {
   test.describe('SDK Mode - Flag Display and Interaction', () => {
     test('should display all flags immediately when toolbar opens', async ({ page }: { page: Page }) => {

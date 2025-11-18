@@ -11,15 +11,14 @@ export class FlagStateManager {
     this.devServerClient = devServerClient;
   }
 
-  async getEnhancedFlags(apiFlags: ApiFlag[]): Promise<Record<string, EnhancedFlag>> {
-    this.apiFlags = apiFlags;
+  async getEnhancedFlags(): Promise<Record<string, EnhancedFlag>> {
     const devServerData = await this.devServerClient.getProjectData();
 
     const enhancedFlags: Record<string, EnhancedFlag> = {};
 
     // First, create a map of API flags for quick lookup
     const apiFlagsMap = new Map<string, ApiFlag>();
-    apiFlags.forEach((apiFlag) => {
+    this.apiFlags.forEach((apiFlag) => {
       apiFlagsMap.set(apiFlag.key, apiFlag);
     });
 
@@ -100,6 +99,10 @@ export class FlagStateManager {
     await this.notifyListeners();
   }
 
+  setApiFlags(apiFlags: ApiFlag[]): void {
+    this.apiFlags = apiFlags;
+  }
+
   subscribe(listener: (flags: Record<string, EnhancedFlag>) => void): () => void {
     this.listeners.add(listener);
     return () => this.listeners.delete(listener);
@@ -107,7 +110,7 @@ export class FlagStateManager {
 
   private async notifyListeners(): Promise<void> {
     try {
-      const flags = await this.getEnhancedFlags(this.apiFlags);
+      const flags = await this.getEnhancedFlags();
       this.listeners.forEach((listener) => listener(flags));
     } catch (error) {
       console.error('Error notifying listeners:', error);

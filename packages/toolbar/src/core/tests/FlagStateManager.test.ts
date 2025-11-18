@@ -27,6 +27,7 @@ describe('FlagStateManager', () => {
         { key: 'feature-flag-1', name: 'Feature Flag One', kind: 'boolean' } as ApiFlag,
         { key: 'feature-flag-2', name: 'Feature Flag Two', kind: 'string' } as ApiFlag,
       ];
+      flagStateManager.setApiFlags(apiFlags);
 
       mockDevServerClient.getProjectData.mockResolvedValue({
         flagsState: {
@@ -39,7 +40,7 @@ describe('FlagStateManager', () => {
       });
 
       // WHEN: Getting enhanced flags
-      const result = await flagStateManager.getEnhancedFlags(apiFlags);
+      const result = await flagStateManager.getEnhancedFlags();
 
       // THEN: Flags use names from API
       expect(result['feature-flag-1'].name).toBe('Feature Flag One');
@@ -49,6 +50,7 @@ describe('FlagStateManager', () => {
     test('formats flag keys as names when API flags are empty', async () => {
       // GIVEN: Dev server has flags but API response is empty
       const apiFlags: ApiFlag[] = [];
+      flagStateManager.setApiFlags(apiFlags);
 
       mockDevServerClient.getProjectData.mockResolvedValue({
         flagsState: {
@@ -61,7 +63,7 @@ describe('FlagStateManager', () => {
       });
 
       // WHEN: Getting enhanced flags
-      const result = await flagStateManager.getEnhancedFlags(apiFlags);
+      const result = await flagStateManager.getEnhancedFlags();
 
       // THEN: Flag keys are formatted as display names
       expect(result['my-awesome-flag']).toBeDefined();
@@ -76,6 +78,7 @@ describe('FlagStateManager', () => {
         { key: 'flag-1', name: 'Flag One', kind: 'boolean' } as ApiFlag,
         // API only has flag-1, but dev server has flag-1, flag-2, and flag-3
       ];
+      flagStateManager.setApiFlags(apiFlags);
 
       mockDevServerClient.getProjectData.mockResolvedValue({
         flagsState: {
@@ -87,9 +90,8 @@ describe('FlagStateManager', () => {
         availableVariations: {},
         sourceEnvironmentKey: 'production',
       });
-
       // WHEN: Getting enhanced flags
-      const result = await flagStateManager.getEnhancedFlags(apiFlags);
+      const result = await flagStateManager.getEnhancedFlags();
 
       // THEN: All flags from dev server are included
       expect(Object.keys(result)).toHaveLength(3);
@@ -104,6 +106,7 @@ describe('FlagStateManager', () => {
         { key: 'flag-1', name: 'Flag One', kind: 'boolean' } as ApiFlag,
         { key: 'flag-2', name: 'Flag Two', kind: 'boolean' } as ApiFlag,
       ];
+      flagStateManager.setApiFlags(apiFlags);
 
       mockDevServerClient.getProjectData.mockResolvedValue({
         flagsState: {
@@ -118,7 +121,7 @@ describe('FlagStateManager', () => {
       });
 
       // WHEN: Getting enhanced flags
-      const result = await flagStateManager.getEnhancedFlags(apiFlags);
+      const result = await flagStateManager.getEnhancedFlags();
 
       // THEN: Override status is correctly identified
       expect(result['flag-1'].isOverridden).toBe(true);
@@ -128,6 +131,7 @@ describe('FlagStateManager', () => {
     test('uses override value when flag is overridden', async () => {
       // GIVEN: Dev server has a flag with an override
       const apiFlags: ApiFlag[] = [{ key: 'test-flag', name: 'Test Flag', kind: 'boolean' } as ApiFlag];
+      flagStateManager.setApiFlags(apiFlags);
 
       mockDevServerClient.getProjectData.mockResolvedValue({
         flagsState: {
@@ -141,7 +145,7 @@ describe('FlagStateManager', () => {
       });
 
       // WHEN: Getting enhanced flags
-      const result = await flagStateManager.getEnhancedFlags(apiFlags);
+      const result = await flagStateManager.getEnhancedFlags();
 
       // THEN: Current value reflects override, original value preserved
       expect(result['test-flag'].currentValue).toBe(false); // Override
@@ -156,6 +160,7 @@ describe('FlagStateManager', () => {
         { key: 'string-flag', name: 'String Flag', kind: 'string' } as ApiFlag,
         { key: 'number-flag', name: 'Number Flag', kind: 'number' } as ApiFlag,
       ];
+      flagStateManager.setApiFlags(apiFlags);
 
       mockDevServerClient.getProjectData.mockResolvedValue({
         flagsState: {
@@ -169,7 +174,7 @@ describe('FlagStateManager', () => {
       });
 
       // WHEN: Getting enhanced flags
-      const result = await flagStateManager.getEnhancedFlags(apiFlags);
+      const result = await flagStateManager.getEnhancedFlags();
 
       // THEN: Types are correctly determined from API
       expect(result['bool-flag'].type).toBe('boolean');
@@ -180,6 +185,7 @@ describe('FlagStateManager', () => {
     test('infers flag type from value when API kind is not available', async () => {
       // GIVEN: Dev server has flags but no API data
       const apiFlags: ApiFlag[] = [];
+      flagStateManager.setApiFlags(apiFlags);
 
       mockDevServerClient.getProjectData.mockResolvedValue({
         flagsState: {
@@ -194,7 +200,7 @@ describe('FlagStateManager', () => {
       });
 
       // WHEN: Getting enhanced flags
-      const result = await flagStateManager.getEnhancedFlags(apiFlags);
+      const result = await flagStateManager.getEnhancedFlags();
 
       // THEN: Types are inferred from values
       expect(result['bool-flag'].type).toBe('boolean');
@@ -208,6 +214,7 @@ describe('FlagStateManager', () => {
       const apiFlags: ApiFlag[] = [
         { key: 'multivariate-flag', name: 'Multivariate Flag', kind: 'multivariate' } as ApiFlag,
       ];
+      flagStateManager.setApiFlags(apiFlags);
 
       mockDevServerClient.getProjectData.mockResolvedValue({
         flagsState: {
@@ -225,7 +232,7 @@ describe('FlagStateManager', () => {
       });
 
       // WHEN: Getting enhanced flags
-      const result = await flagStateManager.getEnhancedFlags(apiFlags);
+      const result = await flagStateManager.getEnhancedFlags();
 
       // THEN: Available variations are included
       expect(result['multivariate-flag'].availableVariations).toHaveLength(3);
@@ -239,6 +246,7 @@ describe('FlagStateManager', () => {
     test('sets enabled status based on flag value', async () => {
       // GIVEN: Flags with different value states
       const apiFlags: ApiFlag[] = [];
+      flagStateManager.setApiFlags(apiFlags);
 
       mockDevServerClient.getProjectData.mockResolvedValue({
         flagsState: {
@@ -252,7 +260,7 @@ describe('FlagStateManager', () => {
       });
 
       // WHEN: Getting enhanced flags
-      const result = await flagStateManager.getEnhancedFlags(apiFlags);
+      const result = await flagStateManager.getEnhancedFlags();
 
       // THEN: Enabled status is correctly set
       expect(result['enabled-flag'].enabled).toBe(true);
@@ -263,6 +271,7 @@ describe('FlagStateManager', () => {
     test('includes source environment key in enhanced flags', async () => {
       // GIVEN: Dev server provides source environment
       const apiFlags: ApiFlag[] = [{ key: 'test-flag', name: 'Test Flag', kind: 'boolean' } as ApiFlag];
+      flagStateManager.setApiFlags(apiFlags);
 
       mockDevServerClient.getProjectData.mockResolvedValue({
         flagsState: {
@@ -274,7 +283,7 @@ describe('FlagStateManager', () => {
       });
 
       // WHEN: Getting enhanced flags
-      const result = await flagStateManager.getEnhancedFlags(apiFlags);
+      const result = await flagStateManager.getEnhancedFlags();
 
       // THEN: Source environment is included
       expect(result['test-flag'].sourceEnvironment).toBe('staging');
@@ -286,6 +295,7 @@ describe('FlagStateManager', () => {
       // GIVEN: Subscriber listening for changes
       const listener = vi.fn();
       const apiFlags: ApiFlag[] = [{ key: 'test-flag', name: 'Test Flag', kind: 'boolean' } as ApiFlag];
+      flagStateManager.setApiFlags(apiFlags);
 
       mockDevServerClient.getProjectData.mockResolvedValue({
         flagsState: {
@@ -297,7 +307,7 @@ describe('FlagStateManager', () => {
       });
 
       // Initialize with first fetch
-      await flagStateManager.getEnhancedFlags(apiFlags);
+      await flagStateManager.getEnhancedFlags();
 
       // Subscribe to changes
       flagStateManager.subscribe(listener);
@@ -313,6 +323,7 @@ describe('FlagStateManager', () => {
       // GIVEN: Subscriber with unsubscribe function
       const listener = vi.fn();
       const apiFlags: ApiFlag[] = [{ key: 'test-flag', name: 'Test Flag', kind: 'boolean' } as ApiFlag];
+      flagStateManager.setApiFlags(apiFlags);
 
       mockDevServerClient.getProjectData.mockResolvedValue({
         flagsState: {
@@ -323,7 +334,7 @@ describe('FlagStateManager', () => {
         sourceEnvironmentKey: 'production',
       });
 
-      await flagStateManager.getEnhancedFlags(apiFlags);
+      await flagStateManager.getEnhancedFlags();
       const unsubscribe = flagStateManager.subscribe(listener);
 
       // WHEN: Unsubscribing and then triggering change
@@ -339,6 +350,7 @@ describe('FlagStateManager', () => {
     test('setOverride calls devServerClient and notifies listeners', async () => {
       // GIVEN: Initialized flag state manager
       const apiFlags: ApiFlag[] = [{ key: 'test-flag', name: 'Test Flag', kind: 'boolean' } as ApiFlag];
+      flagStateManager.setApiFlags(apiFlags);
 
       mockDevServerClient.getProjectData.mockResolvedValue({
         flagsState: {
@@ -349,7 +361,7 @@ describe('FlagStateManager', () => {
         sourceEnvironmentKey: 'production',
       });
 
-      await flagStateManager.getEnhancedFlags(apiFlags);
+      await flagStateManager.getEnhancedFlags();
 
       // WHEN: Setting an override
       await flagStateManager.setOverride('test-flag', false);
@@ -361,6 +373,7 @@ describe('FlagStateManager', () => {
     test('clearOverride calls devServerClient and notifies listeners', async () => {
       // GIVEN: Initialized flag state manager
       const apiFlags: ApiFlag[] = [{ key: 'test-flag', name: 'Test Flag', kind: 'boolean' } as ApiFlag];
+      flagStateManager.setApiFlags(apiFlags);
 
       mockDevServerClient.getProjectData.mockResolvedValue({
         flagsState: {
@@ -371,7 +384,7 @@ describe('FlagStateManager', () => {
         sourceEnvironmentKey: 'production',
       });
 
-      await flagStateManager.getEnhancedFlags(apiFlags);
+      await flagStateManager.getEnhancedFlags();
 
       // WHEN: Clearing an override
       await flagStateManager.clearOverride('test-flag');
@@ -385,6 +398,7 @@ describe('FlagStateManager', () => {
     test('handles empty dev server flags state', async () => {
       // GIVEN: Dev server returns empty flags state
       const apiFlags: ApiFlag[] = [];
+      flagStateManager.setApiFlags(apiFlags);
 
       mockDevServerClient.getProjectData.mockResolvedValue({
         flagsState: {},
@@ -394,7 +408,7 @@ describe('FlagStateManager', () => {
       });
 
       // WHEN: Getting enhanced flags
-      const result = await flagStateManager.getEnhancedFlags(apiFlags);
+      const result = await flagStateManager.getEnhancedFlags();
 
       // THEN: Result is empty object
       expect(result).toEqual({});
@@ -403,6 +417,7 @@ describe('FlagStateManager', () => {
     test('handles flag in dev server but not in flag state', async () => {
       // GIVEN: Override exists but flag doesn't exist in flagsState
       const apiFlags: ApiFlag[] = [];
+      flagStateManager.setApiFlags(apiFlags);
 
       mockDevServerClient.getProjectData.mockResolvedValue({
         flagsState: {
@@ -416,7 +431,7 @@ describe('FlagStateManager', () => {
       });
 
       // WHEN: Getting enhanced flags
-      const result = await flagStateManager.getEnhancedFlags(apiFlags);
+      const result = await flagStateManager.getEnhancedFlags();
 
       // THEN: Only existing flag is included
       expect(Object.keys(result)).toHaveLength(1);
@@ -427,6 +442,7 @@ describe('FlagStateManager', () => {
     test('handles complex object flag values', async () => {
       // GIVEN: Flag with complex object value
       const apiFlags: ApiFlag[] = [];
+      flagStateManager.setApiFlags(apiFlags);
 
       const complexObject = {
         nested: {
@@ -446,7 +462,7 @@ describe('FlagStateManager', () => {
       });
 
       // WHEN: Getting enhanced flags
-      const result = await flagStateManager.getEnhancedFlags(apiFlags);
+      const result = await flagStateManager.getEnhancedFlags();
 
       // THEN: Complex object is preserved
       expect(result['complex-flag'].currentValue).toEqual(complexObject);
