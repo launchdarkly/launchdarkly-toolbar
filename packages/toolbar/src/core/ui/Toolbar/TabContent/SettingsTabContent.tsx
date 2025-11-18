@@ -214,6 +214,12 @@ export function SettingsTabContent(props: SettingsTabContentProps) {
     handlePositionChange(newPosition);
   };
 
+  const handleLogout = () => {
+    // Track logout
+    analytics.trackLogout();
+    logout();
+  };
+
   // Settings data based on mode
   const getSettingsGroups = (): SettingsGroup[] => {
     if (mode === 'dev-server') {
@@ -387,7 +393,7 @@ export function SettingsTabContent(props: SettingsTabContentProps) {
                             <span className={styles.settingName}>{item.name}</span>
                             {item.description && <span className={styles.settingDescription}>{item.description}</span>}
                           </div>
-                          <Button aria-label="Log out" data-testid="logout-button" onClick={logout}>
+                          <Button aria-label="Log out" data-testid="logout-button" onClick={handleLogout}>
                             Log out
                           </Button>
                         </div>

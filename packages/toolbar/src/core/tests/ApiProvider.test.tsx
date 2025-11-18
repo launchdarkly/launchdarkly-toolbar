@@ -21,6 +21,14 @@ vi.mock('../ui/Toolbar/context/IFrameProvider', () => ({
   useIFrameContext: vi.fn(),
 }));
 
+// Mock the AnalyticsProvider
+vi.mock('../ui/Toolbar/context/AnalyticsProvider', () => ({
+  useAnalytics: vi.fn().mockReturnValue({
+    trackLoginSuccess: vi.fn(),
+    trackLoginCancelled: vi.fn(),
+  }),
+}));
+
 import { useAuthContext } from '../ui/Toolbar/context/AuthProvider';
 import { useIFrameContext } from '../ui/Toolbar/context/IFrameProvider';
 

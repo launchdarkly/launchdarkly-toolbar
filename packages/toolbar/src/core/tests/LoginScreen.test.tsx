@@ -14,6 +14,13 @@ vi.mock('../ui/Toolbar/context/ToolbarUIProvider', () => ({
   useToolbarUIContext: vi.fn(),
 }));
 
+// Mock the AnalyticsProvider
+vi.mock('../ui/Toolbar/context/AnalyticsProvider', () => ({
+  useAnalytics: vi.fn().mockReturnValue({
+    trackLoginCancelled: vi.fn(),
+  }),
+}));
+
 import { useAuthContext } from '../ui/Toolbar/context/AuthProvider';
 import { useToolbarUIContext } from '../ui/Toolbar/context/ToolbarUIProvider';
 
