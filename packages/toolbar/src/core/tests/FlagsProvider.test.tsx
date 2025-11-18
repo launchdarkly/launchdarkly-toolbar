@@ -195,9 +195,7 @@ describe('FlagsProvider', () => {
   describe('Project Switching - Dynamic Updates', () => {
     test('refetches flags when project changes', async () => {
       // GIVEN: Developer is viewing flags for project-1
-      mockGetFlags.mockResolvedValue(
-        createPaginatedResponse([{ key: 'flag-a', name: 'Flag A', kind: 'boolean' }]),
-      );
+      mockGetFlags.mockResolvedValue(createPaginatedResponse([{ key: 'flag-a', name: 'Flag A', kind: 'boolean' }]));
 
       const { rerender } = render(
         <TestWrapper>
@@ -446,9 +444,7 @@ describe('FlagsProvider', () => {
         setActiveTab: vi.fn(),
       });
 
-      mockGetFlags.mockResolvedValue(
-        createPaginatedResponse([{ key: 'flag-1', name: 'Flag 1', kind: 'boolean' }]),
-      );
+      mockGetFlags.mockResolvedValue(createPaginatedResponse([{ key: 'flag-1', name: 'Flag 1', kind: 'boolean' }]));
 
       // WHEN: Provider initializes
       render(
@@ -473,9 +469,7 @@ describe('FlagsProvider', () => {
         setActiveTab: vi.fn(),
       });
 
-      mockGetFlags.mockResolvedValue(
-        createPaginatedResponse([{ key: 'flag-1', name: 'Flag 1', kind: 'boolean' }]),
-      );
+      mockGetFlags.mockResolvedValue(createPaginatedResponse([{ key: 'flag-1', name: 'Flag 1', kind: 'boolean' }]));
 
       // WHEN: Provider initializes
       render(
@@ -501,9 +495,7 @@ describe('FlagsProvider', () => {
         setActiveTab: vi.fn(),
       });
 
-      mockGetFlags.mockResolvedValue(
-        createPaginatedResponse([{ key: 'flag-1', name: 'Flag 1', kind: 'boolean' }]),
-      );
+      mockGetFlags.mockResolvedValue(createPaginatedResponse([{ key: 'flag-1', name: 'Flag 1', kind: 'boolean' }]));
 
       // WHEN: Provider initializes
       render(

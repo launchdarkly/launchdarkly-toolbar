@@ -198,13 +198,8 @@ interface SettingsTabContentProps {
 }
 
 export function SettingsTabContent(props: SettingsTabContentProps) {
-  const {
-    mode,
-    reloadOnFlagChangeIsEnabled,
-    onToggleReloadOnFlagChange,
-    isAutoCollapseEnabled,
-    onToggleAutoCollapse,
-  } = props;
+  const { mode, reloadOnFlagChangeIsEnabled, onToggleReloadOnFlagChange, isAutoCollapseEnabled, onToggleAutoCollapse } =
+    props;
   const { state } = useDevServerContext();
   const { position, handlePositionChange } = useToolbarUIContext();
   const { searchTerm } = useSearchContext();

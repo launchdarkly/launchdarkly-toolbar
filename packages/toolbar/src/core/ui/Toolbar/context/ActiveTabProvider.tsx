@@ -18,11 +18,7 @@ export function ActiveTabProvider({ children }: { children: React.ReactNode }) {
     setActiveTabState(tab);
   }, []);
 
-  return (
-    <ActiveTabContext.Provider value={{ activeTab, setActiveTab }}>
-      {children}
-    </ActiveTabContext.Provider>
-  );
+  return <ActiveTabContext.Provider value={{ activeTab, setActiveTab }}>{children}</ActiveTabContext.Provider>;
 }
 
 export function useActiveTabContext() {
@@ -32,4 +28,3 @@ export function useActiveTabContext() {
   }
   return context;
 }
-

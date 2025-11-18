@@ -57,7 +57,11 @@ export const FlagsProvider = ({ children }: { children: React.ReactNode }) => {
       }
 
       try {
-        const response: PaginatedFlagsResponse | null = await getFlags(projectKey, { limit: PAGE_SIZE, offset: 0, query: debouncedSearchTerm });
+        const response: PaginatedFlagsResponse | null = await getFlags(projectKey, {
+          limit: PAGE_SIZE,
+          offset: 0,
+          query: debouncedSearchTerm,
+        });
         if (!response) {
           setFlags([]);
           setLoading(false);
@@ -87,7 +91,11 @@ export const FlagsProvider = ({ children }: { children: React.ReactNode }) => {
 
     try {
       setLoadingMore(true);
-      const response: PaginatedFlagsResponse | null = await getFlags(projectKey, { limit: PAGE_SIZE, offset, query: debouncedSearchTerm });
+      const response: PaginatedFlagsResponse | null = await getFlags(projectKey, {
+        limit: PAGE_SIZE,
+        offset,
+        query: debouncedSearchTerm,
+      });
 
       if (!response) {
         setLoadingMore(false);
@@ -108,7 +116,7 @@ export const FlagsProvider = ({ children }: { children: React.ReactNode }) => {
   useEffect(() => {
     // Only fetch flags when a flag tab is active
     const isFlagTabActive = activeTab === 'flag-sdk' || activeTab === 'flag-dev-server';
-    
+
     if (!isFlagTabActive) {
       return;
     }
