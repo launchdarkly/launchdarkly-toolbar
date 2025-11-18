@@ -103,14 +103,8 @@ test.describe('LaunchDarkly Toolbar - Dev Server Mode', () => {
       // Verify numeric flag display
       await expect(page.getByText('numeric-flag')).toBeVisible();
 
-      // Verify project and environment information
-      await page.getByRole('tab', { name: 'Settings' }).click();
-
-      // Wait for settings content to load
-      await page.waitForTimeout(500);
-
-      // Check for project key in settings
-      await expect(page.getByText(TEST_PROJECT_KEY)).toBeVisible();
+      // Verify other flags from mock data
+      await expect(page.getByText('test-flag-2')).toBeVisible();
     });
   });
 

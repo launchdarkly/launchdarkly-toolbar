@@ -45,7 +45,7 @@ export const ProjectProvider = ({ children, clientSideId, providedProjectKey }: 
   }, [apiReady, getApiProjects]);
 
   useEffect(() => {
-    if (projects.length === 0) {
+    if (!projects || projects?.length === 0) {
       getProjects();
     }
   }, [projects, getProjects]);
@@ -67,7 +67,7 @@ export const ProjectProvider = ({ children, clientSideId, providedProjectKey }: 
 
       getProjects()
         .then((projects) => {
-          if (projects.length === 0) {
+          if (!projects || projects?.length === 0) {
             throw new Error('No projects found');
           }
 

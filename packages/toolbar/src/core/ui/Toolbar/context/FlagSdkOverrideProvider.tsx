@@ -88,11 +88,6 @@ export function FlagSdkOverrideProvider({ children, flagOverridePlugin }: FlagSd
       return;
     }
 
-    if (loadingApiFlags) {
-      setIsLoading(true);
-      return;
-    }
-
     // Get initial flags
     const initialFlags = ldClient.allFlags();
     const initialFlagState = buildFlags(initialFlags, apiFlags);

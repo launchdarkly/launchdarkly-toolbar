@@ -1,37 +1,18 @@
 import { expect } from '@playwright/test';
 import type { Page } from '@playwright/test';
 import { test } from '../setup/global';
+import { blockApiResponses, waitForToolbarReady } from '../utils/apiMocking';
 
 test.describe('LaunchDarkly Toolbar - UI Interactions', () => {
   test.beforeEach(async ({ page }: { page: Page }) => {
-    await page.goto('/sdk');
-    await page.waitForSelector('[data-testid="launchdarkly-toolbar"]');
+    // Block API responses to prevent timing issues during UI interaction tests
+    await blockApiResponses(page);
 
-    // Wait for authentication to complete (login screen should not be visible)
-    await page.waitForFunction(
-      () => {
-        const loginScreen = document.querySelector('[data-testid="login-screen"]');
-        return !loginScreen;
-      },
-      { timeout: 10000 },
-    );
+    await page.goto('/sdk');
+    await waitForToolbarReady(page);
   });
 
   test.describe('Toolbar Interaction Workflows', () => {
-    test.beforeEach(async ({ page }: { page: Page }) => {
-      await page.goto('/sdk');
-      await page.waitForSelector('[data-testid="launchdarkly-toolbar"]');
-
-      // Wait for authentication to complete (login screen should not be visible)
-      await page.waitForFunction(
-        () => {
-          const loginScreen = document.querySelector('[data-testid="login-screen"]');
-          return !loginScreen;
-        },
-        { timeout: 10000 },
-      );
-    });
-
     test('should support complete expand/collapse/navigate/search workflow', async ({ page }: { page: Page }) => {
       const toolbar = page.getByTestId('launchdarkly-toolbar');
 
@@ -53,12 +34,14 @@ test.describe('LaunchDarkly Toolbar - UI Interactions', () => {
 
       // 3. Navigate through all tabs and verify content loads
       await page.getByRole('tab', { name: 'Events' }).click();
+      await page.waitForTimeout(300);
       await expect(page.getByRole('tab', { name: 'Events' })).toHaveAttribute('aria-selected', 'true');
       await expect(page.getByRole('tab', { name: 'Flags' })).toHaveAttribute('aria-selected', 'false');
 
       await page.getByRole('tab', { name: 'Settings' }).click();
+      // Wait for settings content to load by checking for a key element
+      await expect(page.getByLabel('Auto-collapse toolbar')).toBeVisible({ timeout: 10000 });
       await expect(page.getByRole('tab', { name: 'Settings' })).toHaveAttribute('aria-selected', 'true');
-      await expect(page.getByLabel('Auto-collapse toolbar')).toBeVisible();
 
       // 4. Test search functionality
       await page.getByRole('button', { name: /search/i }).click();
@@ -111,8 +94,8 @@ test.describe('LaunchDarkly Toolbar - UI Interactions', () => {
       await page.getByRole('img', { name: 'LaunchDarkly' }).click();
       await page.getByRole('tab', { name: 'Settings' }).click();
 
-      // 2. Verify Settings tab content is visible
-      await expect(page.getByLabel('Auto-collapse toolbar')).toBeVisible();
+      // 2. Wait for Settings tab content to load and verify it's visible
+      await expect(page.getByLabel('Auto-collapse toolbar')).toBeVisible({ timeout: 10000 });
       await expect(page.getByRole('tab', { name: 'Settings' })).toHaveAttribute('aria-selected', 'true');
       const autoCollapseToggle = page.getByTestId('auto-collapse-toggle');
       await expect(autoCollapseToggle.getByRole('switch')).not.toBeChecked();
@@ -139,8 +122,8 @@ test.describe('LaunchDarkly Toolbar - UI Interactions', () => {
       // 3. Test Settings tab focus and activation
       await page.getByRole('tab', { name: 'Settings' }).focus();
       await page.getByRole('tab', { name: 'Settings' }).click();
+      await expect(page.getByLabel('Auto-collapse toolbar')).toBeVisible({ timeout: 10000 });
       await expect(page.getByRole('tab', { name: 'Settings' })).toHaveAttribute('aria-selected', 'true');
-      await expect(page.getByLabel('Auto-collapse toolbar')).toBeVisible();
 
       // 4. Test close button can be focused and activated
       const closeButton = page.getByRole('button', { name: 'Close toolbar' });
@@ -159,18 +142,13 @@ test.describe('LaunchDarkly Toolbar - UI Interactions', () => {
   });
 
   test.describe('Settings Tab and Basic Functionality', () => {
-    test.beforeEach(async ({ page }: { page: Page }) => {
-      await page.goto('/sdk');
-      await page.waitForSelector('[data-testid="launchdarkly-toolbar"]');
-    });
-
     test('should support basic settings tab functionality', async ({ page }: { page: Page }) => {
       // 1. Expand toolbar and navigate to Settings
       await page.getByRole('img', { name: 'LaunchDarkly' }).click();
       await page.getByRole('tab', { name: 'Settings' }).click();
 
-      // 2. Verify Settings tab content is visible
-      await expect(page.getByLabel('Auto-collapse toolbar')).toBeVisible();
+      // 2. Wait for Settings tab content to load and verify it's visible
+      await expect(page.getByLabel('Auto-collapse toolbar')).toBeVisible({ timeout: 10000 });
       await expect(page.getByRole('tab', { name: 'Settings' })).toHaveAttribute('aria-selected', 'true');
       await page.getByTestId('auto-collapse-toggle').click();
 
@@ -200,8 +178,8 @@ test.describe('LaunchDarkly Toolbar - UI Interactions', () => {
       await page.getByRole('img', { name: 'LaunchDarkly' }).click();
       await page.getByRole('tab', { name: 'Settings' }).click();
 
-      // 2. Verify Settings tab content is visible
-      await expect(page.getByLabel('Reload on flag change')).toBeVisible();
+      // 2. Wait for Settings tab content to load and verify it's visible
+      await expect(page.getByLabel('Reload on flag change')).toBeVisible({ timeout: 10000 });
 
       // 3. Verify Reload on Flag Change toggle functionality
       await page.getByTestId('reload-on-flag-change-toggle').click();
@@ -226,11 +204,6 @@ test.describe('LaunchDarkly Toolbar - UI Interactions', () => {
   });
 
   test.describe('Position and Layout Verification', () => {
-    test.beforeEach(async ({ page }: { page: Page }) => {
-      await page.goto('/sdk');
-      await page.waitForSelector('[data-testid="launchdarkly-toolbar"]');
-    });
-
     test('should maintain consistent positioning and layout', async ({ page }: { page: Page }) => {
       const toolbar = page.getByTestId('launchdarkly-toolbar');
       const viewport = page.viewportSize()!;

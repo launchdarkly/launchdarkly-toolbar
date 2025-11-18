@@ -28,6 +28,19 @@
           window.opener.postMessage(message, targetOrigin);
         }
 
+        const apiReadyMessage = {
+          type: 'api-ready',
+          timestamp: Date.now(),
+        };
+
+        if (window.parent && window.parent !== window) {
+          window.parent.postMessage(apiReadyMessage, targetOrigin);
+        }
+
+        if (window.opener) {
+          window.opener.postMessage(apiReadyMessage, targetOrigin);
+        }
+
         // Listen for API requests via postMessage
         window.addEventListener('message', function (event) {
           console.log('[Mock Auth] Received message:', event.data);
