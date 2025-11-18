@@ -6,15 +6,12 @@ import type { Page } from '@playwright/test';
  */
 export async function delayApiResponses(page: Page, delayMs: number) {
   await page.addInitScript((delay) => {
-    // @ts-ignore - Browser context
     // Intercept window.addEventListener for 'message' events
     const originalAddEventListener = window.addEventListener;
-    // @ts-ignore - Browser context
-    window.addEventListener = function (type, listener, options) {
+    window.addEventListener = function (this: any, type: any, listener: any, options: any) {
       if (type === 'message') {
         // Wrap the listener to delay API responses
-        // @ts-ignore - Browser context
-        const wrappedListener = function (event) {
+        const wrappedListener = function (this: any, event: any) {
           const data = event.data;
           console.log('[Test] Received message:', data);
           // Only delay API response messages, not authentication
@@ -26,21 +23,17 @@ export async function delayApiResponses(page: Page, delayMs: number) {
           ) {
             console.log('[Test] Delaying API response:', data.type, `by ${delay}ms`);
             setTimeout(() => {
-              // @ts-ignore - Browser context
-              listener.call(this, event);
+              (listener as any).call(this, event);
             }, delay);
           } else {
             // Let authentication and other messages through immediately
-            // @ts-ignore - Browser context
-            listener.call(this, event);
+            (listener as any).call(this, event);
           }
         };
-        // @ts-ignore - Browser context
-        return originalAddEventListener.call(this, type, wrappedListener, options);
+        return originalAddEventListener.call(this, type, wrappedListener as any, options);
       }
-      // @ts-ignore - Browser context
       return originalAddEventListener.call(this, type, listener, options);
-    };
+    } as any;
   }, delayMs);
 }
 
@@ -49,15 +42,12 @@ export async function delayApiResponses(page: Page, delayMs: number) {
  */
 export async function blockApiResponses(page: Page) {
   await page.addInitScript(() => {
-    // @ts-ignore - Browser context
     // Intercept window.addEventListener for 'message' events
     const originalAddEventListener = window.addEventListener;
-    // @ts-ignore - Browser context
-    window.addEventListener = function (type, listener, options) {
+    window.addEventListener = function (this: any, type: any, listener: any, options: any) {
       if (type === 'message') {
         // Wrap the listener to block API responses
-        // @ts-ignore - Browser context
-        const wrappedListener = function (event) {
+        const wrappedListener = function (this: any, event: any) {
           const data = event.data;
 
           // Block API response messages, but not authentication
@@ -71,15 +61,12 @@ export async function blockApiResponses(page: Page) {
             return; // Don't call the listener
           }
           // Let authentication and other messages through
-          // @ts-ignore - Browser context
-          listener.call(this, event);
+          (listener as any).call(this, event);
         };
-        // @ts-ignore - Browser context
-        return originalAddEventListener.call(this, type, wrappedListener, options);
+        return originalAddEventListener.call(this, type, wrappedListener as any, options);
       }
-      // @ts-ignore - Browser context
       return originalAddEventListener.call(this, type, listener, options);
-    };
+    } as any;
   });
 }
 
