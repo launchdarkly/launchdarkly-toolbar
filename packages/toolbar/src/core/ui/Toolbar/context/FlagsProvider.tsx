@@ -3,6 +3,7 @@ import { useProjectContext } from './ProjectProvider';
 import { useApi } from './ApiProvider';
 import { useAuthContext } from './AuthProvider';
 import { ApiFlag, PaginatedFlagsResponse } from '../types/ldApi';
+import { useSearchContext } from './SearchProvider';
 
 const PAGE_SIZE = 20;
 
@@ -38,6 +39,7 @@ export const FlagsProvider = ({ children }: { children: React.ReactNode }) => {
   const [hasMore, setHasMore] = useState(true);
   const [offset, setOffset] = useState(0);
   const [totalCount, setTotalCount] = useState(0);
+  const { searchTerm } = useSearchContext();
 
   const resetFlags = useCallback(() => {
     setFlags([]);
@@ -53,8 +55,7 @@ export const FlagsProvider = ({ children }: { children: React.ReactNode }) => {
       }
 
       try {
-        const response: PaginatedFlagsResponse | null = await getFlags(projectKey, { limit: PAGE_SIZE, offset: 0 });
-        console.log('response', response);
+        const response: PaginatedFlagsResponse | null = await getFlags(projectKey, { limit: PAGE_SIZE, offset: 0, query: searchTerm });
         if (!response) {
           setFlags([]);
           setLoading(false);
@@ -74,7 +75,7 @@ export const FlagsProvider = ({ children }: { children: React.ReactNode }) => {
         return [];
       }
     },
-    [apiReady, getFlags],
+    [apiReady, getFlags, searchTerm],
   );
 
   const loadMoreFlags = useCallback(async () => {
@@ -84,7 +85,7 @@ export const FlagsProvider = ({ children }: { children: React.ReactNode }) => {
 
     try {
       setLoadingMore(true);
-      const response: PaginatedFlagsResponse | null = await getFlags(projectKey, { limit: PAGE_SIZE, offset });
+      const response: PaginatedFlagsResponse | null = await getFlags(projectKey, { limit: PAGE_SIZE, offset, query: searchTerm });
 
       if (!response) {
         setLoadingMore(false);
@@ -100,7 +101,7 @@ export const FlagsProvider = ({ children }: { children: React.ReactNode }) => {
       console.error('Error loading more flags:', error);
       setLoadingMore(false);
     }
-  }, [projectKey, apiReady, getFlags, loadingMore, hasMore, offset]);
+  }, [projectKey, apiReady, getFlags, loadingMore, hasMore, offset, searchTerm]);
 
   useEffect(() => {
     if (!authenticated || !apiReady) {

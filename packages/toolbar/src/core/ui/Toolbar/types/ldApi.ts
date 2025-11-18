@@ -45,4 +45,5 @@ export interface PaginatedFlagsResponse {
 export interface FlagsPaginationParams {
   limit?: number;
   offset?: number;
+  query?: string;
 }

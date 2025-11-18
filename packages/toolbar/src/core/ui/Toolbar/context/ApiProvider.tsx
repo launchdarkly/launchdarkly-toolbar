@@ -1,13 +1,13 @@
 import { createContext, useCallback, useContext, useEffect, useState } from 'react';
 import { useAuthContext } from './AuthProvider';
 import { IFRAME_API_MESSAGES, useIFrameContext } from './IFrameProvider';
-import { ApiProject } from '../types/ldApi';
+import { ApiProject, FlagsPaginationParams } from '../types/ldApi';
 
 interface ApiProviderContextValue {
   apiReady: boolean;
   getFlag: (flagKey: string) => Promise<any>;
   getProjects: () => Promise<ApiProject[]>;
-  getFlags: (projectKey: string, params?: { limit?: number; offset?: number }) => Promise<any>;
+  getFlags: (projectKey: string, params?: FlagsPaginationParams) => Promise<any>;
 }
 
 const ApiContext = createContext<ApiProviderContextValue | null>(null);
@@ -118,10 +118,9 @@ export function ApiProvider({ children }: { children: React.ReactNode }) {
   }, [authenticated, ref]);
 
   const getFlags = useCallback(
-    async (projectKey: string, params?: { limit?: number; offset?: number }) => {
+    async (projectKey: string, params?: FlagsPaginationParams) => {
       if (!authenticated) {
-        console.log('Authentication required');
-        return null;
+        return { items: [], totalCount: 0 };
       }
 
       if (!ref.current?.contentWindow) {
@@ -134,6 +133,7 @@ export function ApiProvider({ children }: { children: React.ReactNode }) {
           projectKey,
           limit: params?.limit,
           offset: params?.offset,
+          query: params?.query,
         },
         iframeSrc,
       );

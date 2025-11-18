@@ -102,29 +102,9 @@ function FlagSdkOverrideTabContentInner(props: FlagSdkOverrideTabContentInnerPro
 
   // Prepare data for virtualizer (must be done before useVirtualizer hook)
   const flagEntries = Object.entries(flags);
-  const filteredFlags = useMemo(() => {
-    return flagEntries.filter(([flagKey, flag]) => {
-      // Apply search filter
-      const matchesSearch =
-        flag.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        flagKey.toLowerCase().includes(searchTerm.trim().toLowerCase());
-
-      // Apply active filters (OR logic)
-      let matchesFilter = true;
-      if (activeFilters.has(FILTER_MODES.ALL)) {
-        matchesFilter = true;
-      } else {
-        matchesFilter =
-          (activeFilters.has(FILTER_MODES.OVERRIDES) && flag.isOverridden) ||
-          (activeFilters.has(FILTER_MODES.STARRED) && isStarred(flagKey));
-      }
-
-      return matchesSearch && matchesFilter;
-    });
-  }, [flagEntries, searchTerm, activeFilters, isStarred]);
 
   const virtualizer = useVirtualizer({
-    count: filteredFlags.length,
+    count: flagEntries.length,
     getScrollElement,
     estimateSize: () => VIRTUALIZATION.ITEM_HEIGHT,
     overscan: VIRTUALIZATION.OVERSCAN,
@@ -251,7 +231,7 @@ function FlagSdkOverrideTabContentInner(props: FlagSdkOverrideTabContentInnerPro
         <>
           <FilterOptions
             totalFlags={flagEntries.length}
-            filteredFlags={filteredFlags.length}
+            filteredFlags={flagEntries.length}
             totalOverriddenFlags={totalOverriddenFlags}
             starredCount={starredCount}
             onClearOverrides={handleClearAllOverrides}
@@ -259,7 +239,7 @@ function FlagSdkOverrideTabContentInner(props: FlagSdkOverrideTabContentInnerPro
             isLoading={isLoading}
           />
 
-          {filteredFlags.length === 0 && (searchTerm.trim() || !activeFilters.has(FILTER_MODES.ALL)) ? (
+          {flagEntries.length === 0 && (searchTerm.trim() || !activeFilters.has(FILTER_MODES.ALL)) ? (
             <GenericHelpText title={genericHelpTitle} subtitle={genericHelpSubtitle} />
           ) : (
             <div ref={infiniteScrollRef} className={sharedStyles.virtualContainer}>
@@ -271,7 +251,7 @@ function FlagSdkOverrideTabContentInner(props: FlagSdkOverrideTabContentInnerPro
                   }}
                 >
                   {virtualizer.getVirtualItems().map((virtualItem) => {
-                    const entry = filteredFlags[virtualItem.index];
+                    const entry = flagEntries[virtualItem.index];
                     if (!entry) return null;
                     const [flagKey, flag] = entry;
 
