@@ -53,8 +53,6 @@ export function LdToolbar(props: LdToolbarProps) {
     isAutoCollapseEnabled,
     setSearchIsExpanded,
     setIsAnimating,
-    optInToNewFeatures,
-    handleToggleOptInToNewFeatures,
   } = toolbarState;
 
   // Focus management for expand/collapse
@@ -180,8 +178,6 @@ export function LdToolbar(props: LdToolbarProps) {
             onHeaderMouseDown={handleMouseDown}
             reloadOnFlagChangeIsEnabled={reloadOnFlagChangeIsEnabled}
             onToggleReloadOnFlagChange={handleToggleReloadOnFlagChange}
-            optInToNewFeatures={optInToNewFeatures}
-            onToggleOptInToNewFeatures={handleToggleOptInToNewFeatures}
           />
         )}
       </AnimatePresence>

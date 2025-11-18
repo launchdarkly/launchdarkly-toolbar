@@ -37,8 +37,6 @@ interface ExpandedToolbarContentProps {
   onHeaderMouseDown?: (event: React.MouseEvent) => void;
   reloadOnFlagChangeIsEnabled: boolean;
   onToggleReloadOnFlagChange: () => void;
-  optInToNewFeatures: boolean;
-  onToggleOptInToNewFeatures: () => void;
 }
 
 export const ExpandedToolbarContent = React.forwardRef<HTMLDivElement, ExpandedToolbarContentProps>((props, ref) => {
@@ -61,8 +59,6 @@ export const ExpandedToolbarContent = React.forwardRef<HTMLDivElement, ExpandedT
     onHeaderMouseDown,
     reloadOnFlagChangeIsEnabled,
     onToggleReloadOnFlagChange,
-    optInToNewFeatures,
-    onToggleOptInToNewFeatures,
   } = props;
 
   const { authenticated, authenticating } = useAuthContext();
@@ -203,8 +199,6 @@ export const ExpandedToolbarContent = React.forwardRef<HTMLDivElement, ExpandedT
                       onToggleReloadOnFlagChange={onToggleReloadOnFlagChange}
                       isAutoCollapseEnabled={isAutoCollapseEnabled}
                       onToggleAutoCollapse={onToggleAutoCollapse}
-                      optInToNewFeatures={optInToNewFeatures}
-                      onToggleOptInToNewFeatures={onToggleOptInToNewFeatures}
                     />
                   )}
                 </AnimatePresence>

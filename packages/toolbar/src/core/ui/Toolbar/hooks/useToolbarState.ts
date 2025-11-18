@@ -8,8 +8,6 @@ import {
   loadToolbarAutoCollapse,
   loadReloadOnFlagChange,
   saveReloadOnFlagChange,
-  loadOptInToNewFeatures,
-  saveOptInToNewFeatures,
 } from '../utils/localStorage';
 
 export interface UseToolbarStateProps {
@@ -28,7 +26,6 @@ export interface UseToolbarStateReturn {
   hasBeenExpanded: boolean;
   reloadOnFlagChangeIsEnabled: boolean;
   isAutoCollapseEnabled: boolean;
-  optInToNewFeatures: boolean;
 
   // Refs
   toolbarRef: React.RefObject<HTMLDivElement | null>;
@@ -39,7 +36,6 @@ export interface UseToolbarStateReturn {
   handleSearch: (newSearchTerm: string) => void;
   handleToggleReloadOnFlagChange: () => void;
   handleToggleAutoCollapse: () => void;
-  handleToggleOptInToNewFeatures: () => void;
   handleCircleClick: () => void;
   setIsAnimating: Dispatch<SetStateAction<boolean>>;
   setSearchIsExpanded: Dispatch<SetStateAction<boolean>>;
@@ -57,7 +53,6 @@ export function useToolbarState(props: UseToolbarStateProps): UseToolbarStateRet
   const [searchIsExpanded, setSearchIsExpanded] = useState(false);
   const [reloadOnFlagChangeIsEnabled, enableReloadOnFlagChange] = useState(() => loadReloadOnFlagChange());
   const [isAutoCollapseEnabled, setAutoCollapse] = useState(() => loadToolbarAutoCollapse());
-  const [optInToNewFeatures, setOptInToNewFeatures] = useState(() => loadOptInToNewFeatures());
   // Refs
   const hasBeenExpandedRef = useRef(false);
   const toolbarRef = useRef<HTMLDivElement | null>(null);
@@ -133,14 +128,6 @@ export function useToolbarState(props: UseToolbarStateProps): UseToolbarStateRet
     });
   }, []);
 
-  const handleToggleOptInToNewFeatures = useCallback(() => {
-    setOptInToNewFeatures((prev) => {
-      const newValue = !prev;
-      saveOptInToNewFeatures(newValue);
-      return newValue;
-    });
-  }, []);
-
   const handleCircleClick = useCallback(() => {
     if (!isExpanded) {
       // Only set default tab if no tab is currently selected
@@ -195,7 +182,6 @@ export function useToolbarState(props: UseToolbarStateProps): UseToolbarStateRet
     hasBeenExpanded: hasBeenExpandedRef.current,
     reloadOnFlagChangeIsEnabled,
     isAutoCollapseEnabled,
-    optInToNewFeatures,
 
     // Refs
     toolbarRef,
@@ -206,7 +192,6 @@ export function useToolbarState(props: UseToolbarStateProps): UseToolbarStateRet
     handleSearch,
     handleToggleReloadOnFlagChange,
     handleToggleAutoCollapse,
-    handleToggleOptInToNewFeatures,
     handleCircleClick,
     setIsAnimating,
     setSearchIsExpanded,

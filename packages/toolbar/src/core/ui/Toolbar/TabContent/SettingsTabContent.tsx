@@ -24,7 +24,6 @@ interface SettingsItem {
   isConnectionStatus?: boolean;
   isReloadOnFlagChangeToggle?: boolean;
   isAutoCollapseToggle?: boolean;
-  isOptInToNewFeaturesToggle?: boolean;
   value?: string;
 }
 
@@ -168,26 +167,6 @@ function ReloadOnFlagChangeToggle(props: ReloadOnFlagChangeToggleProps) {
   );
 }
 
-interface OptInToNewFeaturesToggleProps {
-  optInToNewFeatures: boolean;
-  onToggleOptInToNewFeatures: () => void;
-}
-
-function OptInToNewFeaturesToggle(props: OptInToNewFeaturesToggleProps) {
-  const { optInToNewFeatures, onToggleOptInToNewFeatures } = props;
-
-  return (
-    <Switch
-      data-testid="opt-in-to-new-features-toggle"
-      className={styles.switch_}
-      data-theme="dark"
-      isSelected={optInToNewFeatures}
-      onChange={onToggleOptInToNewFeatures}
-      aria-label="Opt in to new features"
-    />
-  );
-}
-
 function ConnectionStatusDisplay(props: ConnectionStatusDisplayProps) {
   const { status } = props;
 
@@ -216,8 +195,6 @@ interface SettingsTabContentProps {
   onToggleReloadOnFlagChange: () => void;
   isAutoCollapseEnabled: boolean;
   onToggleAutoCollapse: () => void;
-  optInToNewFeatures: boolean;
-  onToggleOptInToNewFeatures: () => void;
 }
 
 export function SettingsTabContent(props: SettingsTabContentProps) {
@@ -227,8 +204,6 @@ export function SettingsTabContent(props: SettingsTabContentProps) {
     onToggleReloadOnFlagChange,
     isAutoCollapseEnabled,
     onToggleAutoCollapse,
-    optInToNewFeatures,
-    onToggleOptInToNewFeatures,
   } = props;
   const { state } = useDevServerContext();
   const { position, handlePositionChange } = useToolbarUIContext();
@@ -290,12 +265,6 @@ export function SettingsTabContent(props: SettingsTabContentProps) {
               icon: 'refresh',
               isReloadOnFlagChangeToggle: true,
             },
-            {
-              id: 'opt-in-to-new-features',
-              name: 'Opt in to new features',
-              icon: '',
-              isOptInToNewFeaturesToggle: true,
-            },
           ],
         },
       ];
@@ -329,12 +298,6 @@ export function SettingsTabContent(props: SettingsTabContentProps) {
               name: 'Reload on flag change',
               icon: 'refresh',
               isReloadOnFlagChangeToggle: true,
-            },
-            {
-              id: 'opt-in-to-new-features',
-              name: 'Opt in to new features',
-              icon: '',
-              isOptInToNewFeaturesToggle: true,
             },
           ],
         },
@@ -414,11 +377,6 @@ export function SettingsTabContent(props: SettingsTabContentProps) {
                           <ReloadOnFlagChangeToggle
                             reloadOnFlagChangeIsEnabled={reloadOnFlagChangeIsEnabled}
                             onToggleReloadOnFlagChange={onToggleReloadOnFlagChange}
-                          />
-                        ) : item.isOptInToNewFeaturesToggle ? (
-                          <OptInToNewFeaturesToggle
-                            optInToNewFeatures={optInToNewFeatures}
-                            onToggleOptInToNewFeatures={onToggleOptInToNewFeatures}
                           />
                         ) : (
                           <span className={styles.settingValue}>{item.value}</span>
