@@ -18,6 +18,7 @@ const EVENTS = {
   FILTER_CHANGED: 'filter.changed',
   LOGIN_SUCCESS: 'login.success',
   LOGIN_CANCELLED: 'login.cancelled',
+  LOGOUT: 'logout',
 } as const;
 
 /**
@@ -190,5 +191,12 @@ export class ToolbarAnalytics {
    */
   trackLoginCancelled(): void {
     this.track(EVENTS.LOGIN_CANCELLED, {});
+  }
+
+  /**
+   * Track when user logs out
+   */
+  trackLogout(): void {
+    this.track(EVENTS.LOGOUT, {});
   }
 }
