@@ -96,10 +96,3 @@ export const flagListItem = style({
 export const flagListItemBlock = style({
   display: 'block',
 });
-
-export const loadingMoreIndicator = style({
-  padding: '16px',
-  textAlign: 'center',
-  color: 'var(--lp-color-gray-400)',
-  fontSize: '14px',
-});

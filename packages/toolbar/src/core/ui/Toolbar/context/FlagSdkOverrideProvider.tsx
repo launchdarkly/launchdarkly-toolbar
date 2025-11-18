@@ -14,9 +14,6 @@ interface LocalFlag {
 interface FlagSdkOverrideContextType {
   flags: Record<string, LocalFlag>;
   isLoading: boolean;
-  loadMoreFlags: () => Promise<void>;
-  hasMoreFlags: boolean;
-  loadingMoreFlags: boolean;
 }
 
 const FlagSdkOverrideContext = createContext<FlagSdkOverrideContextType | null>(null);
@@ -28,7 +25,7 @@ interface FlagSdkOverrideProviderProps {
 
 export function FlagSdkOverrideProvider({ children, flagOverridePlugin }: FlagSdkOverrideProviderProps) {
   const [flags, setFlags] = useState<Record<string, LocalFlag>>({});
-  const { flags: apiFlags, loading: loadingApiFlags, loadMoreFlags, hasMore, loadingMore } = useFlagsContext();
+  const { flags: apiFlags, loading: loadingApiFlags } = useFlagsContext();
   const [isLoading, setIsLoading] = useState(true);
   const ldClient = flagOverridePlugin.getClient();
 
@@ -124,18 +121,11 @@ export function FlagSdkOverrideProvider({ children, flagOverridePlugin }: FlagSd
     };
   }, [ldClient, buildFlags, apiFlags, loadingApiFlags]);
 
-  const handleLoadMoreFlags = useCallback(async () => {
-    await loadMoreFlags();
-  }, [loadMoreFlags]);
-
   return (
     <FlagSdkOverrideContext.Provider
       value={{
         flags,
         isLoading,
-        loadMoreFlags: handleLoadMoreFlags,
-        hasMoreFlags: hasMore,
-        loadingMoreFlags: loadingMore,
       }}
     >
       {children}

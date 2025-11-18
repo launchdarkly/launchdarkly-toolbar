@@ -1,38 +1,25 @@
 import React, { createContext, Dispatch, type SetStateAction, useContext, useEffect, useState } from 'react';
+import { useAnalytics } from './AnalyticsProvider';
 
 type SearchContextType = {
   searchTerm: string;
   setSearchTerm: Dispatch<SetStateAction<string>>;
-  debouncedSearchTerm: string;
 };
 
 const SearchContext = createContext<SearchContextType>({
   searchTerm: '',
   setSearchTerm: () => {},
-  debouncedSearchTerm: '',
 });
-
-const DEBOUNCE_DELAY = 300; // milliseconds
 
 export function SearchProvider({ children }: { children: React.ReactNode }) {
   const [searchTerm, setSearchTerm] = useState<string>('');
-  const [debouncedSearchTerm, setDebouncedSearchTerm] = useState<string>('');
+  const analytics = useAnalytics();
 
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setDebouncedSearchTerm(searchTerm);
-    }, DEBOUNCE_DELAY);
+    analytics.trackSearch(searchTerm);
+  }, [searchTerm, analytics]);
 
-    return () => {
-      clearTimeout(timer);
-    };
-  }, [searchTerm]);
-
-  return (
-    <SearchContext.Provider value={{ searchTerm, setSearchTerm, debouncedSearchTerm }}>
-      {children}
-    </SearchContext.Provider>
-  );
+  return <SearchContext.Provider value={{ searchTerm, setSearchTerm }}>{children}</SearchContext.Provider>;
 }
 
 export function useSearchContext() {

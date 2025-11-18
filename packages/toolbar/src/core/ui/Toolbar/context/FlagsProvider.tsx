@@ -2,31 +2,20 @@ import { createContext, useCallback, useContext, useEffect, useState } from 'rea
 import { useProjectContext } from './ProjectProvider';
 import { useApi } from './ApiProvider';
 import { useAuthContext } from './AuthProvider';
-import { ApiFlag, PaginatedFlagsResponse } from '../types/ldApi';
-import { useSearchContext } from './SearchProvider';
+import { ApiFlag, FlagsResponse } from '../types/ldApi';
 import { useActiveTabContext } from './ActiveTabProvider';
-
-const PAGE_SIZE = 20;
 
 type FlagsContextType = {
   flags: ApiFlag[];
   loading: boolean;
-  loadingMore: boolean;
-  hasMore: boolean;
-  totalCount: number;
   getProjectFlags: (projectKey: string) => Promise<ApiFlag[]>;
-  loadMoreFlags: () => Promise<void>;
   resetFlags: () => void;
 };
 
 const FlagsContext = createContext<FlagsContextType | null>({
   flags: [],
   loading: true,
-  loadingMore: false,
-  hasMore: false,
-  totalCount: 0,
   getProjectFlags: async () => [],
-  loadMoreFlags: async () => {},
   resetFlags: () => {},
 });
 
@@ -36,18 +25,10 @@ export const FlagsProvider = ({ children }: { children: React.ReactNode }) => {
   const { getFlags, apiReady } = useApi();
   const [flags, setFlags] = useState<ApiFlag[]>([]);
   const [loading, setLoading] = useState(false);
-  const [loadingMore, setLoadingMore] = useState(false);
-  const [hasMore, setHasMore] = useState(true);
-  const [offset, setOffset] = useState(0);
-  const [totalCount, setTotalCount] = useState(0);
-  const { debouncedSearchTerm } = useSearchContext();
   const { activeTab } = useActiveTabContext();
 
   const resetFlags = useCallback(() => {
     setFlags([]);
-    setOffset(0);
-    setHasMore(true);
-    setTotalCount(0);
   }, []);
 
   const getProjectFlags = useCallback(
@@ -57,60 +38,22 @@ export const FlagsProvider = ({ children }: { children: React.ReactNode }) => {
       }
 
       try {
-        const response: PaginatedFlagsResponse | null = await getFlags(projectKey, {
-          limit: PAGE_SIZE,
-          offset: 0,
-          query: debouncedSearchTerm,
-        });
-        if (!response) {
-          setFlags([]);
-          setLoading(false);
-          return [];
-        }
+        let allFlags: ApiFlag[] = [];
 
-        setFlags(response.items);
-        setOffset(response.items.length);
-        setHasMore(!!response._links?.next);
-        setTotalCount(response.totalCount || response.items.length);
+        const response: FlagsResponse | null = await getFlags(projectKey);
+
+        setFlags(response?.items || []);
         setLoading(false);
-        return response.items;
+        return allFlags;
       } catch (error) {
         console.error('Error loading flags:', error);
+        setFlags([]);
         setLoading(false);
         return [];
       }
     },
-    [apiReady, getFlags, debouncedSearchTerm],
+    [apiReady, getFlags],
   );
-
-  const loadMoreFlags = useCallback(async () => {
-    if (!projectKey || !apiReady || loadingMore || !hasMore) {
-      return;
-    }
-
-    try {
-      setLoadingMore(true);
-      const response: PaginatedFlagsResponse | null = await getFlags(projectKey, {
-        limit: PAGE_SIZE,
-        offset,
-        query: debouncedSearchTerm,
-      });
-
-      if (!response) {
-        setLoadingMore(false);
-        return;
-      }
-
-      setFlags((prev) => [...prev, ...response.items]);
-      setOffset((prev) => prev + response.items.length);
-      setHasMore(!!response._links?.next);
-      setTotalCount(response.totalCount || offset + response.items.length);
-      setLoadingMore(false);
-    } catch (error) {
-      console.error('Error loading more flags:', error);
-      setLoadingMore(false);
-    }
-  }, [projectKey, apiReady, getFlags, loadingMore, hasMore, offset, debouncedSearchTerm]);
 
   useEffect(() => {
     // Only fetch flags when a flag tab is active
@@ -135,11 +78,7 @@ export const FlagsProvider = ({ children }: { children: React.ReactNode }) => {
   }, [projectKey, authenticated, apiReady, getProjectFlags, resetFlags, activeTab]);
 
   return (
-    <FlagsContext.Provider
-      value={{ flags, loading, loadingMore, hasMore, totalCount, getProjectFlags, loadMoreFlags, resetFlags }}
-    >
-      {children}
-    </FlagsContext.Provider>
+    <FlagsContext.Provider value={{ flags, loading, getProjectFlags, resetFlags }}>{children}</FlagsContext.Provider>
   );
 };
 

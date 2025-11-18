@@ -6,7 +6,7 @@ import { IconButton } from '../components/IconButton';
 import { ChevronUpIcon } from './icons/ChevronUpIcon';
 import { ChevronDownIcon } from './icons/ChevronDownIcon';
 import { useToolbarUIContext } from '../context/ToolbarUIProvider';
-import { LaunchDarklyIcon } from './icons/LaunchDarklyIcon';
+import { LaunchDarklyLogo } from './icons/LaunchDarklyLogo';
 
 interface LoginScreenProps {
   onClose: () => void;
@@ -32,7 +32,7 @@ export function LoginScreen(props: LoginScreenProps) {
       data-testid="login-screen"
     >
       <div className={styles.loginHeader}>
-        <LaunchDarklyIcon className={styles.headerLogo} onMouseDown={onMouseDown} />
+        <LaunchDarklyLogo className={styles.headerLogo} onMouseDown={onMouseDown} />
         <motion.div
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}

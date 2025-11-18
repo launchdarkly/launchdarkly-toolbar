@@ -20,7 +20,6 @@ import { useToolbarUIContext } from '../ui/Toolbar/context/ToolbarUIProvider';
 describe('LoginScreen', () => {
   const mockOnClose = vi.fn();
   const mockOnLogin = vi.fn();
-  const mockOnMouseDown = vi.fn();
 
   beforeEach(() => {
     vi.clearAllMocks();
@@ -39,8 +38,8 @@ describe('LoginScreen', () => {
 
       // WHEN: They see the login screen
       // THEN: They're greeted with a welcoming message
-      expect(screen.getByText('Welcome!')).toBeInTheDocument();
-      expect(screen.getByText(/Get started with the LaunchDarkly Developer Toolbar/i)).toBeInTheDocument();
+      expect(screen.getByText('Connect to LaunchDarkly')).toBeInTheDocument();
+      expect(screen.getByText(/Authorize your account to activate the Developer Toolbar./i)).toBeInTheDocument();
 
       // AND: They see a clear call-to-action to login
       const loginButton = screen.getByTestId('login-button');

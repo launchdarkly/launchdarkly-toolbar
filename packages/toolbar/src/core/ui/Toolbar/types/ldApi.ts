@@ -31,15 +31,8 @@ export interface ApiVariation {
   value: any;
 }
 
-export interface PaginatedFlagsResponse {
+export interface FlagsResponse {
   items: ApiFlag[];
-  _links: {
-    self?: { href: string };
-    next?: { href: string };
-    first?: { href: string };
-    last?: { href: string };
-  };
-  totalCount?: number;
 }
 
 export interface FlagsPaginationParams {
