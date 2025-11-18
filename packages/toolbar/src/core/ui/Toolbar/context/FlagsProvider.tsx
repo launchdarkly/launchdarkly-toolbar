@@ -39,7 +39,7 @@ export const FlagsProvider = ({ children }: { children: React.ReactNode }) => {
   const [hasMore, setHasMore] = useState(true);
   const [offset, setOffset] = useState(0);
   const [totalCount, setTotalCount] = useState(0);
-  const { searchTerm } = useSearchContext();
+  const { debouncedSearchTerm } = useSearchContext();
 
   const resetFlags = useCallback(() => {
     setFlags([]);
@@ -55,7 +55,7 @@ export const FlagsProvider = ({ children }: { children: React.ReactNode }) => {
       }
 
       try {
-        const response: PaginatedFlagsResponse | null = await getFlags(projectKey, { limit: PAGE_SIZE, offset: 0, query: searchTerm });
+        const response: PaginatedFlagsResponse | null = await getFlags(projectKey, { limit: PAGE_SIZE, offset: 0, query: debouncedSearchTerm });
         if (!response) {
           setFlags([]);
           setLoading(false);
@@ -75,7 +75,7 @@ export const FlagsProvider = ({ children }: { children: React.ReactNode }) => {
         return [];
       }
     },
-    [apiReady, getFlags, searchTerm],
+    [apiReady, getFlags, debouncedSearchTerm],
   );
 
   const loadMoreFlags = useCallback(async () => {
@@ -85,7 +85,7 @@ export const FlagsProvider = ({ children }: { children: React.ReactNode }) => {
 
     try {
       setLoadingMore(true);
-      const response: PaginatedFlagsResponse | null = await getFlags(projectKey, { limit: PAGE_SIZE, offset, query: searchTerm });
+      const response: PaginatedFlagsResponse | null = await getFlags(projectKey, { limit: PAGE_SIZE, offset, query: debouncedSearchTerm });
 
       if (!response) {
         setLoadingMore(false);
@@ -101,7 +101,7 @@ export const FlagsProvider = ({ children }: { children: React.ReactNode }) => {
       console.error('Error loading more flags:', error);
       setLoadingMore(false);
     }
-  }, [projectKey, apiReady, getFlags, loadingMore, hasMore, offset, searchTerm]);
+  }, [projectKey, apiReady, getFlags, loadingMore, hasMore, offset, debouncedSearchTerm]);
 
   useEffect(() => {
     if (!authenticated || !apiReady) {
