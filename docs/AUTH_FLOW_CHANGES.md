@@ -47,12 +47,22 @@ going to explain distinct boundaries/ownership between the LD Client flags and t
 - Determines the current value of the flag
 - If a flag is override, determines the evaluation reason (i.e. evaluated as true because it's overriden)
 - all other read data, aside from name (currently). this will change over time
+- Provides flag keys that are used as fallback for display names when API hasn't loaded
 
 **API flags**
 
 - Evaluation reason (if the flag is not overriden)
-- Flag name
+- Flag name (when available; formatted flag key used as fallback)
 - Variations (eventually)
 
 Eventually, as time goes on and more features and built out that utilize the API, the API flags will largely serve as the source of truth aside from
 the value + evaluation reason (only if a flag is overriden).
+
+**Graceful Degradation**
+
+The toolbar is designed to gracefully handle scenarios where API flag data isn't immediately available (e.g., during authentication or network delays):
+
+- **SDK Mode**: Flags from the LD client are displayed immediately using `FlagSdkOverrideProvider`, with flag keys formatted as display names (e.g., `my-flag-key` → "My Flag Key")
+- **Dev Server Mode**: Flags from the dev server are displayed immediately using `FlagStateManager`, with formatted flag keys as fallback names
+- **API Enhancement**: Once API flags are loaded, proper flag names replace the formatted keys for better UX
+- This ensures developers can always see and interact with their flags, even if authentication or API requests are delayed
