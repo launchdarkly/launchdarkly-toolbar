@@ -1,6 +1,7 @@
 import { useCallback, useState, useEffect, useRef } from 'react';
 import { CopyClipboard } from './icons/CopyClipboard';
 import { CheckIcon } from './icons/CheckIcon';
+import { useAnalytics } from '../context/AnalyticsProvider';
 import * as styles from './FlagKeyWithCopy.css';
 
 interface FlagKeyWithCopyProps {
@@ -11,10 +12,14 @@ interface FlagKeyWithCopyProps {
 export function FlagKeyWithCopy({ flagKey, className }: FlagKeyWithCopyProps) {
   const [isCopied, setIsCopied] = useState(false);
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const analytics = useAnalytics();
 
   const handleCopy = useCallback(() => {
     navigator.clipboard.writeText(flagKey);
     setIsCopied(true);
+
+    // Track the copy action
+    analytics.trackFlagKeyCopy(flagKey);
 
     // Clear any existing timeout
     if (timeoutRef.current) {
@@ -26,7 +31,7 @@ export function FlagKeyWithCopy({ flagKey, className }: FlagKeyWithCopyProps) {
       setIsCopied(false);
       timeoutRef.current = null;
     }, 2000);
-  }, [flagKey]);
+  }, [flagKey, analytics]);
 
   // Cleanup timeout on unmount
   useEffect(() => {

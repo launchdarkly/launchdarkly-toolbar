@@ -16,6 +16,7 @@ const EVENTS = {
   RELOAD_ON_FLAG_CHANGE_TOGGLE: 'reload.on.flag.change.toggle',
   STAR_FLAG: 'star.flag',
   FILTER_CHANGED: 'filter.changed',
+  COPY_FLAG_KEY: 'copy.flag.key',
 } as const;
 
 /**
@@ -173,6 +174,15 @@ export class ToolbarAnalytics {
   trackReloadOnFlagChangeToggle(enabled: boolean): void {
     this.track(EVENTS.RELOAD_ON_FLAG_CHANGE_TOGGLE, {
       enabled,
+    });
+  }
+
+  /**
+   * Track flag key copy to clipboard
+   */
+  trackFlagKeyCopy(flagKey: string): void {
+    this.track(EVENTS.COPY_FLAG_KEY, {
+      flagKey,
     });
   }
 }
