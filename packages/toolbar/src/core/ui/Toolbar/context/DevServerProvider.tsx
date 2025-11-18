@@ -30,7 +30,7 @@ export interface DevServerProviderProps {
 }
 
 export const DevServerProvider: FC<DevServerProviderProps> = ({ children, config }) => {
-  const { getProjectFlags, flags: apiFlags } = useFlagsContext();
+  const { getProjectFlags } = useFlagsContext();
   const { projectKey, getProjects } = useProjectContext();
 
   const [toolbarState, setToolbarState] = useState<ToolbarState>(() => {
