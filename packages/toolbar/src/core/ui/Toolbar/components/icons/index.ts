@@ -13,3 +13,4 @@ export { CancelIcon } from './CancelIcon';
 export { StarIcon } from './StarIcon';
 export { StarOutlineIcon } from './StarOutlineIcon';
 export { PersonPassword } from './PersonPassword';
+export { CopyClipboard } from './CopyClipboard';
