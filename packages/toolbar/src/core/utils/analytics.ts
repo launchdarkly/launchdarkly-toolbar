@@ -16,6 +16,8 @@ const EVENTS = {
   RELOAD_ON_FLAG_CHANGE_TOGGLE: 'reload.on.flag.change.toggle',
   STAR_FLAG: 'star.flag',
   FILTER_CHANGED: 'filter.changed',
+  LOGIN_SUCCESS: 'login.success',
+  LOGIN_CANCELLED: 'login.cancelled',
 } as const;
 
 /**
@@ -174,5 +176,19 @@ export class ToolbarAnalytics {
     this.track(EVENTS.RELOAD_ON_FLAG_CHANGE_TOGGLE, {
       enabled,
     });
+  }
+
+  /**
+   * Track successful login
+   */
+  trackLoginSuccess(): void {
+    this.track(EVENTS.LOGIN_SUCCESS, {});
+  }
+
+  /**
+   * Track when user closes the login screen without logging in
+   */
+  trackLoginCancelled(): void {
+    this.track(EVENTS.LOGIN_CANCELLED, {});
   }
 }

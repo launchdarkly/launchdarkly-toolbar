@@ -1,5 +1,6 @@
 import { createContext, Dispatch, SetStateAction, useCallback, useContext, useEffect, useState } from 'react';
 import { IFRAME_API_MESSAGES, useIFrameContext } from './IFrameProvider';
+import { useAnalytics } from './AnalyticsProvider';
 
 type AuthProviderType = {
   authenticated: boolean;
@@ -22,6 +23,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [loading, setLoading] = useState(true);
   const [authenticating, setAuthenticating] = useState(false);
   const { iframeSrc, ref } = useIFrameContext();
+  const analytics = useAnalytics();
 
   const handleMessage = useCallback((event: MessageEvent) => {
     if (event.origin !== iframeSrc) {
@@ -29,6 +31,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
 
     if (event.data.type === IFRAME_API_MESSAGES.AUTHENTICATION.authenticated) {
+      analytics.trackLoginSuccess();
       setAuthenticated(true);
       setLoading(false);
     } else if (event.data.type === IFRAME_API_MESSAGES.AUTHENTICATION.authenticationRequired) {

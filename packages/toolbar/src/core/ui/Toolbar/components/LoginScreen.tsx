@@ -7,6 +7,7 @@ import { ChevronUpIcon } from './icons/ChevronUpIcon';
 import { ChevronDownIcon } from './icons/ChevronDownIcon';
 import { useToolbarUIContext } from '../context/ToolbarUIProvider';
 import { LaunchDarklyLogo } from './icons/LaunchDarklyLogo';
+import { useAnalytics } from '../context/AnalyticsProvider';
 
 interface LoginScreenProps {
   onClose: () => void;
@@ -21,7 +22,13 @@ export function LoginScreen(props: LoginScreenProps) {
   const { onClose, onLogin, onMouseDown } = props;
   const { authenticating } = useAuthContext();
   const { position } = useToolbarUIContext();
+  const analytics = useAnalytics();
   const isTop = position.startsWith('top-');
+
+  const handleClose = () => {
+    analytics.trackLoginCancelled();
+    onClose();
+  };
 
   return (
     <motion.div
@@ -43,7 +50,7 @@ export function LoginScreen(props: LoginScreenProps) {
           <IconButton
             icon={isTop ? <ChevronUpIcon /> : <ChevronDownIcon />}
             label="Close toolbar"
-            onClick={onClose}
+            onClick={handleClose}
             className={styles.actionButton}
           />
         </motion.div>
