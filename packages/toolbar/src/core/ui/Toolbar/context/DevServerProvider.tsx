@@ -119,10 +119,7 @@ export const DevServerProvider: FC<DevServerProviderProps> = ({ children, config
         setToolbarState((prev) => ({ ...prev, isLoading: true }));
         const projectData = await devServerClient.getProjectData();
         const apiFlags = await getProjectFlags(projectKey);
-        console.log('apiFlags', apiFlags);
         const flags = await flagStateManager.getEnhancedFlags(apiFlags);
-
-        console.log('flags', flags);
 
         setToolbarState((prev) => ({
           ...prev,

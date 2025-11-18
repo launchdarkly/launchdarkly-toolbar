@@ -71,7 +71,6 @@ export const FlagsProvider = ({ children }: { children: React.ReactNode }) => {
         setFlags(response.items);
         setOffset(response.items.length);
         setHasMore(!!response._links?.next);
-        console.log('response', response);
         setTotalCount(response.totalCount || response.items.length);
         setLoading(false);
         return response.items;

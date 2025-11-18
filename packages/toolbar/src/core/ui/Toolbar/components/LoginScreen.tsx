@@ -2,11 +2,11 @@ import { motion } from 'motion/react';
 
 import { useAuthContext } from '../context/AuthProvider';
 import * as styles from './LoginScreen.css';
-import { LaunchDarklyLogo } from './icons/LaunchDarklyLogo';
 import { IconButton } from '../components/IconButton';
 import { ChevronUpIcon } from './icons/ChevronUpIcon';
 import { ChevronDownIcon } from './icons/ChevronDownIcon';
 import { useToolbarUIContext } from '../context/ToolbarUIProvider';
+import { LaunchDarklyIcon } from './icons/LaunchDarklyIcon';
 
 interface LoginScreenProps {
   onClose: () => void;
@@ -32,7 +32,7 @@ export function LoginScreen(props: LoginScreenProps) {
       data-testid="login-screen"
     >
       <div className={styles.loginHeader}>
-        <LaunchDarklyLogo className={styles.headerLogo} onMouseDown={onMouseDown} />
+        <LaunchDarklyIcon className={styles.headerLogo} onMouseDown={onMouseDown} />
         <motion.div
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
@@ -51,8 +51,8 @@ export function LoginScreen(props: LoginScreenProps) {
 
       <div className={styles.loginMainContent}>
         <div className={styles.loginContent}>
-          <h2 className={styles.title}>Welcome!</h2>
-          <p className={styles.description}>Get started with the LaunchDarkly Developer Toolbar.</p>
+          <h2 className={styles.title}>Connect to LaunchDarkly</h2>
+          <p className={styles.description}>Authorize your account to activate the Developer Toolbar.</p>
 
           <motion.button
             className={styles.loginButton}

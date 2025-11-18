@@ -104,7 +104,6 @@ export function useInfiniteScroll<T extends HTMLElement = HTMLDivElement>(
       if (node && enabled) {
         node.addEventListener('scroll', handleScroll, { passive: true });
         listenerAttachedRef.current = true;
-        console.log('Scroll listener attached to element:', node);
       }
     },
     [handleScroll, enabled],

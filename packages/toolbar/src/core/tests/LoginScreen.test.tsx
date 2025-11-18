@@ -156,28 +156,11 @@ describe('LoginScreen', () => {
   describe('Visual Design - Animations', () => {
     test('renders with animation entrance', () => {
       // GIVEN: Login screen appears for the first time
-      const { container } = render(<LoginScreen onClose={mockOnClose} onLogin={mockOnLogin} />);
+      render(<LoginScreen onClose={mockOnClose} onLogin={mockOnLogin} />);
 
       // THEN: The container uses motion for smooth entrance
       const loginScreen = screen.getByTestId('login-screen');
       expect(loginScreen).toBeInTheDocument();
-    });
-  });
-
-  describe('Drag Functionality', () => {
-    test('forwards mouse down events for toolbar dragging', () => {
-      // GIVEN: User wants to reposition the toolbar
-      render(<LoginScreen onClose={mockOnClose} onLogin={mockOnLogin} onMouseDown={mockOnMouseDown} />);
-
-      // WHEN: They click and hold on the logo area
-      const logo = screen.getByTestId('login-screen').querySelector('[class*="headerLogo"]');
-      if (logo) {
-        fireEvent.mouseDown(logo);
-      }
-
-      // THEN: The drag handler is called (allowing toolbar repositioning)
-      // Note: The actual dragging is handled by parent component
-      // This just verifies the event is forwarded
     });
   });
 

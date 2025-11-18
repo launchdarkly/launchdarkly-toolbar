@@ -12,7 +12,6 @@ import {
 import { useActiveTabContext } from '../context/ActiveTabProvider';
 
 export interface UseToolbarStateProps {
-  defaultActiveTab: ActiveTabId;
   domId: string;
 }
 
@@ -42,7 +41,7 @@ export interface UseToolbarStateReturn {
 }
 
 export function useToolbarState(props: UseToolbarStateProps): UseToolbarStateReturn {
-  const { defaultActiveTab, domId } = props;
+  const { domId } = props;
   const { setSearchTerm } = useSearchContext();
   const analytics = useAnalytics();
   const { activeTab, setActiveTab } = useActiveTabContext();
@@ -139,13 +138,6 @@ export function useToolbarState(props: UseToolbarStateProps): UseToolbarStateRet
       hasBeenExpandedRef.current = true;
     }
   }, [isExpanded]);
-
-  // Set default active tab when toolbar expands (if no tab is selected)
-  useEffect(() => {
-    if (isExpanded && !activeTab) {
-      setActiveTab(defaultActiveTab);
-    }
-  }, [isExpanded, activeTab, defaultActiveTab]);
 
   // Handle click outside to close toolbar (only when auto-collapse is enabled)
   useEffect(() => {

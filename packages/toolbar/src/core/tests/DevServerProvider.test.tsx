@@ -176,7 +176,6 @@ describe('DevServerProvider - Integration Flows', () => {
         return connectionStatus.textContent === 'connected';
       });
 
-      // Project is available from context
       expect(mockGetProjects).toHaveBeenCalled();
     });
 

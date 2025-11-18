@@ -5,7 +5,6 @@ import { IFlagOverridePlugin } from '../../types';
 import '@testing-library/jest-dom/vitest';
 import React from 'react';
 
-// Create a stable flags array to avoid reference changes
 const API_FLAGS = [
   {
     key: 'feature-flag-1',
@@ -41,7 +40,7 @@ const API_FLAGS = [
   },
 ];
 
-// Mock the FlagsProvider with stable references
+// Mock the FlagsProvider
 vi.mock('../ui/Toolbar/context/FlagsProvider', () => ({
   FlagsProvider: ({ children }: { children: React.ReactNode }) => <>{children}</>,
   useFlagsContext: () => ({

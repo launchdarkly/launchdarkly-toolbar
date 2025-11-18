@@ -42,7 +42,7 @@ export function LdToolbar(props: LdToolbarProps) {
 
   const defaultActiveTab = getDefaultActiveTab(mode, !!flagOverridePlugin, !!eventInterceptionPlugin);
 
-  const toolbarState = useToolbarState({ defaultActiveTab, domId });
+  const toolbarState = useToolbarState({ domId });
   const circleButtonRef = useRef<HTMLButtonElement>(null);
   const expandedContentRef = useRef<HTMLDivElement>(null);
 
@@ -204,13 +204,13 @@ export interface LaunchDarklyToolbarProps {
   baseUrl?: string; // Optional - will default to https://app.launchdarkly.com
   authUrl?: string; // Optional - will default to https://integrations.launchdarkly.com
   devServerUrl?: string; // Optional - will default to dev server mode if provided
-  projectKey?: string; // Optional - will auto-detect first available project if not provided
+  projectKey?: string; // Optional - will auto-detect the first available project if this and clientSideId are not provided
   flagOverridePlugin?: IFlagOverridePlugin; // Optional - for flag override functionality
   eventInterceptionPlugin?: IEventInterceptionPlugin; // Optional - for event tracking
   pollIntervalInMs?: number; // Optional - will default to 5000ms
   position?: ToolbarPosition; // Optional - will default to 'bottom-right'
   domId: string;
-  clientSideId?: string; // Optional - either clientSideId or projectKey must be provided to make requests to the LaunchDarkly API
+  clientSideId?: string; // Optional - will auto-detect the first available project if this and projectKey are not provided
 }
 
 export function LaunchDarklyToolbar(props: LaunchDarklyToolbarProps) {
