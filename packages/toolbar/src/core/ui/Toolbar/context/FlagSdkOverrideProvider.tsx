@@ -50,6 +50,7 @@ export function FlagSdkOverrideProvider({ children, flagOverridePlugin }: FlagSd
       const overrides = flagOverridePlugin.getAllOverrides();
       const result: Record<string, LocalFlag> = {};
 
+      // First, add all flags from the API (these have proper names)
       apiFlags.forEach((apiFlag) => {
         const currentValue = allFlags[apiFlag.key];
         result[apiFlag.key] = {
@@ -59,6 +60,20 @@ export function FlagSdkOverrideProvider({ children, flagOverridePlugin }: FlagSd
           isOverridden: apiFlag.key in overrides,
           type: inferFlagType(currentValue),
         };
+      });
+
+      // Then, add any flags from the LD client that aren't in apiFlags
+      // This ensures flags are displayed even if the API hasn't loaded yet
+      Object.keys(allFlags).forEach((flagKey) => {
+        if (!result[flagKey]) {
+          result[flagKey] = {
+            key: flagKey,
+            name: formatFlagName(flagKey),
+            currentValue: allFlags[flagKey],
+            isOverridden: flagKey in overrides,
+            type: inferFlagType(allFlags[flagKey]),
+          };
+        }
       });
 
       return result;

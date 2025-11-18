@@ -244,4 +244,38 @@ describe('FlagSdkOverrideProvider', () => {
     expect(screen.getByTestId('flag-number-flag')).toBeInTheDocument();
     expect(screen.getByTestId('flag-object-flag')).toBeInTheDocument();
   });
+
+  test('displays flags from LD client even when API flags are empty', async () => {
+    // Mock FlagsProvider to return empty flags (simulating API not loaded yet)
+    const emptyFlagsModule = await import('../ui/Toolbar/context/FlagsProvider');
+    vi.spyOn(emptyFlagsModule, 'useFlagsContext').mockReturnValue({
+      flags: [], // Empty API flags
+      loading: false,
+      getProjectFlags: vi.fn().mockResolvedValue([]),
+      resetFlags: vi.fn(),
+    });
+
+    // GIVEN: LD client has flags but API hasn't loaded
+    mockLdClient.allFlags.mockReturnValue({
+      'client-only-flag': true,
+      'another-flag': 'test-value',
+    });
+
+    // WHEN: Component is rendered
+    render(
+      <FlagSdkOverrideProvider flagOverridePlugin={mockFlagOverridePlugin}>
+        <TestConsumer />
+      </FlagSdkOverrideProvider>,
+    );
+
+    await act(async () => {
+      await new Promise((resolve) => setTimeout(resolve, 0));
+    });
+
+    // THEN: Flags from LD client are displayed with formatted names
+    expect(screen.getByTestId('flag-client-only-flag')).toBeInTheDocument();
+    expect(screen.getByTestId('flag-client-only-flag')).toHaveTextContent('Client Only Flag: true (original)');
+    expect(screen.getByTestId('flag-another-flag')).toBeInTheDocument();
+    expect(screen.getByTestId('flag-another-flag')).toHaveTextContent('Another Flag: test-value (original)');
+  });
 });

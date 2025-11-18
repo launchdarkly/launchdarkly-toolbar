@@ -16,21 +16,28 @@ export class FlagStateManager {
     const devServerData = await this.devServerClient.getProjectData();
 
     const enhancedFlags: Record<string, EnhancedFlag> = {};
-    apiFlags.forEach((apiFlag) => {
-      const flagState = devServerData.flagsState[apiFlag.key];
-      if (!flagState) return;
 
-      const override = devServerData.overrides[apiFlag.key];
-      const variations = devServerData.availableVariations[apiFlag.key] || [];
+    // First, create a map of API flags for quick lookup
+    const apiFlagsMap = new Map<string, ApiFlag>();
+    apiFlags.forEach((apiFlag) => {
+      apiFlagsMap.set(apiFlag.key, apiFlag);
+    });
+
+    // Process all flags from the dev server
+    Object.entries(devServerData.flagsState).forEach(([flagKey, flagState]) => {
+      const apiFlag = apiFlagsMap.get(flagKey);
+      const override = devServerData.overrides[flagKey];
+      const variations = devServerData.availableVariations[flagKey] || [];
 
       // Current value is override if exists, otherwise original value
       const currentValue = override ? override.value : flagState.value;
 
-      enhancedFlags[apiFlag.key] = {
-        key: apiFlag.key,
-        name: this.formatFlagName(apiFlag.key),
+      enhancedFlags[flagKey] = {
+        key: flagKey,
+        // Use API flag name if available, otherwise format the key
+        name: apiFlag?.name || this.formatFlagName(flagKey),
         currentValue,
-        isOverridden: false,
+        isOverridden: !!override,
         originalValue: flagState.value,
         availableVariations: variations,
         type: apiFlag?.kind || this.determineFlagType(variations, currentValue),
