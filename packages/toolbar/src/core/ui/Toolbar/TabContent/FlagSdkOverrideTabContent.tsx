@@ -314,8 +314,12 @@ function FlagSdkOverrideTabContentInner(props: FlagSdkOverrideTabContentInnerPro
                         data-testid={`flag-row-${flagKey}`}
                       >
                         <ListItem className={sharedStyles.flagListItem}>
+                          {flag.isOverridden && (
+                            <div className={sharedStyles.overrideIndicatorContainer}>
+                              <OverrideIndicator onClear={() => handleClearOverride(flagKey)} />
+                            </div>
+                          )}
                           <div className={sharedStyles.flagHeader}>
-                            {flag.isOverridden && <OverrideIndicator onClear={() => handleClearOverride(flagKey)} />}
                             <span className={sharedStyles.flagName}>
                               <span className={sharedStyles.flagNameText} data-testid={`flag-name-${flagKey}`}>
                                 {flag.name}

@@ -91,6 +91,14 @@ export const virtualItem = style({
 
 export const flagListItem = style({
   height: '100%',
+  position: 'relative',
+});
+
+export const overrideIndicatorContainer = style({
+  position: 'absolute',
+  top: '8px',
+  right: '8px',
+  zIndex: 1,
 });
 
 export const flagLinkContainer = style({
@@ -109,4 +117,5 @@ export const flagLinkContainer = style({
 
 export const flagListItemBlock = style({
   display: 'block',
+  position: 'relative',
 });

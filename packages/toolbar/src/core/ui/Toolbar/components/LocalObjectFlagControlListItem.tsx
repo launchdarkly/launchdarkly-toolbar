@@ -82,10 +82,14 @@ export function LocalObjectFlagControlListItem(props: LocalObjectFlagControlList
       }}
     >
       <ListItem className={sharedStyles.flagListItemBlock}>
+        {flag.isOverridden && (
+          <div className={sharedStyles.overrideIndicatorContainer}>
+            <OverrideIndicator onClear={() => handleClearOverride(flag.key)} />
+          </div>
+        )}
         <div className={styles.listItemColumn}>
           <div className={styles.listItemRow}>
             <div className={sharedStyles.flagHeader}>
-              {flag.isOverridden && <OverrideIndicator onClear={() => handleClearOverride(flag.key)} />}
               <span className={sharedStyles.flagName}>
                 <span className={styles.flagNameText} data-testid={`flag-name-${flag.key}`}>
                   {flag.name}

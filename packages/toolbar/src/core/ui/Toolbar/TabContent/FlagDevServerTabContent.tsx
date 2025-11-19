@@ -239,8 +239,12 @@ export function FlagDevServerTabContent(props: FlagDevServerTabContentProps) {
                         }}
                       >
                         <ListItem className={styles.flagListItem}>
+                          {flag.isOverridden && (
+                            <div className={styles.overrideIndicatorContainer}>
+                              <OverrideIndicator onClear={() => onClearOverride(flag.key)} />
+                            </div>
+                          )}
                           <div className={styles.flagHeader}>
-                            {flag.isOverridden && <OverrideIndicator onClear={() => onClearOverride(flag.key)} />}
                             <span className={styles.flagName}>
                               <span className={styles.flagNameText}>{flag.name}</span>
                             </span>
