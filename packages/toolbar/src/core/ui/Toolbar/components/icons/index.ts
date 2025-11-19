@@ -14,3 +14,4 @@ export { StarIcon } from './StarIcon';
 export { StarOutlineIcon } from './StarOutlineIcon';
 export { PersonPassword } from './PersonPassword';
 export { CopyClipboard } from './CopyClipboard';
+export { ExternalLinkIcon } from './ExternalLinkIcon';
