@@ -37,6 +37,7 @@ import { useApi } from '../ui/Toolbar/context/ApiProvider';
 import { useAuthContext } from '../ui/Toolbar/context/AuthProvider';
 import { useActiveTabContext } from '../ui/Toolbar/context/ActiveTabProvider';
 import { ActiveTabProvider } from '../ui/Toolbar/context/ActiveTabProvider';
+import { ApiFlag } from '../ui/Toolbar/types/ldApi';
 
 // Test component
 function TestConsumer() {
@@ -61,7 +62,7 @@ function TestWrapper({ children }: { children: React.ReactNode }) {
 }
 
 // Helper to create proper paginated response
-function createPaginatedResponse(items: any[], hasMore = false) {
+function createFlagsResponse(items: ApiFlag[], hasMore = false) {
   return {
     items,
     totalCount: items.length,
@@ -93,9 +94,9 @@ describe('FlagsProvider', () => {
     test('automatically fetches flags when project is selected', async () => {
       // GIVEN: Developer has selected a project
       mockGetFlags.mockResolvedValue(
-        createPaginatedResponse([
-          { key: 'feature-1', name: 'Feature 1', kind: 'boolean' },
-          { key: 'feature-2', name: 'Feature 2', kind: 'multivariate' },
+        createFlagsResponse([
+          { key: 'feature-1', name: 'Feature 1', kind: 'boolean' } as ApiFlag,
+          { key: 'feature-2', name: 'Feature 2', kind: 'multivariate' } as ApiFlag,
         ]),
       );
 
@@ -194,7 +195,9 @@ describe('FlagsProvider', () => {
   describe('Project Switching - Dynamic Updates', () => {
     test('refetches flags when project changes', async () => {
       // GIVEN: Developer is viewing flags for project-1
-      mockGetFlags.mockResolvedValue(createPaginatedResponse([{ key: 'flag-a', name: 'Flag A', kind: 'boolean' }]));
+      mockGetFlags.mockResolvedValue(
+        createFlagsResponse([{ key: 'flag-a', name: 'Flag A', kind: 'boolean' } as ApiFlag]),
+      );
 
       const { rerender } = render(
         <TestWrapper>
@@ -214,9 +217,9 @@ describe('FlagsProvider', () => {
       });
 
       mockGetFlags.mockResolvedValue(
-        createPaginatedResponse([
-          { key: 'flag-x', name: 'Flag X', kind: 'boolean' },
-          { key: 'flag-y', name: 'Flag Y', kind: 'boolean' },
+        createFlagsResponse([
+          { key: 'flag-x', name: 'Flag X', kind: 'boolean' } as ApiFlag,
+          { key: 'flag-y', name: 'Flag Y', kind: 'boolean' } as ApiFlag,
         ]),
       );
 
@@ -239,12 +242,12 @@ describe('FlagsProvider', () => {
     test('allows manual flag fetching for specific projects', async () => {
       // GIVEN: Developer wants to fetch flags for a different project temporarily
       mockGetFlags.mockResolvedValue(
-        createPaginatedResponse([{ key: 'default-flag', name: 'Default Flag', kind: 'boolean' }]),
+        createFlagsResponse([{ key: 'default-flag', name: 'Default Flag', kind: 'boolean' } as ApiFlag]),
       );
 
       const TestWithManualFetch = () => {
         const { getProjectFlags } = useFlagsContext();
-        const [customFlags, setCustomFlags] = React.useState<any[]>([]);
+        const [customFlags, setCustomFlags] = React.useState<ApiFlag[]>([]);
 
         return (
           <div>
@@ -252,7 +255,7 @@ describe('FlagsProvider', () => {
               data-testid="fetch-custom"
               onClick={async () => {
                 const flags = await getProjectFlags('other-project');
-                setCustomFlags(flags);
+                setCustomFlags(flags.items);
               }}
             >
               Fetch Custom
@@ -277,9 +280,9 @@ describe('FlagsProvider', () => {
       // WHEN: They manually fetch flags for another project
       const fetchButton = screen.getByTestId('fetch-custom');
       mockGetFlags.mockResolvedValue(
-        createPaginatedResponse([
-          { key: 'custom-1', name: 'Custom 1', kind: 'boolean' },
-          { key: 'custom-2', name: 'Custom 2', kind: 'boolean' },
+        createFlagsResponse([
+          { key: 'custom-1', name: 'Custom 1', kind: 'boolean' } as ApiFlag,
+          { key: 'custom-2', name: 'Custom 2', kind: 'boolean' } as ApiFlag,
         ]),
       );
 
@@ -299,7 +302,7 @@ describe('FlagsProvider', () => {
 
       const TestManualFetch = () => {
         const { getProjectFlags } = useFlagsContext();
-        const [result, setResult] = React.useState<any[] | null>(null);
+        const [result, setResult] = React.useState<ApiFlag[] | null>(null);
 
         return (
           <div>
@@ -307,7 +310,7 @@ describe('FlagsProvider', () => {
               data-testid="fetch"
               onClick={async () => {
                 const flags = await getProjectFlags('some-project');
-                setResult(flags);
+                setResult(flags.items);
               }}
             >
               Fetch
@@ -343,7 +346,7 @@ describe('FlagsProvider', () => {
 
       const TestManualFetch = () => {
         const { getProjectFlags } = useFlagsContext();
-        const [result, setResult] = React.useState<any[] | null>(null);
+        const [result, setResult] = React.useState<ApiFlag[] | null>(null);
 
         return (
           <div>
@@ -351,7 +354,7 @@ describe('FlagsProvider', () => {
               data-testid="fetch"
               onClick={async () => {
                 const flags = await getProjectFlags('some-project');
-                setResult(flags);
+                setResult(flags.items);
               }}
             >
               Fetch
@@ -383,7 +386,7 @@ describe('FlagsProvider', () => {
   describe('Empty States', () => {
     test('handles project with no flags gracefully', async () => {
       // GIVEN: Project exists but has no feature flags yet
-      mockGetFlags.mockResolvedValue(createPaginatedResponse([]));
+      mockGetFlags.mockResolvedValue(createFlagsResponse([]));
 
       // WHEN: Flags are loaded
       render(
@@ -439,7 +442,9 @@ describe('FlagsProvider', () => {
         setActiveTab: vi.fn(),
       });
 
-      mockGetFlags.mockResolvedValue(createPaginatedResponse([{ key: 'flag-1', name: 'Flag 1', kind: 'boolean' }]));
+      mockGetFlags.mockResolvedValue(
+        createFlagsResponse([{ key: 'flag-1', name: 'Flag 1', kind: 'boolean' } as ApiFlag]),
+      );
 
       // WHEN: Provider initializes
       render(
@@ -464,7 +469,9 @@ describe('FlagsProvider', () => {
         setActiveTab: vi.fn(),
       });
 
-      mockGetFlags.mockResolvedValue(createPaginatedResponse([{ key: 'flag-1', name: 'Flag 1', kind: 'boolean' }]));
+      mockGetFlags.mockResolvedValue(
+        createFlagsResponse([{ key: 'flag-1', name: 'Flag 1', kind: 'boolean' } as ApiFlag]),
+      );
 
       // WHEN: Provider initializes
       render(
@@ -490,7 +497,9 @@ describe('FlagsProvider', () => {
         setActiveTab: vi.fn(),
       });
 
-      mockGetFlags.mockResolvedValue(createPaginatedResponse([{ key: 'flag-1', name: 'Flag 1', kind: 'boolean' }]));
+      mockGetFlags.mockResolvedValue(
+        createFlagsResponse([{ key: 'flag-1', name: 'Flag 1', kind: 'boolean' } as ApiFlag]),
+      );
 
       // WHEN: Provider initializes
       render(
@@ -534,7 +543,7 @@ describe('FlagsProvider', () => {
       });
 
       // WHEN: Flags finish loading
-      resolveFlags(createPaginatedResponse([{ key: 'flag-1', name: 'Flag 1', kind: 'boolean' }]));
+      resolveFlags(createFlagsResponse([{ key: 'flag-1', name: 'Flag 1', kind: 'boolean' } as ApiFlag]));
 
       // THEN: Loading becomes false
       await waitFor(() => {
@@ -586,10 +595,10 @@ describe('FlagsProvider', () => {
       // WHEN: Project is selected
       (useProjectContext as any).mockReturnValue({ projectKey: 'my-project' });
       mockGetFlags.mockResolvedValue(
-        createPaginatedResponse([
-          { key: 'feature-1', name: 'Feature 1', kind: 'boolean' },
-          { key: 'feature-2', name: 'Feature 2', kind: 'multivariate' },
-          { key: 'feature-3', name: 'Feature 3', kind: 'boolean' },
+        createFlagsResponse([
+          { key: 'feature-1', name: 'Feature 1', kind: 'boolean' } as ApiFlag,
+          { key: 'feature-2', name: 'Feature 2', kind: 'multivariate' } as ApiFlag,
+          { key: 'feature-3', name: 'Feature 3', kind: 'boolean' } as ApiFlag,
         ]),
       );
 

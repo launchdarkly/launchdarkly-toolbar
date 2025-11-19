@@ -117,7 +117,7 @@ export const DevServerProvider: FC<DevServerProviderProps> = ({ children, config
         setToolbarState((prev) => ({ ...prev, isLoading: true }));
         const projectData = await devServerClient.getProjectData();
         const apiFlags = await getProjectFlags(projectKey);
-        flagStateManager.setApiFlags(apiFlags);
+        flagStateManager.setApiFlags(apiFlags.items);
         const flags = await flagStateManager.getEnhancedFlags();
         setToolbarState((prev) => ({
           ...prev,
@@ -173,7 +173,7 @@ export const DevServerProvider: FC<DevServerProviderProps> = ({ children, config
         if (!projectKey) {
           await initializeProjectSelection();
           const apiFlags = await getProjectFlags(projectKey);
-          flagStateManager.setApiFlags(apiFlags);
+          flagStateManager.setApiFlags(apiFlags.items);
         }
 
         const projectData = await devServerClient.getProjectData();
@@ -292,7 +292,7 @@ export const DevServerProvider: FC<DevServerProviderProps> = ({ children, config
       setToolbarState((prev) => ({ ...prev, isLoading: true }));
       const projectData = await devServerClient.getProjectData();
       const apiFlags = await getProjectFlags(projectKey);
-      flagStateManager.setApiFlags(apiFlags);
+      flagStateManager.setApiFlags(apiFlags.items);
       const flags = await flagStateManager.getEnhancedFlags();
       setToolbarState((prev) => ({
         ...prev,

@@ -8,14 +8,14 @@ import { useActiveTabContext } from './ActiveTabProvider';
 type FlagsContextType = {
   flags: ApiFlag[];
   loading: boolean;
-  getProjectFlags: (projectKey: string) => Promise<ApiFlag[]>;
+  getProjectFlags: (projectKey: string) => Promise<FlagsResponse>;
   resetFlags: () => void;
 };
 
 const FlagsContext = createContext<FlagsContextType>({
   flags: [],
   loading: true,
-  getProjectFlags: async () => [],
+  getProjectFlags: async () => ({ items: [], totalCount: 0 }),
   resetFlags: () => {},
 });
 
@@ -34,26 +34,18 @@ export const FlagsProvider = ({ children }: { children: React.ReactNode }) => {
   const getProjectFlags = useCallback(
     async (projectKey: string) => {
       if (!apiReady) {
-        return [];
+        return { items: [] };
       }
 
-      try {
-        const response: FlagsResponse | null = await getFlags(projectKey);
-        setFlags(response?.items || []);
-        setLoading(false);
-        return response?.items || [];
-      } catch (error) {
-        console.error('Error loading flags:', error);
-        setFlags([]);
-        setLoading(false);
-        return [];
-      }
+      return await getFlags(projectKey);
     },
     [apiReady, getFlags],
   );
 
   useEffect(() => {
-    // Only fetch flags when a flag tab is active
+    // Only fetch flags when a flag tab is active'
+    let isMounted = true;
+
     const isFlagTabActive = activeTab === 'flag-sdk' || activeTab === 'flag-dev-server';
 
     if (!isFlagTabActive) {
@@ -71,7 +63,16 @@ export const FlagsProvider = ({ children }: { children: React.ReactNode }) => {
 
     setLoading(true);
     resetFlags();
-    getProjectFlags(projectKey);
+    getProjectFlags(projectKey).then((flags) => {
+      if (isMounted) {
+        setFlags(flags.items);
+        setLoading(false);
+      }
+    });
+
+    return () => {
+      isMounted = false;
+    };
   }, [projectKey, authenticated, apiReady, getProjectFlags, resetFlags, activeTab]);
 
   return (
