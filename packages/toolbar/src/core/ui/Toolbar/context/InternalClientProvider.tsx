@@ -180,31 +180,3 @@ export function useInternalClientInstance(): LDClient | null {
   const { client } = useInternalClient();
   return client;
 }
-
-/**
- * Hook to update the internal client context with auth information.
- *
- * Call this when the user authenticates to update the client's context.
- */
-export function useUpdateInternalClientContext() {
-  const { client } = useInternalClient();
-
-  return async (authState: AuthState) => {
-    if (!client || !authState.authenticated) return;
-
-    const userContext: LDContext = {
-      kind: 'user',
-      key: authState.userId || 'unknown',
-      email: authState.email,
-      authenticated: true,
-    };
-
-    try {
-      await client.identify(userContext);
-      console.log('[InternalClientProvider] Context updated with auth');
-    } catch (err) {
-      console.error('[InternalClientProvider] Failed to update context:', err);
-      throw err;
-    }
-  };
-}

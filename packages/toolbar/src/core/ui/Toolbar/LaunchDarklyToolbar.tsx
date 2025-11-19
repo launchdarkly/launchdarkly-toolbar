@@ -1,5 +1,5 @@
 import { AnimatePresence, motion } from 'motion/react';
-import { useCallback, useRef } from 'react';
+import { useCallback, useMemo, useRef } from 'react';
 
 import { SearchProvider, useSearchContext, AnalyticsProvider, useAnalytics, StarredFlagsProvider } from './context';
 import { CircleLogo, ExpandedToolbarContent } from './components';
@@ -212,12 +212,15 @@ export function LaunchDarklyToolbar(props: LaunchDarklyToolbarProps) {
     domId,
   } = props;
 
-  const internalClientConfig = {
-    clientSideId: import.meta.env.TOOLBAR_INTERNAL_CLIENT_ID,
-    baseUrl: import.meta.env.TOOLBAR_INTERNAL_BASE_URL,
-    streamUrl: import.meta.env.TOOLBAR_INTERNAL_STREAM_URL,
-    eventsUrl: import.meta.env.TOOLBAR_INTERNAL_EVENTS_URL,
-  };
+  const internalClientConfig = useMemo(
+    () => ({
+      clientSideId: import.meta.env.TOOLBAR_INTERNAL_CLIENT_ID,
+      baseUrl: import.meta.env.TOOLBAR_INTERNAL_BASE_URL,
+      streamUrl: import.meta.env.TOOLBAR_INTERNAL_STREAM_URL,
+      eventsUrl: import.meta.env.TOOLBAR_INTERNAL_EVENTS_URL,
+    }),
+    [],
+  );
 
   const isVisible = useToolbarVisibility();
 
