@@ -8,7 +8,7 @@ const STORAGE_KEY = TOOLBAR_STORAGE_KEYS.PROJECT;
 type ProjectContextType = {
   projectKey: string;
   setProjectKey: (projectKey: string) => void;
-  getProjects: () => Promise<ApiProject[]>;
+  getProjects: () => Promise<ProjectsResponse>;
   projects: ApiProject[];
   loading: boolean;
 };
@@ -16,7 +16,7 @@ type ProjectContextType = {
 const ProjectContext = createContext<ProjectContextType>({
   projectKey: '',
   setProjectKey: () => {},
-  getProjects: async () => [],
+  getProjects: async () => ({ items: [] }),
   projects: [],
   loading: false,
 });
@@ -35,20 +35,29 @@ export const ProjectProvider = ({ children, clientSideId, providedProjectKey }: 
 
   const getProjects = useCallback(async () => {
     if (!apiReady) {
-      return [];
+      return { items: [] };
     }
 
-    const response: ProjectsResponse = await getApiProjects();
-    const projects = response.items;
-    setProjects(projects);
-    return projects;
+    return await getApiProjects();
   }, [apiReady, getApiProjects]);
 
   useEffect(() => {
-    if (!projects || projects?.length === 0) {
-      getProjects();
+    let isMounted = true;
+
+    if (apiReady) {
+      setLoading(true);
+      getProjects().then((projects) => {
+        if (isMounted) {
+          setProjects(projects.items);
+          setLoading(false);
+        }
+      });
     }
-  }, [projects, getProjects]);
+
+    return () => {
+      isMounted = false;
+    };
+  }, [apiReady, getProjects]);
 
   useEffect(() => {
     const savedProjectKey = localStorage.getItem(STORAGE_KEY);
@@ -62,14 +71,14 @@ export const ProjectProvider = ({ children, clientSideId, providedProjectKey }: 
 
       getProjects()
         .then((projects) => {
-          if (!projects || projects?.length === 0) {
+          if (!projects || projects.items?.length === 0) {
             throw new Error('No projects found');
           }
 
-          let project = projects[0];
+          let project = projects.items[0];
 
           if (clientSideId) {
-            project = projects.find((project) =>
+            project = projects.items.find((project) =>
               project.environments.some((environment) => environment._id === clientSideId),
             );
 
