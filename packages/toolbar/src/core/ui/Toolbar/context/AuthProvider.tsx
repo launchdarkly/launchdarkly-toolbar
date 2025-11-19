@@ -1,5 +1,5 @@
 import { createContext, Dispatch, SetStateAction, useCallback, useContext, useEffect, useState } from 'react';
-import { IFRAME_API_MESSAGES, useIFrameContext } from './IFrameProvider';
+import { IFRAME_EVENTS, useIFrameContext } from './IFrameProvider';
 import { useAnalytics } from './AnalyticsProvider';
 
 type AuthProviderType = {
@@ -28,14 +28,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       return;
     }
 
-    if (event.data.type === IFRAME_API_MESSAGES.AUTHENTICATION.authenticated) {
+    if (event.data.type === IFRAME_EVENTS.AUTHENTICATED) {
       analytics.trackLoginSuccess();
       setAuthenticated(true);
       setLoading(false);
-    } else if (event.data.type === IFRAME_API_MESSAGES.AUTHENTICATION.authenticationRequired) {
+    } else if (event.data.type === IFRAME_EVENTS.AUTH_REQUIRED) {
       setAuthenticated(false);
       setLoading(false);
-    } else if (event.data.type === IFRAME_API_MESSAGES.AUTHENTICATION.error) {
+    } else if (event.data.type === IFRAME_EVENTS.AUTH_ERROR) {
       setAuthenticated(false);
       setLoading(false);
       throw new Error(event.data.error);

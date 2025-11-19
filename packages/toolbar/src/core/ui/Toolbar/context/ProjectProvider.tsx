@@ -28,8 +28,7 @@ interface ProjectProviderProps {
 }
 
 export const ProjectProvider = ({ children, clientSideId, providedProjectKey }: ProjectProviderProps) => {
-  const { getProjects: getApiProjects } = useApi();
-  const { apiReady } = useApi();
+  const { getProjects: getApiProjects, apiReady } = useApi();
   const [projects, setProjects] = useState<ApiProject[]>([]);
   const [projectKey, setProjectKey] = useState<string>('');
   const [loading, setLoading] = useState(false);
@@ -59,11 +58,6 @@ export const ProjectProvider = ({ children, clientSideId, providedProjectKey }: 
       setProjectKey(providedProjectKey);
     } else if (apiReady) {
       setLoading(true);
-
-      if (!apiReady) {
-        setLoading(false);
-        return;
-      }
 
       getProjects()
         .then((projects) => {

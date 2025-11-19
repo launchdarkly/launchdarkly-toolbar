@@ -1,6 +1,6 @@
 import { createContext, useCallback, useContext, useEffect, useState } from 'react';
 import { useAuthContext } from './AuthProvider';
-import { IFRAME_API_MESSAGES, useIFrameContext } from './IFrameProvider';
+import { getResponseTopic, getErrorTopic, IFRAME_COMMANDS, useIFrameContext, IFRAME_EVENTS } from './IFrameProvider';
 import { ApiProject, FlagsPaginationParams } from '../types/ldApi';
 
 interface ApiProviderContextValue {
@@ -27,7 +27,7 @@ export function ApiProvider({ children }: { children: React.ReactNode }) {
         return;
       }
 
-      if (event.data.type === IFRAME_API_MESSAGES.API_READY) {
+      if (event.data.type === IFRAME_EVENTS.API_READY) {
         setApiReady(true);
       }
     },
@@ -54,7 +54,7 @@ export function ApiProvider({ children }: { children: React.ReactNode }) {
 
       ref.current.contentWindow.postMessage(
         {
-          type: IFRAME_API_MESSAGES.GET_FLAG.request,
+          type: IFRAME_COMMANDS.GET_FLAG,
           flagKey,
         },
         iframeSrc,
@@ -66,10 +66,10 @@ export function ApiProvider({ children }: { children: React.ReactNode }) {
             return;
           }
 
-          if (event.data.type === IFRAME_API_MESSAGES.GET_FLAG.response) {
+          if (event.data.type === getResponseTopic(IFRAME_COMMANDS.GET_FLAG)) {
             window.removeEventListener('message', handleMessage);
             resolve(event.data.data);
-          } else if (event.data.type === IFRAME_API_MESSAGES.GET_FLAG.error) {
+          } else if (event.data.type === getErrorTopic(IFRAME_COMMANDS.GET_FLAG)) {
             window.removeEventListener('message', handleMessage);
             reject(new Error(event.data.error));
           }
@@ -93,7 +93,7 @@ export function ApiProvider({ children }: { children: React.ReactNode }) {
 
     ref.current.contentWindow.postMessage(
       {
-        type: IFRAME_API_MESSAGES.GET_PROJECTS.request,
+        type: IFRAME_COMMANDS.GET_PROJECTS,
       },
       iframeSrc,
     );
@@ -104,10 +104,10 @@ export function ApiProvider({ children }: { children: React.ReactNode }) {
           return;
         }
 
-        if (event.data.type === IFRAME_API_MESSAGES.GET_PROJECTS.response) {
+        if (event.data.type === getResponseTopic(IFRAME_COMMANDS.GET_PROJECTS)) {
           window.removeEventListener('message', handleMessage);
           resolve(event.data.data.items);
-        } else if (event.data.type === IFRAME_API_MESSAGES.GET_PROJECTS.error) {
+        } else if (event.data.type === getErrorTopic(IFRAME_COMMANDS.GET_PROJECTS)) {
           window.removeEventListener('message', handleMessage);
           reject(new Error(event.data.error));
         }
@@ -129,7 +129,7 @@ export function ApiProvider({ children }: { children: React.ReactNode }) {
 
       ref.current.contentWindow.postMessage(
         {
-          type: IFRAME_API_MESSAGES.GET_FLAGS.request,
+          type: IFRAME_COMMANDS.GET_FLAGS,
           projectKey,
           limit: params?.limit,
           offset: params?.offset,
@@ -144,10 +144,10 @@ export function ApiProvider({ children }: { children: React.ReactNode }) {
             return;
           }
 
-          if (event.data.type === IFRAME_API_MESSAGES.GET_FLAGS.response) {
+          if (event.data.type === getResponseTopic(IFRAME_COMMANDS.GET_FLAGS)) {
             window.removeEventListener('message', handleMessage);
             resolve(event.data.data);
-          } else if (event.data.type === IFRAME_API_MESSAGES.GET_FLAGS.error) {
+          } else if (event.data.type === getErrorTopic(IFRAME_COMMANDS.GET_FLAGS)) {
             window.removeEventListener('message', handleMessage);
             reject(new Error(event.data.error));
           }

@@ -1,7 +1,7 @@
 import { render, screen, waitFor, act } from '@testing-library/react';
 import { expect, test, describe, vi, beforeEach, afterEach } from 'vitest';
 import { ApiProvider, useApi } from '../ui/Toolbar/context/ApiProvider';
-import { IFRAME_API_MESSAGES } from '../ui/Toolbar/context/IFrameProvider';
+import { getErrorTopic, getResponseTopic, IFRAME_COMMANDS, IFRAME_EVENTS } from '../ui/Toolbar/context/IFrameProvider';
 import '@testing-library/jest-dom/vitest';
 import React from 'react';
 
@@ -12,12 +12,19 @@ vi.mock('../ui/Toolbar/context/AuthProvider', () => ({
 
 // Mock the IFrameProvider
 vi.mock('../ui/Toolbar/context/IFrameProvider', () => ({
-  IFRAME_API_MESSAGES: {
-    API_READY: 'API_READY',
-    GET_FLAG: { request: 'GET_FLAG_REQUEST', response: 'GET_FLAG_RESPONSE', error: 'GET_FLAG_ERROR' },
-    GET_PROJECTS: { request: 'GET_PROJECTS_REQUEST', response: 'GET_PROJECTS_RESPONSE', error: 'GET_PROJECTS_ERROR' },
-    GET_FLAGS: { request: 'GET_FLAGS_REQUEST', response: 'GET_FLAGS_RESPONSE', error: 'GET_FLAGS_ERROR' },
+  IFRAME_COMMANDS: {
+    GET_PROJECTS: 'GET_PROJECTS',
+    GET_FLAGS: 'GET_FLAGS',
+    GET_FLAG: 'GET_FLAG',
   },
+  IFRAME_EVENTS: {
+    API_READY: 'API_READY',
+    AUTHENTICATED: 'AUTHENTICATED',
+    AUTH_REQUIRED: 'AUTH_REQUIRED',
+    AUTH_ERROR: 'AUTH_ERROR',
+  },
+  getResponseTopic: vi.fn().mockImplementation((command) => `${command}-response`),
+  getErrorTopic: vi.fn().mockImplementation((command) => `${command}-error`),
   useIFrameContext: vi.fn(),
 }));
 
@@ -95,7 +102,7 @@ describe('ApiProvider', () => {
       act(() => {
         window.dispatchEvent(
           new MessageEvent('message', {
-            data: { type: IFRAME_API_MESSAGES.API_READY },
+            data: { type: IFRAME_EVENTS.API_READY },
             origin: 'https://integrations.launchdarkly.com',
           }),
         );
@@ -119,7 +126,7 @@ describe('ApiProvider', () => {
       act(() => {
         window.dispatchEvent(
           new MessageEvent('message', {
-            data: { type: IFRAME_API_MESSAGES.API_READY },
+            data: { type: IFRAME_EVENTS.API_READY },
             origin: 'https://evil.com',
           }),
         );
@@ -143,7 +150,7 @@ describe('ApiProvider', () => {
       act(() => {
         window.dispatchEvent(
           new MessageEvent('message', {
-            data: { type: IFRAME_API_MESSAGES.API_READY },
+            data: { type: IFRAME_EVENTS.API_READY },
             origin: 'https://integrations.launchdarkly.com',
           }),
         );
@@ -161,7 +168,7 @@ describe('ApiProvider', () => {
             window.dispatchEvent(
               new MessageEvent('message', {
                 data: {
-                  type: IFRAME_API_MESSAGES.GET_PROJECTS.response,
+                  type: getResponseTopic(IFRAME_COMMANDS.GET_PROJECTS),
                   data: {
                     items: [
                       { key: 'project-1', name: 'Project 1' },
@@ -179,7 +186,7 @@ describe('ApiProvider', () => {
 
       // THEN: The correct message was sent to iframe
       expect(mockIframeRef.current.contentWindow.postMessage).toHaveBeenCalledWith(
-        { type: IFRAME_API_MESSAGES.GET_PROJECTS.request },
+        { type: IFRAME_COMMANDS.GET_PROJECTS },
         'https://integrations.launchdarkly.com',
       );
     });
@@ -267,7 +274,7 @@ describe('ApiProvider', () => {
       act(() => {
         window.dispatchEvent(
           new MessageEvent('message', {
-            data: { type: IFRAME_API_MESSAGES.API_READY },
+            data: { type: IFRAME_EVENTS.API_READY },
             origin: 'https://integrations.launchdarkly.com',
           }),
         );
@@ -285,7 +292,7 @@ describe('ApiProvider', () => {
             window.dispatchEvent(
               new MessageEvent('message', {
                 data: {
-                  type: IFRAME_API_MESSAGES.GET_PROJECTS.error,
+                  type: getErrorTopic(IFRAME_COMMANDS.GET_PROJECTS),
                   error: 'Network error',
                 },
                 origin: 'https://integrations.launchdarkly.com',
@@ -315,7 +322,7 @@ describe('ApiProvider', () => {
       act(() => {
         window.dispatchEvent(
           new MessageEvent('message', {
-            data: { type: IFRAME_API_MESSAGES.API_READY },
+            data: { type: IFRAME_EVENTS.API_READY },
             origin: 'https://integrations.launchdarkly.com',
           }),
         );
@@ -333,7 +340,7 @@ describe('ApiProvider', () => {
             window.dispatchEvent(
               new MessageEvent('message', {
                 data: {
-                  type: IFRAME_API_MESSAGES.GET_FLAGS.response,
+                  type: getResponseTopic(IFRAME_COMMANDS.GET_FLAGS),
                   data: {
                     items: [
                       { key: 'feature-1', name: 'Feature 1' },
@@ -351,7 +358,7 @@ describe('ApiProvider', () => {
 
       // THEN: The correct project key was sent
       expect(mockIframeRef.current.contentWindow.postMessage).toHaveBeenCalledWith(
-        { type: IFRAME_API_MESSAGES.GET_FLAGS.request, projectKey: 'test-project' },
+        { type: IFRAME_COMMANDS.GET_FLAGS, projectKey: 'test-project' },
         'https://integrations.launchdarkly.com',
       );
     });
@@ -390,7 +397,7 @@ describe('ApiProvider', () => {
       act(() => {
         window.dispatchEvent(
           new MessageEvent('message', {
-            data: { type: IFRAME_API_MESSAGES.API_READY },
+            data: { type: IFRAME_EVENTS.API_READY },
             origin: 'https://integrations.launchdarkly.com',
           }),
         );
@@ -407,7 +414,7 @@ describe('ApiProvider', () => {
             window.dispatchEvent(
               new MessageEvent('message', {
                 data: {
-                  type: IFRAME_API_MESSAGES.GET_FLAGS.error,
+                  type: getErrorTopic(IFRAME_COMMANDS.GET_FLAGS),
                   error: 'Project not found',
                 },
                 origin: 'https://integrations.launchdarkly.com',
@@ -437,7 +444,7 @@ describe('ApiProvider', () => {
       act(() => {
         window.dispatchEvent(
           new MessageEvent('message', {
-            data: { type: IFRAME_API_MESSAGES.API_READY },
+            data: { type: IFRAME_EVENTS.API_READY },
             origin: 'https://integrations.launchdarkly.com',
           }),
         );
@@ -454,7 +461,7 @@ describe('ApiProvider', () => {
             window.dispatchEvent(
               new MessageEvent('message', {
                 data: {
-                  type: IFRAME_API_MESSAGES.GET_FLAG.response,
+                  type: getResponseTopic(IFRAME_COMMANDS.GET_FLAG),
                   data: { key: 'test-flag', name: 'Test Flag', value: true },
                 },
                 origin: 'https://integrations.launchdarkly.com',
@@ -467,7 +474,7 @@ describe('ApiProvider', () => {
 
       // THEN: The correct flag key was requested
       expect(mockIframeRef.current.contentWindow.postMessage).toHaveBeenCalledWith(
-        { type: IFRAME_API_MESSAGES.GET_FLAG.request, flagKey: 'test-flag' },
+        { type: IFRAME_COMMANDS.GET_FLAG, flagKey: 'test-flag' },
         'https://integrations.launchdarkly.com',
       );
     });
@@ -486,7 +493,7 @@ describe('ApiProvider', () => {
       act(() => {
         window.dispatchEvent(
           new MessageEvent('message', {
-            data: { type: IFRAME_API_MESSAGES.API_READY },
+            data: { type: IFRAME_EVENTS.API_READY },
             origin: 'https://integrations.launchdarkly.com',
           }),
         );
@@ -497,7 +504,7 @@ describe('ApiProvider', () => {
         window.dispatchEvent(
           new MessageEvent('message', {
             data: {
-              type: IFRAME_API_MESSAGES.GET_PROJECTS.response,
+              type: getResponseTopic(IFRAME_COMMANDS.GET_PROJECTS),
               data: { items: [{ key: 'evil-project', name: 'Evil Project' }] },
             },
             origin: 'https://evil-attacker.com', // Wrong origin!
