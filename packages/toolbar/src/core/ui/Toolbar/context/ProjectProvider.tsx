@@ -1,7 +1,7 @@
 import { createContext, useCallback, useContext, useEffect, useState } from 'react';
 import { useApi } from './ApiProvider';
 import { TOOLBAR_STORAGE_KEYS } from '../utils/localStorage';
-import { ApiProject } from '../types/ldApi';
+import { ApiEnvironment, ApiProject } from '../types/ldApi';
 
 const STORAGE_KEY = TOOLBAR_STORAGE_KEYS.PROJECT;
 
@@ -10,6 +10,7 @@ type ProjectContextType = {
   setProjectKey: (projectKey: string) => void;
   getProjects: () => Promise<ApiProject[]>;
   projects: ApiProject[];
+  environments: ApiEnvironment[];
   loading: boolean;
 };
 
@@ -18,6 +19,7 @@ const ProjectContext = createContext<ProjectContextType>({
   setProjectKey: () => {},
   getProjects: async () => [],
   projects: [],
+  environments: [],
   loading: false,
 });
 
@@ -33,6 +35,7 @@ export const ProjectProvider = ({ children, clientSideId, providedProjectKey }: 
   const [projects, setProjects] = useState<ApiProject[]>([]);
   const [projectKey, setProjectKey] = useState<string>('');
   const [loading, setLoading] = useState(false);
+  const [environments, setEnvironments] = useState<ApiEnvironment[]>([]);
 
   const getProjects = useCallback(async () => {
     if (!apiReady) {
@@ -41,6 +44,7 @@ export const ProjectProvider = ({ children, clientSideId, providedProjectKey }: 
 
     const projects = await getApiProjects();
     setProjects(projects);
+    setEnvironments(projects.flatMap((project) => project.environments));
     return projects;
   }, [apiReady, getApiProjects]);
 
@@ -72,6 +76,7 @@ export const ProjectProvider = ({ children, clientSideId, providedProjectKey }: 
           }
 
           let project = projects[0];
+          let environments: ApiEnvironment[] = [];
 
           if (clientSideId) {
             project = projects.find((project) =>
@@ -81,6 +86,8 @@ export const ProjectProvider = ({ children, clientSideId, providedProjectKey }: 
             if (!project) {
               throw new Error(`No project found for clientSideId: ${clientSideId}`);
             }
+
+            environments = project.environments;
           }
 
           if (!project) {
@@ -88,6 +95,7 @@ export const ProjectProvider = ({ children, clientSideId, providedProjectKey }: 
           }
 
           setProjectKey(project.key);
+          setEnvironments(environments);
           localStorage.setItem(STORAGE_KEY, project.key);
           setLoading(false);
         })
@@ -102,7 +110,7 @@ export const ProjectProvider = ({ children, clientSideId, providedProjectKey }: 
   }, [providedProjectKey, clientSideId, getProjects, apiReady]);
 
   return (
-    <ProjectContext.Provider value={{ projectKey, setProjectKey, getProjects, projects, loading }}>
+    <ProjectContext.Provider value={{ projectKey, setProjectKey, getProjects, projects, environments, loading }}>
       {children}
     </ProjectContext.Provider>
   );
