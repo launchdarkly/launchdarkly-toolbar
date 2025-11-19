@@ -517,6 +517,73 @@ describe('FlagsProvider', () => {
         expect(screen.getByTestId('flags-count')).toHaveTextContent('1');
       });
     });
+
+    test('does not refetch flags when switching back to flag tab with same project', async () => {
+      // GIVEN: Developer has loaded flags for a project
+      let activeTab = 'flag-sdk';
+      const setActiveTab = vi.fn((newTab: string) => {
+        activeTab = newTab;
+      });
+
+      (useActiveTabContext as any).mockImplementation(() => ({
+        activeTab,
+        setActiveTab,
+      }));
+
+      mockGetFlags.mockResolvedValue(
+        createFlagsResponse([
+          { key: 'flag-1', name: 'Flag 1', kind: 'boolean' } as ApiFlag,
+          { key: 'flag-2', name: 'Flag 2', kind: 'boolean' } as ApiFlag,
+        ]),
+      );
+
+      const { rerender } = render(
+        <FlagsProvider>
+          <TestConsumer />
+        </FlagsProvider>,
+      );
+
+      // WHEN: Initial load completes
+      await waitFor(() => {
+        expect(mockGetFlags).toHaveBeenCalledTimes(1);
+        expect(screen.getByTestId('flags-count')).toHaveTextContent('2');
+      });
+
+      // AND: Developer switches to settings tab
+      (useActiveTabContext as any).mockReturnValue({
+        activeTab: 'settings',
+        setActiveTab,
+      });
+
+      rerender(
+        <FlagsProvider>
+          <TestConsumer />
+        </FlagsProvider>,
+      );
+
+      await waitFor(() => {
+        // Flags are still in state
+        expect(screen.getByTestId('flags-count')).toHaveTextContent('2');
+      });
+
+      // AND: Developer switches back to flag tab
+      (useActiveTabContext as any).mockReturnValue({
+        activeTab: 'flag-sdk',
+        setActiveTab,
+      });
+
+      rerender(
+        <FlagsProvider>
+          <TestConsumer />
+        </FlagsProvider>,
+      );
+
+      // THEN: No additional API call is made (data is cached)
+      await waitFor(() => {
+        expect(mockGetFlags).toHaveBeenCalledTimes(1); // Still only called once
+        expect(screen.getByTestId('flags-count')).toHaveTextContent('2');
+      });
+    });
   });
 
   describe('Loading State Management', () => {

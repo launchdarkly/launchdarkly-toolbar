@@ -25,10 +25,12 @@ export const FlagsProvider = ({ children }: { children: React.ReactNode }) => {
   const { getFlags, apiReady } = useApi();
   const [flags, setFlags] = useState<ApiFlag[]>([]);
   const [loading, setLoading] = useState(false);
+  const [loadedProjectKey, setLoadedProjectKey] = useState<string | null>(null);
   const { activeTab } = useActiveTabContext();
 
   const resetFlags = useCallback(() => {
     setFlags([]);
+    setLoadedProjectKey(null);
   }, []);
 
   const getProjectFlags = useCallback(
@@ -61,11 +63,17 @@ export const FlagsProvider = ({ children }: { children: React.ReactNode }) => {
       return;
     }
 
+    // Only fetch if we haven't loaded data for this project yet
+    if (loadedProjectKey === projectKey) {
+      return;
+    }
+
     setLoading(true);
-    resetFlags();
+    setFlags([]);
     getProjectFlags(projectKey).then((flags) => {
       if (isMounted) {
         setFlags(flags.items);
+        setLoadedProjectKey(projectKey);
         setLoading(false);
       }
     });
@@ -73,7 +81,7 @@ export const FlagsProvider = ({ children }: { children: React.ReactNode }) => {
     return () => {
       isMounted = false;
     };
-  }, [projectKey, authenticated, apiReady, getProjectFlags, resetFlags, activeTab]);
+  }, [projectKey, authenticated, apiReady, getProjectFlags, activeTab, loadedProjectKey]);
 
   return (
     <FlagsContext.Provider value={{ flags, loading, getProjectFlags, resetFlags }}>{children}</FlagsContext.Provider>
