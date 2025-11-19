@@ -10,6 +10,7 @@ import { LocalBooleanFlagControl, LocalStringNumberFlagControl } from '../compon
 import { OverrideIndicator } from '../components/OverrideIndicator';
 import { StarButton } from '../components/StarButton';
 import { FlagKeyWithCopy } from '../components/FlagKeyWithCopy';
+import { ExternalLinkIcon } from '../components/icons';
 import { useStarredFlags } from '../context/StarredFlagsProvider';
 import {
   type FlagFilterMode,
@@ -330,6 +331,7 @@ function FlagSdkOverrideTabContentInner(props: FlagSdkOverrideTabContentInnerPro
                               isStarred={isStarred(flag.key)}
                               onToggle={handleToggleStarred}
                             />
+                            <ExternalLinkIcon />
                           </div>
                         </ListItem>
                       </div>
