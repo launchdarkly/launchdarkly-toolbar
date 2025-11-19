@@ -44,7 +44,6 @@ export const ProjectProvider = ({ children, clientSideId, providedProjectKey }: 
 
     const projects = await getApiProjects();
     setProjects(projects);
-    setEnvironments(projects.flatMap((project) => project.environments));
     return projects;
   }, [apiReady, getApiProjects]);
 
@@ -53,6 +52,18 @@ export const ProjectProvider = ({ children, clientSideId, providedProjectKey }: 
       getProjects();
     }
   }, [projects, getProjects]);
+
+  useEffect(() => {
+    if (!projects || projects.length === 0) {
+      return;
+    }
+
+    const environments = projects.find((project) => project.key === projectKey)?.environments;
+    if (environments) {
+      console.log('environments', environments);
+      setEnvironments(environments);
+    }
+  }, [projects, projectKey]);
 
   useEffect(() => {
     const savedProjectKey = localStorage.getItem(STORAGE_KEY);

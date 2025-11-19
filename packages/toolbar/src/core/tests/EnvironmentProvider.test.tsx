@@ -2,6 +2,7 @@ import { render, screen, waitFor, act, fireEvent } from '@testing-library/react'
 import { expect, test, describe, vi, beforeEach } from 'vitest';
 import { EnvironmentProvider, useEnvironmentContext } from '../ui/Toolbar/context/EnvironmentProvider';
 import { ProjectProvider, useProjectContext } from '../ui/Toolbar/context/ProjectProvider';
+import { TOOLBAR_STORAGE_KEYS } from '../ui/Toolbar/utils/localStorage';
 import '@testing-library/jest-dom/vitest';
 import React from 'react';
 import type { ApiProject } from '../ui/Toolbar/types/ldApi';
@@ -36,18 +37,15 @@ function MockProjectProviderWrapper({
   return (
     <div data-testid="mock-project-provider">
       {/* Simulate ProjectProvider by providing the mock context directly */}
-      {React.createElement(
-        ProjectProvider as any,
-        {
-          children: (
-            <>
-              {/* Inject mock environments into context */}
-              <div style={{ display: 'none' }} data-environments={JSON.stringify(environments)} />
-              {children}
-            </>
-          ),
-        },
-      )}
+      {React.createElement(ProjectProvider as any, {
+        children: (
+          <>
+            {/* Inject mock environments into context */}
+            <div style={{ display: 'none' }} data-environments={JSON.stringify(environments)} />
+            {children}
+          </>
+        ),
+      })}
     </div>
   );
 }
@@ -111,6 +109,8 @@ describe('EnvironmentProvider', () => {
   describe('Environment Selection by clientSideId', () => {
     test('sets environment based on matching clientSideId', async () => {
       // GIVEN: Environments are available and clientSideId matches staging
+      // AND: No saved environment in localStorage
+      localStorage.removeItem(TOOLBAR_STORAGE_KEYS.ENVIRONMENT);
       const clientSideId = 'env-2'; // staging
 
       // WHEN: Provider is rendered with clientSideId
@@ -130,6 +130,8 @@ describe('EnvironmentProvider', () => {
 
     test('falls back to first environment when clientSideId does not match', async () => {
       // GIVEN: Environments are available but clientSideId does not match any
+      // AND: No saved environment in localStorage
+      localStorage.removeItem(TOOLBAR_STORAGE_KEYS.ENVIRONMENT);
       const clientSideId = 'nonexistent-id';
 
       // WHEN: Provider is rendered with non-matching clientSideId
@@ -149,6 +151,8 @@ describe('EnvironmentProvider', () => {
 
     test('uses first environment when clientSideId is not provided', async () => {
       // GIVEN: Environments are available but no clientSideId provided
+      // AND: No saved environment in localStorage
+      localStorage.removeItem(TOOLBAR_STORAGE_KEYS.ENVIRONMENT);
 
       // WHEN: Provider is rendered without clientSideId
       render(
@@ -282,6 +286,134 @@ describe('EnvironmentProvider', () => {
     });
   });
 
+  describe('LocalStorage Integration', () => {
+    test('saves environment to localStorage when setEnvironment is called', async () => {
+      // GIVEN: Provider is initialized
+      render(
+        <ProjectProvider>
+          <EnvironmentProvider>
+            <TestConsumer />
+          </EnvironmentProvider>
+        </ProjectProvider>,
+      );
+
+      // Wait for initial state
+      await waitFor(() => {
+        expect(screen.getByTestId('environment')).toBeTruthy();
+      });
+
+      // WHEN: setEnvironment is called
+      const button = screen.getByText('Set Staging');
+      fireEvent.click(button);
+
+      // THEN: Environment is saved to localStorage
+      await waitFor(() => {
+        expect(localStorage.getItem(TOOLBAR_STORAGE_KEYS.ENVIRONMENT)).toBe('staging');
+      });
+    });
+
+    test('loads environment from localStorage on initialization', async () => {
+      // GIVEN: Environment is saved in localStorage
+      localStorage.setItem(TOOLBAR_STORAGE_KEYS.ENVIRONMENT, 'staging');
+
+      // WHEN: Provider is initialized
+      render(
+        <ProjectProvider>
+          <EnvironmentProvider>
+            <TestConsumer />
+          </EnvironmentProvider>
+        </ProjectProvider>,
+      );
+
+      // THEN: Environment is loaded from localStorage
+      await waitFor(() => {
+        expect(screen.getByTestId('environment')).toHaveTextContent('staging');
+      });
+    });
+
+    test('localStorage takes priority over clientSideId', async () => {
+      // GIVEN: Environment is saved in localStorage and clientSideId is provided
+      localStorage.setItem(TOOLBAR_STORAGE_KEYS.ENVIRONMENT, 'development');
+      const clientSideId = 'env-2'; // staging
+
+      // WHEN: Provider is initialized with clientSideId
+      render(
+        <ProjectProvider clientSideId={clientSideId}>
+          <EnvironmentProvider clientSideId={clientSideId}>
+            <TestConsumer />
+          </EnvironmentProvider>
+        </ProjectProvider>,
+      );
+
+      // THEN: localStorage value takes priority
+      await waitFor(() => {
+        expect(screen.getByTestId('environment')).toHaveTextContent('development');
+      });
+    });
+
+    test('uses clientSideId when no localStorage value exists', async () => {
+      // GIVEN: No environment in localStorage but clientSideId provided
+      localStorage.removeItem(TOOLBAR_STORAGE_KEYS.ENVIRONMENT);
+      const clientSideId = 'env-2'; // staging
+
+      // WHEN: Provider is initialized
+      render(
+        <ProjectProvider clientSideId={clientSideId}>
+          <EnvironmentProvider clientSideId={clientSideId}>
+            <TestConsumer />
+          </EnvironmentProvider>
+        </ProjectProvider>,
+      );
+
+      // THEN: Environment is set based on clientSideId
+      await waitFor(() => {
+        expect(screen.getByTestId('environment')).toHaveTextContent('staging');
+      });
+
+      // AND: Value is saved to localStorage
+      await waitFor(() => {
+        expect(localStorage.getItem(TOOLBAR_STORAGE_KEYS.ENVIRONMENT)).toBe('staging');
+      });
+    });
+
+    test('persists manual environment changes across re-renders', async () => {
+      // GIVEN: Provider is rendered
+      const { rerender } = render(
+        <ProjectProvider>
+          <EnvironmentProvider>
+            <TestConsumer />
+          </EnvironmentProvider>
+        </ProjectProvider>,
+      );
+
+      await waitFor(() => {
+        expect(screen.getByTestId('environment')).toBeTruthy();
+      });
+
+      // WHEN: Environment is manually changed
+      const button = screen.getByText('Set Staging');
+      fireEvent.click(button);
+
+      await waitFor(() => {
+        expect(screen.getByTestId('environment')).toHaveTextContent('staging');
+      });
+
+      // AND: Component is re-rendered
+      rerender(
+        <ProjectProvider>
+          <EnvironmentProvider>
+            <TestConsumer />
+          </EnvironmentProvider>
+        </ProjectProvider>,
+      );
+
+      // THEN: Manual change persists
+      await waitFor(() => {
+        expect(screen.getByTestId('environment')).toHaveTextContent('staging');
+      });
+    });
+  });
+
   describe('Context Hook - useEnvironmentContext', () => {
     test('provides default context when used outside EnvironmentProvider', () => {
       // GIVEN: Component tries to use context without provider
@@ -310,7 +442,9 @@ describe('EnvironmentProvider', () => {
         return (
           <div>
             <div data-testid="has-environment">{typeof context.environment === 'string' ? 'true' : 'false'}</div>
-            <div data-testid="has-setEnvironment">{typeof context.setEnvironment === 'function' ? 'true' : 'false'}</div>
+            <div data-testid="has-setEnvironment">
+              {typeof context.setEnvironment === 'function' ? 'true' : 'false'}
+            </div>
           </div>
         );
       };
@@ -392,7 +526,6 @@ describe('EnvironmentProvider', () => {
     });
   });
 
-
   describe('Multiple Consumers', () => {
     test('all consumers receive the same environment state', async () => {
       // GIVEN: Multiple components consume the same context
@@ -469,4 +602,3 @@ describe('EnvironmentProvider', () => {
     });
   });
 });
-
