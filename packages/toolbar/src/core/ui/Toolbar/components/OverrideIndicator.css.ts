@@ -8,6 +8,7 @@ export const overrideIndicator = style({
   border: '1px solid rgba(from var(--lp-color-brand-cyan-base) r g b / 0.3)',
   borderRadius: '12px',
   padding: '8px 8px',
+  maxWidth: '85px',
 });
 
 export const interactive = style({

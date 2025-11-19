@@ -2,12 +2,15 @@ import * as styles from './Icon.css';
 
 interface IconProps {
   className?: string;
+  size?: 'default' | 'small';
 }
 
-export function ExternalLinkIcon({ className }: IconProps) {
+export function ExternalLinkIcon({ className, size = 'default' }: IconProps) {
+  const iconClass = size === 'small' ? styles.iconSmall : styles.icon;
+
   return (
     <svg
-      className={`${styles.icon} ${className}`}
+      className={`${iconClass} ${className || ''}`}
       fill="currentColor"
       viewBox="0 0 20 20"
       xmlns="http://www.w3.org/2000/svg"

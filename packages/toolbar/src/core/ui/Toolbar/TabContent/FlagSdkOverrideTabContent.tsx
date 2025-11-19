@@ -315,13 +315,17 @@ function FlagSdkOverrideTabContentInner(props: FlagSdkOverrideTabContentInnerPro
                       >
                         <ListItem className={sharedStyles.flagListItem}>
                           <div className={sharedStyles.flagHeader}>
+                            {flag.isOverridden && <OverrideIndicator onClear={() => handleClearOverride(flagKey)} />}
                             <span className={sharedStyles.flagName}>
                               <span className={sharedStyles.flagNameText} data-testid={`flag-name-${flagKey}`}>
                                 {flag.name}
                               </span>
-                              {flag.isOverridden && <OverrideIndicator onClear={() => handleClearOverride(flagKey)} />}
                             </span>
                             <FlagKeyWithCopy flagKey={flagKey} className={sharedStyles.flagKey} />
+                            <div className={sharedStyles.flagLinkContainer}>
+                              <span>View flag in LaunchDarkly</span>
+                              <ExternalLinkIcon size="small" />
+                            </div>
                           </div>
 
                           <div className={sharedStyles.flagOptions}>
@@ -331,7 +335,6 @@ function FlagSdkOverrideTabContentInner(props: FlagSdkOverrideTabContentInnerPro
                               isStarred={isStarred(flag.key)}
                               onToggle={handleToggleStarred}
                             />
-                            <ExternalLinkIcon />
                           </div>
                         </ListItem>
                       </div>

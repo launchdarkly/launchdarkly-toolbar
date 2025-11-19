@@ -85,13 +85,17 @@ export function LocalObjectFlagControlListItem(props: LocalObjectFlagControlList
         <div className={styles.listItemColumn}>
           <div className={styles.listItemRow}>
             <div className={sharedStyles.flagHeader}>
+              {flag.isOverridden && <OverrideIndicator onClear={() => handleClearOverride(flag.key)} />}
               <span className={sharedStyles.flagName}>
                 <span className={styles.flagNameText} data-testid={`flag-name-${flag.key}`}>
                   {flag.name}
                 </span>
-                {flag.isOverridden && <OverrideIndicator onClear={() => handleClearOverride(flag.key)} />}
               </span>
               <FlagKeyWithCopy flagKey={flag.key} className={sharedStyles.flagKey} />
+              <div className={sharedStyles.flagLinkContainer}>
+                <span>View flag in LaunchDarkly</span>
+                <ExternalLinkIcon size="small" />
+              </div>
             </div>
             <div className={sharedStyles.flagOptions}>
               <LocalObjectFlagControl
@@ -104,7 +108,6 @@ export function LocalObjectFlagControlListItem(props: LocalObjectFlagControlList
                 hasErrors={hasErrors}
               />
               <StarButton flagKey={flag.key} isStarred={isStarred(flag.key)} onToggle={toggleStarred} />
-              <ExternalLinkIcon />
             </div>
           </div>
 

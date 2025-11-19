@@ -240,17 +240,20 @@ export function FlagDevServerTabContent(props: FlagDevServerTabContentProps) {
                       >
                         <ListItem className={styles.flagListItem}>
                           <div className={styles.flagHeader}>
+                            {flag.isOverridden && <OverrideIndicator onClear={() => onClearOverride(flag.key)} />}
                             <span className={styles.flagName}>
                               <span className={styles.flagNameText}>{flag.name}</span>
-                              {flag.isOverridden && <OverrideIndicator onClear={() => onClearOverride(flag.key)} />}
                             </span>
                             <FlagKeyWithCopy flagKey={flag.key} className={styles.flagKey} />
+                            <div className={styles.flagLinkContainer}>
+                              <span>View flag in LaunchDarkly</span>
+                              <ExternalLinkIcon size="small" />
+                            </div>
                           </div>
 
                           <div className={styles.flagOptions}>
                             {renderFlagControl(flag)}
                             <StarButton flagKey={flag.key} isStarred={isStarred(flag.key)} onToggle={toggleStarred} />
-                            <ExternalLinkIcon />
                           </div>
                         </ListItem>
                       </div>

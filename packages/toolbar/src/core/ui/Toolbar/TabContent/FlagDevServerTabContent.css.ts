@@ -93,6 +93,20 @@ export const flagListItem = style({
   height: '100%',
 });
 
+export const flagLinkContainer = style({
+  display: 'flex',
+  alignItems: 'center',
+  gap: '4px',
+  marginTop: '6px',
+  fontSize: '11px',
+  color: 'var(--lp-color-gray-400)',
+  cursor: 'pointer',
+
+  ':hover': {
+    color: 'var(--lp-color-gray-200)',
+  },
+});
+
 export const flagListItemBlock = style({
   display: 'block',
 });
