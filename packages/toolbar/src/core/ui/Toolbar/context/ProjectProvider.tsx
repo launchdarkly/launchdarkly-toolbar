@@ -1,7 +1,7 @@
 import { createContext, useCallback, useContext, useEffect, useState } from 'react';
 import { useApi } from './ApiProvider';
 import { TOOLBAR_STORAGE_KEYS } from '../utils/localStorage';
-import { ApiProject } from '../types/ldApi';
+import { ApiProject, ProjectsResponse } from '../types/ldApi';
 
 const STORAGE_KEY = TOOLBAR_STORAGE_KEYS.PROJECT;
 
@@ -38,7 +38,8 @@ export const ProjectProvider = ({ children, clientSideId, providedProjectKey }: 
       return [];
     }
 
-    const projects = await getApiProjects();
+    const response: ProjectsResponse = await getApiProjects();
+    const projects = response.items;
     setProjects(projects);
     return projects;
   }, [apiReady, getApiProjects]);

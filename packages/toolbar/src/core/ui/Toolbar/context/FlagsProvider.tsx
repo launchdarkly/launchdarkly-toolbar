@@ -12,7 +12,7 @@ type FlagsContextType = {
   resetFlags: () => void;
 };
 
-const FlagsContext = createContext<FlagsContextType | null>({
+const FlagsContext = createContext<FlagsContextType>({
   flags: [],
   loading: true,
   getProjectFlags: async () => [],

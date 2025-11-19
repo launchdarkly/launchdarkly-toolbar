@@ -1,13 +1,13 @@
 import { createContext, useCallback, useContext, useEffect, useState } from 'react';
 import { useAuthContext } from './AuthProvider';
 import { getResponseTopic, getErrorTopic, IFRAME_COMMANDS, useIFrameContext, IFRAME_EVENTS } from './IFrameProvider';
-import { ApiProject, FlagsPaginationParams } from '../types/ldApi';
+import { FlagsPaginationParams, FlagsResponse, ApiFlag, ProjectsResponse } from '../types/ldApi';
 
 interface ApiProviderContextValue {
   apiReady: boolean;
-  getFlag: (flagKey: string) => Promise<any>;
-  getProjects: () => Promise<ApiProject[]>;
-  getFlags: (projectKey: string, params?: FlagsPaginationParams) => Promise<any>;
+  getFlag: (flagKey: string) => Promise<ApiFlag>;
+  getProjects: () => Promise<ProjectsResponse>;
+  getFlags: (projectKey: string, params?: FlagsPaginationParams) => Promise<FlagsResponse>;
 }
 
 const ApiContext = createContext<ApiProviderContextValue | null>(null);
@@ -34,6 +34,35 @@ export function ApiProvider({ children }: { children: React.ReactNode }) {
     [iframeSrc],
   );
 
+  const sendMessage = useCallback(
+    (command: string, data: any) => {
+      if (!ref.current?.contentWindow) {
+        throw new Error('IFrame not found');
+      }
+
+      ref.current.contentWindow.postMessage({ type: command, ...data }, iframeSrc);
+
+      return new Promise((resolve, reject) => {
+        const handleMessage = (event: MessageEvent) => {
+          if (event.origin !== iframeSrc) {
+            return;
+          }
+
+          if (event.data.type === getResponseTopic(command)) {
+            window.removeEventListener('message', handleMessage);
+            resolve(event.data.data);
+          } else if (event.data.type === getErrorTopic(command)) {
+            window.removeEventListener('message', handleMessage);
+            reject(new Error(event.data.error));
+          }
+        };
+
+        window.addEventListener('message', handleMessage);
+      });
+    },
+    [ref, iframeSrc],
+  );
+
   useEffect(() => {
     window.addEventListener('message', handleMessage);
     return () => {
@@ -43,40 +72,7 @@ export function ApiProvider({ children }: { children: React.ReactNode }) {
 
   const getFlag = useCallback(
     async (flagKey: string) => {
-      if (!authenticated) {
-        console.log('Authentication required');
-        return null;
-      }
-
-      if (!ref.current?.contentWindow) {
-        throw new Error('IFrame not found');
-      }
-
-      ref.current.contentWindow.postMessage(
-        {
-          type: IFRAME_COMMANDS.GET_FLAG,
-          flagKey,
-        },
-        iframeSrc,
-      );
-
-      return new Promise((resolve, reject) => {
-        const handleMessage = (event: MessageEvent) => {
-          if (event.origin !== iframeSrc) {
-            return;
-          }
-
-          if (event.data.type === getResponseTopic(IFRAME_COMMANDS.GET_FLAG)) {
-            window.removeEventListener('message', handleMessage);
-            resolve(event.data.data);
-          } else if (event.data.type === getErrorTopic(IFRAME_COMMANDS.GET_FLAG)) {
-            window.removeEventListener('message', handleMessage);
-            reject(new Error(event.data.error));
-          }
-        };
-
-        window.addEventListener('message', handleMessage);
-      });
+      return sendMessage(IFRAME_COMMANDS.GET_FLAG, { flagKey }) as Promise<ApiFlag>;
     },
     [authenticated, ref],
   );
@@ -84,37 +80,10 @@ export function ApiProvider({ children }: { children: React.ReactNode }) {
   const getProjects = useCallback(async () => {
     if (!authenticated) {
       console.log('Authentication required');
-      return [];
+      return { items: [] };
     }
 
-    if (!ref.current?.contentWindow) {
-      throw new Error('IFrame not found');
-    }
-
-    ref.current.contentWindow.postMessage(
-      {
-        type: IFRAME_COMMANDS.GET_PROJECTS,
-      },
-      iframeSrc,
-    );
-
-    return new Promise<ApiProject[]>((resolve, reject) => {
-      const handleMessage = (event: MessageEvent) => {
-        if (event.origin !== iframeSrc) {
-          return;
-        }
-
-        if (event.data.type === getResponseTopic(IFRAME_COMMANDS.GET_PROJECTS)) {
-          window.removeEventListener('message', handleMessage);
-          resolve(event.data.data.items);
-        } else if (event.data.type === getErrorTopic(IFRAME_COMMANDS.GET_PROJECTS)) {
-          window.removeEventListener('message', handleMessage);
-          reject(new Error(event.data.error));
-        }
-      };
-
-      window.addEventListener('message', handleMessage);
-    });
+    return sendMessage(IFRAME_COMMANDS.GET_PROJECTS, {}) as Promise<ProjectsResponse>;
   }, [authenticated, ref]);
 
   const getFlags = useCallback(
@@ -123,38 +92,12 @@ export function ApiProvider({ children }: { children: React.ReactNode }) {
         return { items: [], totalCount: 0 };
       }
 
-      if (!ref.current?.contentWindow) {
-        throw new Error('IFrame not found');
-      }
-
-      ref.current.contentWindow.postMessage(
-        {
-          type: IFRAME_COMMANDS.GET_FLAGS,
-          projectKey,
-          limit: params?.limit,
-          offset: params?.offset,
-          query: params?.query,
-        },
-        iframeSrc,
-      );
-
-      return new Promise<any>((resolve, reject) => {
-        const handleMessage = (event: MessageEvent) => {
-          if (event.origin !== iframeSrc) {
-            return;
-          }
-
-          if (event.data.type === getResponseTopic(IFRAME_COMMANDS.GET_FLAGS)) {
-            window.removeEventListener('message', handleMessage);
-            resolve(event.data.data);
-          } else if (event.data.type === getErrorTopic(IFRAME_COMMANDS.GET_FLAGS)) {
-            window.removeEventListener('message', handleMessage);
-            reject(new Error(event.data.error));
-          }
-        };
-
-        window.addEventListener('message', handleMessage);
-      });
+      return sendMessage(IFRAME_COMMANDS.GET_FLAGS, {
+        projectKey,
+        limit: params?.limit,
+        offset: params?.offset,
+        query: params?.query,
+      }) as Promise<FlagsResponse>;
     },
     [authenticated, ref, iframeSrc],
   );

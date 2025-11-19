@@ -209,7 +209,7 @@ describe('ApiProvider', () => {
               data-testid="fetch-projects"
               onClick={async () => {
                 const projects = await getProjects();
-                setResult(projects);
+                setResult(projects.items);
               }}
             >
               Fetch
