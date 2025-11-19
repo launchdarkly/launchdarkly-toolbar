@@ -40,7 +40,10 @@ export function ApiProvider({ children }: { children: React.ReactNode }) {
         throw new Error('IFrame not found');
       }
 
-      ref.current.contentWindow.postMessage({ type: command, ...data }, iframeSrc);
+      // Generate unique request ID to match request with response
+      const requestId = `${command}-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`;
+
+      ref.current.contentWindow.postMessage({ type: command, requestId, ...data }, iframeSrc);
 
       return new Promise((resolve, reject) => {
         const handleMessage = (event: MessageEvent) => {
@@ -48,14 +51,27 @@ export function ApiProvider({ children }: { children: React.ReactNode }) {
             return;
           }
 
+          // Only handle messages that match this specific request ID
+          if (event.data.requestId !== requestId) {
+            return;
+          }
+
           if (event.data.type === getResponseTopic(command)) {
             window.removeEventListener('message', handleMessage);
+            clearTimeout(timeoutId);
             resolve(event.data.data);
           } else if (event.data.type === getErrorTopic(command)) {
             window.removeEventListener('message', handleMessage);
+            clearTimeout(timeoutId);
             reject(new Error(event.data.error));
           }
         };
+
+        // Add timeout to prevent hanging promises
+        const timeoutId = setTimeout(() => {
+          window.removeEventListener('message', handleMessage);
+          reject(new Error(`Request timeout: ${command}`));
+        }, 30000); // 30 second timeout
 
         window.addEventListener('message', handleMessage);
       });
