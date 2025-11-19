@@ -38,6 +38,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     } else if (event.data.type === IFRAME_EVENTS.AUTH_ERROR) {
       setAuthenticated(false);
       setLoading(false);
+      analytics.trackAuthError(new Error(event.data.error));
       throw new Error(event.data.error);
     }
   }, []);

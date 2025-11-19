@@ -2,6 +2,7 @@ import { createContext, useCallback, useContext, useEffect, useState } from 'rea
 import { useAuthContext } from './AuthProvider';
 import { getResponseTopic, getErrorTopic, IFRAME_COMMANDS, useIFrameContext, IFRAME_EVENTS } from './IFrameProvider';
 import { FlagsPaginationParams, FlagsResponse, ApiFlag, ProjectsResponse } from '../types/ldApi';
+import { useAnalytics } from '../context';
 
 interface ApiProviderContextValue {
   apiReady: boolean;
@@ -20,6 +21,7 @@ export function ApiProvider({ children }: { children: React.ReactNode }) {
   const { authenticated } = useAuthContext();
   const { ref, iframeSrc } = useIFrameContext();
   const [apiReady, setApiReady] = useState(false);
+  const analytics = useAnalytics();
 
   const handleMessage = useCallback(
     (event: MessageEvent) => {
@@ -63,6 +65,7 @@ export function ApiProvider({ children }: { children: React.ReactNode }) {
           } else if (event.data.type === getErrorTopic(command)) {
             window.removeEventListener('message', handleMessage);
             clearTimeout(timeoutId);
+            analytics.trackApiError(new Error(event.data.error));
             reject(new Error(event.data.error));
           }
         };

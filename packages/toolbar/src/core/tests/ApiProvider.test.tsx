@@ -33,6 +33,8 @@ vi.mock('../ui/Toolbar/context/AnalyticsProvider', () => ({
   useAnalytics: vi.fn().mockReturnValue({
     trackLoginSuccess: vi.fn(),
     trackLoginCancelled: vi.fn(),
+    trackAuthError: vi.fn(),
+    trackApiError: vi.fn(),
   }),
 }));
 
