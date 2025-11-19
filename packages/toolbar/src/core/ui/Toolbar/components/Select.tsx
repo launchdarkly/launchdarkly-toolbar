@@ -1,6 +1,9 @@
 import { useState, useRef, useEffect, useCallback, ReactNode } from 'react';
+import { createPortal } from 'react-dom';
 import { ChevronDownIcon } from './icons';
 import * as styles from './Select.css';
+import { Z_INDEX } from '../../constants/zIndex';
+import { useReactMount } from '../../../context/ReactMountContext';
 
 export interface SelectOption {
   id: string;
@@ -34,9 +37,11 @@ export function Select(props: SelectProps) {
 
   const [isOpen, setIsOpen] = useState(false);
   const [focusedIndex, setFocusedIndex] = useState(-1);
+  const [dropdownPosition, setDropdownPosition] = useState({ top: 0, left: 0, width: 0 });
   const selectRef = useRef<HTMLDivElement>(null);
   const triggerRef = useRef<HTMLButtonElement>(null);
   const listRef = useRef<HTMLUListElement>(null);
+  const portalTarget = useReactMount(); // Get Shadow DOM mount point
 
   const selectedOption = options.find((option) => option.id === selectedKey);
 
@@ -103,22 +108,42 @@ export function Select(props: SelectProps) {
     [isDisabled, isOpen, focusedIndex, options, handleSelect],
   );
 
-  // Close dropdown when clicking outside
+  // Calculate dropdown position when it opens
   useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      const path = event.composedPath();
-      const clickedInsideSelect = path.some((el) => (el as HTMLElement).id === selectRef.current?.id);
-      if (listRef.current && !clickedInsideSelect) {
-        setIsOpen(false);
-        setFocusedIndex(-1);
-      }
-    };
-
-    if (isOpen) {
-      document.addEventListener('mousedown', handleClickOutside);
-      return () => document.removeEventListener('mousedown', handleClickOutside);
+    if (isOpen && triggerRef.current) {
+      const rect = triggerRef.current.getBoundingClientRect();
+      setDropdownPosition({
+        top: rect.bottom + 2, // 2px gap below trigger
+        left: rect.left,
+        width: rect.width,
+      });
     }
-  }, [isOpen, listRef]);
+  }, [isOpen]);
+
+  // Prevent scrolling on other elements when dropdown is open
+  useEffect(() => {
+    if (isOpen) {
+      const preventScroll = (e: Event) => {
+        // Allow scrolling within the dropdown list itself
+        const target = e.target as HTMLElement;
+        if (listRef.current?.contains(target)) {
+          return;
+        }
+        // Prevent scrolling on all other elements
+        e.preventDefault();
+        e.stopPropagation();
+      };
+
+      // Add scroll prevention with capture phase to catch all scroll attempts
+      document.addEventListener('wheel', preventScroll, { passive: false, capture: true });
+      document.addEventListener('touchmove', preventScroll, { passive: false, capture: true });
+
+      return () => {
+        document.removeEventListener('wheel', preventScroll, { capture: true });
+        document.removeEventListener('touchmove', preventScroll, { capture: true });
+      };
+    }
+  }, [isOpen]);
 
   const displayValue = selectedOption?.label || placeholder || 'Select option';
 
@@ -148,34 +173,46 @@ export function Select(props: SelectProps) {
         <ChevronDownIcon className={`${styles.icon} ${isOpen ? styles.iconOpen : ''}`} />
       </button>
 
-      {isOpen && (
-        <div className={styles.dropdown}>
-          <ul ref={listRef} className={styles.list} role="listbox" aria-label={ariaLabel}>
-            {options.map((option, index) => (
-              <li
-                key={option.id}
-                className={`${styles.option} ${focusedIndex === index ? styles.focused : ''} ${
-                  selectedKey === option.id ? styles.selected : ''
-                }`}
-                role="option"
-                aria-selected={selectedKey === option.id}
-                onClick={() => handleSelect(option.id)}
-                tabIndex={0}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter' || e.key === ' ') {
-                    e.preventDefault();
-                    handleSelect(option.id);
-                  }
-                }}
-                onFocus={() => setFocusedIndex(index)}
-                onMouseEnter={() => setFocusedIndex(index)}
-              >
-                {option.label}
-              </li>
-            ))}
-          </ul>
-        </div>
-      )}
+      {isOpen &&
+        createPortal(
+          <div
+            className={styles.dropdown}
+            style={{
+              position: 'fixed',
+              zIndex: Z_INDEX.POPOVER,
+              top: `${dropdownPosition.top}px`,
+              left: `${dropdownPosition.left}px`,
+              width: `${dropdownPosition.width}px`,
+            }}
+            data-theme={dataTheme}
+          >
+            <ul ref={listRef} className={styles.list} role="listbox" aria-label={ariaLabel}>
+              {options.map((option, index) => (
+                <li
+                  key={option.id}
+                  className={`${styles.option} ${focusedIndex === index ? styles.focused : ''} ${
+                    selectedKey === option.id ? styles.selected : ''
+                  }`}
+                  role="option"
+                  aria-selected={selectedKey === option.id}
+                  onClick={() => handleSelect(option.id)}
+                  tabIndex={0}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                      e.preventDefault();
+                      handleSelect(option.id);
+                    }
+                  }}
+                  onFocus={() => setFocusedIndex(index)}
+                  onMouseEnter={() => setFocusedIndex(index)}
+                >
+                  {option.label}
+                </li>
+              ))}
+            </ul>
+          </div>,
+          portalTarget,
+        )}
     </div>
   );
 }
