@@ -388,9 +388,189 @@ describe('Select', () => {
     });
   });
 
-  // Note: Click outside handling tests have been removed because this functionality
-  // was intentionally removed from the Select component. With scroll prevention active,
-  // the dropdown behavior is different and doesn't need click-outside handling.
+  describe('Click Outside Handler', () => {
+    test('closes dropdown when clicking outside', () => {
+      renderSelect(<Select options={mockOptions} onSelectionChange={mockOnSelectionChange} aria-label="Test select" />);
+
+      const trigger = screen.getByRole('button');
+      fireEvent.click(trigger);
+      expect(screen.getByRole('listbox')).toBeInTheDocument();
+
+      // Click outside (on document body)
+      fireEvent.mouseDown(document.body);
+
+      expect(screen.queryByRole('listbox')).not.toBeInTheDocument();
+    });
+
+    test('does not close dropdown when clicking inside dropdown', () => {
+      renderSelect(<Select options={mockOptions} onSelectionChange={mockOnSelectionChange} aria-label="Test select" />);
+
+      const trigger = screen.getByRole('button');
+      fireEvent.click(trigger);
+      expect(screen.getByRole('listbox')).toBeInTheDocument();
+
+      const listbox = screen.getByRole('listbox');
+      fireEvent.mouseDown(listbox);
+
+      expect(screen.getByRole('listbox')).toBeInTheDocument();
+    });
+
+    test('does not close dropdown when clicking on an option (before option click handler)', () => {
+      renderSelect(<Select options={mockOptions} onSelectionChange={mockOnSelectionChange} aria-label="Test select" />);
+
+      const trigger = screen.getByRole('button');
+      fireEvent.click(trigger);
+      expect(screen.getByRole('listbox')).toBeInTheDocument();
+
+      const option1 = screen.getByRole('option', { name: 'Option 1' });
+      fireEvent.mouseDown(option1);
+
+      // Dropdown should still be open at this point (closes on click, not mouseDown)
+      expect(screen.getByRole('listbox')).toBeInTheDocument();
+    });
+
+    test('closes dropdown when clicking on trigger (via click outside handler)', () => {
+      renderSelect(<Select options={mockOptions} onSelectionChange={mockOnSelectionChange} aria-label="Test select" />);
+
+      const trigger = screen.getByRole('button');
+      fireEvent.click(trigger);
+      expect(screen.getByRole('listbox')).toBeInTheDocument();
+
+      // MouseDown on trigger will close it via click outside handler
+      // (because trigger is outside the dropdown element)
+      fireEvent.mouseDown(trigger);
+      expect(screen.queryByRole('listbox')).not.toBeInTheDocument();
+    });
+
+    test('click outside handler is only active when dropdown is open', () => {
+      renderSelect(<Select options={mockOptions} onSelectionChange={mockOnSelectionChange} aria-label="Test select" />);
+
+      // Dropdown is closed, clicking outside should not cause issues
+      fireEvent.mouseDown(document.body);
+
+      // No errors thrown, and dropdown remains closed
+      expect(screen.queryByRole('listbox')).not.toBeInTheDocument();
+    });
+
+    test('removes click outside listener when dropdown closes', () => {
+      renderSelect(<Select options={mockOptions} onSelectionChange={mockOnSelectionChange} aria-label="Test select" />);
+
+      const trigger = screen.getByRole('button');
+
+      // Open dropdown
+      fireEvent.click(trigger);
+      expect(screen.getByRole('listbox')).toBeInTheDocument();
+
+      // Close dropdown by clicking trigger
+      fireEvent.click(trigger);
+      expect(screen.queryByRole('listbox')).not.toBeInTheDocument();
+
+      // Click outside - should not cause any issues since listener is removed
+      expect(() => fireEvent.mouseDown(document.body)).not.toThrow();
+    });
+  });
+
+  describe('Scroll Prevention', () => {
+    test('prevents wheel events on document when dropdown is open', () => {
+      renderSelect(<Select options={mockOptions} onSelectionChange={mockOnSelectionChange} aria-label="Test select" />);
+
+      const trigger = screen.getByRole('button');
+      fireEvent.click(trigger);
+
+      const wheelEvent = new WheelEvent('wheel', { bubbles: true, cancelable: true });
+      const preventDefaultSpy = vi.spyOn(wheelEvent, 'preventDefault');
+
+      document.dispatchEvent(wheelEvent);
+
+      expect(preventDefaultSpy).toHaveBeenCalled();
+    });
+
+    test('prevents touchmove events on document when dropdown is open', () => {
+      renderSelect(<Select options={mockOptions} onSelectionChange={mockOnSelectionChange} aria-label="Test select" />);
+
+      const trigger = screen.getByRole('button');
+      fireEvent.click(trigger);
+
+      const touchEvent = new TouchEvent('touchmove', { bubbles: true, cancelable: true });
+      const preventDefaultSpy = vi.spyOn(touchEvent, 'preventDefault');
+
+      document.dispatchEvent(touchEvent);
+
+      expect(preventDefaultSpy).toHaveBeenCalled();
+    });
+
+    test('does not prevent scroll events when dropdown is closed', () => {
+      renderSelect(<Select options={mockOptions} onSelectionChange={mockOnSelectionChange} aria-label="Test select" />);
+
+      const wheelEvent = new WheelEvent('wheel', { bubbles: true, cancelable: true });
+      const preventDefaultSpy = vi.spyOn(wheelEvent, 'preventDefault');
+
+      document.dispatchEvent(wheelEvent);
+
+      expect(preventDefaultSpy).not.toHaveBeenCalled();
+    });
+
+    test('removes scroll prevention listeners when dropdown closes', () => {
+      renderSelect(<Select options={mockOptions} onSelectionChange={mockOnSelectionChange} aria-label="Test select" />);
+
+      const trigger = screen.getByRole('button');
+
+      // Open dropdown
+      fireEvent.click(trigger);
+
+      // Close dropdown
+      fireEvent.click(trigger);
+
+      const wheelEvent = new WheelEvent('wheel', { bubbles: true, cancelable: true });
+      const preventDefaultSpy = vi.spyOn(wheelEvent, 'preventDefault');
+
+      document.dispatchEvent(wheelEvent);
+
+      expect(preventDefaultSpy).not.toHaveBeenCalled();
+    });
+
+    test('allows scrolling within the dropdown list', () => {
+      renderSelect(<Select options={mockOptions} onSelectionChange={mockOnSelectionChange} aria-label="Test select" />);
+
+      const trigger = screen.getByRole('button');
+      fireEvent.click(trigger);
+
+      const listbox = screen.getByRole('listbox');
+
+      // Create a wheel event that originates from within the listbox
+      const wheelEvent = new WheelEvent('wheel', { bubbles: true, cancelable: true });
+      Object.defineProperty(wheelEvent, 'composedPath', {
+        value: () => [listbox, document.body],
+      });
+
+      const preventDefaultSpy = vi.spyOn(wheelEvent, 'preventDefault');
+
+      listbox.dispatchEvent(wheelEvent);
+
+      // Should NOT prevent default for events within the list
+      expect(preventDefaultSpy).not.toHaveBeenCalled();
+    });
+
+    test('removes scroll listeners when component unmounts', () => {
+      const { unmount } = renderSelect(
+        <Select options={mockOptions} onSelectionChange={mockOnSelectionChange} aria-label="Test select" />,
+      );
+
+      const trigger = screen.getByRole('button');
+      fireEvent.click(trigger);
+
+      // Unmount component
+      unmount();
+
+      // Scroll event should not be prevented after unmount
+      const wheelEvent = new WheelEvent('wheel', { bubbles: true, cancelable: true });
+      const preventDefaultSpy = vi.spyOn(wheelEvent, 'preventDefault');
+
+      document.dispatchEvent(wheelEvent);
+
+      expect(preventDefaultSpy).not.toHaveBeenCalled();
+    });
+  });
 
   describe('Accessibility', () => {
     test('has proper ARIA attributes on trigger', () => {

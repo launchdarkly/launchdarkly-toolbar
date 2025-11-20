@@ -41,6 +41,7 @@ export function Select(props: SelectProps) {
   const selectRef = useRef<HTMLDivElement>(null);
   const triggerRef = useRef<HTMLButtonElement>(null);
   const listRef = useRef<HTMLUListElement>(null);
+  const dropdownRef = useRef<HTMLDivElement>(null);
   const portalTarget = useReactMount(); // Get Shadow DOM mount point
 
   const selectedOption = options.find((option) => option.id === selectedKey);
@@ -145,6 +146,29 @@ export function Select(props: SelectProps) {
     }
   }, [isOpen]);
 
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    if (!isOpen) return;
+
+    const handleClickOutside = (event: MouseEvent) => {
+      const path = event.composedPath();
+      const clickedInsideDropdown = path.some((el) => (el as HTMLElement).id === dropdownRef.current?.id);
+
+      // Check if click is outside both the select trigger and the dropdown
+      if (!clickedInsideDropdown) {
+        setIsOpen(false);
+        setFocusedIndex(-1);
+      }
+    };
+
+    // Use capture phase to ensure we catch the event before it's handled elsewhere
+    document.addEventListener('mousedown', handleClickOutside, true);
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside, true);
+    };
+  }, [isOpen]);
+
   const displayValue = selectedOption?.label || placeholder || 'Select option';
 
   // Create accessible name that combines selected value with aria-label for compatibility with e2e tests
@@ -176,6 +200,8 @@ export function Select(props: SelectProps) {
       {isOpen &&
         createPortal(
           <div
+            ref={dropdownRef}
+            id="select-dropdown"
             className={styles.dropdown}
             style={{
               position: 'fixed',
