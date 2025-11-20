@@ -25,6 +25,8 @@ import type { LocalFlag } from '../context';
 import * as sharedStyles from './FlagDevServerTabContent.css';
 import { IFlagOverridePlugin } from '../../../../types';
 import { LocalObjectFlagControlListItem } from '../components/LocalObjectFlagControlListItem';
+import { useProjectContext } from '../context/ProjectProvider';
+import { useEnvironmentContext } from '../context/EnvironmentProvider';
 
 interface FlagSdkOverrideTabContentInnerProps {
   flagOverridePlugin: IFlagOverridePlugin;
@@ -38,7 +40,9 @@ function FlagSdkOverrideTabContentInner(props: FlagSdkOverrideTabContentInnerPro
   const { flags, isLoading } = useFlagSdkOverrideContext();
   const { isStarred, toggleStarred, clearAllStarred, starredCount } = useStarredFlags();
   const [activeFilters, setActiveFilters] = useState<Set<FlagFilterMode>>(new Set([FILTER_MODES.ALL]));
-
+  const { projectKey } = useProjectContext();
+  const { environment } = useEnvironmentContext();
+  
   // Ref for scroll container
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const getScrollElement = useCallback(() => scrollContainerRef.current, []);
@@ -326,10 +330,10 @@ function FlagSdkOverrideTabContentInner(props: FlagSdkOverrideTabContentInnerPro
                               </span>
                             </span>
                             <FlagKeyWithCopy flagKey={flagKey} className={sharedStyles.flagKey} />
-                            <div className={sharedStyles.flagLinkContainer}>
-                              <span>View flag in LaunchDarkly</span>
+                            <a href={`https://app.launchdarkly.com/projects/${projectKey}/flags/${flagKey}?env=${environment}&selectedEnv=${environment}`} target="_blank" className={sharedStyles.flagLinkContainer}>
+                              <span>Open in LaunchDarkly</span>
                               <ExternalLinkIcon size="small" />
-                            </div>
+                            </a>
                           </div>
 
                           <div className={sharedStyles.flagOptions}>

@@ -16,6 +16,9 @@ import { Diagnostic } from '@codemirror/lint';
 
 import * as sharedStyles from '../TabContent/FlagDevServerTabContent.css';
 import * as styles from './LocalObjectFlagControlListItem.css';
+import { useEnvironmentContext } from '../context/EnvironmentProvider';
+import { useProjectContext } from '../context/ProjectProvider';
+import { env } from 'process';
 
 interface LocalObjectFlagControlListItemProps {
   handleClearOverride: (key: string) => void;
@@ -35,6 +38,8 @@ export function LocalObjectFlagControlListItem(props: LocalObjectFlagControlList
   const [isEditing, setIsEditing] = useState(false);
   const [tempValue, setTempValue] = useState(currentValue);
   const [hasErrors, setHasErrors] = useState(false);
+  const { environment } = useEnvironmentContext();
+  const { projectKey } = useProjectContext();
 
   // Since this is a virtualized item, we need to set the height to the standard item height when the component mounts
   // This happens specifically if the user is editing a JSON flag, scrolls to the point where the item is no longer visible,
@@ -96,10 +101,10 @@ export function LocalObjectFlagControlListItem(props: LocalObjectFlagControlList
                 </span>
               </span>
               <FlagKeyWithCopy flagKey={flag.key} className={sharedStyles.flagKey} />
-              <div className={sharedStyles.flagLinkContainer}>
-                <span>View flag in LaunchDarkly</span>
+              <a href={`https://app.launchdarkly.com/projects/${projectKey}/flags/${flag.key}?env=${environment}&selectedEnv=${environment}`} target="_blank" className={sharedStyles.flagLinkContainer}>
+                <span>Open in LaunchDarkly</span>
                 <ExternalLinkIcon size="small" />
-              </div>
+              </a>
             </div>
             <div className={sharedStyles.flagOptions}>
               <LocalObjectFlagControl

@@ -22,6 +22,8 @@ import { VIRTUALIZATION } from '../constants';
 import { LocalObjectFlagControlListItem } from '../components/LocalObjectFlagControlListItem';
 
 import * as styles from './FlagDevServerTabContent.css';
+import { useEnvironmentContext } from '../context/EnvironmentProvider';
+import { useProjectContext } from '../context/ProjectProvider';
 
 interface FlagDevServerTabContentProps {
   reloadOnFlagChangeIsEnabled: boolean;
@@ -33,7 +35,8 @@ export function FlagDevServerTabContent(props: FlagDevServerTabContentProps) {
   const { state, setOverride, clearOverride, clearAllOverrides } = useDevServerContext();
   const { flags } = state;
   const { isStarred, toggleStarred, clearAllStarred, starredCount } = useStarredFlags();
-
+  const { projectKey } = useProjectContext();
+  const { environment } = useEnvironmentContext();
   const [activeFilters, setActiveFilters] = useState<Set<FlagFilterMode>>(new Set([FILTER_MODES.ALL]));
 
   // Ref for scroll container
@@ -249,10 +252,10 @@ export function FlagDevServerTabContent(props: FlagDevServerTabContentProps) {
                               <span className={styles.flagNameText}>{flag.name}</span>
                             </span>
                             <FlagKeyWithCopy flagKey={flag.key} className={styles.flagKey} />
-                            <div className={styles.flagLinkContainer}>
-                              <span>View flag in LaunchDarkly</span>
+                            <a href={`https://app.launchdarkly.com/projects/${projectKey}/flags/${flag.key}?env=${environment}&selectedEnv=${environment}`} target="_blank" className={styles.flagLinkContainer}>
+                              <span>Open in LaunchDarkly</span>
                               <ExternalLinkIcon size="small" />
-                            </div>
+                            </a>
                           </div>
 
                           <div className={styles.flagOptions}>
