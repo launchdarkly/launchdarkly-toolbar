@@ -41,6 +41,7 @@ export function Select(props: SelectProps) {
   const selectRef = useRef<HTMLDivElement>(null);
   const triggerRef = useRef<HTMLButtonElement>(null);
   const listRef = useRef<HTMLUListElement>(null);
+  const dropdownRef = useRef<HTMLDivElement>(null);
   const portalTarget = useReactMount(); // Get Shadow DOM mount point
 
   const selectedOption = options.find((option) => option.id === selectedKey);
@@ -120,29 +121,66 @@ export function Select(props: SelectProps) {
     }
   }, [isOpen]);
 
-  // Prevent scrolling on other elements when dropdown is open
+  // Close dropdown on any scroll (including within toolbar)
   useEffect(() => {
-    if (isOpen) {
-      const preventScroll = (e: Event) => {
-        // Allow scrolling within the dropdown list itself
-        const path = e.composedPath();
-        if (path.some((el) => (el as HTMLElement).id === listRef.current?.id)) {
-          return;
-        }
-        // Prevent scrolling on all other elements
-        e.preventDefault();
-        e.stopPropagation();
-      };
+    if (!isOpen) return;
 
-      // Add scroll prevention with capture phase to catch all scroll attempts
-      document.addEventListener('wheel', preventScroll, { passive: false, capture: true });
-      document.addEventListener('touchmove', preventScroll, { passive: false, capture: true });
+    const handleScrollOrWheel = (e: Event) => {
+      // Use composedPath for better portal/shadow DOM support
+      const path = e.composedPath();
 
-      return () => {
-        document.removeEventListener('wheel', preventScroll, { capture: true });
-        document.removeEventListener('touchmove', preventScroll, { capture: true });
-      };
-    }
+      // Allow scrolling if event path includes the dropdown or list
+      const isWithinDropdown = path.some((el) => el === listRef.current || el === dropdownRef.current);
+
+      if (isWithinDropdown) {
+        return;
+      }
+
+      // Close dropdown for any other scroll (page scroll, toolbar scroll, etc.)
+      setIsOpen(false);
+      setFocusedIndex(-1);
+    };
+
+    // Listen for both scroll and wheel events to catch all scrolling interactions
+    document.addEventListener('scroll', handleScrollOrWheel, true);
+    document.addEventListener('wheel', handleScrollOrWheel, true);
+
+    return () => {
+      document.removeEventListener('scroll', handleScrollOrWheel, true);
+      document.removeEventListener('wheel', handleScrollOrWheel, true);
+    };
+  }, [isOpen]);
+
+  // Handle click outside to close dropdown (portal-aware)
+  useEffect(() => {
+    if (!isOpen) return;
+
+    const handleClickOutside = (event: MouseEvent) => {
+      const target = event.target as Node;
+
+      // Check if click is inside trigger, select container, or dropdown portal
+      const clickedInside =
+        selectRef.current?.contains(target) ||
+        triggerRef.current?.contains(target) ||
+        dropdownRef.current?.contains(target) ||
+        listRef.current?.contains(target);
+
+      if (!clickedInside) {
+        setIsOpen(false);
+        setFocusedIndex(-1);
+      }
+    };
+
+    // Use setTimeout to avoid closing immediately after opening
+    // Use 'click' event instead of 'mousedown' to allow option onClick to fire first
+    const timeoutId = setTimeout(() => {
+      document.addEventListener('click', handleClickOutside);
+    }, 0);
+
+    return () => {
+      clearTimeout(timeoutId);
+      document.removeEventListener('click', handleClickOutside);
+    };
   }, [isOpen]);
 
   const displayValue = selectedOption?.label || placeholder || 'Select option';
@@ -176,6 +214,7 @@ export function Select(props: SelectProps) {
       {isOpen &&
         createPortal(
           <div
+            ref={dropdownRef}
             className={styles.dropdown}
             style={{
               position: 'fixed',
@@ -186,7 +225,7 @@ export function Select(props: SelectProps) {
             }}
             data-theme={dataTheme}
           >
-            <ul ref={listRef} className={styles.list} id="select-list" role="listbox" aria-label={ariaLabel}>
+            <ul ref={listRef} className={styles.list} role="listbox" aria-label={ariaLabel}>
               {options.map((option, index) => (
                 <li
                   key={option.id}

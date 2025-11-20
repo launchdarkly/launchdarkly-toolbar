@@ -18,11 +18,12 @@ export default function mount(rootNode: HTMLElement, config: InitializationConfi
 
   const reactRoot = createRoot(reactMount);
 
-  // Dynamically import toolbar to capture style injection timing
-  import('./ui/Toolbar/LaunchDarklyToolbar').then((module) => {
-    const { LaunchDarklyToolbar } = module;
-    import('./context/ReactMountContext').then((contextModule) => {
+  // Dynamically import toolbar and context in parallel to capture style injection timing
+  Promise.all([import('./ui/Toolbar/LaunchDarklyToolbar'), import('./context/ReactMountContext')]).then(
+    ([toolbarModule, contextModule]) => {
+      const { LaunchDarklyToolbar } = toolbarModule;
       const ReactMountContext = contextModule.default;
+
       reactRoot.render(
         <StrictMode>
           <ReactMountContext.Provider value={reactMount}>
@@ -40,8 +41,8 @@ export default function mount(rootNode: HTMLElement, config: InitializationConfi
           </ReactMountContext.Provider>
         </StrictMode>,
       );
-    });
-  });
+    },
+  );
 
   cleanup.push(() => {
     observer.disconnect();
