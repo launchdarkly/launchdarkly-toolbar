@@ -125,7 +125,7 @@ export function Select(props: SelectProps) {
     if (isOpen) {
       const preventScroll = (e: Event) => {
         // Allow scrolling within the dropdown list itself
-        const path = event.composedPath();
+        const path = e.composedPath();
         if (path.some((el) => (el as HTMLElement).id === listRef.current?.id)) {
           return;
         }
