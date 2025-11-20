@@ -1,5 +1,9 @@
 import { pluginReact } from '@rsbuild/plugin-react';
 import { defineConfig } from '@rslib/core';
+import { loadEnv } from '@rsbuild/core';
+
+// Load environment variables with TOOLBAR_ prefix from .env files
+const { publicVars } = loadEnv({ prefixes: ['TOOLBAR_'] });
 
 export default defineConfig({
   source: {
@@ -8,6 +12,8 @@ export default defineConfig({
     },
     include: ['./src/**/*.ts', './src/**/*.tsx'],
     exclude: ['./src/**/*.test.*', './src/**/*.stories.*'],
+    // Inject TOOLBAR_ prefixed env vars into the build
+    define: publicVars,
   },
   lib: [
     // ESM build for NPM
