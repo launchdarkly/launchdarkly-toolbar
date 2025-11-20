@@ -31,6 +31,11 @@ jobs:
 
       - uses: ./.github/actions/ci
         if: ${{ fromJson(steps.release.outputs.releases_created) }}
+        env:
+          TOOLBAR_INTERNAL_CLIENT_ID: ${{ vars.TOOLBAR_INTERNAL_CLIENT_ID }}
+          TOOLBAR_INTERNAL_BASE_URL: ${{ vars.TOOLBAR_INTERNAL_BASE_URL }}
+          TOOLBAR_INTERNAL_STREAM_URL: ${{ vars.TOOLBAR_INTERNAL_STREAM_URL }}
+          TOOLBAR_INTERNAL_EVENTS_URL: ${{ vars.TOOLBAR_INTERNAL_EVENTS_URL }}
 
       - uses: ./.github/actions/publish
         if: ${{ fromJson(steps.release.outputs.releases_created) }}
