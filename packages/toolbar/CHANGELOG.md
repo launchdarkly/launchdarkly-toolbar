@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.4.0](https://github.com/launchdarkly/launchdarkly-toolbar/compare/1.3.1...1.4.0) (2025-11-20)
+
+
+### Features
+
+* add InternalClientProvider for Toolbar flags and analytics ([#288](https://github.com/launchdarkly/launchdarkly-toolbar/issues/288)) ([63f4f5a](https://github.com/launchdarkly/launchdarkly-toolbar/commit/63f4f5aa22d497a1c2d460f5f9ed375af878bdd8))
+
 ## [1.3.1](https://github.com/launchdarkly/launchdarkly-toolbar/compare/1.3.0...1.3.1) (2025-11-14)
 
 
