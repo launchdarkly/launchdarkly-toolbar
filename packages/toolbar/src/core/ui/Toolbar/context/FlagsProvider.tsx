@@ -8,14 +8,14 @@ import { useActiveTabContext } from './ActiveTabProvider';
 type FlagsContextType = {
   flags: ApiFlag[];
   loading: boolean;
-  getProjectFlags: (projectKey: string) => Promise<ApiFlag[]>;
+  getProjectFlags: (projectKey: string) => Promise<FlagsResponse>;
   resetFlags: () => void;
 };
 
-const FlagsContext = createContext<FlagsContextType | null>({
+const FlagsContext = createContext<FlagsContextType>({
   flags: [],
   loading: true,
-  getProjectFlags: async () => [],
+  getProjectFlags: async () => ({ items: [], totalCount: 0 }),
   resetFlags: () => {},
 });
 
@@ -25,35 +25,29 @@ export const FlagsProvider = ({ children }: { children: React.ReactNode }) => {
   const { getFlags, apiReady } = useApi();
   const [flags, setFlags] = useState<ApiFlag[]>([]);
   const [loading, setLoading] = useState(false);
+  const [loadedProjectKey, setLoadedProjectKey] = useState<string | null>(null);
   const { activeTab } = useActiveTabContext();
 
   const resetFlags = useCallback(() => {
     setFlags([]);
+    setLoadedProjectKey(null);
   }, []);
 
   const getProjectFlags = useCallback(
     async (projectKey: string) => {
       if (!apiReady) {
-        return [];
+        return { items: [] };
       }
 
-      try {
-        const response: FlagsResponse | null = await getFlags(projectKey);
-        setFlags(response?.items || []);
-        setLoading(false);
-        return response?.items || [];
-      } catch (error) {
-        console.error('Error loading flags:', error);
-        setFlags([]);
-        setLoading(false);
-        return [];
-      }
+      return await getFlags(projectKey);
     },
     [apiReady, getFlags],
   );
 
   useEffect(() => {
-    // Only fetch flags when a flag tab is active
+    // Only fetch flags when a flag tab is active'
+    let isMounted = true;
+
     const isFlagTabActive = activeTab === 'flag-sdk' || activeTab === 'flag-dev-server';
 
     if (!isFlagTabActive) {
@@ -69,10 +63,25 @@ export const FlagsProvider = ({ children }: { children: React.ReactNode }) => {
       return;
     }
 
+    // Only fetch if we haven't loaded data for this project yet
+    if (loadedProjectKey === projectKey) {
+      return;
+    }
+
     setLoading(true);
-    resetFlags();
-    getProjectFlags(projectKey);
-  }, [projectKey, authenticated, apiReady, getProjectFlags, resetFlags, activeTab]);
+    setFlags([]);
+    getProjectFlags(projectKey).then((flags) => {
+      if (isMounted) {
+        setFlags(flags.items);
+        setLoadedProjectKey(projectKey);
+        setLoading(false);
+      }
+    });
+
+    return () => {
+      isMounted = false;
+    };
+  }, [projectKey, authenticated, apiReady, getProjectFlags, activeTab, loadedProjectKey]);
 
   return (
     <FlagsContext.Provider value={{ flags, loading, getProjectFlags, resetFlags }}>{children}</FlagsContext.Provider>

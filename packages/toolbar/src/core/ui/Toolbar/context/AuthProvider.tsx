@@ -1,5 +1,5 @@
 import { createContext, Dispatch, SetStateAction, useCallback, useContext, useEffect, useState } from 'react';
-import { IFRAME_API_MESSAGES, useIFrameContext } from './IFrameProvider';
+import { getErrorTopic, getResponseTopic, IFRAME_COMMANDS, IFRAME_EVENTS, useIFrameContext } from './IFrameProvider';
 import { useAnalytics } from './AnalyticsProvider';
 
 type AuthProviderType = {
@@ -30,21 +30,22 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       return;
     }
 
-    if (event.data.type === IFRAME_API_MESSAGES.AUTHENTICATION.authenticated) {
+    if (event.data.type === IFRAME_EVENTS.AUTHENTICATED) {
       analytics.trackLoginSuccess();
       setAuthenticated(true);
       setLoading(false);
-    } else if (event.data.type === IFRAME_API_MESSAGES.AUTHENTICATION.authenticationRequired) {
+    } else if (event.data.type === IFRAME_EVENTS.AUTH_REQUIRED) {
       setAuthenticated(false);
       setLoading(false);
-    } else if (event.data.type === IFRAME_API_MESSAGES.AUTHENTICATION.error) {
+    } else if (event.data.type === IFRAME_EVENTS.AUTH_ERROR) {
       setAuthenticated(false);
       setLoading(false);
+      analytics.trackAuthError(new Error(event.data.error));
       throw new Error(event.data.error);
-    } else if (event.data.type === IFRAME_API_MESSAGES.LOGOUT.response) {
+    } else if (event.data.type === getResponseTopic(IFRAME_COMMANDS.LOGOUT)) {
       setAuthenticated(false);
       setLoading(false);
-    } else if (event.data.type === IFRAME_API_MESSAGES.LOGOUT.error) {
+    } else if (event.data.type === getErrorTopic(IFRAME_COMMANDS.LOGOUT)) {
       setAuthenticated(false);
       setLoading(false);
       throw new Error(event.data.error);
@@ -54,7 +55,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const logout = useCallback(() => {
     const iframe = ref.current;
     if (iframe?.contentWindow) {
-      iframe.contentWindow.postMessage({ type: IFRAME_API_MESSAGES.LOGOUT.request }, iframeSrc);
+      iframe.contentWindow.postMessage({ type: IFRAME_COMMANDS.LOGOUT }, iframeSrc);
     }
   }, [ref, iframeSrc]);
 

@@ -1,14 +1,14 @@
 import { createContext, useCallback, useContext, useEffect, useState } from 'react';
 import { useApi } from './ApiProvider';
 import { TOOLBAR_STORAGE_KEYS } from '../utils/localStorage';
-import { ApiProject } from '../types/ldApi';
+import { ApiProject, ProjectsResponse } from '../types/ldApi';
 
 const STORAGE_KEY = TOOLBAR_STORAGE_KEYS.PROJECT;
 
 type ProjectContextType = {
   projectKey: string;
   setProjectKey: (projectKey: string) => void;
-  getProjects: () => Promise<ApiProject[]>;
+  getProjects: () => Promise<ProjectsResponse>;
   projects: ApiProject[];
   loading: boolean;
 };
@@ -16,7 +16,7 @@ type ProjectContextType = {
 const ProjectContext = createContext<ProjectContextType>({
   projectKey: '',
   setProjectKey: () => {},
-  getProjects: async () => [],
+  getProjects: async () => ({ items: [] }),
   projects: [],
   loading: false,
 });
@@ -28,27 +28,36 @@ interface ProjectProviderProps {
 }
 
 export const ProjectProvider = ({ children, clientSideId, providedProjectKey }: ProjectProviderProps) => {
-  const { getProjects: getApiProjects } = useApi();
-  const { apiReady } = useApi();
+  const { getProjects: getApiProjects, apiReady } = useApi();
   const [projects, setProjects] = useState<ApiProject[]>([]);
   const [projectKey, setProjectKey] = useState<string>('');
   const [loading, setLoading] = useState(false);
 
   const getProjects = useCallback(async () => {
     if (!apiReady) {
-      return [];
+      return { items: [] };
     }
 
-    const projects = await getApiProjects();
-    setProjects(projects);
-    return projects;
+    return await getApiProjects();
   }, [apiReady, getApiProjects]);
 
   useEffect(() => {
-    if (!projects || projects?.length === 0) {
-      getProjects();
+    let isMounted = true;
+
+    if (apiReady) {
+      setLoading(true);
+      getProjects().then((projects) => {
+        if (isMounted) {
+          setProjects(projects.items);
+          setLoading(false);
+        }
+      });
     }
-  }, [projects, getProjects]);
+
+    return () => {
+      isMounted = false;
+    };
+  }, [apiReady, getProjects]);
 
   useEffect(() => {
     const savedProjectKey = localStorage.getItem(STORAGE_KEY);
@@ -60,21 +69,16 @@ export const ProjectProvider = ({ children, clientSideId, providedProjectKey }: 
     } else if (apiReady) {
       setLoading(true);
 
-      if (!apiReady) {
-        setLoading(false);
-        return;
-      }
-
       getProjects()
         .then((projects) => {
-          if (!projects || projects?.length === 0) {
+          if (!projects || projects.items?.length === 0) {
             throw new Error('No projects found');
           }
 
-          let project = projects[0];
+          let project = projects.items[0];
 
           if (clientSideId) {
-            project = projects.find((project) =>
+            project = projects.items.find((project) =>
               project.environments.some((environment) => environment._id === clientSideId),
             );
 

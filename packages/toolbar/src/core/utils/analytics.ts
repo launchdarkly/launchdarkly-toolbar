@@ -19,6 +19,8 @@ const EVENTS = {
   LOGIN_SUCCESS: 'login.success',
   LOGIN_CANCELLED: 'login.cancelled',
   LOGOUT: 'logout',
+  AUTH_ERROR: 'auth.error',
+  API_ERROR: 'api.error',
 } as const;
 
 /**
@@ -198,5 +200,23 @@ export class ToolbarAnalytics {
    */
   trackLogout(): void {
     this.track(EVENTS.LOGOUT, {});
+  }
+
+  /**
+   * Track authentication errors
+   */
+  trackAuthError(error: unknown): void {
+    this.track(EVENTS.AUTH_ERROR, {
+      error: error instanceof Error ? error.message : String(error),
+    });
+  }
+
+  /**
+   * Track API errors
+   */
+  trackApiError(error: unknown): void {
+    this.track(EVENTS.API_ERROR, {
+      error: error instanceof Error ? error.message : String(error),
+    });
   }
 }
