@@ -38,6 +38,10 @@ runs:
         VITE_LD_BASE_URL: https://app.launchdarkly.com
         VITE_LD_STREAM_URL: https://clientstream.launchdarkly.com
         VITE_LD_EVENTS_URL: https://events.launchdarkly.com
+        TOOLBAR_INTERNAL_CLIENT_ID: ${{ env.TOOLBAR_INTERNAL_CLIENT_ID }}
+        TOOLBAR_INTERNAL_BASE_URL: ${{ env.TOOLBAR_INTERNAL_BASE_URL }}
+        TOOLBAR_INTERNAL_STREAM_URL: ${{ env.TOOLBAR_INTERNAL_STREAM_URL }}
+        TOOLBAR_INTERNAL_EVENTS_URL: ${{ env.TOOLBAR_INTERNAL_EVENTS_URL }}
         VITE_LD_DEV_SERVER_URL: http://localhost:8765
         VITE_LD_DEV_SERVER_PROJECT_KEY: developer-toolbar-sandbox
 
@@ -93,6 +97,10 @@ runs:
         VITE_LD_BASE_URL: https://app.launchdarkly.com
         VITE_LD_STREAM_URL: https://clientstream.launchdarkly.com
         VITE_LD_EVENTS_URL: https://events.launchdarkly.com
+        TOOLBAR_INTERNAL_CLIENT_ID: ${{ env.TOOLBAR_INTERNAL_CLIENT_ID }}
+        TOOLBAR_INTERNAL_BASE_URL: ${{ env.TOOLBAR_INTERNAL_BASE_URL }}
+        TOOLBAR_INTERNAL_STREAM_URL: ${{ env.TOOLBAR_INTERNAL_STREAM_URL }}
+        TOOLBAR_INTERNAL_EVENTS_URL: ${{ env.TOOLBAR_INTERNAL_EVENTS_URL }}
         VITE_LD_DEV_SERVER_URL: http://localhost:8765
         VITE_LD_DEV_SERVER_PROJECT_KEY: developer-toolbar-sandbox
 

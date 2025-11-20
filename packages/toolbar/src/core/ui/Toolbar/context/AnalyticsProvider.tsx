@@ -1,6 +1,6 @@
 import { createContext, useContext, useEffect, useMemo, useRef } from 'react';
-import type { LDClient } from 'launchdarkly-js-client-sdk';
 import { ToolbarAnalytics } from '../../../utils/analytics';
+import { useInternalClientInstance } from './InternalClientProvider';
 
 interface AnalyticsContextValue {
   analytics: ToolbarAnalytics;
@@ -10,11 +10,11 @@ const AnalyticsContext = createContext<AnalyticsContextValue | null>(null);
 
 interface AnalyticsProviderProps {
   children: React.ReactNode;
-  ldClient?: LDClient | null;
 }
 
-export function AnalyticsProvider({ children, ldClient }: AnalyticsProviderProps) {
-  const analytics = useMemo(() => new ToolbarAnalytics(ldClient), [ldClient]);
+export function AnalyticsProvider({ children }: AnalyticsProviderProps) {
+  const internalClient = useInternalClientInstance();
+  const analytics = useMemo(() => new ToolbarAnalytics(internalClient), [internalClient]);
   const hasInitialized = useRef(false);
 
   // Track initialization once (prevent duplicates during development)

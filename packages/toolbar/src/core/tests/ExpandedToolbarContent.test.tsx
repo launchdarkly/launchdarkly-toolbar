@@ -6,6 +6,7 @@ import { DevServerProvider } from '../ui/Toolbar/context/DevServerProvider';
 import { ToolbarUIProvider } from '../ui/Toolbar/context/ToolbarUIProvider';
 import { SearchProvider } from '../ui/Toolbar/context/SearchProvider';
 import { AnalyticsProvider } from '../ui/Toolbar/context/AnalyticsProvider';
+import { InternalClientProvider } from '../ui/Toolbar/context/InternalClientProvider';
 import { IEventInterceptionPlugin, IFlagOverridePlugin } from '../../types';
 
 // Create mock instances that we can access in tests
@@ -91,9 +92,11 @@ function TestWrapper({
           pollIntervalInMs: 5000,
         }}
       >
-        <AnalyticsProvider>
-          <SearchProvider>{children}</SearchProvider>
-        </AnalyticsProvider>
+        <InternalClientProvider>
+          <AnalyticsProvider>
+            <SearchProvider>{children}</SearchProvider>
+          </AnalyticsProvider>
+        </InternalClientProvider>
       </DevServerProvider>
     </ToolbarUIProvider>
   );
@@ -115,6 +118,8 @@ describe('ExpandedToolbarContent - User Interaction Flows', () => {
     onTabChange: vi.fn(),
     setSearchIsExpanded: vi.fn(),
     defaultActiveTab: 'settings' as const,
+    optInToNewFeatures: false,
+    onToggleOptInToNewFeatures: vi.fn(),
   };
 
   const createMockFlagOverridePlugin = (): IFlagOverridePlugin & {
