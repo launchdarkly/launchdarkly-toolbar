@@ -429,17 +429,17 @@ describe('Select', () => {
       expect(screen.getByRole('listbox')).toBeInTheDocument();
     });
 
-    test('closes dropdown when clicking on trigger (via click outside handler)', () => {
+    test('does not close dropdown when clicking on trigger (via click outside handler)', () => {
       renderSelect(<Select options={mockOptions} onSelectionChange={mockOnSelectionChange} aria-label="Test select" />);
 
       const trigger = screen.getByRole('button');
       fireEvent.click(trigger);
       expect(screen.getByRole('listbox')).toBeInTheDocument();
 
-      // MouseDown on trigger will close it via click outside handler
-      // (because trigger is outside the dropdown element)
+      // MouseDown on trigger should not close it via click outside handler
+      // (the trigger is part of the select container and excluded from outside clicks)
       fireEvent.mouseDown(trigger);
-      expect(screen.queryByRole('listbox')).not.toBeInTheDocument();
+      expect(screen.getByRole('listbox')).toBeInTheDocument();
     });
 
     test('click outside handler is only active when dropdown is open', () => {

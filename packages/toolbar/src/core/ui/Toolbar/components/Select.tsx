@@ -153,9 +153,10 @@ export function Select(props: SelectProps) {
     const handleClickOutside = (event: MouseEvent) => {
       const path = event.composedPath();
       const clickedInsideDropdown = path.some((el) => (el as HTMLElement).id === dropdownRef.current?.id);
+      const clickedInsideSelect = path.some((el) => (el as HTMLElement).id === selectRef.current?.id);
 
       // Check if click is outside both the select trigger and the dropdown
-      if (!clickedInsideDropdown) {
+      if (!clickedInsideDropdown && !clickedInsideSelect) {
         setIsOpen(false);
         setFocusedIndex(-1);
       }
