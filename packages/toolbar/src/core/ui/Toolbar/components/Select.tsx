@@ -125,8 +125,8 @@ export function Select(props: SelectProps) {
     if (isOpen) {
       const preventScroll = (e: Event) => {
         // Allow scrolling within the dropdown list itself
-        const target = e.target as HTMLElement;
-        if (listRef.current?.contains(target)) {
+        const path = event.composedPath();
+        if (path.some((el) => (el as HTMLElement).id === listRef.current?.id)) {
           return;
         }
         // Prevent scrolling on all other elements
@@ -186,7 +186,7 @@ export function Select(props: SelectProps) {
             }}
             data-theme={dataTheme}
           >
-            <ul ref={listRef} className={styles.list} role="listbox" aria-label={ariaLabel}>
+            <ul ref={listRef} className={styles.list} id="select-list" role="listbox" aria-label={ariaLabel}>
               {options.map((option, index) => (
                 <li
                   key={option.id}
