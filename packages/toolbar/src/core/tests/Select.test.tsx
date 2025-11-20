@@ -471,13 +471,21 @@ describe('Select', () => {
   });
 
   describe('Scroll Prevention', () => {
-    test('prevents wheel events on document when dropdown is open', () => {
-      renderSelect(<Select options={mockOptions} onSelectionChange={mockOnSelectionChange} aria-label="Test select" />);
+    test('prevents wheel events within toolbar when dropdown is open', () => {
+      const { container } = renderSelect(
+        <Select options={mockOptions} onSelectionChange={mockOnSelectionChange} aria-label="Test select" />,
+      );
 
       const trigger = screen.getByRole('button');
       fireEvent.click(trigger);
 
+      // Create a mock element with the toolbar ID
+      const toolbarElement = { id: 'ld-toolbar' } as HTMLElement;
+      const selectContainer = container.querySelector('#select-container');
       const wheelEvent = new WheelEvent('wheel', { bubbles: true, cancelable: true });
+      Object.defineProperty(wheelEvent, 'composedPath', {
+        value: () => [selectContainer, toolbarElement, document.body],
+      });
       const preventDefaultSpy = vi.spyOn(wheelEvent, 'preventDefault');
 
       document.dispatchEvent(wheelEvent);
@@ -485,18 +493,45 @@ describe('Select', () => {
       expect(preventDefaultSpy).toHaveBeenCalled();
     });
 
-    test('prevents touchmove events on document when dropdown is open', () => {
-      renderSelect(<Select options={mockOptions} onSelectionChange={mockOnSelectionChange} aria-label="Test select" />);
+    test('prevents touchmove events within toolbar when dropdown is open', () => {
+      const { container } = renderSelect(
+        <Select options={mockOptions} onSelectionChange={mockOnSelectionChange} aria-label="Test select" />,
+      );
 
       const trigger = screen.getByRole('button');
       fireEvent.click(trigger);
 
+      // Create a mock element with the toolbar ID
+      const toolbarElement = { id: 'ld-toolbar' } as HTMLElement;
+      const selectContainer = container.querySelector('#select-container');
       const touchEvent = new TouchEvent('touchmove', { bubbles: true, cancelable: true });
+      Object.defineProperty(touchEvent, 'composedPath', {
+        value: () => [selectContainer, toolbarElement, document.body],
+      });
       const preventDefaultSpy = vi.spyOn(touchEvent, 'preventDefault');
 
       document.dispatchEvent(touchEvent);
 
       expect(preventDefaultSpy).toHaveBeenCalled();
+    });
+
+    test('does not prevent wheel events in host app when dropdown is open', () => {
+      renderSelect(<Select options={mockOptions} onSelectionChange={mockOnSelectionChange} aria-label="Test select" />);
+
+      const trigger = screen.getByRole('button');
+      fireEvent.click(trigger);
+
+      // Create an event that appears to come from outside the toolbar
+      const wheelEvent = new WheelEvent('wheel', { bubbles: true, cancelable: true });
+      Object.defineProperty(wheelEvent, 'composedPath', {
+        value: () => [document.body],
+      });
+      const preventDefaultSpy = vi.spyOn(wheelEvent, 'preventDefault');
+
+      document.dispatchEvent(wheelEvent);
+
+      // Should NOT prevent default for events outside the toolbar
+      expect(preventDefaultSpy).not.toHaveBeenCalled();
     });
 
     test('does not prevent scroll events when dropdown is closed', () => {
@@ -545,7 +580,7 @@ describe('Select', () => {
 
       const preventDefaultSpy = vi.spyOn(wheelEvent, 'preventDefault');
 
-      listbox.dispatchEvent(wheelEvent);
+      document.dispatchEvent(wheelEvent);
 
       // Should NOT prevent default for events within the list
       expect(preventDefaultSpy).not.toHaveBeenCalled();

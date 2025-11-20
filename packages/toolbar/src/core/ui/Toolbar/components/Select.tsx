@@ -4,6 +4,7 @@ import { ChevronDownIcon } from './icons';
 import * as styles from './Select.css';
 import { Z_INDEX } from '../../constants/zIndex';
 import { useReactMount } from '../../../context/ReactMountContext';
+import { TOOLBAR_DOM_ID } from '../../../../types/constants';
 
 export interface SelectOption {
   id: string;
@@ -121,18 +122,27 @@ export function Select(props: SelectProps) {
     }
   }, [isOpen]);
 
-  // Prevent scrolling on other elements when dropdown is open
+  // Prevent scrolling within toolbar when dropdown is open (but allow host app scrolling)
   useEffect(() => {
     if (isOpen) {
       const preventScroll = (e: Event) => {
-        // Allow scrolling within the dropdown list itself
         const path = e.composedPath();
+
+        // Allow scrolling within the dropdown list itself
         if (path.some((el) => (el as HTMLElement).id === listRef.current?.id)) {
           return;
         }
-        // Prevent scrolling on all other elements
-        e.preventDefault();
-        e.stopPropagation();
+
+        // Check if the scroll event is happening within the toolbar
+        // by checking if the event path includes the portal target (shadow DOM)
+        // or the select container
+        const isWithinToolbar = path.some((el) => (el as HTMLElement).id === TOOLBAR_DOM_ID);
+
+        // Only prevent scrolling if the event is within the toolbar
+        if (isWithinToolbar) {
+          e.preventDefault();
+          e.stopPropagation();
+        }
       };
 
       // Add scroll prevention with capture phase to catch all scroll attempts
@@ -144,7 +154,7 @@ export function Select(props: SelectProps) {
         document.removeEventListener('touchmove', preventScroll, { capture: true });
       };
     }
-  }, [isOpen]);
+  }, [isOpen, portalTarget]);
 
   // Close dropdown when clicking outside
   useEffect(() => {

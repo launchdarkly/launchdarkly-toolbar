@@ -1,8 +1,7 @@
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { InitializationConfig } from '../types';
-
-const TOOLBAR_DOM_ID = 'ld-toolbar';
+import { TOOLBAR_DOM_ID } from '../types/constants';
 
 export default function mount(rootNode: HTMLElement, config: InitializationConfig) {
   const cleanup: (() => void)[] = [];
