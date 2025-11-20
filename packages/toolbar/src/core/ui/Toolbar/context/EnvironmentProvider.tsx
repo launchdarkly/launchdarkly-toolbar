@@ -1,5 +1,6 @@
 import { createContext, FC, useCallback, useContext, useEffect, useState } from 'react';
 import { useProjectContext } from './ProjectProvider';
+import { useDevServerContext } from './DevServerProvider';
 import { TOOLBAR_STORAGE_KEYS } from '../utils/localStorage';
 
 const STORAGE_KEY = TOOLBAR_STORAGE_KEYS.ENVIRONMENT;
@@ -22,14 +23,39 @@ interface EnvironmentProviderProps {
 export const EnvironmentProvider: FC<EnvironmentProviderProps> = ({ children, clientSideId }) => {
   const [environment, setEnvironmentState] = useState<string>('production');
   const { environments } = useProjectContext();
+  const { state: devServerState } = useDevServerContext();
+
+  // In dev-server mode, the environment is controlled by the dev server
+  const isDevServerMode = devServerState.sourceEnvironmentKey !== null;
+  const devServerEnvironment = devServerState.sourceEnvironmentKey;
 
   // Wrapper function to update environment and save to localStorage
-  const setEnvironment = useCallback((newEnvironment: string) => {
-    setEnvironmentState(newEnvironment);
-    localStorage.setItem(STORAGE_KEY, newEnvironment);
-  }, []);
+  const setEnvironment = useCallback(
+    (newEnvironment: string) => {
+      setEnvironmentState(newEnvironment);
+      // Only save to localStorage if not in dev-server mode
+      if (!isDevServerMode) {
+        localStorage.setItem(STORAGE_KEY, newEnvironment);
+      }
+    },
+    [isDevServerMode],
+  );
 
+  // Sync with dev server environment when in dev-server mode
   useEffect(() => {
+    if (isDevServerMode && devServerEnvironment) {
+      setEnvironmentState(devServerEnvironment);
+      return;
+    }
+  }, [isDevServerMode, devServerEnvironment]);
+
+  // SDK mode: manage environment from localStorage and clientSideId
+  useEffect(() => {
+    // Skip this logic if in dev-server mode
+    if (isDevServerMode) {
+      return;
+    }
+
     // Check if there's a saved environment in localStorage
     const savedEnvironment = localStorage.getItem(STORAGE_KEY);
 
@@ -48,7 +74,7 @@ export const EnvironmentProvider: FC<EnvironmentProviderProps> = ({ children, cl
       // Default fallback - don't save to localStorage yet, just set state
       setEnvironmentState('production');
     }
-  }, [environments, clientSideId, setEnvironment]);
+  }, [environments, clientSideId, setEnvironment, isDevServerMode]);
 
   return <EnvironmentContext.Provider value={{ environment, setEnvironment }}>{children}</EnvironmentContext.Provider>;
 };

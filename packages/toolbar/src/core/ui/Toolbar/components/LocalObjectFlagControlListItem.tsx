@@ -18,7 +18,6 @@ import * as sharedStyles from '../TabContent/FlagDevServerTabContent.css';
 import * as styles from './LocalObjectFlagControlListItem.css';
 import { useEnvironmentContext } from '../context/EnvironmentProvider';
 import { useProjectContext } from '../context/ProjectProvider';
-import { env } from 'process';
 
 interface LocalObjectFlagControlListItemProps {
   handleClearOverride: (key: string) => void;
@@ -101,7 +100,11 @@ export function LocalObjectFlagControlListItem(props: LocalObjectFlagControlList
                 </span>
               </span>
               <FlagKeyWithCopy flagKey={flag.key} className={sharedStyles.flagKey} />
-              <a href={`https://app.launchdarkly.com/projects/${projectKey}/flags/${flag.key}?env=${environment}&selectedEnv=${environment}`} target="_blank" className={sharedStyles.flagLinkContainer}>
+              <a
+                href={`https://app.launchdarkly.com/projects/${projectKey}/flags/${flag.key}?env=${environment}&selectedEnv=${environment}`}
+                target="_blank"
+                className={sharedStyles.flagLinkContainer}
+              >
                 <span>Open in LaunchDarkly</span>
                 <ExternalLinkIcon size="small" />
               </a>

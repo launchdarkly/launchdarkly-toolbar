@@ -42,7 +42,7 @@ function FlagSdkOverrideTabContentInner(props: FlagSdkOverrideTabContentInnerPro
   const [activeFilters, setActiveFilters] = useState<Set<FlagFilterMode>>(new Set([FILTER_MODES.ALL]));
   const { projectKey } = useProjectContext();
   const { environment } = useEnvironmentContext();
-  
+
   // Ref for scroll container
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const getScrollElement = useCallback(() => scrollContainerRef.current, []);
@@ -330,7 +330,11 @@ function FlagSdkOverrideTabContentInner(props: FlagSdkOverrideTabContentInnerPro
                               </span>
                             </span>
                             <FlagKeyWithCopy flagKey={flagKey} className={sharedStyles.flagKey} />
-                            <a href={`https://app.launchdarkly.com/projects/${projectKey}/flags/${flagKey}?env=${environment}&selectedEnv=${environment}`} target="_blank" className={sharedStyles.flagLinkContainer}>
+                            <a
+                              href={`https://app.launchdarkly.com/projects/${projectKey}/flags/${flagKey}?env=${environment}&selectedEnv=${environment}`}
+                              target="_blank"
+                              className={sharedStyles.flagLinkContainer}
+                            >
                               <span>Open in LaunchDarkly</span>
                               <ExternalLinkIcon size="small" />
                             </a>

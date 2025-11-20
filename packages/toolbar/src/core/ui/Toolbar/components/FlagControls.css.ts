@@ -21,7 +21,7 @@ export const customVariantContainer = style({
   flexDirection: 'row',
   gap: '4px',
   minWidth: '120px',
-  maxWidth: '160px',
+  maxWidth: '140px',
 });
 
 export const jsonEditorContainer = style({
@@ -30,7 +30,7 @@ export const jsonEditorContainer = style({
   flexDirection: 'row-reverse',
   gap: '4px',
   minWidth: '120px',
-  maxWidth: '160px',
+  maxWidth: '140px',
 });
 
 export const currentValueGroup = style({
@@ -45,7 +45,7 @@ export const currentValueGroup = style({
   gap: '2px',
   paddingRight: '2px',
   minWidth: '120px',
-  maxWidth: '160px',
+  maxWidth: '140px',
 });
 
 export const customVariantFieldGroup = style({
@@ -94,7 +94,7 @@ export const currentValueText = style({
 export const select = style({
   background: 'transparent',
   minWidth: '120px',
-  maxWidth: '160px',
+  maxWidth: '140px',
 });
 
 export const selectedValue = style({

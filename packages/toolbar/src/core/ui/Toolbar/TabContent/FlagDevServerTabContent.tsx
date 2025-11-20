@@ -252,7 +252,11 @@ export function FlagDevServerTabContent(props: FlagDevServerTabContentProps) {
                               <span className={styles.flagNameText}>{flag.name}</span>
                             </span>
                             <FlagKeyWithCopy flagKey={flag.key} className={styles.flagKey} />
-                            <a href={`https://app.launchdarkly.com/projects/${projectKey}/flags/${flag.key}?env=${environment}&selectedEnv=${environment}`} target="_blank" className={styles.flagLinkContainer}>
+                            <a
+                              href={`https://app.launchdarkly.com/projects/${projectKey}/flags/${flag.key}?env=${environment}&selectedEnv=${environment}`}
+                              target="_blank"
+                              className={styles.flagLinkContainer}
+                            >
                               <span>Open in LaunchDarkly</span>
                               <ExternalLinkIcon size="small" />
                             </a>

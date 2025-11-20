@@ -244,16 +244,16 @@ export function LaunchDarklyToolbar(props: LaunchDarklyToolbarProps) {
             <SearchProvider>
               <ApiProvider>
                 <ProjectProvider clientSideId={clientSideId} providedProjectKey={projectKey}>
-                  <EnvironmentProvider clientSideId={clientSideId}>
-                    <ActiveTabProvider>
-                      <FlagsProvider>
-                        <DevServerProvider
-                          config={{
-                            projectKey,
-                            devServerUrl,
-                            pollIntervalInMs,
-                          }}
-                        >
+                  <ActiveTabProvider>
+                    <FlagsProvider>
+                      <DevServerProvider
+                        config={{
+                          projectKey,
+                          devServerUrl,
+                          pollIntervalInMs,
+                        }}
+                      >
+                        <EnvironmentProvider clientSideId={clientSideId}>
                           <StarredFlagsProvider>
                             <LdToolbar
                               domId={domId}
@@ -263,10 +263,10 @@ export function LaunchDarklyToolbar(props: LaunchDarklyToolbarProps) {
                               eventInterceptionPlugin={eventInterceptionPlugin}
                             />
                           </StarredFlagsProvider>
-                        </DevServerProvider>
-                      </FlagsProvider>
-                    </ActiveTabProvider>
-                  </EnvironmentProvider>
+                        </EnvironmentProvider>
+                      </DevServerProvider>
+                    </FlagsProvider>
+                  </ActiveTabProvider>
                 </ProjectProvider>
               </ApiProvider>
             </SearchProvider>
