@@ -68,7 +68,7 @@
     "@lezer/highlight": "^1.2.3",
     "@react-aria/focus": "^3.21.2",
     "@react-stately/flags": "^3.1.2",
-    "@rsbuild/core": "^1.6.6",
+    "@rsbuild/core": "^1.6.7",
     "@rsbuild/plugin-react": "^1.4.2",
     "@rslib/core": "^0.18.0",
     "@storybook/addon-docs": "^10.0.8",
