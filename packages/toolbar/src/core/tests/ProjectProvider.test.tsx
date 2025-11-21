@@ -44,18 +44,20 @@ describe('ProjectProvider', () => {
   describe('Project Auto-Detection - First Time User', () => {
     test('auto-selects first available project when no project is saved', async () => {
       // GIVEN: New developer using toolbar for first time (no saved project)
-      mockGetApiProjects.mockResolvedValue([
-        {
-          key: 'mobile-app',
-          name: 'Mobile App',
-          environments: [{ _id: 'env-1', key: 'production' }],
-        },
-        {
-          key: 'web-app',
-          name: 'Web App',
-          environments: [{ _id: 'env-2', key: 'production' }],
-        },
-      ]);
+      mockGetApiProjects.mockResolvedValue({
+        items: [
+          {
+            key: 'mobile-app',
+            name: 'Mobile App',
+            environments: [{ _id: 'env-1', key: 'production' }],
+          },
+          {
+            key: 'web-app',
+            name: 'Web App',
+            environments: [{ _id: 'env-2', key: 'production' }],
+          },
+        ],
+      });
 
       // WHEN: They open the toolbar
       render(
@@ -77,18 +79,20 @@ describe('ProjectProvider', () => {
       // GIVEN: Developer initializes toolbar with a specific clientSideId
       const clientSideId = 'sdk-key-production';
 
-      mockGetApiProjects.mockResolvedValue([
-        {
-          key: 'mobile-app',
-          name: 'Mobile App',
-          environments: [{ _id: 'other-env', key: 'staging' }],
-        },
-        {
-          key: 'web-app',
-          name: 'Web App',
-          environments: [{ _id: clientSideId, key: 'production' }],
-        },
-      ]);
+      mockGetApiProjects.mockResolvedValue({
+        items: [
+          {
+            key: 'mobile-app',
+            name: 'Mobile App',
+            environments: [{ _id: 'other-env', key: 'staging' }],
+          },
+          {
+            key: 'web-app',
+            name: 'Web App',
+            environments: [{ _id: clientSideId, key: 'production' }],
+          },
+        ],
+      });
 
       // WHEN: Toolbar initializes with clientSideId
       render(
@@ -109,10 +113,20 @@ describe('ProjectProvider', () => {
       // GIVEN: Developer has used toolbar before and selected a project
       localStorage.setItem('ld-toolbar-project', 'my-favorite-project');
 
-      mockGetApiProjects.mockResolvedValue([
-        { key: 'my-favorite-project', name: 'My Favorite Project', environments: [] },
-        { key: 'other-project', name: 'Other Project', environments: [] },
-      ]);
+      mockGetApiProjects.mockResolvedValue({
+        items: [
+          {
+            key: 'my-favorite-project',
+            name: 'My Favorite Project',
+            environments: [],
+          },
+          {
+            key: 'other-project',
+            name: 'Other Project',
+            environments: [],
+          },
+        ],
+      });
 
       // WHEN: They open toolbar again
       render(
@@ -131,10 +145,12 @@ describe('ProjectProvider', () => {
       // GIVEN: localStorage has one project, but code provides a different one
       localStorage.setItem('ld-toolbar-project', 'old-project');
 
-      mockGetApiProjects.mockResolvedValue([
-        { key: 'explicit-project', name: 'Explicit Project', environments: [] },
-        { key: 'old-project', name: 'Old Project', environments: [] },
-      ]);
+      mockGetApiProjects.mockResolvedValue({
+        items: [
+          { key: 'explicit-project', name: 'Explicit Project', environments: [] },
+          { key: 'old-project', name: 'Old Project', environments: [] },
+        ],
+      });
 
       // WHEN: Developer explicitly provides a projectKey
       render(
@@ -156,11 +172,13 @@ describe('ProjectProvider', () => {
   describe('Projects List - Available Options', () => {
     test('fetches and stores list of available projects', async () => {
       // GIVEN: Developer has access to multiple projects
-      mockGetApiProjects.mockResolvedValue([
-        { key: 'project-1', name: 'Project 1', environments: [] },
-        { key: 'project-2', name: 'Project 2', environments: [] },
-        { key: 'project-3', name: 'Project 3', environments: [] },
-      ]);
+      mockGetApiProjects.mockResolvedValue({
+        items: [
+          { key: 'project-1', name: 'Project 1', environments: [] },
+          { key: 'project-2', name: 'Project 2', environments: [] },
+          { key: 'project-3', name: 'Project 3', environments: [] },
+        ],
+      });
 
       // WHEN: Toolbar initializes
       render(
@@ -201,7 +219,7 @@ describe('ProjectProvider', () => {
     test('handles no projects found gracefully', async () => {
       // GIVEN: User account has no projects (edge case)
       // Return empty array instead of rejecting to avoid unhandled rejection
-      mockGetApiProjects.mockResolvedValue([]);
+      mockGetApiProjects.mockResolvedValue({ items: [] });
 
       // WHEN: Toolbar tries to initialize
       render(
@@ -220,13 +238,15 @@ describe('ProjectProvider', () => {
     test('handles clientSideId not matching any project', async () => {
       // GIVEN: Provided clientSideId doesn't match any available project
       // Return projects that don't have the matching clientSideId
-      mockGetApiProjects.mockResolvedValue([
-        {
-          key: 'project-1',
-          name: 'Project 1',
-          environments: [{ _id: 'different-sdk-key', key: 'production' }],
-        },
-      ]);
+      mockGetApiProjects.mockResolvedValue({
+        items: [
+          {
+            key: 'project-1',
+            name: 'Project 1',
+            environments: [{ _id: 'different-sdk-key', key: 'production' }],
+          },
+        ],
+      });
 
       const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
 
@@ -269,7 +289,7 @@ describe('ProjectProvider', () => {
 
       // WHEN: Projects arrive
       act(() => {
-        resolveProjects([{ key: 'project-1', name: 'Project 1', environments: [] }]);
+        resolveProjects({ items: [{ key: 'project-1', name: 'Project 1', environments: [] }] });
       });
 
       // THEN: Loading state clears
@@ -306,10 +326,12 @@ describe('ProjectProvider', () => {
   describe('Project Selection Workflow', () => {
     test('allows changing project after initial selection', async () => {
       // GIVEN: User has a project selected
-      mockGetApiProjects.mockResolvedValue([
-        { key: 'project-1', name: 'Project 1', environments: [] },
-        { key: 'project-2', name: 'Project 2', environments: [] },
-      ]);
+      mockGetApiProjects.mockResolvedValue({
+        items: [
+          { key: 'project-1', name: 'Project 1', environments: [] },
+          { key: 'project-2', name: 'Project 2', environments: [] },
+        ],
+      });
 
       const TestWithSwitch = () => {
         const { projectKey, setProjectKey } = useProjectContext();
@@ -355,10 +377,12 @@ describe('ProjectProvider', () => {
       // Case: With localStorage only
       localStorage.setItem('ld-toolbar-project', 'saved-project');
 
-      mockGetApiProjects.mockResolvedValue([
-        { key: 'saved-project', name: 'Saved', environments: [] },
-        { key: 'other-project', name: 'Other', environments: [] },
-      ]);
+      mockGetApiProjects.mockResolvedValue({
+        items: [
+          { key: 'saved-project', name: 'Saved', environments: [] },
+          { key: 'other-project', name: 'Other', environments: [] },
+        ],
+      });
 
       render(
         <ProjectProvider>

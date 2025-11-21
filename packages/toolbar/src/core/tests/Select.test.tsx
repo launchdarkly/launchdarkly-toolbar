@@ -1,8 +1,29 @@
 import { describe, test, expect, vi, beforeEach } from 'vitest';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { render, screen, fireEvent } from '@testing-library/react';
 import { Select, SelectOption } from '../ui/Toolbar/components/Select';
 import '@testing-library/jest-dom/vitest';
 import React from 'react';
+import ReactMountContext from '../context/ReactMountContext';
+import '@testing-library/jest-dom';
+
+// Test wrapper to provide ReactMountContext with proper portal target
+function SelectWrapper({ children }: { children: React.ReactNode }) {
+  const [portalTarget] = React.useState(() => document.createElement('div'));
+
+  React.useEffect(() => {
+    document.body.appendChild(portalTarget);
+    return () => {
+      document.body.removeChild(portalTarget);
+    };
+  }, [portalTarget]);
+
+  return <ReactMountContext.Provider value={portalTarget}>{children}</ReactMountContext.Provider>;
+}
+
+// Helper function to render Select with proper context
+function renderSelect(ui: React.ReactElement) {
+  return render(<SelectWrapper>{ui}</SelectWrapper>);
+}
 
 describe('Select', () => {
   const mockOptions: SelectOption[] = [
@@ -19,7 +40,7 @@ describe('Select', () => {
 
   describe('Rendering', () => {
     test('renders with placeholder when no selection', () => {
-      render(
+      renderSelect(
         <Select
           options={mockOptions}
           onSelectionChange={mockOnSelectionChange}
@@ -32,7 +53,7 @@ describe('Select', () => {
     });
 
     test('renders with selected value', () => {
-      render(
+      renderSelect(
         <Select
           options={mockOptions}
           selectedKey="option2"
@@ -45,13 +66,13 @@ describe('Select', () => {
     });
 
     test('renders with default placeholder when none provided', () => {
-      render(<Select options={mockOptions} onSelectionChange={mockOnSelectionChange} aria-label="Test select" />);
+      renderSelect(<Select options={mockOptions} onSelectionChange={mockOnSelectionChange} aria-label="Test select" />);
 
       expect(screen.getByText('Select option')).toBeInTheDocument();
     });
 
     test('applies custom className', () => {
-      const { container } = render(
+      const { container } = renderSelect(
         <Select
           options={mockOptions}
           onSelectionChange={mockOnSelectionChange}
@@ -65,7 +86,7 @@ describe('Select', () => {
     });
 
     test('applies data-theme attribute', () => {
-      const { container } = render(
+      const { container } = renderSelect(
         <Select
           options={mockOptions}
           onSelectionChange={mockOnSelectionChange}
@@ -79,7 +100,7 @@ describe('Select', () => {
     });
 
     test('defaults to dark theme', () => {
-      const { container } = render(
+      const { container } = renderSelect(
         <Select options={mockOptions} onSelectionChange={mockOnSelectionChange} aria-label="Test select" />,
       );
 
@@ -90,7 +111,7 @@ describe('Select', () => {
 
   describe('Dropdown Interaction', () => {
     test('opens dropdown on trigger click', () => {
-      render(<Select options={mockOptions} onSelectionChange={mockOnSelectionChange} aria-label="Test select" />);
+      renderSelect(<Select options={mockOptions} onSelectionChange={mockOnSelectionChange} aria-label="Test select" />);
 
       const trigger = screen.getByRole('button');
       fireEvent.click(trigger);
@@ -102,7 +123,7 @@ describe('Select', () => {
     });
 
     test('closes dropdown on trigger click when already open', () => {
-      render(<Select options={mockOptions} onSelectionChange={mockOnSelectionChange} aria-label="Test select" />);
+      renderSelect(<Select options={mockOptions} onSelectionChange={mockOnSelectionChange} aria-label="Test select" />);
 
       const trigger = screen.getByRole('button');
       fireEvent.click(trigger);
@@ -113,7 +134,7 @@ describe('Select', () => {
     });
 
     test('calls onSelectionChange when option is clicked', () => {
-      render(<Select options={mockOptions} onSelectionChange={mockOnSelectionChange} aria-label="Test select" />);
+      renderSelect(<Select options={mockOptions} onSelectionChange={mockOnSelectionChange} aria-label="Test select" />);
 
       const trigger = screen.getByRole('button');
       fireEvent.click(trigger);
@@ -126,7 +147,7 @@ describe('Select', () => {
     });
 
     test('closes dropdown after selection', () => {
-      render(<Select options={mockOptions} onSelectionChange={mockOnSelectionChange} aria-label="Test select" />);
+      renderSelect(<Select options={mockOptions} onSelectionChange={mockOnSelectionChange} aria-label="Test select" />);
 
       const trigger = screen.getByRole('button');
       fireEvent.click(trigger);
@@ -138,7 +159,7 @@ describe('Select', () => {
     });
 
     test('returns focus to trigger after selection', () => {
-      render(<Select options={mockOptions} onSelectionChange={mockOnSelectionChange} aria-label="Test select" />);
+      renderSelect(<Select options={mockOptions} onSelectionChange={mockOnSelectionChange} aria-label="Test select" />);
 
       const trigger = screen.getByRole('button');
       fireEvent.click(trigger);
@@ -150,7 +171,7 @@ describe('Select', () => {
     });
 
     test('updates focused index on mouse enter', () => {
-      render(<Select options={mockOptions} onSelectionChange={mockOnSelectionChange} aria-label="Test select" />);
+      renderSelect(<Select options={mockOptions} onSelectionChange={mockOnSelectionChange} aria-label="Test select" />);
 
       const trigger = screen.getByRole('button');
       fireEvent.click(trigger);
@@ -165,7 +186,7 @@ describe('Select', () => {
 
   describe('Keyboard Navigation', () => {
     test('opens dropdown on Enter key', () => {
-      render(<Select options={mockOptions} onSelectionChange={mockOnSelectionChange} aria-label="Test select" />);
+      renderSelect(<Select options={mockOptions} onSelectionChange={mockOnSelectionChange} aria-label="Test select" />);
 
       const trigger = screen.getByRole('button');
       trigger.focus();
@@ -175,7 +196,7 @@ describe('Select', () => {
     });
 
     test('opens dropdown on Space key', () => {
-      render(<Select options={mockOptions} onSelectionChange={mockOnSelectionChange} aria-label="Test select" />);
+      renderSelect(<Select options={mockOptions} onSelectionChange={mockOnSelectionChange} aria-label="Test select" />);
 
       const trigger = screen.getByRole('button');
       trigger.focus();
@@ -185,7 +206,7 @@ describe('Select', () => {
     });
 
     test('opens dropdown and focuses first item on ArrowDown', () => {
-      render(<Select options={mockOptions} onSelectionChange={mockOnSelectionChange} aria-label="Test select" />);
+      renderSelect(<Select options={mockOptions} onSelectionChange={mockOnSelectionChange} aria-label="Test select" />);
 
       const trigger = screen.getByRole('button');
       trigger.focus();
@@ -197,7 +218,7 @@ describe('Select', () => {
     });
 
     test('opens dropdown and focuses last item on ArrowUp', () => {
-      render(<Select options={mockOptions} onSelectionChange={mockOnSelectionChange} aria-label="Test select" />);
+      renderSelect(<Select options={mockOptions} onSelectionChange={mockOnSelectionChange} aria-label="Test select" />);
 
       const trigger = screen.getByRole('button');
       trigger.focus();
@@ -209,7 +230,7 @@ describe('Select', () => {
     });
 
     test('navigates down through options with ArrowDown', () => {
-      render(<Select options={mockOptions} onSelectionChange={mockOnSelectionChange} aria-label="Test select" />);
+      renderSelect(<Select options={mockOptions} onSelectionChange={mockOnSelectionChange} aria-label="Test select" />);
 
       const trigger = screen.getByRole('button');
       trigger.focus();
@@ -228,7 +249,7 @@ describe('Select', () => {
     });
 
     test('wraps to first option when navigating down from last', () => {
-      render(<Select options={mockOptions} onSelectionChange={mockOnSelectionChange} aria-label="Test select" />);
+      renderSelect(<Select options={mockOptions} onSelectionChange={mockOnSelectionChange} aria-label="Test select" />);
 
       const trigger = screen.getByRole('button');
       trigger.focus();
@@ -240,7 +261,7 @@ describe('Select', () => {
     });
 
     test('navigates up through options with ArrowUp', () => {
-      render(<Select options={mockOptions} onSelectionChange={mockOnSelectionChange} aria-label="Test select" />);
+      renderSelect(<Select options={mockOptions} onSelectionChange={mockOnSelectionChange} aria-label="Test select" />);
 
       const trigger = screen.getByRole('button');
       trigger.focus();
@@ -259,7 +280,7 @@ describe('Select', () => {
     });
 
     test('wraps to last option when navigating up from first', () => {
-      render(<Select options={mockOptions} onSelectionChange={mockOnSelectionChange} aria-label="Test select" />);
+      renderSelect(<Select options={mockOptions} onSelectionChange={mockOnSelectionChange} aria-label="Test select" />);
 
       const trigger = screen.getByRole('button');
       trigger.focus();
@@ -271,7 +292,7 @@ describe('Select', () => {
     });
 
     test('selects focused option on Enter', () => {
-      render(<Select options={mockOptions} onSelectionChange={mockOnSelectionChange} aria-label="Test select" />);
+      renderSelect(<Select options={mockOptions} onSelectionChange={mockOnSelectionChange} aria-label="Test select" />);
 
       const trigger = screen.getByRole('button');
       trigger.focus();
@@ -285,7 +306,7 @@ describe('Select', () => {
     });
 
     test('selects focused option on Space', () => {
-      render(<Select options={mockOptions} onSelectionChange={mockOnSelectionChange} aria-label="Test select" />);
+      renderSelect(<Select options={mockOptions} onSelectionChange={mockOnSelectionChange} aria-label="Test select" />);
 
       const trigger = screen.getByRole('button');
       trigger.focus();
@@ -299,7 +320,7 @@ describe('Select', () => {
     });
 
     test('closes dropdown on Escape key', () => {
-      render(<Select options={mockOptions} onSelectionChange={mockOnSelectionChange} aria-label="Test select" />);
+      renderSelect(<Select options={mockOptions} onSelectionChange={mockOnSelectionChange} aria-label="Test select" />);
 
       const trigger = screen.getByRole('button');
       fireEvent.click(trigger);
@@ -310,7 +331,7 @@ describe('Select', () => {
     });
 
     test('returns focus to trigger on Escape', () => {
-      render(<Select options={mockOptions} onSelectionChange={mockOnSelectionChange} aria-label="Test select" />);
+      renderSelect(<Select options={mockOptions} onSelectionChange={mockOnSelectionChange} aria-label="Test select" />);
 
       const trigger = screen.getByRole('button');
       fireEvent.click(trigger);
@@ -322,7 +343,7 @@ describe('Select', () => {
 
   describe('Disabled State', () => {
     test('does not open dropdown when disabled', () => {
-      render(
+      renderSelect(
         <Select
           options={mockOptions}
           onSelectionChange={mockOnSelectionChange}
@@ -338,7 +359,7 @@ describe('Select', () => {
     });
 
     test('ignores keyboard events when disabled', () => {
-      render(
+      renderSelect(
         <Select
           options={mockOptions}
           onSelectionChange={mockOnSelectionChange}
@@ -354,7 +375,7 @@ describe('Select', () => {
     });
 
     test('applies disabled attribute to button', () => {
-      render(
+      renderSelect(
         <Select
           options={mockOptions}
           onSelectionChange={mockOnSelectionChange}
@@ -368,29 +389,22 @@ describe('Select', () => {
     });
   });
 
-  describe('Click Outside Handling', () => {
-    test('closes dropdown when clicking outside', async () => {
-      const { container } = render(
-        <div>
-          <Select options={mockOptions} onSelectionChange={mockOnSelectionChange} aria-label="Test select" />
-          <button>Outside button</button>
-        </div>,
-      );
+  describe('Click Outside Handler', () => {
+    test('closes dropdown when clicking outside', () => {
+      renderSelect(<Select options={mockOptions} onSelectionChange={mockOnSelectionChange} aria-label="Test select" />);
 
-      const trigger = screen.getByRole('button', { name: /Test select/i });
+      const trigger = screen.getByRole('button');
       fireEvent.click(trigger);
       expect(screen.getByRole('listbox')).toBeInTheDocument();
 
-      const outsideButton = screen.getByRole('button', { name: 'Outside button' });
-      fireEvent.mouseDown(outsideButton);
+      // Click outside (on document body)
+      fireEvent.mouseDown(document.body);
 
-      await waitFor(() => {
-        expect(screen.queryByRole('listbox')).not.toBeInTheDocument();
-      });
+      expect(screen.queryByRole('listbox')).not.toBeInTheDocument();
     });
 
-    test('does not close dropdown when clicking inside', () => {
-      render(<Select options={mockOptions} onSelectionChange={mockOnSelectionChange} aria-label="Test select" />);
+    test('does not close dropdown when clicking inside dropdown', () => {
+      renderSelect(<Select options={mockOptions} onSelectionChange={mockOnSelectionChange} aria-label="Test select" />);
 
       const trigger = screen.getByRole('button');
       fireEvent.click(trigger);
@@ -402,37 +416,201 @@ describe('Select', () => {
       expect(screen.getByRole('listbox')).toBeInTheDocument();
     });
 
-    test('uses composedPath for Shadow DOM compatibility', async () => {
-      const { container } = render(
-        <div>
-          <Select options={mockOptions} onSelectionChange={mockOnSelectionChange} aria-label="Test select" />
-          <button>Outside button</button>
-        </div>,
+    test('does not close dropdown when clicking on an option (before option click handler)', () => {
+      renderSelect(<Select options={mockOptions} onSelectionChange={mockOnSelectionChange} aria-label="Test select" />);
+
+      const trigger = screen.getByRole('button');
+      fireEvent.click(trigger);
+      expect(screen.getByRole('listbox')).toBeInTheDocument();
+
+      const option1 = screen.getByRole('option', { name: 'Option 1' });
+      fireEvent.mouseDown(option1);
+
+      // Dropdown should still be open at this point (closes on click, not mouseDown)
+      expect(screen.getByRole('listbox')).toBeInTheDocument();
+    });
+
+    test('does not close dropdown when clicking on trigger (via click outside handler)', () => {
+      renderSelect(<Select options={mockOptions} onSelectionChange={mockOnSelectionChange} aria-label="Test select" />);
+
+      const trigger = screen.getByRole('button');
+      fireEvent.click(trigger);
+      expect(screen.getByRole('listbox')).toBeInTheDocument();
+
+      // MouseDown on trigger should not close it via click outside handler
+      // (the trigger is part of the select container and excluded from outside clicks)
+      fireEvent.mouseDown(trigger);
+      expect(screen.getByRole('listbox')).toBeInTheDocument();
+    });
+
+    test('click outside handler is only active when dropdown is open', () => {
+      renderSelect(<Select options={mockOptions} onSelectionChange={mockOnSelectionChange} aria-label="Test select" />);
+
+      // Dropdown is closed, clicking outside should not cause issues
+      fireEvent.mouseDown(document.body);
+
+      // No errors thrown, and dropdown remains closed
+      expect(screen.queryByRole('listbox')).not.toBeInTheDocument();
+    });
+
+    test('removes click outside listener when dropdown closes', () => {
+      renderSelect(<Select options={mockOptions} onSelectionChange={mockOnSelectionChange} aria-label="Test select" />);
+
+      const trigger = screen.getByRole('button');
+
+      // Open dropdown
+      fireEvent.click(trigger);
+      expect(screen.getByRole('listbox')).toBeInTheDocument();
+
+      // Close dropdown by clicking trigger
+      fireEvent.click(trigger);
+      expect(screen.queryByRole('listbox')).not.toBeInTheDocument();
+
+      // Click outside - should not cause any issues since listener is removed
+      expect(() => fireEvent.mouseDown(document.body)).not.toThrow();
+    });
+  });
+
+  describe('Scroll Prevention', () => {
+    test('prevents wheel events within toolbar when dropdown is open', () => {
+      const { container } = renderSelect(
+        <Select options={mockOptions} onSelectionChange={mockOnSelectionChange} aria-label="Test select" />,
       );
 
-      const trigger = screen.getByRole('button', { name: /Test select/i });
+      const trigger = screen.getByRole('button');
       fireEvent.click(trigger);
 
-      const outsideButton = screen.getByRole('button', { name: 'Outside button' });
+      // Create a mock element with the toolbar ID
+      const toolbarElement = { id: 'ld-toolbar' } as HTMLElement;
+      const selectContainer = container.querySelector('#select-container');
+      const wheelEvent = new WheelEvent('wheel', { bubbles: true, cancelable: true });
+      Object.defineProperty(wheelEvent, 'composedPath', {
+        value: () => [selectContainer, toolbarElement, document.body],
+      });
+      const preventDefaultSpy = vi.spyOn(wheelEvent, 'preventDefault');
 
-      // Create a mock event with composedPath
-      const mouseDownEvent = new MouseEvent('mousedown', { bubbles: true });
-      const composedPathSpy = vi.spyOn(mouseDownEvent, 'composedPath');
-      composedPathSpy.mockReturnValue([outsideButton, document.body, document.documentElement]);
+      document.dispatchEvent(wheelEvent);
 
-      fireEvent(outsideButton, mouseDownEvent);
+      expect(preventDefaultSpy).toHaveBeenCalled();
+    });
 
-      await waitFor(() => {
-        expect(screen.queryByRole('listbox')).not.toBeInTheDocument();
+    test('prevents touchmove events within toolbar when dropdown is open', () => {
+      const { container } = renderSelect(
+        <Select options={mockOptions} onSelectionChange={mockOnSelectionChange} aria-label="Test select" />,
+      );
+
+      const trigger = screen.getByRole('button');
+      fireEvent.click(trigger);
+
+      // Create a mock element with the toolbar ID
+      const toolbarElement = { id: 'ld-toolbar' } as HTMLElement;
+      const selectContainer = container.querySelector('#select-container');
+      const touchEvent = new TouchEvent('touchmove', { bubbles: true, cancelable: true });
+      Object.defineProperty(touchEvent, 'composedPath', {
+        value: () => [selectContainer, toolbarElement, document.body],
+      });
+      const preventDefaultSpy = vi.spyOn(touchEvent, 'preventDefault');
+
+      document.dispatchEvent(touchEvent);
+
+      expect(preventDefaultSpy).toHaveBeenCalled();
+    });
+
+    test('does not prevent wheel events in host app when dropdown is open', () => {
+      renderSelect(<Select options={mockOptions} onSelectionChange={mockOnSelectionChange} aria-label="Test select" />);
+
+      const trigger = screen.getByRole('button');
+      fireEvent.click(trigger);
+
+      // Create an event that appears to come from outside the toolbar
+      const wheelEvent = new WheelEvent('wheel', { bubbles: true, cancelable: true });
+      Object.defineProperty(wheelEvent, 'composedPath', {
+        value: () => [document.body],
+      });
+      const preventDefaultSpy = vi.spyOn(wheelEvent, 'preventDefault');
+
+      document.dispatchEvent(wheelEvent);
+
+      // Should NOT prevent default for events outside the toolbar
+      expect(preventDefaultSpy).not.toHaveBeenCalled();
+    });
+
+    test('does not prevent scroll events when dropdown is closed', () => {
+      renderSelect(<Select options={mockOptions} onSelectionChange={mockOnSelectionChange} aria-label="Test select" />);
+
+      const wheelEvent = new WheelEvent('wheel', { bubbles: true, cancelable: true });
+      const preventDefaultSpy = vi.spyOn(wheelEvent, 'preventDefault');
+
+      document.dispatchEvent(wheelEvent);
+
+      expect(preventDefaultSpy).not.toHaveBeenCalled();
+    });
+
+    test('removes scroll prevention listeners when dropdown closes', () => {
+      renderSelect(<Select options={mockOptions} onSelectionChange={mockOnSelectionChange} aria-label="Test select" />);
+
+      const trigger = screen.getByRole('button');
+
+      // Open dropdown
+      fireEvent.click(trigger);
+
+      // Close dropdown
+      fireEvent.click(trigger);
+
+      const wheelEvent = new WheelEvent('wheel', { bubbles: true, cancelable: true });
+      const preventDefaultSpy = vi.spyOn(wheelEvent, 'preventDefault');
+
+      document.dispatchEvent(wheelEvent);
+
+      expect(preventDefaultSpy).not.toHaveBeenCalled();
+    });
+
+    test('allows scrolling within the dropdown list', () => {
+      renderSelect(<Select options={mockOptions} onSelectionChange={mockOnSelectionChange} aria-label="Test select" />);
+
+      const trigger = screen.getByRole('button');
+      fireEvent.click(trigger);
+
+      const listbox = screen.getByRole('listbox');
+
+      // Create a wheel event that originates from within the listbox
+      const wheelEvent = new WheelEvent('wheel', { bubbles: true, cancelable: true });
+      Object.defineProperty(wheelEvent, 'composedPath', {
+        value: () => [listbox, document.body],
       });
 
-      expect(composedPathSpy).toHaveBeenCalled();
+      const preventDefaultSpy = vi.spyOn(wheelEvent, 'preventDefault');
+
+      document.dispatchEvent(wheelEvent);
+
+      // Should NOT prevent default for events within the list
+      expect(preventDefaultSpy).not.toHaveBeenCalled();
+    });
+
+    test('removes scroll listeners when component unmounts', () => {
+      const { unmount } = renderSelect(
+        <Select options={mockOptions} onSelectionChange={mockOnSelectionChange} aria-label="Test select" />,
+      );
+
+      const trigger = screen.getByRole('button');
+      fireEvent.click(trigger);
+
+      // Unmount component
+      unmount();
+
+      // Scroll event should not be prevented after unmount
+      const wheelEvent = new WheelEvent('wheel', { bubbles: true, cancelable: true });
+      const preventDefaultSpy = vi.spyOn(wheelEvent, 'preventDefault');
+
+      document.dispatchEvent(wheelEvent);
+
+      expect(preventDefaultSpy).not.toHaveBeenCalled();
     });
   });
 
   describe('Accessibility', () => {
     test('has proper ARIA attributes on trigger', () => {
-      render(<Select options={mockOptions} onSelectionChange={mockOnSelectionChange} aria-label="Test select" />);
+      renderSelect(<Select options={mockOptions} onSelectionChange={mockOnSelectionChange} aria-label="Test select" />);
 
       const trigger = screen.getByRole('button');
       expect(trigger).toHaveAttribute('aria-label');
@@ -441,7 +619,7 @@ describe('Select', () => {
     });
 
     test('updates aria-expanded when dropdown opens', () => {
-      render(<Select options={mockOptions} onSelectionChange={mockOnSelectionChange} aria-label="Test select" />);
+      renderSelect(<Select options={mockOptions} onSelectionChange={mockOnSelectionChange} aria-label="Test select" />);
 
       const trigger = screen.getByRole('button');
       fireEvent.click(trigger);
@@ -450,7 +628,7 @@ describe('Select', () => {
     });
 
     test('has proper ARIA attributes on options', () => {
-      render(
+      renderSelect(
         <Select
           options={mockOptions}
           selectedKey="option2"
@@ -470,7 +648,7 @@ describe('Select', () => {
     });
 
     test('listbox has aria-label', () => {
-      render(<Select options={mockOptions} onSelectionChange={mockOnSelectionChange} aria-label="Test select" />);
+      renderSelect(<Select options={mockOptions} onSelectionChange={mockOnSelectionChange} aria-label="Test select" />);
 
       const trigger = screen.getByRole('button');
       fireEvent.click(trigger);
@@ -482,7 +660,7 @@ describe('Select', () => {
 
   describe('Edge Cases', () => {
     test('handles empty options array', () => {
-      render(<Select options={[]} onSelectionChange={mockOnSelectionChange} aria-label="Test select" />);
+      renderSelect(<Select options={[]} onSelectionChange={mockOnSelectionChange} aria-label="Test select" />);
 
       const trigger = screen.getByRole('button');
       fireEvent.click(trigger);
@@ -492,7 +670,7 @@ describe('Select', () => {
     });
 
     test('handles null selectedKey', () => {
-      render(
+      renderSelect(
         <Select
           options={mockOptions}
           selectedKey={null}
@@ -505,7 +683,7 @@ describe('Select', () => {
     });
 
     test('handles undefined selectedKey', () => {
-      render(
+      renderSelect(
         <Select
           options={mockOptions}
           selectedKey={undefined}
@@ -518,7 +696,7 @@ describe('Select', () => {
     });
 
     test('handles selectedKey that does not exist in options', () => {
-      render(
+      renderSelect(
         <Select
           options={mockOptions}
           selectedKey="nonexistent"
@@ -531,7 +709,7 @@ describe('Select', () => {
     });
 
     test('does not call onSelectionChange if not provided', () => {
-      render(<Select options={mockOptions} aria-label="Test select" />);
+      renderSelect(<Select options={mockOptions} aria-label="Test select" />);
 
       const trigger = screen.getByRole('button');
       fireEvent.click(trigger);
@@ -541,7 +719,7 @@ describe('Select', () => {
     });
 
     test('handles rapid toggle clicks', () => {
-      render(<Select options={mockOptions} onSelectionChange={mockOnSelectionChange} aria-label="Test select" />);
+      renderSelect(<Select options={mockOptions} onSelectionChange={mockOnSelectionChange} aria-label="Test select" />);
 
       const trigger = screen.getByRole('button');
 
@@ -555,7 +733,7 @@ describe('Select', () => {
 
   describe('Visual State', () => {
     test('applies selected class to selected option', () => {
-      render(
+      renderSelect(
         <Select
           options={mockOptions}
           selectedKey="option2"
@@ -572,7 +750,7 @@ describe('Select', () => {
     });
 
     test('dropdown opens and closes correctly', () => {
-      render(<Select options={mockOptions} onSelectionChange={mockOnSelectionChange} aria-label="Test select" />);
+      renderSelect(<Select options={mockOptions} onSelectionChange={mockOnSelectionChange} aria-label="Test select" />);
 
       const trigger = screen.getByRole('button');
 

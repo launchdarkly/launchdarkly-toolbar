@@ -12,13 +12,7 @@ vi.mock('../ui/Toolbar/context/ApiProvider', () => ({
   useApi: vi.fn(),
 }));
 
-// Mock DevServerProvider to provide minimal context
-vi.mock('../ui/Toolbar/context/DevServerProvider', () => ({
-  useDevServerContext: vi.fn(),
-}));
-
 import { useApi } from '../ui/Toolbar/context/ApiProvider';
-import { useDevServerContext } from '../ui/Toolbar/context/DevServerProvider';
 
 // Test component that consumes the Environment context
 function TestConsumer() {
@@ -85,23 +79,7 @@ describe('EnvironmentProvider', () => {
       apiReady: true,
     });
 
-    mockGetApiProjects.mockResolvedValue(mockProjects);
-
-    // Setup default DevServer mock (SDK mode - no dev server)
-    (useDevServerContext as any).mockReturnValue({
-      state: {
-        sourceEnvironmentKey: null,
-        flags: {},
-        connectionStatus: 'disconnected',
-        lastSyncTime: 0,
-        isLoading: false,
-        error: null,
-      },
-      setOverride: vi.fn(),
-      clearOverride: vi.fn(),
-      clearAllOverrides: vi.fn(),
-      refresh: vi.fn(),
-    });
+    mockGetApiProjects.mockResolvedValue({ items: mockProjects });
   });
 
   describe('Default State', () => {
@@ -620,165 +598,6 @@ describe('EnvironmentProvider', () => {
       await waitFor(() => {
         expect(screen.getByTestId('consumer-1')).toHaveTextContent('development');
         expect(screen.getByTestId('consumer-2')).toHaveTextContent('development');
-      });
-    });
-  });
-
-  describe('Dev Server Mode Integration', () => {
-    test('syncs environment with dev server sourceEnvironmentKey', async () => {
-      // GIVEN: Dev server is active with a specific environment
-      (useDevServerContext as any).mockReturnValue({
-        state: {
-          sourceEnvironmentKey: 'staging',
-          flags: {},
-          connectionStatus: 'connected',
-          lastSyncTime: Date.now(),
-          isLoading: false,
-          error: null,
-        },
-        setOverride: vi.fn(),
-        clearOverride: vi.fn(),
-        clearAllOverrides: vi.fn(),
-        refresh: vi.fn(),
-      });
-
-      // WHEN: EnvironmentProvider is rendered
-      render(
-        <ProjectProvider>
-          <EnvironmentProvider>
-            <TestConsumer />
-          </EnvironmentProvider>
-        </ProjectProvider>,
-      );
-
-      // THEN: Environment matches dev server's environment
-      await waitFor(() => {
-        expect(screen.getByTestId('environment')).toHaveTextContent('staging');
-      });
-    });
-
-    test('updates environment when dev server environment changes', async () => {
-      // GIVEN: Dev server starts with one environment
-      const mockDevServerContext = {
-        state: {
-          sourceEnvironmentKey: 'production',
-          flags: {},
-          connectionStatus: 'connected',
-          lastSyncTime: Date.now(),
-          isLoading: false,
-          error: null,
-        },
-        setOverride: vi.fn(),
-        clearOverride: vi.fn(),
-        clearAllOverrides: vi.fn(),
-        refresh: vi.fn(),
-      };
-
-      (useDevServerContext as any).mockReturnValue(mockDevServerContext);
-
-      const { rerender } = render(
-        <ProjectProvider>
-          <EnvironmentProvider>
-            <TestConsumer />
-          </EnvironmentProvider>
-        </ProjectProvider>,
-      );
-
-      await waitFor(() => {
-        expect(screen.getByTestId('environment')).toHaveTextContent('production');
-      });
-
-      // WHEN: Dev server environment changes
-      mockDevServerContext.state.sourceEnvironmentKey = 'development';
-      (useDevServerContext as any).mockReturnValue(mockDevServerContext);
-
-      rerender(
-        <ProjectProvider>
-          <EnvironmentProvider>
-            <TestConsumer />
-          </EnvironmentProvider>
-        </ProjectProvider>,
-      );
-
-      // THEN: Environment updates to match
-      await waitFor(() => {
-        expect(screen.getByTestId('environment')).toHaveTextContent('development');
-      });
-    });
-
-    test('does not save to localStorage in dev server mode', async () => {
-      // GIVEN: Dev server mode is active
-      (useDevServerContext as any).mockReturnValue({
-        state: {
-          sourceEnvironmentKey: 'production',
-          flags: {},
-          connectionStatus: 'connected',
-          lastSyncTime: Date.now(),
-          isLoading: false,
-          error: null,
-        },
-        setOverride: vi.fn(),
-        clearOverride: vi.fn(),
-        clearAllOverrides: vi.fn(),
-        refresh: vi.fn(),
-      });
-
-      // WHEN: EnvironmentProvider is rendered and environment is set
-      render(
-        <ProjectProvider>
-          <EnvironmentProvider>
-            <TestConsumer />
-          </EnvironmentProvider>
-        </ProjectProvider>,
-      );
-
-      await waitFor(() => {
-        expect(screen.getByTestId('environment')).toHaveTextContent('production');
-      });
-
-      const button = screen.getByText('Set Staging');
-      fireEvent.click(button);
-
-      await waitFor(() => {
-        expect(screen.getByTestId('environment')).toHaveTextContent('staging');
-      });
-
-      // THEN: Environment is NOT saved to localStorage (dev server controls it)
-      expect(localStorage.getItem(TOOLBAR_STORAGE_KEYS.ENVIRONMENT)).toBeNull();
-    });
-
-    test('ignores localStorage when dev server is active', async () => {
-      // GIVEN: localStorage has a saved environment
-      localStorage.setItem(TOOLBAR_STORAGE_KEYS.ENVIRONMENT, 'development');
-
-      // AND: Dev server is active with a different environment
-      (useDevServerContext as any).mockReturnValue({
-        state: {
-          sourceEnvironmentKey: 'staging',
-          flags: {},
-          connectionStatus: 'connected',
-          lastSyncTime: Date.now(),
-          isLoading: false,
-          error: null,
-        },
-        setOverride: vi.fn(),
-        clearOverride: vi.fn(),
-        clearAllOverrides: vi.fn(),
-        refresh: vi.fn(),
-      });
-
-      // WHEN: EnvironmentProvider is rendered
-      render(
-        <ProjectProvider>
-          <EnvironmentProvider>
-            <TestConsumer />
-          </EnvironmentProvider>
-        </ProjectProvider>,
-      );
-
-      // THEN: Environment matches dev server, not localStorage
-      await waitFor(() => {
-        expect(screen.getByTestId('environment')).toHaveTextContent('staging');
       });
     });
   });

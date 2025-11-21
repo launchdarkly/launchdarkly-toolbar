@@ -52,7 +52,19 @@ vi.mock('../services/FlagStateManager', () => {
 });
 
 // Create mock for getProjects that can be overridden in tests
-const mockGetProjects = vi.fn().mockResolvedValue([{ key: 'test-project', name: 'Test Project' }]);
+const mockGetProjects = vi.fn().mockResolvedValue({
+  items: [
+    {
+      key: 'test-project',
+      name: 'Test Project',
+      environments: [
+        { _id: 'env-1', key: 'production', name: 'Production' },
+        { _id: 'env-2', key: 'staging', name: 'Staging' },
+        { _id: 'env-3', key: 'development', name: 'Development' },
+      ],
+    },
+  ],
+});
 const mockProjectKey = { current: 'test-project' };
 
 // Mock the ProjectProvider
