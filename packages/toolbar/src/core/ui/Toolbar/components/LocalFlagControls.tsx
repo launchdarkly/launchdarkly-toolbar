@@ -179,29 +179,39 @@ export function LocalMultivariateFlagControl(props: LocalMultivariateFlagControl
   const { flag, onOverride, disabled = false } = props;
   const currentVariation = flag.availableVariations.find((v) => deepEqual(v.value, flag.currentValue));
 
+  // Format the value for display
+  const formatValue = (value: any): string => {
+    if (typeof value === 'object' && value !== null) {
+      return JSON.stringify(value);
+    }
+    return String(value);
+  };
+
   const options: SelectOption[] = flag.availableVariations.map((variation) => ({
     id: variation._id,
-    label: variation.name,
+    label: formatValue(variation.value),
     value: variation.value,
   }));
 
   return (
-    <Select
-      selectedKey={currentVariation?._id || null}
-      onSelectionChange={(key) => {
-        if (key) {
-          const variation = flag.availableVariations.find((v) => v._id === key);
-          if (variation) {
-            onOverride(variation.value);
+    <div className={styles.multivariateContainer} data-testid={`flag-control-${flag.key}`}>
+      <Select
+        selectedKey={currentVariation?._id || null}
+        onSelectionChange={(key) => {
+          if (key) {
+            const variation = flag.availableVariations.find((v) => v._id === key);
+            if (variation) {
+              onOverride(variation.value);
+            }
           }
-        }
-      }}
-      aria-label="Select variant"
-      placeholder="Select variant"
-      data-theme="dark"
-      className={styles.select}
-      isDisabled={disabled}
-      options={options}
-    />
+        }}
+        aria-label="Select variant"
+        placeholder="Select variant"
+        data-theme="dark"
+        className={styles.select}
+        isDisabled={disabled}
+        options={options}
+      />
+    </div>
   );
 }
