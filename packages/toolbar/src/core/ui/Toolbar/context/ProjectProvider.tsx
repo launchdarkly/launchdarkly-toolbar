@@ -32,9 +32,15 @@ interface ProjectProviderProps {
 export const ProjectProvider = ({ children, clientSideId, providedProjectKey }: ProjectProviderProps) => {
   const { getProjects: getApiProjects, apiReady } = useApi();
   const [projects, setProjects] = useState<ApiProject[]>([]);
-  const [projectKey, setProjectKey] = useState<string>('');
+  const [projectKey, setProjectKeyState] = useState<string>('');
   const [loading, setLoading] = useState(false);
   const [environments, setEnvironments] = useState<ApiEnvironment[]>([]);
+
+  // Wrapper function to update project and save to localStorage
+  const setProjectKey = useCallback((key: string) => {
+    setProjectKeyState(key);
+    localStorage.setItem(STORAGE_KEY, key);
+  }, []);
 
   const getProjects = useCallback(async () => {
     if (!apiReady) {
@@ -78,8 +84,10 @@ export const ProjectProvider = ({ children, clientSideId, providedProjectKey }: 
     const savedProjectKey = localStorage.getItem(STORAGE_KEY);
 
     if (savedProjectKey) {
-      setProjectKey(savedProjectKey);
+      // Load from localStorage without triggering a save
+      setProjectKeyState(savedProjectKey);
     } else if (providedProjectKey) {
+      // Use provided project key and save it
       setProjectKey(providedProjectKey);
     } else if (apiReady) {
       setLoading(true);
@@ -122,7 +130,7 @@ export const ProjectProvider = ({ children, clientSideId, providedProjectKey }: 
     } else {
       setLoading(false);
     }
-  }, [providedProjectKey, clientSideId, getProjects, apiReady]);
+  }, [providedProjectKey, clientSideId, getProjects, apiReady, setProjectKey]);
 
   return (
     <ProjectContext.Provider value={{ projectKey, setProjectKey, getProjects, projects, environments, loading }}>
