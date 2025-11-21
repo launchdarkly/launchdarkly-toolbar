@@ -1,6 +1,9 @@
 name: Publish Package
 description: 'Publish the package to npm'
 inputs:
+  token:
+    description: 'Token to use for publishing.'
+    required: true
   prerelease:
     description: 'Is this a prerelease. If so, then the latest tag will not be updated in npm.'
     required: false
@@ -13,6 +16,13 @@ inputs:
 runs:
   using: composite
   steps:
+    - name: Setup .npmrc
+        shell: bash
+        run: |
+          echo "//registry.npmjs.org/:_authToken=${{ inputs.token }}" >> ~/.npmrc
+          echo "registry=https://registry.npmjs.org/" >> ~/.npmrc
+          echo "always-auth=true" >> ~/.npmrc
+          
     - name: Publish to npm (dry run)
       if: inputs.dry_run == 'true'
       shell: bash
