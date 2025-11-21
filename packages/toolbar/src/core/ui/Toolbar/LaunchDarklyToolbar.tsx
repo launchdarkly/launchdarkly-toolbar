@@ -1,5 +1,5 @@
 import { AnimatePresence, motion } from 'motion/react';
-import { useCallback, useRef, useEffect } from 'react';
+import { useCallback, useMemo, useRef, useEffect } from 'react';
 
 import {
   SearchProvider,
@@ -24,6 +24,7 @@ import { IFrameProvider } from './context/IFrameProvider';
 import { ProjectProvider } from './context/ProjectProvider';
 import { FlagsProvider } from './context/FlagsProvider';
 import { AuthenticationModal } from './components/AuthenticationModal';
+import { InternalClientProvider } from './context/InternalClientProvider';
 
 export interface LdToolbarProps {
   mode: ToolbarMode;
@@ -226,6 +227,17 @@ export function LaunchDarklyToolbar(props: LaunchDarklyToolbarProps) {
     domId,
     clientSideId,
   } = props;
+
+  const internalClientConfig = useMemo(
+    () => ({
+      clientSideId: import.meta.env.TOOLBAR_INTERNAL_CLIENT_ID,
+      baseUrl: import.meta.env.TOOLBAR_INTERNAL_BASE_URL,
+      streamUrl: import.meta.env.TOOLBAR_INTERNAL_STREAM_URL,
+      eventsUrl: import.meta.env.TOOLBAR_INTERNAL_EVENTS_URL,
+    }),
+    [],
+  );
+
   const isVisible = useToolbarVisibility();
 
   // Don't render anything if visibility check fails
@@ -237,39 +249,46 @@ export function LaunchDarklyToolbar(props: LaunchDarklyToolbarProps) {
 
   return (
     <ToolbarUIProvider initialPosition={position}>
-      <AnalyticsProvider ldClient={flagOverridePlugin?.getClient() ?? eventInterceptionPlugin?.getClient()}>
-        <IFrameProvider authUrl={authUrl}>
-          <AuthProvider>
-            <SearchProvider>
-              <ApiProvider>
-                <ProjectProvider clientSideId={clientSideId} providedProjectKey={projectKey}>
-                  <ActiveTabProvider>
-                    <FlagsProvider>
-                      <DevServerProvider
-                        config={{
-                          projectKey,
-                          devServerUrl,
-                          pollIntervalInMs,
-                        }}
-                      >
-                        <StarredFlagsProvider>
-                          <LdToolbar
-                            domId={domId}
-                            mode={mode}
-                            baseUrl={baseUrl}
-                            flagOverridePlugin={flagOverridePlugin}
-                            eventInterceptionPlugin={eventInterceptionPlugin}
-                          />
-                        </StarredFlagsProvider>
-                      </DevServerProvider>
-                    </FlagsProvider>
-                  </ActiveTabProvider>
-                </ProjectProvider>
-              </ApiProvider>
-            </SearchProvider>
-          </AuthProvider>
-        </IFrameProvider>
-      </AnalyticsProvider>
+      <InternalClientProvider
+        clientSideId={internalClientConfig.clientSideId}
+        baseUrl={internalClientConfig.baseUrl}
+        streamUrl={internalClientConfig.streamUrl}
+        eventsUrl={internalClientConfig.eventsUrl}
+      >
+        <AnalyticsProvider>
+          <IFrameProvider authUrl={authUrl}>
+            <AuthProvider>
+              <SearchProvider>
+                <ApiProvider>
+                  <ProjectProvider clientSideId={clientSideId} providedProjectKey={projectKey}>
+                    <ActiveTabProvider>
+                      <FlagsProvider>
+                        <DevServerProvider
+                          config={{
+                            projectKey,
+                            devServerUrl,
+                            pollIntervalInMs,
+                          }}
+                        >
+                          <StarredFlagsProvider>
+                            <LdToolbar
+                              domId={domId}
+                              mode={mode}
+                              baseUrl={baseUrl}
+                              flagOverridePlugin={flagOverridePlugin}
+                              eventInterceptionPlugin={eventInterceptionPlugin}
+                            />
+                          </StarredFlagsProvider>
+                        </DevServerProvider>
+                      </FlagsProvider>
+                    </ActiveTabProvider>
+                  </ProjectProvider>
+                </ApiProvider>
+              </SearchProvider>
+            </AuthProvider>
+          </IFrameProvider>
+        </AnalyticsProvider>
+      </InternalClientProvider>
     </ToolbarUIProvider>
   );
 }

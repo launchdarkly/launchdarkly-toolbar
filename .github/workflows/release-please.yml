@@ -20,6 +20,12 @@ jobs:
         with:
           token: ${{secrets.GITHUB_TOKEN}}
 
+      - name: Setup Node.js
+        if: ${{ fromJson(steps.release.outputs.releases_created) }}
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version: '24'
+
       - name: Install npm
         if: ${{ fromJson(steps.release.outputs.releases_created) }}
         run: npm install -g npm@latest
@@ -31,6 +37,11 @@ jobs:
 
       - uses: ./.github/actions/ci
         if: ${{ fromJson(steps.release.outputs.releases_created) }}
+        env:
+          TOOLBAR_INTERNAL_CLIENT_ID: ${{ vars.TOOLBAR_INTERNAL_CLIENT_ID }}
+          TOOLBAR_INTERNAL_BASE_URL: ${{ vars.TOOLBAR_INTERNAL_BASE_URL }}
+          TOOLBAR_INTERNAL_STREAM_URL: ${{ vars.TOOLBAR_INTERNAL_STREAM_URL }}
+          TOOLBAR_INTERNAL_EVENTS_URL: ${{ vars.TOOLBAR_INTERNAL_EVENTS_URL }}
 
       - uses: ./.github/actions/publish
         if: ${{ fromJson(steps.release.outputs.releases_created) }}
