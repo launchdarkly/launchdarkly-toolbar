@@ -52,7 +52,7 @@
             console.log('[Mock Auth] Processing logout request');
             event.source.postMessage(
               {
-                type: 'logout-success',
+                type: 'logout-response',
                 requestId: requestId,
                 timestamp: Date.now(),
               },
