@@ -17,7 +17,7 @@
     "@launchdarkly/toolbar": "workspace:*",
     "launchdarkly-js-client-sdk": "^3.9.0",
     "launchdarkly-react-client-sdk": "^3.9.0",
-    "msw": "^2.11.6",
+    "msw": "^2.12.2",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
     "react-router-dom": "^7.9.6"
