@@ -35,6 +35,10 @@ export interface FlagsResponse {
   items: ApiFlag[];
 }
 
+export interface ProjectsResponse {
+  items: ApiProject[];
+}
+
 export interface FlagsPaginationParams {
   limit?: number;
   offset?: number;

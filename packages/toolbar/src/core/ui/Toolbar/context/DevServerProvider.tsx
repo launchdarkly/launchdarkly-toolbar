@@ -60,6 +60,57 @@ export const DevServerProvider: FC<DevServerProviderProps> = ({ children, config
     return null;
   }, [devServerClient]);
 
+  // Helper: Extract error message from unknown error
+  const getErrorMessage = useCallback((error: unknown): string => {
+    return error instanceof Error ? error.message : 'Unknown error';
+  }, []);
+
+  // Helper: Handle errors by updating state and calling config callback
+  const handleError = useCallback(
+    (error: unknown, updateConnectionStatus = true) => {
+      const errorMessage = getErrorMessage(error);
+      config.onError?.(errorMessage);
+      setToolbarState((prev) => ({
+        ...prev,
+        ...(updateConnectionStatus && { connectionStatus: 'error' as const }),
+        error: errorMessage,
+        isLoading: false,
+      }));
+    },
+    [config, getErrorMessage],
+  );
+
+  // Helper: Check if flagStateManager is available, handle error if not
+  const ensureFlagStateManager = useCallback((): boolean => {
+    if (!flagStateManager) {
+      handleError(new Error('Flag state manager not available - not in dev-server mode'), false);
+      return false;
+    }
+    return true;
+  }, [flagStateManager, handleError]);
+
+  // Helper: Load and sync flags from dev server and API
+  const syncFlags = useCallback(async () => {
+    if (!devServerClient || !flagStateManager || !projectKey) {
+      throw new Error('Dev server client, flag state manager, or project key not available');
+    }
+
+    const projectData = await devServerClient.getProjectData();
+    const apiFlags = await getProjectFlags(projectKey);
+    flagStateManager.setApiFlags(apiFlags.items);
+    const flags = await flagStateManager.getEnhancedFlags();
+
+    setToolbarState((prev) => ({
+      ...prev,
+      connectionStatus: 'connected',
+      flags,
+      sourceEnvironmentKey: projectData.sourceEnvironmentKey,
+      lastSyncTime: Date.now(),
+      error: null,
+      isLoading: false,
+    }));
+  }, [devServerClient, flagStateManager, projectKey, getProjectFlags]);
+
   const initializeProjectSelection = useCallback(async () => {
     // Only initialize project selection in dev-server mode
     if (!devServerClient) {
@@ -85,26 +136,18 @@ export const DevServerProvider: FC<DevServerProviderProps> = ({ children, config
 
       try {
         setToolbarState((prev) => ({ ...prev, isLoading: true, error: null }));
-
         await initializeProjectSelection();
-
         setToolbarState((prev) => ({
           ...prev,
           connectionStatus: 'connected',
         }));
       } catch (error) {
-        const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-        setToolbarState((prev) => ({
-          ...prev,
-          connectionStatus: 'error',
-          error: errorMessage,
-          isLoading: false,
-        }));
+        handleError(error);
       }
     };
 
     setupProjectConnection();
-  }, [config.devServerUrl, projectKey]);
+  }, [config.devServerUrl, projectKey, initializeProjectSelection, handleError]);
 
   // Load project data after project is set
   useEffect(() => {
@@ -115,31 +158,14 @@ export const DevServerProvider: FC<DevServerProviderProps> = ({ children, config
 
       try {
         setToolbarState((prev) => ({ ...prev, isLoading: true }));
-        const projectData = await devServerClient.getProjectData();
-        const apiFlags = await getProjectFlags(projectKey);
-        flagStateManager.setApiFlags(apiFlags);
-        const flags = await flagStateManager.getEnhancedFlags();
-        setToolbarState((prev) => ({
-          ...prev,
-          flags,
-          sourceEnvironmentKey: projectData.sourceEnvironmentKey,
-          lastSyncTime: Date.now(),
-          error: null,
-          isLoading: false,
-        }));
+        await syncFlags();
       } catch (error) {
-        const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-        setToolbarState((prev) => ({
-          ...prev,
-          connectionStatus: 'error',
-          error: errorMessage,
-          isLoading: false,
-        }));
+        handleError(error);
       }
     };
 
     loadProjectData();
-  }, [toolbarState.connectionStatus, devServerClient, flagStateManager, projectKey, getProjectFlags]);
+  }, [toolbarState.connectionStatus, devServerClient, flagStateManager, projectKey, syncFlags, handleError]);
 
   // Setup real-time updates
   useEffect(() => {
@@ -173,26 +199,12 @@ export const DevServerProvider: FC<DevServerProviderProps> = ({ children, config
         if (!projectKey) {
           await initializeProjectSelection();
           const apiFlags = await getProjectFlags(projectKey);
-          flagStateManager.setApiFlags(apiFlags);
+          flagStateManager.setApiFlags(apiFlags.items);
         }
 
-        const projectData = await devServerClient.getProjectData();
-        const flags = await flagStateManager.getEnhancedFlags();
-        setToolbarState((prev) => ({
-          ...prev,
-          connectionStatus: 'connected',
-          flags,
-          sourceEnvironmentKey: projectData.sourceEnvironmentKey,
-          lastSyncTime: Date.now(),
-          error: null,
-        }));
+        await syncFlags();
       } catch (error) {
-        const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-        setToolbarState((prev) => ({
-          ...prev,
-          connectionStatus: 'error',
-          error: errorMessage,
-        }));
+        handleError(error);
       }
     };
 
@@ -202,64 +214,54 @@ export const DevServerProvider: FC<DevServerProviderProps> = ({ children, config
     devServerClient,
     flagStateManager,
     config.pollIntervalInMs,
-    initializeProjectSelection,
     config.devServerUrl,
     projectKey,
+    initializeProjectSelection,
+    getProjectFlags,
+    syncFlags,
+    handleError,
   ]);
 
   const setOverride = useCallback(
     async (flagKey: string, value: any) => {
-      if (!flagStateManager) {
-        const errorMessage = 'Flag state manager not available - not in dev-server mode';
-        config.onError?.(errorMessage);
-        setToolbarState((prev) => ({ ...prev, error: errorMessage }));
+      if (!ensureFlagStateManager()) {
         return;
       }
 
       try {
         setToolbarState((prev) => ({ ...prev, isLoading: true }));
-        await flagStateManager.setOverride(flagKey, value);
+        await flagStateManager!.setOverride(flagKey, value);
         config.onDebugOverride?.(flagKey, value, true);
       } catch (error) {
-        const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-        config.onError?.(errorMessage);
-        setToolbarState((prev) => ({ ...prev, error: errorMessage }));
+        handleError(error, false);
       } finally {
         setToolbarState((prev) => ({ ...prev, isLoading: false }));
       }
     },
-    [flagStateManager, config],
+    [flagStateManager, config, ensureFlagStateManager, handleError],
   );
 
   const clearOverride = useCallback(
     async (flagKey: string) => {
-      if (!flagStateManager) {
-        const errorMessage = 'Flag state manager not available - not in dev-server mode';
-        config.onError?.(errorMessage);
-        setToolbarState((prev) => ({ ...prev, error: errorMessage }));
+      if (!ensureFlagStateManager()) {
         return;
       }
 
       try {
         setToolbarState((prev) => ({ ...prev, isLoading: true }));
-        await flagStateManager.clearOverride(flagKey);
+        await flagStateManager!.clearOverride(flagKey);
         config.onDebugOverride?.(flagKey, null, false);
       } catch (error) {
-        const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-        config.onError?.(errorMessage);
-        setToolbarState((prev) => ({ ...prev, error: errorMessage }));
+        handleError(error, false);
       } finally {
         setToolbarState((prev) => ({ ...prev, isLoading: false }));
       }
     },
-    [flagStateManager, config],
+    [flagStateManager, config, ensureFlagStateManager, handleError],
   );
 
   const clearAllOverrides = useCallback(async () => {
-    if (!flagStateManager) {
-      const errorMessage = 'Flag state manager not available - not in dev-server mode';
-      config.onError?.(errorMessage);
-      setToolbarState((prev) => ({ ...prev, error: errorMessage }));
+    if (!ensureFlagStateManager()) {
       return;
     }
 
@@ -268,51 +270,32 @@ export const DevServerProvider: FC<DevServerProviderProps> = ({ children, config
 
       const overriddenFlags = Object.entries(toolbarState.flags).filter(([_, flag]) => flag.isOverridden);
 
-      await Promise.all(overriddenFlags.map(([flagKey]) => flagStateManager.clearOverride(flagKey)));
+      await Promise.all(overriddenFlags.map(([flagKey]) => flagStateManager!.clearOverride(flagKey)));
 
       overriddenFlags.forEach(([flagKey]) => {
         config.onDebugOverride?.(flagKey, null, false);
       });
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-      config.onError?.(errorMessage);
-      setToolbarState((prev) => ({ ...prev, error: errorMessage }));
+      handleError(error, false);
     } finally {
       setToolbarState((prev) => ({ ...prev, isLoading: false }));
     }
-  }, [flagStateManager, config, toolbarState.flags]);
+  }, [flagStateManager, config, toolbarState.flags, ensureFlagStateManager, handleError]);
 
   const refresh = useCallback(async () => {
-    try {
-      // If no project is selected, or the connection is not established, do not refresh
-      // This helps prevent unhelpful errors from being shown to the user
-      if (!projectKey || toolbarState.connectionStatus !== 'connected' || !devServerClient || !flagStateManager) {
-        return;
-      }
-      setToolbarState((prev) => ({ ...prev, isLoading: true }));
-      const projectData = await devServerClient.getProjectData();
-      const apiFlags = await getProjectFlags(projectKey);
-      flagStateManager.setApiFlags(apiFlags);
-      const flags = await flagStateManager.getEnhancedFlags();
-      setToolbarState((prev) => ({
-        ...prev,
-        connectionStatus: 'connected',
-        flags,
-        sourceEnvironmentKey: projectData.sourceEnvironmentKey,
-        lastSyncTime: Date.now(),
-        error: null,
-        isLoading: false,
-      }));
-    } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-      setToolbarState((prev) => ({
-        ...prev,
-        connectionStatus: 'error',
-        error: errorMessage,
-        isLoading: false,
-      }));
+    // If no project is selected, or the connection is not established, do not refresh
+    // This helps prevent unhelpful errors from being shown to the user
+    if (!projectKey || toolbarState.connectionStatus !== 'connected' || !devServerClient || !flagStateManager) {
+      return;
     }
-  }, [flagStateManager, devServerClient, projectKey, toolbarState.connectionStatus]);
+
+    try {
+      setToolbarState((prev) => ({ ...prev, isLoading: true }));
+      await syncFlags();
+    } catch (error) {
+      handleError(error);
+    }
+  }, [projectKey, toolbarState.connectionStatus, devServerClient, flagStateManager, syncFlags, handleError]);
 
   const value = useMemo(
     () => ({
