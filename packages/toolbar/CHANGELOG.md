@@ -1,5 +1,19 @@
 # Changelog
 
+## [1.4.1](https://github.com/launchdarkly/launchdarkly-toolbar/compare/1.4.0...1.4.1) (2025-11-21)
+
+
+### Bug Fixes
+
+* [REL-10878] fix Select dropdown styling issue ([#317](https://github.com/launchdarkly/launchdarkly-toolbar/issues/317)) ([7651dcb](https://github.com/launchdarkly/launchdarkly-toolbar/commit/7651dcb9768fa68f5b963352ada731f0710a77aa))
+
+## [1.4.0](https://github.com/launchdarkly/launchdarkly-toolbar/compare/1.3.1...1.4.0) (2025-11-20)
+
+
+### Features
+
+* add InternalClientProvider for Toolbar flags and analytics ([#288](https://github.com/launchdarkly/launchdarkly-toolbar/issues/288)) ([63f4f5a](https://github.com/launchdarkly/launchdarkly-toolbar/commit/63f4f5aa22d497a1c2d460f5f9ed375af878bdd8))
+
 ## [1.3.1](https://github.com/launchdarkly/launchdarkly-toolbar/compare/1.3.0...1.3.1) (2025-11-14)
 
 
