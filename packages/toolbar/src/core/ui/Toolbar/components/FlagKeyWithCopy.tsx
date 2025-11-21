@@ -46,8 +46,8 @@ export function FlagKeyWithCopy({ flagKey, className }: FlagKeyWithCopyProps) {
     <button
       className={`${styles.container} ${isCopied ? styles.copied : ''} ${className || ''}`}
       onClick={handleCopy}
-      aria-label={isCopied ? 'Copied to clipboard!' : `Copy flag key: ${flagKey}`}
-      title={isCopied ? 'Copied to clipboard!' : 'Click to copy flag key'}
+      aria-label={isCopied ? `Copied flag key: ${flagKey}` : `Copy flag key: ${flagKey}`}
+      title={isCopied ? `Copied flag key: ${flagKey}` : `Copy flag key: ${flagKey}`}
     >
       {isCopied ? (
         <>
