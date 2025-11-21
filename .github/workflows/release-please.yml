@@ -43,8 +43,12 @@ jobs:
           TOOLBAR_INTERNAL_STREAM_URL: ${{ vars.TOOLBAR_INTERNAL_STREAM_URL }}
           TOOLBAR_INTERNAL_EVENTS_URL: ${{ vars.TOOLBAR_INTERNAL_EVENTS_URL }}
 
-      - uses: ./.github/actions/publish
-        if: ${{ fromJson(steps.release.outputs.releases_created) }}
-        with:
-          prerelease: ${{ contains(steps.release.outputs.tag_name, '-') }}
-          dry_run: 'false'
+      - name: Publish Package (prerelease)
+        if: ${{ fromJson(steps.release.outputs.releases_created) && contains(steps.release.outputs.tag_name, '-') }}
+        shell: bash
+        run: pnpm --filter @launchdarkly/toolbar publish --tag next --no-git-checks
+
+      - name: Publish Package (release)
+        if: ${{ fromJson(steps.release.outputs.releases_created) && !contains(steps.release.outputs.tag_name, '-') }}
+        shell: bash
+        run: pnpm --filter @launchdarkly/toolbar publish --no-git-checks
