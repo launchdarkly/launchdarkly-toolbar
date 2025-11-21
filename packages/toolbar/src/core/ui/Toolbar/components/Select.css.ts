@@ -71,12 +71,7 @@ export const iconOpen = style({
 });
 
 export const dropdown = style({
-  position: 'absolute',
-  top: '100%',
-  left: 0,
-  right: 0,
   zIndex: Z_INDEX.POPOVER,
-  marginTop: '2px',
   background: 'var(--lp-color-gray-900)',
   border: '1px solid var(--lp-color-gray-700)',
   borderRadius: '6px',

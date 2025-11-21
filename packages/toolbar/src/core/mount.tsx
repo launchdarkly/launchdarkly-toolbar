@@ -1,8 +1,7 @@
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { InitializationConfig } from '../types';
-
-const TOOLBAR_DOM_ID = 'ld-toolbar';
+import { TOOLBAR_DOM_ID } from '../types/constants';
 
 export default function mount(rootNode: HTMLElement, config: InitializationConfig) {
   const cleanup: (() => void)[] = [];
@@ -21,21 +20,26 @@ export default function mount(rootNode: HTMLElement, config: InitializationConfi
   // Dynamically import toolbar to capture style injection timing
   import('./ui/Toolbar/LaunchDarklyToolbar').then((module) => {
     const { LaunchDarklyToolbar } = module;
-    reactRoot.render(
-      <StrictMode>
-        <LaunchDarklyToolbar
-          domId={TOOLBAR_DOM_ID}
-          baseUrl={config.baseUrl}
-          authUrl={config.authUrl}
-          devServerUrl={config.devServerUrl}
-          projectKey={config.projectKey}
-          flagOverridePlugin={config.flagOverridePlugin}
-          eventInterceptionPlugin={config.eventInterceptionPlugin}
-          pollIntervalInMs={config.pollIntervalInMs}
-          position={config.position}
-        />
-      </StrictMode>,
-    );
+    import('./context/ReactMountContext').then((contextModule) => {
+      const ReactMountContext = contextModule.default;
+      reactRoot.render(
+        <StrictMode>
+          <ReactMountContext.Provider value={reactMount}>
+            <LaunchDarklyToolbar
+              domId={TOOLBAR_DOM_ID}
+              baseUrl={config.baseUrl}
+              authUrl={config.authUrl}
+              devServerUrl={config.devServerUrl}
+              projectKey={config.projectKey}
+              flagOverridePlugin={config.flagOverridePlugin}
+              eventInterceptionPlugin={config.eventInterceptionPlugin}
+              pollIntervalInMs={config.pollIntervalInMs}
+              position={config.position}
+            />
+          </ReactMountContext.Provider>
+        </StrictMode>,
+      );
+    });
   });
 
   cleanup.push(() => {
