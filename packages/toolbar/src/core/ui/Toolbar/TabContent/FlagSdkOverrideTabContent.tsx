@@ -6,7 +6,11 @@ import { ListItem } from '../../List/ListItem';
 import { useSearchContext, useAnalytics } from '../context';
 import { FlagSdkOverrideProvider, useFlagSdkOverrideContext } from '../context';
 import { GenericHelpText } from '../components/GenericHelpText';
-import { LocalBooleanFlagControl, LocalStringNumberFlagControl } from '../components/LocalFlagControls';
+import {
+  LocalBooleanFlagControl,
+  LocalMultivariateFlagControl,
+  LocalStringNumberFlagControl,
+} from '../components/LocalFlagControls';
 import { OverrideIndicator } from '../components/OverrideIndicator';
 import { StarButton } from '../components/StarButton';
 import { FlagKeyWithCopy } from '../components/FlagKeyWithCopy';
@@ -200,6 +204,9 @@ function FlagSdkOverrideTabContentInner(props: FlagSdkOverrideTabContentInnerPro
     switch (flag.type) {
       case 'boolean':
         return <LocalBooleanFlagControl flag={flag} onOverride={handleOverride} />;
+
+      case 'multivariate':
+        return <LocalMultivariateFlagControl flag={flag} onOverride={handleOverride} />;
 
       case 'string':
       case 'number':

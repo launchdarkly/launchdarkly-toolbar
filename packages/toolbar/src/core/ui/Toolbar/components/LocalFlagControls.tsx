@@ -7,6 +7,8 @@ import { enableShadowDOM } from '@react-stately/flags';
 import * as sharedStyles from './FlagControls.css';
 import * as styles from './LocalFlagControls.css';
 import { EnhancedFlag } from '../../../types/devServer';
+import { Select, SelectOption } from './Select';
+import { deepEqual } from '../../../utils/deepEqual';
 
 enableShadowDOM();
 
@@ -164,5 +166,42 @@ export function LocalObjectFlagControl(props: LocalObjectFlagControlProps) {
         )}
       </div>
     </div>
+  );
+}
+
+interface LocalMultivariateFlagControlProps {
+  flag: LocalFlag;
+  onOverride: (value: any) => void;
+  disabled?: boolean;
+}
+
+export function LocalMultivariateFlagControl(props: LocalMultivariateFlagControlProps) {
+  const { flag, onOverride, disabled = false } = props;
+  const currentVariation = flag.availableVariations.find((v) => deepEqual(v.value, flag.currentValue));
+
+  const options: SelectOption[] = flag.availableVariations.map((variation) => ({
+    id: variation._id,
+    label: variation.name,
+    value: variation.value,
+  }));
+
+  return (
+    <Select
+      selectedKey={currentVariation?._id || null}
+      onSelectionChange={(key) => {
+        if (key) {
+          const variation = flag.availableVariations.find((v) => v._id === key);
+          if (variation) {
+            onOverride(variation.value);
+          }
+        }
+      }}
+      aria-label="Select variant"
+      placeholder="Select variant"
+      data-theme="dark"
+      className={styles.select}
+      isDisabled={disabled}
+      options={options}
+    />
   );
 }
