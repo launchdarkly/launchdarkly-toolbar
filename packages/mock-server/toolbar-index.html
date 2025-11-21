@@ -47,7 +47,18 @@
 
           const { type, requestId } = event.data;
 
-          if (type === 'get-projects') {
+          if (type === 'logout') {
+            // Handle logout request
+            console.log('[Mock Auth] Processing logout request');
+            event.source.postMessage(
+              {
+                type: 'logout-success',
+                requestId: requestId,
+                timestamp: Date.now(),
+              },
+              event.origin,
+            );
+          } else if (type === 'get-projects') {
             // Return mock projects
             event.source.postMessage(
               {

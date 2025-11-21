@@ -18,6 +18,7 @@ const EVENTS = {
   FILTER_CHANGED: 'filter.changed',
   LOGIN_SUCCESS: 'login.success',
   LOGIN_CANCELLED: 'login.cancelled',
+  LOGOUT: 'logout',
   AUTH_ERROR: 'auth.error',
   API_ERROR: 'api.error',
 } as const;
@@ -192,6 +193,13 @@ export class ToolbarAnalytics {
    */
   trackLoginCancelled(): void {
     this.track(EVENTS.LOGIN_CANCELLED, {});
+  }
+
+  /**
+   * Track when user logs out
+   */
+  trackLogout(): void {
+    this.track(EVENTS.LOGOUT, {});
   }
 
   /**

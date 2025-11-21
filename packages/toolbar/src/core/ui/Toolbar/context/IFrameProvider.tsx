@@ -1,6 +1,7 @@
 import { createContext, RefObject, useContext, useMemo, useRef } from 'react';
 
 export const IFRAME_COMMANDS = {
+  LOGOUT: 'logout',
   GET_PROJECTS: 'get-projects',
   GET_FLAGS: 'get-flags',
   GET_FLAG: 'get-flag',
