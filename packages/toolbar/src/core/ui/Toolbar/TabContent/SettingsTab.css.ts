@@ -79,7 +79,7 @@ export const icon = style({
 
 export const select = style({
   background: 'transparent',
-  minWidth: '120px',
+  minWidth: '160px',
   maxWidth: '200px',
   flexShrink: 0,
 });
