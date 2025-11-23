@@ -235,6 +235,7 @@ export function SettingsTabContent(props: SettingsTabContentProps) {
   const handleProjectSwitch = async (projectKey: string) => {
     try {
       await switchProject(projectKey);
+      analytics.trackProjectSwitch(state.currentProjectKey || 'unknown', projectKey);
     } catch (error) {
       console.error('Failed to switch project:', error);
     }

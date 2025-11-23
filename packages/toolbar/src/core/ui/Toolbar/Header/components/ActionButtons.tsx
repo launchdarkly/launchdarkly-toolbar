@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'motion/react';
 import { IconButton } from '../../components/IconButton';
 import { SearchIcon, SyncIcon, ChevronDownIcon, ChevronUpIcon, PersonPassword } from '../../components/icons';
 import { useToolbarUIContext } from '../../context/ToolbarUIProvider';
+import { useAnalytics } from '../../context';
 
 import * as styles from '../Header.css';
 import { useAuthContext } from '../../context/AuthProvider';
@@ -31,6 +32,7 @@ export function ActionButtons(props: ActionButtonsProps) {
   const [rotationCount, setRotationCount] = useState(0);
   const { position } = useToolbarUIContext();
   const isTop = position.startsWith('top-');
+  const analytics = useAnalytics();
 
   const { authenticated, loading } = useAuthContext();
 
@@ -46,8 +48,9 @@ export function ActionButtons(props: ActionButtonsProps) {
       setIsSpinning(false);
     }, 1000);
 
+    analytics.trackRefresh();
     onRefresh();
-  }, [onRefresh, isSpinning]);
+  }, [onRefresh, isSpinning, analytics]);
 
   return (
     <div className={styles.rightSection}>
