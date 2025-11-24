@@ -75,7 +75,6 @@ export const ProjectProvider = ({ children, clientSideId, providedProjectKey }: 
 
     const environments = projects.find((project) => project.key === projectKey)?.environments;
     if (environments) {
-      console.log('environments', environments);
       setEnvironments(environments);
     }
   }, [projects, projectKey]);
