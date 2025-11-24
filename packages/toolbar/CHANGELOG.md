@@ -1,5 +1,18 @@
 # Changelog
 
+## [1.5.0](https://github.com/launchdarkly/launchdarkly-toolbar/compare/1.4.1...1.5.0) (2025-11-24)
+
+
+### Features
+
+* add analytics tracking for dev server mode ([#344](https://github.com/launchdarkly/launchdarkly-toolbar/issues/344)) ([d2b0922](https://github.com/launchdarkly/launchdarkly-toolbar/commit/d2b0922f0edd72688a41080ad5f7efd94cbbbba0))
+
+
+### Bug Fixes
+
+* prevent parent app keyboard shortcuts from interfering with tool… ([#343](https://github.com/launchdarkly/launchdarkly-toolbar/issues/343)) ([4ef47bc](https://github.com/launchdarkly/launchdarkly-toolbar/commit/4ef47bcc611e87fe42ed19efb80a1fd319c68b37))
+* prevent parent app keyboard shortcuts from interfering with toolbar inputs ([4ef47bc](https://github.com/launchdarkly/launchdarkly-toolbar/commit/4ef47bcc611e87fe42ed19efb80a1fd319c68b37))
+
 ## [1.4.1](https://github.com/launchdarkly/launchdarkly-toolbar/compare/1.4.0...1.4.1) (2025-11-21)
 
 
