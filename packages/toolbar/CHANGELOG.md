@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.6.0](https://github.com/launchdarkly/launchdarkly-toolbar/compare/1.5.0...1.6.0) (2025-11-24)
+
+
+### Features
+
+* REL-10583 - add feedback mechanism to settings tab ([#345](https://github.com/launchdarkly/launchdarkly-toolbar/issues/345)) ([3b99673](https://github.com/launchdarkly/launchdarkly-toolbar/commit/3b996730f9d5f4997577279ff8275892cf6f0ec6))
+
 ## [1.5.0](https://github.com/launchdarkly/launchdarkly-toolbar/compare/1.4.1...1.5.0) (2025-11-24)
 
 
