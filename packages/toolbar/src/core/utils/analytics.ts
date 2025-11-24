@@ -1,4 +1,5 @@
 import type { LDClient } from 'launchdarkly-js-client-sdk';
+import type { FeedbackSentiment } from '../../types/analytics';
 import { isDoNotTrackEnabled } from './browser';
 import { ToolbarMode } from '../ui/Toolbar/types';
 
@@ -19,6 +20,7 @@ const EVENTS = {
   FILTER_CHANGED: 'filter.changed',
   PROJECT_SWITCHED: 'project.switched',
   REFRESH: 'refresh',
+  FEEDBACK_SUBMITTED: 'feedback.submitted',
 } as const;
 
 /**
@@ -202,5 +204,15 @@ export class ToolbarAnalytics {
    */
   trackRefresh(): void {
     this.track(EVENTS.REFRESH, {});
+  }
+
+  /**
+   * Track user feedback
+   */
+  trackFeedback(feedback: string, sentiment: FeedbackSentiment): void {
+    this.track(EVENTS.FEEDBACK_SUBMITTED, {
+      sentiment,
+      comment: feedback,
+    });
   }
 }
