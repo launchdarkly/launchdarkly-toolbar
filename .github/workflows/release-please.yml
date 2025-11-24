@@ -46,9 +46,9 @@ jobs:
       - name: Publish Package (prerelease)
         if: ${{ fromJson(steps.release.outputs.releases_created) && contains(steps.release.outputs.tag_name, '-') }}
         shell: bash
-        run: pnpm --filter @launchdarkly/toolbar publish --tag next --no-git-checks
+        run: cd packages/toolbar && npm publish --tag next --no-git-checks
 
       - name: Publish Package (release)
         if: ${{ fromJson(steps.release.outputs.releases_created) && !contains(steps.release.outputs.tag_name, '-') }}
         shell: bash
-        run: pnpm --filter @launchdarkly/toolbar publish --no-git-checks
+        run: cd packages/toolbar && npm publish --no-git-checks
