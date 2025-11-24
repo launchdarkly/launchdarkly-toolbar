@@ -25,6 +25,7 @@ jobs:
         uses: actions/setup-node@2028fbc5c25fe9cf00d9f06a71cc4710d4507903 # v6.0.0
         with:
           node-version: '24'
+          registry-url: 'https://registry.npmjs.org'
 
       - name: Install npm
         if: ${{ fromJson(steps.release.outputs.releases_created) }}
@@ -43,8 +44,14 @@ jobs:
           TOOLBAR_INTERNAL_STREAM_URL: ${{ vars.TOOLBAR_INTERNAL_STREAM_URL }}
           TOOLBAR_INTERNAL_EVENTS_URL: ${{ vars.TOOLBAR_INTERNAL_EVENTS_URL }}
 
-      - uses: ./.github/actions/publish
-        if: ${{ fromJson(steps.release.outputs.releases_created) }}
-        with:
-          prerelease: ${{ contains(steps.release.outputs.tag_name, '-') }}
-          dry_run: 'false'
+      - name: Publish Package (prerelease)
+        if: ${{ fromJson(steps.release.outputs.releases_created) && contains(steps.release.outputs.tag_name, '-') }}
+        shell: bash
+        working-directory: ./packages/toolbar
+        run: npm publish --provenance --tag next
+
+      - name: Publish Package (release)
+        if: ${{ fromJson(steps.release.outputs.releases_created) && !contains(steps.release.outputs.tag_name, '-') }}
+        shell: bash
+        working-directory: ./packages/toolbar
+        run: npm publish --provenance
