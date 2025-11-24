@@ -9,8 +9,10 @@ import { StatusDot } from '../components/StatusDot';
 import { GenericHelpText } from '../components/GenericHelpText';
 import { TOOLBAR_POSITIONS, type ToolbarPosition, type ToolbarMode } from '../types/toolbar';
 import { Select, SelectOption } from '../components/Select';
+import { Feedback } from '../components/Feedback/Feedback';
 
 import * as styles from './SettingsTab.css';
+import type { FeedbackSentiment } from '../../../../types/analytics';
 
 interface SettingsItem {
   id: string;
@@ -247,6 +249,10 @@ export function SettingsTabContent(props: SettingsTabContentProps) {
     handlePositionChange(newPosition);
   };
 
+  const handleFeedbackSubmit = (feedback: string, sentiment: FeedbackSentiment) => {
+    analytics.trackFeedback(feedback, sentiment);
+  };
+
   // Settings data based on mode
   const getSettingsGroups = (): SettingsGroup[] => {
     if (mode === 'dev-server') {
@@ -436,6 +442,9 @@ export function SettingsTabContent(props: SettingsTabContentProps) {
           </div>
         );
       })}
+      <div className={styles.settingsGroup}>
+        <Feedback onSubmit={handleFeedbackSubmit} />
+      </div>
     </div>
   );
 }
