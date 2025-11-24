@@ -1,5 +1,6 @@
 import type { LDClient } from 'launchdarkly-js-client-sdk';
 import { isDoNotTrackEnabled } from './browser';
+import { ToolbarMode } from '../ui/Toolbar/types';
 
 export const ANALYTICS_EVENT_PREFIX = 'ld.toolbar';
 
@@ -16,6 +17,8 @@ const EVENTS = {
   RELOAD_ON_FLAG_CHANGE_TOGGLE: 'reload.on.flag.change.toggle',
   STAR_FLAG: 'star.flag',
   FILTER_CHANGED: 'filter.changed',
+  PROJECT_SWITCHED: 'project.switched',
+  REFRESH: 'refresh',
 } as const;
 
 /**
@@ -23,11 +26,13 @@ const EVENTS = {
  */
 export class ToolbarAnalytics {
   private ldClient: LDClient | null = null;
+  private mode: ToolbarMode | null = null;
   // Timer id for debouncing search tracking
   private searchDebounceTimer: ReturnType<typeof setTimeout> | null = null;
 
-  constructor(ldClient?: LDClient | null) {
+  constructor(ldClient?: LDClient | null, mode?: ToolbarMode) {
     this.ldClient = ldClient || null;
+    this.mode = mode || null;
   }
 
   /**
@@ -45,8 +50,14 @@ export class ToolbarAnalytics {
       return;
     }
 
+    // Include these properties in all tracked events
+    const enrichedProperties = {
+      ...properties,
+      mode: this.mode,
+    };
+
     try {
-      this.ldClient.track(fullEventName, properties);
+      this.ldClient.track(fullEventName, enrichedProperties);
     } catch (error) {
       console.error('ToolbarAnalytics: Failed to track event:', fullEventName, error);
     }
@@ -174,5 +185,22 @@ export class ToolbarAnalytics {
     this.track(EVENTS.RELOAD_ON_FLAG_CHANGE_TOGGLE, {
       enabled,
     });
+  }
+
+  /**
+   * Track project switching in dev server mode
+   */
+  trackProjectSwitch(fromProject: string, toProject: string): void {
+    this.track(EVENTS.PROJECT_SWITCHED, {
+      fromProject,
+      toProject,
+    });
+  }
+
+  /**
+   * Track refresh button clicks in dev server mode
+   */
+  trackRefresh(): void {
+    this.track(EVENTS.REFRESH, {});
   }
 }
