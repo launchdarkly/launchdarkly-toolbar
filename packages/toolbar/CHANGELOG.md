@@ -1,5 +1,22 @@
 # Changelog
 
+## [2.0.0](https://github.com/launchdarkly/launchdarkly-toolbar/compare/1.6.0...2.0.0) (2025-11-24)
+
+
+### ⚠ BREAKING CHANGES
+
+* [REL-10665] display flag names via API ([#309](https://github.com/launchdarkly/launchdarkly-toolbar/issues/309))
+
+### Features
+
+* [REL-10665] display flag names via API ([#309](https://github.com/launchdarkly/launchdarkly-toolbar/issues/309)) ([6f3af66](https://github.com/launchdarkly/launchdarkly-toolbar/commit/6f3af66fb0760af9466d7d309dbc44315b7710d8))
+* improve DevServerMode api call logic ([6f3af66](https://github.com/launchdarkly/launchdarkly-toolbar/commit/6f3af66fb0760af9466d7d309dbc44315b7710d8))
+
+
+### Bug Fixes
+
+* remove provenance flag from npm publish command ([#350](https://github.com/launchdarkly/launchdarkly-toolbar/issues/350)) ([668bc27](https://github.com/launchdarkly/launchdarkly-toolbar/commit/668bc27560d187420920202302e3776c4105a5ec))
+
 ## [1.6.0](https://github.com/launchdarkly/launchdarkly-toolbar/compare/1.5.0...1.6.0) (2025-11-24)
 
 
