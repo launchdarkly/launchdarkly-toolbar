@@ -118,4 +118,5 @@ export const flagLinkContainer = style({
 export const flagListItemBlock = style({
   display: 'block',
   position: 'relative',
+  minHeight: '100%',
 });

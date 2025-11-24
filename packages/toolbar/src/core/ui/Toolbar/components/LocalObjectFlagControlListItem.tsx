@@ -91,85 +91,84 @@ export function LocalObjectFlagControlListItem(props: LocalObjectFlagControlList
             <OverrideIndicator onClear={() => handleClearOverride(flag.key)} />
           </div>
         )}
-        <div className={styles.listItemColumn}>
-          <div className={styles.listItemRow}>
-            <div className={sharedStyles.flagHeader}>
-              <span className={sharedStyles.flagName}>
-                <span className={styles.flagNameText} data-testid={`flag-name-${flag.key}`}>
-                  {flag.name}
-                </span>
+        <div className={styles.flagContentWrapper}>
+          <div className={sharedStyles.flagHeader}>
+            <span className={sharedStyles.flagName}>
+              <span className={styles.flagNameText} data-testid={`flag-name-${flag.key}`}>
+                {flag.name}
               </span>
-              <FlagKeyWithCopy flagKey={flag.key} className={sharedStyles.flagKey} />
-              <a
-                href={`https://app.launchdarkly.com/projects/${projectKey}/flags/${flag.key}?env=${environment}&selectedEnv=${environment}`}
-                target="_blank"
-                className={sharedStyles.flagLinkContainer}
-              >
-                <span>Open in LaunchDarkly</span>
-                <ExternalLinkIcon size="small" />
-              </a>
-            </div>
-            <div className={sharedStyles.flagOptions}>
-              <LocalObjectFlagControl
-                flag={flag}
-                isEditing={isEditing}
-                handleEdit={handleEdit}
-                handleConfirm={handleConfirm}
-                handleCancel={handleCancel}
-                onOverride={() => handleOverride(flag.key, tempValue)}
-                hasErrors={hasErrors}
-              />
-              <StarButton flagKey={flag.key} isStarred={isStarred(flag.key)} onToggle={toggleStarred} />
-            </div>
+            </span>
+            <FlagKeyWithCopy flagKey={flag.key} className={sharedStyles.flagKey} />
+            <a
+              href={`https://app.launchdarkly.com/projects/${projectKey}/flags/${flag.key}?env=${environment}&selectedEnv=${environment}`}
+              target="_blank"
+              className={sharedStyles.flagLinkContainer}
+            >
+              <span>Open in LaunchDarkly</span>
+              <ExternalLinkIcon size="small" />
+            </a>
           </div>
 
-          <AnimatePresence data-testid={`json-editor-${flag.key}`} mode="wait">
-            {isEditing && (
-              <motion.div
-                key={`json-editor-${flag.key}`}
-                initial={{
-                  opacity: 0,
-                  height: 0,
-                  y: -10,
-                }}
-                animate={{
-                  opacity: 1,
-                  height: 'auto',
-                  y: 0,
-                }}
-                exit={{
-                  opacity: 0,
-                  height: 0,
-                  y: -10,
-                }}
-                transition={{
-                  duration: 0.25,
-                  ease: EASING.smooth,
-                  height: {
-                    duration: 0.3,
-                    ease: EASING.smooth,
-                  },
-                }}
-                style={{
-                  overflow: 'hidden',
-                }}
-              >
-                <JsonEditor
-                  docString={tempValue}
-                  onChange={handleValueChange}
-                  onLintErrors={handleLintErrors}
-                  data-testid={`flag-input-${flag.key}`}
-                  editorId={`json-editor-${flag.key}`}
-                  initialState={{
-                    startCursorAtLine: 0,
-                    autoFocus: true,
-                  }}
-                  onEditorHeightChange={handleEditorHeightChange}
-                />
-              </motion.div>
-            )}
-          </AnimatePresence>
+          <div className={sharedStyles.flagOptions}>
+            <LocalObjectFlagControl
+              flag={flag}
+              isEditing={isEditing}
+              handleEdit={handleEdit}
+              handleConfirm={handleConfirm}
+              handleCancel={handleCancel}
+              onOverride={() => handleOverride(flag.key, tempValue)}
+              hasErrors={hasErrors}
+            />
+            <StarButton flagKey={flag.key} isStarred={isStarred(flag.key)} onToggle={toggleStarred} />
+          </div>
         </div>
+
+        <AnimatePresence data-testid={`json-editor-${flag.key}`} mode="wait">
+          {isEditing && (
+            <motion.div
+              key={`json-editor-${flag.key}`}
+              initial={{
+                opacity: 0,
+                height: 0,
+                y: -10,
+              }}
+              animate={{
+                opacity: 1,
+                height: 'auto',
+                y: 0,
+              }}
+              exit={{
+                opacity: 0,
+                height: 0,
+                y: -10,
+              }}
+              transition={{
+                duration: 0.25,
+                ease: EASING.smooth,
+                height: {
+                  duration: 0.3,
+                  ease: EASING.smooth,
+                },
+              }}
+              style={{
+                overflow: 'hidden',
+              }}
+            >
+              <JsonEditor
+                docString={tempValue}
+                onChange={handleValueChange}
+                onLintErrors={handleLintErrors}
+                data-testid={`flag-input-${flag.key}`}
+                editorId={`json-editor-${flag.key}`}
+                initialState={{
+                  startCursorAtLine: 0,
+                  autoFocus: true,
+                }}
+                onEditorHeightChange={handleEditorHeightChange}
+              />
+            </motion.div>
+          )}
+        </AnimatePresence>
       </ListItem>
     </div>
   );
