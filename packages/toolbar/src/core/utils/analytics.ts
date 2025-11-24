@@ -18,6 +18,11 @@ const EVENTS = {
   RELOAD_ON_FLAG_CHANGE_TOGGLE: 'reload.on.flag.change.toggle',
   STAR_FLAG: 'star.flag',
   FILTER_CHANGED: 'filter.changed',
+  LOGIN_SUCCESS: 'login.success',
+  LOGIN_CANCELLED: 'login.cancelled',
+  LOGOUT: 'logout',
+  AUTH_ERROR: 'auth.error',
+  API_ERROR: 'api.error',
   PROJECT_SWITCHED: 'project.switched',
   REFRESH: 'refresh',
   FEEDBACK_SUBMITTED: 'feedback.submitted',
@@ -190,12 +195,51 @@ export class ToolbarAnalytics {
   }
 
   /**
+   * Track successful login
+   */
+  trackLoginSuccess(): void {
+    this.track(EVENTS.LOGIN_SUCCESS, {});
+  }
+
+  /**
+   * Track when user closes the login screen without logging in
+   */
+  trackLoginCancelled(): void {
+    this.track(EVENTS.LOGIN_CANCELLED, {});
+  }
+
+  /**
+   * Track when user logs out
+   */
+  trackLogout(): void {
+    this.track(EVENTS.LOGOUT, {});
+  }
+
+  /**
+   * Track authentication errors
+   */
+  trackAuthError(error: unknown): void {
+    this.track(EVENTS.AUTH_ERROR, {
+      error: error instanceof Error ? error.message : String(error),
+    });
+  }
+
+  /**
    * Track project switching in dev server mode
    */
   trackProjectSwitch(fromProject: string, toProject: string): void {
     this.track(EVENTS.PROJECT_SWITCHED, {
       fromProject,
       toProject,
+    });
+  }
+
+  /**
+   * Track API errors
+   */
+  trackApiError(error: unknown): void {
+    this.track(EVENTS.API_ERROR, {
+      error: error instanceof Error ? error.message : String(error),
     });
   }
 

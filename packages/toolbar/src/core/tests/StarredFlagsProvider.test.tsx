@@ -1,8 +1,9 @@
 import { render, screen, fireEvent } from '@testing-library/react';
 import { expect, test, describe, vi, beforeEach } from 'vitest';
-
 import { StarredFlagsProvider, useStarredFlags } from '../ui/Toolbar/context/StarredFlagsProvider';
 import { TOOLBAR_STORAGE_KEYS } from '../ui/Toolbar/utils/localStorage';
+import '@testing-library/jest-dom/vitest';
+import React from 'react';
 
 // Test component that consumes the context
 function TestConsumer() {

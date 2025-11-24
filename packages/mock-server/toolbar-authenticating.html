@@ -1,0 +1,74 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Authenticating...</title>
+    <style>
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 100vh;
+        margin: 0;
+        background: #f5f5f5;
+      }
+      .loader {
+        text-align: center;
+      }
+      .spinner {
+        border: 4px solid #f3f3f3;
+        border-top: 4px solid #405bff;
+        border-radius: 50%;
+        width: 40px;
+        height: 40px;
+        animation: spin 1s linear infinite;
+        margin: 0 auto 20px;
+      }
+      @keyframes spin {
+        0% {
+          transform: rotate(0deg);
+        }
+        100% {
+          transform: rotate(360deg);
+        }
+      }
+      h2 {
+        color: #333;
+        font-size: 18px;
+        font-weight: 500;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="loader">
+      <div class="spinner"></div>
+      <h2>Authenticating with LaunchDarkly...</h2>
+      <p style="color: #666; font-size: 14px">This is a mock authentication page for testing.</p>
+    </div>
+    <script>
+      (function () {
+        // In a real scenario, this page would show while authentication happens
+        // For mocking, we'll just wait a moment then send authenticated message
+        setTimeout(function () {
+          const originUrl = new URLSearchParams(window.location.search).get('originUrl');
+          const targetOrigin = originUrl || '*';
+
+          const message = {
+            type: 'toolbar-authenticated',
+            timestamp: Date.now(),
+          };
+
+          if (window.parent && window.parent !== window) {
+            window.parent.postMessage(message, targetOrigin);
+          }
+
+          if (window.opener) {
+            window.opener.postMessage(message, targetOrigin);
+            window.close();
+          }
+        }, 1000);
+      })();
+    </script>
+  </body>
+</html>

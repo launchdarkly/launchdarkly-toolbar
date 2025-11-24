@@ -1,10 +1,11 @@
-import { Switch } from '@launchpad-ui/components';
+import { Button, Switch } from '@launchpad-ui/components';
 import { List } from '../../List/List';
 import { ListItem } from '../../List/ListItem';
 import { useSearchContext } from '../context/SearchProvider';
 import { useDevServerContext } from '../context/DevServerProvider';
 import { useToolbarUIContext } from '../context/ToolbarUIProvider';
 import { useAnalytics } from '../context/AnalyticsProvider';
+import { useAuthContext } from '../context/AuthProvider';
 import { StatusDot } from '../components/StatusDot';
 import { GenericHelpText } from '../components/GenericHelpText';
 import { TOOLBAR_POSITIONS, type ToolbarPosition, type ToolbarMode } from '../types/toolbar';
@@ -12,6 +13,8 @@ import { Select, SelectOption } from '../components/Select';
 import { Feedback } from '../components/Feedback/Feedback';
 
 import * as styles from './SettingsTab.css';
+import { useProjectContext } from '../context/ProjectProvider';
+import { useEffect, useMemo } from 'react';
 import type { FeedbackSentiment } from '../../../../types/analytics';
 
 interface SettingsItem {
@@ -24,7 +27,7 @@ interface SettingsItem {
   isConnectionStatus?: boolean;
   isReloadOnFlagChangeToggle?: boolean;
   isAutoCollapseToggle?: boolean;
-  isOptInToNewFeaturesToggle?: boolean;
+  isLogoutButton?: boolean;
   value?: string;
 }
 
@@ -33,37 +36,40 @@ interface SettingsGroup {
   items: SettingsItem[];
 }
 
-interface ProjectSelectorProps {
-  availableProjects: string[];
-  currentProject: string | null;
-  onProjectChange: (projectKey: string) => void;
-  isLoading: boolean;
-}
+function ProjectSelector() {
+  const { projectKey, setProjectKey, projects, loading, getProjects } = useProjectContext();
+  const analytics = useAnalytics();
 
-function ProjectSelector(props: ProjectSelectorProps) {
-  const { availableProjects, currentProject, onProjectChange, isLoading } = props;
+  useEffect(() => {
+    if (projects.length === 0) {
+      getProjects();
+    }
+  }, [projects]);
+
+  const projectOptions = useMemo(() => {
+    return projects.map((project) => ({
+      id: project.key,
+      label: project.name,
+    }));
+  }, [projects]);
 
   const handleProjectSelect = (key: string | null) => {
-    if (key && key !== currentProject && !isLoading) {
-      onProjectChange(key);
+    if (key && key !== projectKey && !loading) {
+      analytics.trackProjectSwitch(projectKey, key);
+      setProjectKey(key);
     }
   };
 
-  const options: SelectOption[] = availableProjects.map((projectKey) => ({
-    id: projectKey,
-    label: projectKey,
-  }));
-
   return (
     <Select
-      selectedKey={currentProject}
+      selectedKey={projectKey}
       onSelectionChange={handleProjectSelect}
       aria-label="Select project"
       placeholder="Select project"
       data-theme="dark"
       className={styles.select}
-      isDisabled={isLoading}
-      options={options}
+      isDisabled={loading}
+      options={projectOptions}
     />
   );
 }
@@ -167,26 +173,6 @@ function ReloadOnFlagChangeToggle(props: ReloadOnFlagChangeToggleProps) {
   );
 }
 
-interface OptInToNewFeaturesToggleProps {
-  optInToNewFeatures: boolean;
-  onToggleOptInToNewFeatures: () => void;
-}
-
-function OptInToNewFeaturesToggle(props: OptInToNewFeaturesToggleProps) {
-  const { optInToNewFeatures, onToggleOptInToNewFeatures } = props;
-
-  return (
-    <Switch
-      data-testid="opt-in-to-new-features-toggle"
-      className={styles.switch_}
-      data-theme="dark"
-      isSelected={optInToNewFeatures}
-      onChange={onToggleOptInToNewFeatures}
-      aria-label="Opt in to new features"
-    />
-  );
-}
-
 function ConnectionStatusDisplay(props: ConnectionStatusDisplayProps) {
   const { status } = props;
 
@@ -215,38 +201,27 @@ interface SettingsTabContentProps {
   onToggleReloadOnFlagChange: () => void;
   isAutoCollapseEnabled: boolean;
   onToggleAutoCollapse: () => void;
-  optInToNewFeatures: boolean;
-  onToggleOptInToNewFeatures: () => void;
 }
 
 export function SettingsTabContent(props: SettingsTabContentProps) {
-  const {
-    mode,
-    reloadOnFlagChangeIsEnabled,
-    onToggleReloadOnFlagChange,
-    isAutoCollapseEnabled,
-    onToggleAutoCollapse,
-    optInToNewFeatures,
-    onToggleOptInToNewFeatures,
-  } = props;
-  const { state, switchProject } = useDevServerContext();
+  const { mode, reloadOnFlagChangeIsEnabled, onToggleReloadOnFlagChange, isAutoCollapseEnabled, onToggleAutoCollapse } =
+    props;
+  const { state } = useDevServerContext();
   const { position, handlePositionChange } = useToolbarUIContext();
   const { searchTerm } = useSearchContext();
   const analytics = useAnalytics();
-
-  const handleProjectSwitch = async (projectKey: string) => {
-    try {
-      await switchProject(projectKey);
-      analytics.trackProjectSwitch(state.currentProjectKey || 'unknown', projectKey);
-    } catch (error) {
-      console.error('Failed to switch project:', error);
-    }
-  };
+  const { logout } = useAuthContext();
 
   const handlePositionSelect = (newPosition: ToolbarPosition) => {
     // Track position change
     analytics.trackPositionChange(position, newPosition, 'settings');
     handlePositionChange(newPosition);
+  };
+
+  const handleLogout = () => {
+    // Track logout
+    analytics.trackLogout();
+    logout();
   };
 
   const handleFeedbackSubmit = (feedback: string, sentiment: FeedbackSentiment) => {
@@ -302,11 +277,17 @@ export function SettingsTabContent(props: SettingsTabContentProps) {
               icon: 'refresh',
               isReloadOnFlagChangeToggle: true,
             },
+          ],
+        },
+        {
+          title: 'Account',
+          items: [
             {
-              id: 'opt-in-to-new-features',
-              name: 'Opt in to new features',
-              icon: '',
-              isOptInToNewFeaturesToggle: true,
+              id: 'logout',
+              name: 'Log out',
+              description: 'Sign the Toolbar out of LaunchDarkly',
+              icon: 'logout',
+              isLogoutButton: true,
             },
           ],
         },
@@ -317,6 +298,12 @@ export function SettingsTabContent(props: SettingsTabContentProps) {
         {
           title: 'Toolbar Settings',
           items: [
+            {
+              id: 'project',
+              name: 'Project',
+              icon: 'folder',
+              isProjectSelector: true,
+            },
             {
               id: 'position',
               name: 'Position',
@@ -336,11 +323,17 @@ export function SettingsTabContent(props: SettingsTabContentProps) {
               icon: 'refresh',
               isReloadOnFlagChangeToggle: true,
             },
+          ],
+        },
+        {
+          title: 'Account',
+          items: [
             {
-              id: 'opt-in-to-new-features',
-              name: 'Opt in to new features',
-              icon: '',
-              isOptInToNewFeaturesToggle: true,
+              id: 'logout',
+              name: 'Log out',
+              description: 'Sign the Toolbar out of LaunchDarkly',
+              icon: 'logout',
+              isLogoutButton: true,
             },
           ],
         },
@@ -400,6 +393,22 @@ export function SettingsTabContent(props: SettingsTabContentProps) {
                     );
                   }
 
+                  if (item.isLogoutButton) {
+                    return (
+                      <ListItem key={item.id}>
+                        <div className={styles.settingInfo}>
+                          <div className={styles.settingDetails}>
+                            <span className={styles.settingName}>{item.name}</span>
+                            {item.description && <span className={styles.settingDescription}>{item.description}</span>}
+                          </div>
+                          <Button aria-label="Log out" data-testid="logout-button" onClick={handleLogout}>
+                            Log out
+                          </Button>
+                        </div>
+                      </ListItem>
+                    );
+                  }
+
                   return (
                     <ListItem key={item.id}>
                       <div className={styles.settingInfo}>
@@ -408,12 +417,7 @@ export function SettingsTabContent(props: SettingsTabContentProps) {
                           {item.description && <span className={styles.settingDescription}>{item.description}</span>}
                         </div>
                         {item.isProjectSelector ? (
-                          <ProjectSelector
-                            availableProjects={state.availableProjects}
-                            currentProject={state.currentProjectKey}
-                            onProjectChange={handleProjectSwitch}
-                            isLoading={state.isLoading}
-                          />
+                          <ProjectSelector />
                         ) : item.isPositionSelector ? (
                           <PositionSelector currentPosition={position} onPositionChange={handlePositionSelect} />
                         ) : item.isAutoCollapseToggle ? (
@@ -425,11 +429,6 @@ export function SettingsTabContent(props: SettingsTabContentProps) {
                           <ReloadOnFlagChangeToggle
                             reloadOnFlagChangeIsEnabled={reloadOnFlagChangeIsEnabled}
                             onToggleReloadOnFlagChange={onToggleReloadOnFlagChange}
-                          />
-                        ) : item.isOptInToNewFeaturesToggle ? (
-                          <OptInToNewFeaturesToggle
-                            optInToNewFeatures={optInToNewFeatures}
-                            onToggleOptInToNewFeatures={onToggleOptInToNewFeatures}
                           />
                         ) : (
                           <span className={styles.settingValue}>{item.value}</span>

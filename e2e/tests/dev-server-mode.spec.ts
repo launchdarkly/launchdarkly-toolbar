@@ -51,6 +51,15 @@ test.describe('LaunchDarkly Toolbar - Dev Server Mode', () => {
     await page.goto('/dev-server');
     await page.waitForSelector('[data-testid="launchdarkly-toolbar"]');
     await expect(page.getByText('LaunchDarkly Toolbar Demo (dev server mode)')).toBeVisible();
+
+    // Wait for authentication to complete (login screen should not be visible)
+    await page.waitForFunction(
+      () => {
+        const loginScreen = document.querySelector('[data-testid="login-screen"]');
+        return !loginScreen;
+      },
+      { timeout: 10000 },
+    );
   });
 
   test.describe('Dev Server Integration', () => {
@@ -94,10 +103,8 @@ test.describe('LaunchDarkly Toolbar - Dev Server Mode', () => {
       // Verify numeric flag display
       await expect(page.getByText('numeric-flag')).toBeVisible();
 
-      // Verify project and environment information
-      await page.getByRole('tab', { name: 'Settings' }).click();
-      await expect(page.getByRole('button', { name: `${TEST_PROJECT_KEY} Select project` })).toBeVisible();
-      await expect(page.getByText('test', { exact: true })).toBeVisible(); // sourceEnvironmentKey
+      // Verify other flags from mock data
+      await expect(page.getByText('test-flag-2')).toBeVisible();
     });
   });
 

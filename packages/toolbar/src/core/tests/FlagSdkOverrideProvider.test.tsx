@@ -1,8 +1,54 @@
 import { render, screen, act } from '@testing-library/react';
 import { expect, test, describe, vi, beforeEach } from 'vitest';
-
 import { FlagSdkOverrideProvider, useFlagSdkOverrideContext } from '../ui/Toolbar/context/FlagSdkOverrideProvider';
 import { IFlagOverridePlugin } from '../../types';
+import '@testing-library/jest-dom/vitest';
+import React from 'react';
+
+const API_FLAGS = [
+  {
+    key: 'feature-flag-1',
+    name: 'Feature Flag 1',
+  },
+  {
+    key: 'test-string-flag',
+    name: 'Test String Flag',
+  },
+  {
+    key: 'number-flag',
+    name: 'Number Flag',
+  },
+  {
+    key: 'object-flag',
+    name: 'Object Flag',
+  },
+  {
+    key: 'boolean-flag',
+    name: 'Boolean Flag',
+  },
+  {
+    key: 'string-flag',
+    name: 'String Flag',
+  },
+  {
+    key: 'dynamic-flag',
+    name: 'Dynamic Flag',
+  },
+  {
+    key: 'normal-flag',
+    name: 'Normal Flag',
+  },
+];
+
+// Mock the FlagsProvider
+vi.mock('../ui/Toolbar/context/FlagsProvider', () => ({
+  FlagsProvider: ({ children }: { children: React.ReactNode }) => <>{children}</>,
+  useFlagsContext: () => ({
+    flags: API_FLAGS,
+    loading: false,
+    getProjectFlags: vi.fn().mockResolvedValue([]),
+  }),
+}));
 
 // Test component that uses the context
 function TestConsumer() {
@@ -197,5 +243,39 @@ describe('FlagSdkOverrideProvider', () => {
     expect(screen.getByTestId('flag-string-flag')).toBeInTheDocument();
     expect(screen.getByTestId('flag-number-flag')).toBeInTheDocument();
     expect(screen.getByTestId('flag-object-flag')).toBeInTheDocument();
+  });
+
+  test('displays flags from LD client even when API flags are empty', async () => {
+    // Mock FlagsProvider to return empty flags (simulating API not loaded yet)
+    const emptyFlagsModule = await import('../ui/Toolbar/context/FlagsProvider');
+    vi.spyOn(emptyFlagsModule, 'useFlagsContext').mockReturnValue({
+      flags: [], // Empty API flags
+      loading: false,
+      getProjectFlags: vi.fn().mockResolvedValue([]),
+      resetFlags: vi.fn(),
+    });
+
+    // GIVEN: LD client has flags but API hasn't loaded
+    mockLdClient.allFlags.mockReturnValue({
+      'client-only-flag': true,
+      'another-flag': 'test-value',
+    });
+
+    // WHEN: Component is rendered
+    render(
+      <FlagSdkOverrideProvider flagOverridePlugin={mockFlagOverridePlugin}>
+        <TestConsumer />
+      </FlagSdkOverrideProvider>,
+    );
+
+    await act(async () => {
+      await new Promise((resolve) => setTimeout(resolve, 0));
+    });
+
+    // THEN: Flags from LD client are displayed with formatted names
+    expect(screen.getByTestId('flag-client-only-flag')).toBeInTheDocument();
+    expect(screen.getByTestId('flag-client-only-flag')).toHaveTextContent('Client Only Flag: true (original)');
+    expect(screen.getByTestId('flag-another-flag')).toBeInTheDocument();
+    expect(screen.getByTestId('flag-another-flag')).toHaveTextContent('Another Flag: test-value (original)');
   });
 });

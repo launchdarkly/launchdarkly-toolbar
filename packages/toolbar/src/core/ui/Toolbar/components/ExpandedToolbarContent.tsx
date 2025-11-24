@@ -1,4 +1,4 @@
-import React, { Dispatch, SetStateAction, useState } from 'react';
+import React, { Dispatch, SetStateAction } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 
 import { Header } from '../Header/Header';
@@ -8,11 +8,13 @@ import { TabContentRenderer } from './TabContentRenderer';
 import { ANIMATION_CONFIG, EASING } from '../constants';
 import { ActiveTabId, ToolbarMode, getTabsForMode, TAB_ORDER } from '../types';
 import { useDevServerContext } from '../context/DevServerProvider';
+import { useAuthContext } from '../context/AuthProvider';
+import { LoginScreen } from './LoginScreen';
+import { AuthenticationModal } from './AuthenticationModal';
 
 import * as styles from '../LaunchDarklyToolbar.css';
 import { GearIcon, SyncIcon, ToggleOffIcon } from './icons';
 import { ErrorMessage } from './ErrorMessage';
-import { AuthenticationModal } from './AuthenticationModal';
 import { FocusScope } from '@react-aria/focus';
 import { IEventInterceptionPlugin, IFlagOverridePlugin } from '../../../../types';
 
@@ -35,16 +37,6 @@ interface ExpandedToolbarContentProps {
   onHeaderMouseDown?: (event: React.MouseEvent) => void;
   reloadOnFlagChangeIsEnabled: boolean;
   onToggleReloadOnFlagChange: () => void;
-  optInToNewFeatures: boolean;
-  onToggleOptInToNewFeatures: () => void;
-}
-
-function getHeaderLabel(currentProjectKey: string | null, sourceEnvironmentKey: string | null) {
-  let label = '';
-  if (currentProjectKey && sourceEnvironmentKey) {
-    label = `${currentProjectKey} - ${sourceEnvironmentKey}`;
-  }
-  return label;
 }
 
 export const ExpandedToolbarContent = React.forwardRef<HTMLDivElement, ExpandedToolbarContentProps>((props, ref) => {
@@ -67,23 +59,44 @@ export const ExpandedToolbarContent = React.forwardRef<HTMLDivElement, ExpandedT
     onHeaderMouseDown,
     reloadOnFlagChangeIsEnabled,
     onToggleReloadOnFlagChange,
-    optInToNewFeatures,
-    onToggleOptInToNewFeatures,
   } = props;
 
-  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+  const { authenticated, authenticating } = useAuthContext();
   const { state } = useDevServerContext();
+  const [isAuthModalOpen, setIsAuthModalOpen] = React.useState(false);
 
-  const headerLabel = getHeaderLabel(state.currentProjectKey, state.sourceEnvironmentKey);
   const { error } = state;
 
   const availableTabs = getTabsForMode(mode, !!flagOverridePlugin, !!eventInterceptionPlugin);
 
-  const shouldShowError = error && mode === 'dev-server' && state.connectionStatus === 'error';
+  const shouldShowError =
+    error && mode === 'dev-server' && state.connectionStatus === 'error' && activeTab !== 'settings';
 
+  // Show login screen if not authenticated
+  if (!authenticated || authenticating) {
+    return (
+      <>
+        <AuthenticationModal isOpen={isAuthModalOpen} onClose={() => setIsAuthModalOpen(false)} />
+        <motion.div
+          ref={ref}
+          className={styles.toolbarContent}
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          exit={{ opacity: 0, scale: 0.95 }}
+          transition={ANIMATION_CONFIG.container}
+          tabIndex={-1}
+          style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+        >
+          <LoginScreen onClose={onClose} onLogin={() => setIsAuthModalOpen(true)} onMouseDown={onHeaderMouseDown} />
+        </motion.div>
+      </>
+    );
+  }
+
+  // Show normal toolbar content if authenticated
   return (
     <>
-      {optInToNewFeatures && <AuthenticationModal isOpen={isAuthModalOpen} onClose={() => setIsAuthModalOpen(false)} />}
+      <AuthenticationModal isOpen={isAuthModalOpen} onClose={() => setIsAuthModalOpen(false)} />
       <FocusScope restoreFocus>
         <motion.div
           ref={ref}
@@ -162,10 +175,8 @@ export const ExpandedToolbarContent = React.forwardRef<HTMLDivElement, ExpandedT
               onClose={onClose}
               searchIsExpanded={searchIsExpanded}
               setSearchIsExpanded={setSearchIsExpanded}
-              label={headerLabel}
               mode={mode}
               onMouseDown={onHeaderMouseDown}
-              onOpenConfig={() => setIsAuthModalOpen(true)}
             />
             {shouldShowError && <ErrorMessage error={error} />}
             {!shouldShowError && (
@@ -173,11 +184,7 @@ export const ExpandedToolbarContent = React.forwardRef<HTMLDivElement, ExpandedT
                 className={styles.scrollableContent}
                 initial={{ opacity: 0, y: -10 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{
-                  duration: 0.25,
-                  ease: EASING.smooth,
-                  delay: 0.05,
-                }}
+                transition={{ duration: 0.25, ease: EASING.smooth, delay: 0.05 }}
               >
                 <AnimatePresence mode="wait">
                   {activeTab && (
@@ -192,8 +199,6 @@ export const ExpandedToolbarContent = React.forwardRef<HTMLDivElement, ExpandedT
                       onToggleReloadOnFlagChange={onToggleReloadOnFlagChange}
                       isAutoCollapseEnabled={isAutoCollapseEnabled}
                       onToggleAutoCollapse={onToggleAutoCollapse}
-                      optInToNewFeatures={optInToNewFeatures}
-                      onToggleOptInToNewFeatures={onToggleOptInToNewFeatures}
                     />
                   )}
                 </AnimatePresence>

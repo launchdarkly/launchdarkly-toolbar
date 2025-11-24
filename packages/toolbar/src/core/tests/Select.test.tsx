@@ -1,8 +1,9 @@
 import { describe, test, expect, vi, beforeEach } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { Select, SelectOption } from '../ui/Toolbar/components/Select';
-import ReactMountContext from '../context/ReactMountContext';
+import '@testing-library/jest-dom/vitest';
 import React from 'react';
+import ReactMountContext from '../context/ReactMountContext';
 import '@testing-library/jest-dom';
 
 // Test wrapper to provide ReactMountContext with proper portal target

@@ -2,6 +2,7 @@ import React from 'react';
 import { render, screen, fireEvent, waitFor, waitForElementToBeRemoved } from '@testing-library/react';
 import { expect, test, describe, vi, beforeEach } from 'vitest';
 import { LaunchDarklyToolbar } from '../ui/Toolbar/LaunchDarklyToolbar';
+import '@testing-library/jest-dom/vitest';
 
 // Mock the DevServerClient to avoid actual network calls in tests
 vi.mock('../services/DevServerClient', () => {
@@ -38,6 +39,26 @@ vi.mock('../services/FlagStateManager', () => {
     FlagStateManager: MockFlagStateManager,
   };
 });
+
+// Mock the AuthProvider to return authenticated state
+vi.mock('../ui/Toolbar/context/AuthProvider', () => ({
+  AuthProvider: ({ children }: { children: React.ReactNode }) => <>{children}</>,
+  useAuthContext: () => ({
+    authenticated: true,
+    authenticating: false,
+    loading: false,
+    setAuthenticating: vi.fn(),
+  }),
+}));
+
+// Mock the IFrameProvider
+vi.mock('../ui/Toolbar/context/IFrameProvider', () => ({
+  IFrameProvider: ({ children }: { children: React.ReactNode }) => <>{children}</>,
+  useIFrameContext: () => ({
+    ref: { current: null },
+    iframeSrc: 'https://integrations.launchdarkly.com',
+  }),
+}));
 
 describe('LaunchDarklyToolbar - User Flows', () => {
   beforeEach(() => {

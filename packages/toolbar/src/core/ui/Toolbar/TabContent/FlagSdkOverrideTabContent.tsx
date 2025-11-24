@@ -1,4 +1,4 @@
-import { useRef, useState, useMemo, useCallback } from 'react';
+import { useState, useMemo, useCallback, useRef } from 'react';
 import { useVirtualizer } from '@tanstack/react-virtual';
 import { motion } from 'motion/react';
 import { List } from '../../List/List';
@@ -36,7 +36,10 @@ function FlagSdkOverrideTabContentInner(props: FlagSdkOverrideTabContentInnerPro
   const { flags, isLoading } = useFlagSdkOverrideContext();
   const { isStarred, toggleStarred, clearAllStarred, starredCount } = useStarredFlags();
   const [activeFilters, setActiveFilters] = useState<Set<FlagFilterMode>>(new Set([FILTER_MODES.ALL]));
-  const parentRef = useRef<HTMLDivElement>(null);
+
+  // Ref for scroll container
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const getScrollElement = useCallback(() => scrollContainerRef.current, []);
 
   const handleFilterToggle = useCallback(
     (filter: FlagFilterMode) => {
@@ -116,7 +119,7 @@ function FlagSdkOverrideTabContentInner(props: FlagSdkOverrideTabContentInnerPro
 
   const virtualizer = useVirtualizer({
     count: filteredFlags.length,
-    getScrollElement: () => parentRef.current,
+    getScrollElement,
     estimateSize: () => VIRTUALIZATION.ITEM_HEIGHT,
     overscan: VIRTUALIZATION.OVERSCAN,
   });
@@ -253,7 +256,7 @@ function FlagSdkOverrideTabContentInner(props: FlagSdkOverrideTabContentInnerPro
           {filteredFlags.length === 0 && (searchTerm.trim() || !activeFilters.has(FILTER_MODES.ALL)) ? (
             <GenericHelpText title={genericHelpTitle} subtitle={genericHelpSubtitle} />
           ) : (
-            <div ref={parentRef} className={sharedStyles.virtualContainer}>
+            <div ref={scrollContainerRef} className={sharedStyles.virtualContainer}>
               <List>
                 <div
                   className={sharedStyles.virtualInner}
