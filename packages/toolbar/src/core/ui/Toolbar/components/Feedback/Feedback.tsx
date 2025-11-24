@@ -11,11 +11,12 @@ interface FeedbackProps {
 }
 
 export function Feedback(props: FeedbackProps) {
-  const { onSubmit, title = 'Help us improve' } = props;
+  const { onSubmit, title = "How's your experience?" } = props;
   const [sentiment, setSentiment] = useState<FeedbackSentiment | null>(null);
   const [comment, setComment] = useState('');
   const [isSubmitted, setIsSubmitted] = useState(false);
   const resetTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const submitButtonRef = useRef<HTMLDivElement | null>(null);
 
   const handleSentimentClick = (newSentiment: FeedbackSentiment) => {
     if (isSubmitted) return;
@@ -44,6 +45,22 @@ export function Feedback(props: FeedbackProps) {
       }
     };
   }, []);
+
+  // Scroll submit button into view when comment form appears
+  useEffect(() => {
+    if (sentiment && !isSubmitted && submitButtonRef.current) {
+      const scrollTimeout = setTimeout(() => {
+        if (submitButtonRef.current && typeof submitButtonRef.current.scrollIntoView === 'function') {
+          submitButtonRef.current.scrollIntoView({
+            behavior: 'smooth',
+            block: 'center',
+          });
+        }
+      }, 100);
+
+      return () => clearTimeout(scrollTimeout);
+    }
+  }, [sentiment, isSubmitted]);
 
   return (
     <div className={styles.feedbackContainer}>
@@ -94,9 +111,11 @@ export function Feedback(props: FeedbackProps) {
                 rows={3}
               />
             </TextField>
-            <Button className={styles.submitButton} onClick={handleSubmit} variant="primary">
-              Send Feedback
-            </Button>
+            <div ref={submitButtonRef}>
+              <Button className={styles.submitButton} onClick={handleSubmit} variant="primary">
+                Send Feedback
+              </Button>
+            </div>
           </motion.div>
         )}
       </AnimatePresence>
