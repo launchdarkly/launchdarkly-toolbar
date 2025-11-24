@@ -25,6 +25,7 @@ jobs:
         uses: actions/setup-node@2028fbc5c25fe9cf00d9f06a71cc4710d4507903 # v6.0.0
         with:
           node-version: '24'
+          registry-url: 'https://registry.npmjs.org'
 
       - name: Install npm
         if: ${{ fromJson(steps.release.outputs.releases_created) }}
@@ -46,9 +47,11 @@ jobs:
       - name: Publish Package (prerelease)
         if: ${{ fromJson(steps.release.outputs.releases_created) && contains(steps.release.outputs.tag_name, '-') }}
         shell: bash
-        run: pnpm --filter @launchdarkly/toolbar publish --tag next --no-git-checks
+        working-directory: ./packages/toolbar
+        run: npm publish --provenance --tag next --access public
 
       - name: Publish Package (release)
         if: ${{ fromJson(steps.release.outputs.releases_created) && !contains(steps.release.outputs.tag_name, '-') }}
         shell: bash
-        run: pnpm --filter @launchdarkly/toolbar publish --no-git-checks
+        working-directory: ./packages/toolbar
+        run: npm publish --provenance --access public
