@@ -109,6 +109,10 @@ export function LocalStringNumberFlagControl(props: LocalStringNumberFlagControl
               onChange={(e) => setTempValue(e.target.value)}
               type={flag.type === 'number' ? 'number' : 'text'}
               data-testid={`flag-input-${flag.key}`}
+              onKeyDown={(e) => {
+                // Stop propagation to prevent parent app keyboard shortcuts from interfering
+                e.stopPropagation();
+              }}
             />
             <IconButton
               icon={<CheckIcon />}

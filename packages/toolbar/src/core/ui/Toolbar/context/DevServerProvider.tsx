@@ -44,6 +44,9 @@ export const DevServerProvider: FC<DevServerProviderProps> = ({ children, config
     };
   });
 
+  // Track the last sync timestamp from dev server to detect changes
+  const [lastDevServerSync, setLastDevServerSync] = useState<number>(0);
+
   const devServerClient = useMemo(() => {
     // Only create devServerClient if devServerUrl is provided (dev-server mode)
     if (config.devServerUrl) {
@@ -90,26 +93,45 @@ export const DevServerProvider: FC<DevServerProviderProps> = ({ children, config
   }, [flagStateManager, handleError]);
 
   // Helper: Load and sync flags from dev server and API
-  const syncFlags = useCallback(async () => {
-    if (!devServerClient || !flagStateManager || !projectKey) {
-      throw new Error('Dev server client, flag state manager, or project key not available');
-    }
+  // Only fetches from API if dev server data has changed (based on _lastSyncedFromSource timestamp)
+  // Set forceApiRefresh=true to always fetch from API (useful for manual refresh)
+  const syncFlags = useCallback(
+    async (forceApiRefresh = false) => {
+      if (!devServerClient || !flagStateManager || !projectKey) {
+        throw new Error('Dev server client, flag state manager, or project key not available');
+      }
 
-    const projectData = await devServerClient.getProjectData();
-    const apiFlags = await getProjectFlags(projectKey);
-    flagStateManager.setApiFlags(apiFlags.items);
-    const flags = await flagStateManager.getEnhancedFlags();
+      // Always fetch dev server data (lightweight, local)
+      const projectData = await devServerClient.getProjectData();
 
-    setToolbarState((prev) => ({
-      ...prev,
-      connectionStatus: 'connected',
-      flags,
-      sourceEnvironmentKey: projectData.sourceEnvironmentKey,
-      lastSyncTime: Date.now(),
-      error: null,
-      isLoading: false,
-    }));
-  }, [devServerClient, flagStateManager, projectKey, getProjectFlags]);
+      // Check if dev server data has changed since last sync
+      const devServerDataChanged = projectData._lastSyncedFromSource !== lastDevServerSync;
+
+      // Only fetch API flags if:
+      // 1. This is the first sync (lastDevServerSync === 0), OR
+      // 2. Dev server data has changed (_lastSyncedFromSource timestamp changed), OR
+      // 3. Force refresh is requested (manual refresh)
+      if (forceApiRefresh || lastDevServerSync === 0 || devServerDataChanged) {
+        const apiFlags = await getProjectFlags(projectKey);
+        flagStateManager.setApiFlags(apiFlags.items);
+        setLastDevServerSync(projectData._lastSyncedFromSource);
+      }
+
+      // Always update flags from dev server (includes overrides)
+      const flags = await flagStateManager.getEnhancedFlags();
+
+      setToolbarState((prev) => ({
+        ...prev,
+        connectionStatus: 'connected',
+        flags,
+        sourceEnvironmentKey: projectData.sourceEnvironmentKey,
+        lastSyncTime: Date.now(),
+        error: null,
+        isLoading: false,
+      }));
+    },
+    [devServerClient, flagStateManager, projectKey, getProjectFlags, lastDevServerSync],
+  );
 
   const initializeProjectSelection = useCallback(async () => {
     // Only initialize project selection in dev-server mode
@@ -198,10 +220,9 @@ export const DevServerProvider: FC<DevServerProviderProps> = ({ children, config
         // If no project key is set (initial connection failed), attempt recovery
         if (!projectKey) {
           await initializeProjectSelection();
-          const apiFlags = await getProjectFlags(projectKey);
-          flagStateManager.setApiFlags(apiFlags.items);
         }
 
+        // syncFlags will handle fetching API flags only if dev server data changed
         await syncFlags();
       } catch (error) {
         handleError(error);
@@ -291,7 +312,8 @@ export const DevServerProvider: FC<DevServerProviderProps> = ({ children, config
 
     try {
       setToolbarState((prev) => ({ ...prev, isLoading: true }));
-      await syncFlags();
+      // Force API refresh on manual refresh
+      await syncFlags(true);
     } catch (error) {
       handleError(error);
     }
