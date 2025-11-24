@@ -114,7 +114,7 @@ export function Feedback(props: FeedbackProps) {
             <div className={styles.successIcon}>
               <CheckIcon />
             </div>
-            <span>Thanks! Your feedback helps us improve the toolbar.</span>
+            <span>Thanks! Your feedback is valuable and will help us improve.</span>
           </motion.div>
         )}
       </AnimatePresence>
