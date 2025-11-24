@@ -49,13 +49,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setAuthenticated(false);
       setLoading(false);
       throw new Error(event.data.error);
-    } else if (event.data.type === getResponseTopic(IFRAME_COMMANDS.LOGOUT)) {
-      setAuthenticated(false);
-      setLoading(false);
-    } else if (event.data.type === getErrorTopic(IFRAME_COMMANDS.LOGOUT)) {
-      setAuthenticated(false);
-      setLoading(false);
-      throw new Error(event.data.error);
     }
   }, []);
 

@@ -10,10 +10,12 @@ import { StatusDot } from '../components/StatusDot';
 import { GenericHelpText } from '../components/GenericHelpText';
 import { TOOLBAR_POSITIONS, type ToolbarPosition, type ToolbarMode } from '../types/toolbar';
 import { Select, SelectOption } from '../components/Select';
+import { Feedback } from '../components/Feedback/Feedback';
 
 import * as styles from './SettingsTab.css';
 import { useProjectContext } from '../context/ProjectProvider';
 import { useEffect, useMemo } from 'react';
+import type { FeedbackSentiment } from '../../../../types/analytics';
 
 interface SettingsItem {
   id: string;
@@ -36,6 +38,7 @@ interface SettingsGroup {
 
 function ProjectSelector() {
   const { projectKey, setProjectKey, projects, loading, getProjects } = useProjectContext();
+  const analytics = useAnalytics();
 
   useEffect(() => {
     if (projects.length === 0) {
@@ -52,6 +55,7 @@ function ProjectSelector() {
 
   const handleProjectSelect = (key: string | null) => {
     if (key && key !== projectKey && !loading) {
+      analytics.trackProjectSwitch(projectKey, key);
       setProjectKey(key);
     }
   };
@@ -218,6 +222,10 @@ export function SettingsTabContent(props: SettingsTabContentProps) {
     // Track logout
     analytics.trackLogout();
     logout();
+  };
+
+  const handleFeedbackSubmit = (feedback: string, sentiment: FeedbackSentiment) => {
+    analytics.trackFeedback(feedback, sentiment);
   };
 
   // Settings data based on mode
@@ -433,6 +441,9 @@ export function SettingsTabContent(props: SettingsTabContentProps) {
           </div>
         );
       })}
+      <div className={styles.settingsGroup}>
+        <Feedback onSubmit={handleFeedbackSubmit} />
+      </div>
     </div>
   );
 }

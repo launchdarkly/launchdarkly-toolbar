@@ -255,7 +255,7 @@ export function LaunchDarklyToolbar(props: LaunchDarklyToolbarProps) {
         streamUrl={internalClientConfig.streamUrl}
         eventsUrl={internalClientConfig.eventsUrl}
       >
-        <AnalyticsProvider>
+        <AnalyticsProvider mode={mode}>
           <IFrameProvider authUrl={authUrl}>
             <AuthProvider>
               <SearchProvider>

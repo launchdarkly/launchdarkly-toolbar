@@ -120,6 +120,10 @@ export function JsonEditor(props: JsonEditorProps) {
       onBlur={(e) => {
         onBlur?.(e, codeEditor?.contentDOM.textContent ?? '');
       }}
+      onKeyDown={(e) => {
+        // Stop propagation to prevent parent app keyboard shortcuts from interfering
+        e.stopPropagation();
+      }}
       ref={containerRef}
     />
   );
