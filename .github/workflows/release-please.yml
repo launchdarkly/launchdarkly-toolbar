@@ -48,10 +48,10 @@ jobs:
         if: ${{ fromJson(steps.release.outputs.releases_created) && contains(steps.release.outputs.tag_name, '-') }}
         shell: bash
         working-directory: ./packages/toolbar
-        run: npm publish --tag next
+        run: npm publish --provenance --tag next
 
       - name: Publish Package (release)
         if: ${{ fromJson(steps.release.outputs.releases_created) && !contains(steps.release.outputs.tag_name, '-') }}
         shell: bash
         working-directory: ./packages/toolbar
-        run: npm publish
+        run: npm publish --provenance
