@@ -1,6 +1,7 @@
 import { createContext, useContext, useEffect, useMemo, useRef } from 'react';
-import type { LDClient } from 'launchdarkly-js-client-sdk';
 import { ToolbarAnalytics } from '../../../utils/analytics';
+import { useInternalClient } from './InternalClientProvider';
+import { ToolbarMode } from '../types';
 
 interface AnalyticsContextValue {
   analytics: ToolbarAnalytics;
@@ -10,20 +11,24 @@ const AnalyticsContext = createContext<AnalyticsContextValue | null>(null);
 
 interface AnalyticsProviderProps {
   children: React.ReactNode;
-  ldClient?: LDClient | null;
+  mode?: ToolbarMode;
 }
 
-export function AnalyticsProvider({ children, ldClient }: AnalyticsProviderProps) {
-  const analytics = useMemo(() => new ToolbarAnalytics(ldClient), [ldClient]);
-  const hasInitialized = useRef(false);
+export function AnalyticsProvider({ children, mode }: AnalyticsProviderProps) {
+  const { client: internalClient, loading } = useInternalClient();
+  const analytics = useMemo(() => new ToolbarAnalytics(internalClient, mode), [internalClient, mode]);
+  const prevClientRef = useRef<typeof internalClient>(null);
 
-  // Track initialization once (prevent duplicates during development)
+  // Track initialization once when the client transitions from null to initialized
   useEffect(() => {
-    if (!hasInitialized.current) {
+    const internalClientIsReady = !prevClientRef.current && internalClient && !loading;
+
+    if (internalClientIsReady) {
       analytics.trackInitialization();
-      hasInitialized.current = true;
     }
-  }, [analytics]);
+
+    prevClientRef.current = internalClient;
+  }, [analytics, loading, internalClient]);
 
   return <AnalyticsContext.Provider value={{ analytics }}>{children}</AnalyticsContext.Provider>;
 }

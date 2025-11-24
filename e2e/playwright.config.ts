@@ -46,10 +46,24 @@ export default defineConfig({
   ],
 
   /* Run your local dev server before starting the tests */
-  webServer: {
-    command: 'pnpm demo & pnpm dev:server',
-    url: 'http://localhost:5173',
-    reuseExistingServer: !process.env.CI,
-    timeout: 120 * 1000,
-  },
+  webServer: [
+    {
+      // Demo app defaults to http://localhost:9090 for authUrl
+      command: 'pnpm demo',
+      url: 'http://localhost:5173',
+      env: {
+        VITE_LD_AUTH_URL: 'http://localhost:9090',
+        VITE_LD_DEV_SERVER_PROJECT_KEY: 'test-project',
+      },
+      reuseExistingServer: !process.env.CI,
+      timeout: 120 * 1000,
+    },
+    {
+      // Mock auth server on port 9090
+      command: 'pnpm dev:server',
+      url: 'http://localhost:9090/health',
+      reuseExistingServer: !process.env.CI,
+      timeout: 30 * 1000,
+    },
+  ],
 });

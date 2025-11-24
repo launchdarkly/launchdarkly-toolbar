@@ -5,7 +5,7 @@ import { LogoSection, EnvironmentLabel, SearchSection, ActionButtons } from './c
 import { useDevServerContext } from '../context/DevServerProvider';
 import { ConnectionStatus } from '../components';
 import { ToolbarMode } from '../types/toolbar';
-import { useAnalytics } from '../context';
+import { useProjectContext } from '../context/ProjectProvider';
 
 export interface HeaderProps {
   searchTerm: string;
@@ -13,29 +13,25 @@ export interface HeaderProps {
   onClose: () => void;
   searchIsExpanded: boolean;
   setSearchIsExpanded: Dispatch<SetStateAction<boolean>>;
-  label: string;
   mode: ToolbarMode;
   onMouseDown?: (event: React.MouseEvent) => void;
+  onOpenConfig?: () => void;
 }
 
 export function Header(props: HeaderProps) {
-  const { onClose, onSearch, searchTerm, searchIsExpanded, setSearchIsExpanded, label, mode, onMouseDown } = props;
+  const { onClose, onSearch, searchTerm, searchIsExpanded, setSearchIsExpanded, mode, onMouseDown, onOpenConfig } =
+    props;
 
   const { state, refresh } = useDevServerContext();
   const { connectionStatus } = state;
   const isConnected = connectionStatus === 'connected';
-  const analytics = useAnalytics();
 
   const isDevServer = mode === 'dev-server';
-  const showEnvironment = isDevServer && isConnected;
   const showSearch = isDevServer ? isConnected : true;
   const showRefresh = isDevServer;
   const showConnectionStatus = isDevServer;
 
-  const handleSearch = (term: string) => {
-    onSearch(term);
-    analytics.trackSearch(term);
-  };
+  const { projectKey, loading: loadingProjectKey } = useProjectContext();
 
   return (
     <>
@@ -43,10 +39,10 @@ export function Header(props: HeaderProps) {
         <LogoSection onMouseDown={onMouseDown} />
 
         <div className={styles.centerSection}>
-          {(showEnvironment || showSearch) && (
+          {(projectKey || showSearch) && (
             <AnimatePresence mode="wait">
               {!searchIsExpanded ? (
-                showEnvironment ? (
+                projectKey || loadingProjectKey ? (
                   <motion.div
                     key="environment"
                     className={styles.environmentWrapper}
@@ -55,7 +51,7 @@ export function Header(props: HeaderProps) {
                     exit={{ opacity: 0, scale: 0.9 }}
                     transition={{ duration: 0.2 }}
                   >
-                    <EnvironmentLabel label={label} />
+                    <EnvironmentLabel label={loadingProjectKey ? 'Loading Project...' : projectKey} />
                   </motion.div>
                 ) : null
               ) : (
@@ -69,7 +65,7 @@ export function Header(props: HeaderProps) {
                 >
                   <SearchSection
                     searchTerm={searchTerm}
-                    onSearch={handleSearch}
+                    onSearch={onSearch}
                     setSearchIsExpanded={setSearchIsExpanded}
                   />
                 </motion.div>
@@ -83,6 +79,7 @@ export function Header(props: HeaderProps) {
           setSearchIsExpanded={setSearchIsExpanded}
           onClose={onClose}
           onRefresh={refresh}
+          onOpenConfig={onOpenConfig}
           showSearchButton={showSearch}
           showRefreshButton={showRefresh}
         />

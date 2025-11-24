@@ -19,10 +19,13 @@ export function SDKMode() {
 
   useLaunchDarklyToolbar({
     toolbarBundleUrl: import.meta.env.DEV ? 'http://localhost:8080/toolbar.min.js' : undefined,
+    baseUrl: import.meta.env.VITE_LD_BASE_URL,
+    authUrl: import.meta.env.VITE_LD_AUTH_URL,
     enabled: true,
     flagOverridePlugin,
     eventInterceptionPlugin,
     position: 'bottom-right',
+    clientSideId: import.meta.env.VITE_LD_CLIENT_SIDE_ID,
   });
 
   if (!LDProvider) {

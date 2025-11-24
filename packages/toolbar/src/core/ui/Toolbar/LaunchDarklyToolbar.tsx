@@ -1,7 +1,15 @@
 import { AnimatePresence, motion } from 'motion/react';
-import { useCallback, useRef } from 'react';
+import { useCallback, useMemo, useRef, useEffect } from 'react';
 
-import { SearchProvider, useSearchContext, AnalyticsProvider, useAnalytics } from './context';
+import {
+  SearchProvider,
+  useSearchContext,
+  AnalyticsProvider,
+  useAnalytics,
+  StarredFlagsProvider,
+  ActiveTabProvider,
+  useActiveTabContext,
+} from './context';
 import { CircleLogo, ExpandedToolbarContent } from './components';
 import { useToolbarAnimations, useToolbarVisibility, useToolbarDrag, useToolbarState } from './hooks';
 import { ToolbarUIProvider, useToolbarUIContext } from './context';
@@ -10,6 +18,13 @@ import { ToolbarMode, ToolbarPosition, getToolbarMode, getDefaultActiveTab } fro
 import * as styles from './LaunchDarklyToolbar.css';
 import { DevServerProvider } from './context';
 import { IEventInterceptionPlugin, IFlagOverridePlugin } from '../../../types';
+import { AuthProvider } from './context/AuthProvider';
+import { ApiProvider } from './context/ApiProvider';
+import { IFrameProvider } from './context/IFrameProvider';
+import { ProjectProvider } from './context/ProjectProvider';
+import { FlagsProvider } from './context/FlagsProvider';
+import { AuthenticationModal } from './components/AuthenticationModal';
+import { InternalClientProvider } from './context/InternalClientProvider';
 
 export interface LdToolbarProps {
   mode: ToolbarMode;
@@ -24,15 +39,15 @@ export function LdToolbar(props: LdToolbarProps) {
   const { searchTerm } = useSearchContext();
   const { position, handlePositionChange } = useToolbarUIContext();
   const analytics = useAnalytics();
+  const { activeTab, setActiveTab } = useActiveTabContext();
 
   const defaultActiveTab = getDefaultActiveTab(mode, !!flagOverridePlugin, !!eventInterceptionPlugin);
 
-  const toolbarState = useToolbarState({ defaultActiveTab, domId });
+  const toolbarState = useToolbarState({ domId });
   const circleButtonRef = useRef<HTMLButtonElement>(null);
   const expandedContentRef = useRef<HTMLDivElement>(null);
 
   const {
-    activeTab,
     slideDirection,
     searchIsExpanded,
     isExpanded,
@@ -103,6 +118,12 @@ export function LdToolbar(props: LdToolbarProps) {
     onExpandComplete: focusExpandedToolbar,
     onCollapseComplete: focusCollapsedToolbar,
   });
+
+  useEffect(() => {
+    if (!activeTab) {
+      setActiveTab(defaultActiveTab);
+    }
+  }, [activeTab, setActiveTab, defaultActiveTab]);
 
   // Prevent clicks from expanding toolbar if user was dragging
   const handleCircleClickWithDragCheck = useCallback(() => {
@@ -175,24 +196,28 @@ export function LdToolbar(props: LdToolbarProps) {
           />
         )}
       </AnimatePresence>
+      <AuthenticationModal isOpen={false} onClose={() => {}} />
     </motion.div>
   );
 }
 
 export interface LaunchDarklyToolbarProps {
   baseUrl?: string; // Optional - will default to https://app.launchdarkly.com
+  authUrl?: string; // Optional - will default to https://integrations.launchdarkly.com
   devServerUrl?: string; // Optional - will default to dev server mode if provided
-  projectKey?: string; // Optional - will auto-detect first available project if not provided
+  projectKey?: string; // Optional - will auto-detect the first available project if this and clientSideId are not provided
   flagOverridePlugin?: IFlagOverridePlugin; // Optional - for flag override functionality
   eventInterceptionPlugin?: IEventInterceptionPlugin; // Optional - for event tracking
   pollIntervalInMs?: number; // Optional - will default to 5000ms
   position?: ToolbarPosition; // Optional - will default to 'bottom-right'
   domId: string;
+  clientSideId?: string; // Optional - will auto-detect the first available project if this and projectKey are not provided
 }
 
 export function LaunchDarklyToolbar(props: LaunchDarklyToolbarProps) {
   const {
     baseUrl = 'https://app.launchdarkly.com',
+    authUrl = 'https://integrations.launchdarkly.com',
     projectKey,
     position,
     devServerUrl,
@@ -200,7 +225,19 @@ export function LaunchDarklyToolbar(props: LaunchDarklyToolbarProps) {
     flagOverridePlugin,
     eventInterceptionPlugin,
     domId,
+    clientSideId,
   } = props;
+
+  const internalClientConfig = useMemo(
+    () => ({
+      clientSideId: import.meta.env.TOOLBAR_INTERNAL_CLIENT_ID,
+      baseUrl: import.meta.env.TOOLBAR_INTERNAL_BASE_URL,
+      streamUrl: import.meta.env.TOOLBAR_INTERNAL_STREAM_URL,
+      eventsUrl: import.meta.env.TOOLBAR_INTERNAL_EVENTS_URL,
+    }),
+    [],
+  );
+
   const isVisible = useToolbarVisibility();
 
   // Don't render anything if visibility check fails
@@ -212,25 +249,46 @@ export function LaunchDarklyToolbar(props: LaunchDarklyToolbarProps) {
 
   return (
     <ToolbarUIProvider initialPosition={position}>
-      <DevServerProvider
-        config={{
-          projectKey,
-          devServerUrl,
-          pollIntervalInMs,
-        }}
+      <InternalClientProvider
+        clientSideId={internalClientConfig.clientSideId}
+        baseUrl={internalClientConfig.baseUrl}
+        streamUrl={internalClientConfig.streamUrl}
+        eventsUrl={internalClientConfig.eventsUrl}
       >
-        <AnalyticsProvider ldClient={flagOverridePlugin?.getClient() ?? eventInterceptionPlugin?.getClient()}>
-          <SearchProvider>
-            <LdToolbar
-              domId={domId}
-              mode={mode}
-              baseUrl={baseUrl}
-              flagOverridePlugin={flagOverridePlugin}
-              eventInterceptionPlugin={eventInterceptionPlugin}
-            />
-          </SearchProvider>
+        <AnalyticsProvider mode={mode}>
+          <IFrameProvider authUrl={authUrl}>
+            <AuthProvider>
+              <SearchProvider>
+                <ApiProvider>
+                  <ProjectProvider clientSideId={clientSideId} providedProjectKey={projectKey}>
+                    <ActiveTabProvider>
+                      <FlagsProvider>
+                        <DevServerProvider
+                          config={{
+                            projectKey,
+                            devServerUrl,
+                            pollIntervalInMs,
+                          }}
+                        >
+                          <StarredFlagsProvider>
+                            <LdToolbar
+                              domId={domId}
+                              mode={mode}
+                              baseUrl={baseUrl}
+                              flagOverridePlugin={flagOverridePlugin}
+                              eventInterceptionPlugin={eventInterceptionPlugin}
+                            />
+                          </StarredFlagsProvider>
+                        </DevServerProvider>
+                      </FlagsProvider>
+                    </ActiveTabProvider>
+                  </ProjectProvider>
+                </ApiProvider>
+              </SearchProvider>
+            </AuthProvider>
+          </IFrameProvider>
         </AnalyticsProvider>
-      </DevServerProvider>
+      </InternalClientProvider>
     </ToolbarUIProvider>
   );
 }

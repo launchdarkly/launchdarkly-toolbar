@@ -9,16 +9,15 @@ import {
   loadReloadOnFlagChange,
   saveReloadOnFlagChange,
 } from '../utils/localStorage';
+import { useActiveTabContext } from '../context/ActiveTabProvider';
 
 export interface UseToolbarStateProps {
-  defaultActiveTab: ActiveTabId;
   domId: string;
 }
 
 export interface UseToolbarStateReturn {
   // State values
   isExpanded: boolean;
-  activeTab: ActiveTabId;
   previousTab: ActiveTabId;
   isAnimating: boolean;
   searchIsExpanded: boolean;
@@ -42,18 +41,16 @@ export interface UseToolbarStateReturn {
 }
 
 export function useToolbarState(props: UseToolbarStateProps): UseToolbarStateReturn {
-  const { defaultActiveTab, domId } = props;
+  const { domId } = props;
   const { setSearchTerm } = useSearchContext();
   const analytics = useAnalytics();
-
+  const { activeTab, setActiveTab } = useActiveTabContext();
   const [isExpanded, setIsExpanded] = useState(false);
-  const [activeTab, setActiveTab] = useState<ActiveTabId>();
   const [previousTab, setPreviousTab] = useState<ActiveTabId>();
   const [isAnimating, setIsAnimating] = useState(false);
   const [searchIsExpanded, setSearchIsExpanded] = useState(false);
   const [reloadOnFlagChangeIsEnabled, enableReloadOnFlagChange] = useState(() => loadReloadOnFlagChange());
   const [isAutoCollapseEnabled, setAutoCollapse] = useState(() => loadToolbarAutoCollapse());
-
   // Refs
   const hasBeenExpandedRef = useRef(false);
   const toolbarRef = useRef<HTMLDivElement | null>(null);
@@ -131,13 +128,9 @@ export function useToolbarState(props: UseToolbarStateProps): UseToolbarStateRet
 
   const handleCircleClick = useCallback(() => {
     if (!isExpanded) {
-      // Only set default tab if no tab is currently selected
-      if (!activeTab) {
-        setActiveTab(defaultActiveTab);
-      }
       setIsExpanded(true);
     }
-  }, [isExpanded, activeTab, defaultActiveTab]);
+  }, [isExpanded]);
 
   // Update hasBeenExpanded ref when toolbar shows
   useEffect(() => {
@@ -175,7 +168,6 @@ export function useToolbarState(props: UseToolbarStateProps): UseToolbarStateRet
   return {
     // State values
     isExpanded,
-    activeTab,
     previousTab,
     isAnimating,
     searchIsExpanded,

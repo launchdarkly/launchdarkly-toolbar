@@ -1,17 +1,21 @@
-import { Button, ListBox, Popover, Select, SelectValue, ListBoxItem, Switch } from '@launchpad-ui/components';
+import { Button, Switch } from '@launchpad-ui/components';
 import { List } from '../../List/List';
 import { ListItem } from '../../List/ListItem';
 import { useSearchContext } from '../context/SearchProvider';
 import { useDevServerContext } from '../context/DevServerProvider';
 import { useToolbarUIContext } from '../context/ToolbarUIProvider';
 import { useAnalytics } from '../context/AnalyticsProvider';
+import { useAuthContext } from '../context/AuthProvider';
 import { StatusDot } from '../components/StatusDot';
 import { GenericHelpText } from '../components/GenericHelpText';
-import { ChevronDownIcon } from '../components/icons';
 import { TOOLBAR_POSITIONS, type ToolbarPosition, type ToolbarMode } from '../types/toolbar';
+import { Select, SelectOption } from '../components/Select';
+import { Feedback } from '../components/Feedback/Feedback';
 
 import * as styles from './SettingsTab.css';
-import * as popoverStyles from '../components/Popover.css';
+import { useProjectContext } from '../context/ProjectProvider';
+import { useEffect, useMemo } from 'react';
+import type { FeedbackSentiment } from '../../../../types/analytics';
 
 interface SettingsItem {
   id: string;
@@ -23,6 +27,7 @@ interface SettingsItem {
   isConnectionStatus?: boolean;
   isReloadOnFlagChangeToggle?: boolean;
   isAutoCollapseToggle?: boolean;
+  isLogoutButton?: boolean;
   value?: string;
 }
 
@@ -31,49 +36,41 @@ interface SettingsGroup {
   items: SettingsItem[];
 }
 
-interface ProjectSelectorProps {
-  availableProjects: string[];
-  currentProject: string | null;
-  onProjectChange: (projectKey: string) => void;
-  isLoading: boolean;
-}
+function ProjectSelector() {
+  const { projectKey, setProjectKey, projects, loading, getProjects } = useProjectContext();
+  const analytics = useAnalytics();
 
-function ProjectSelector(props: ProjectSelectorProps) {
-  const { availableProjects, currentProject, onProjectChange, isLoading } = props;
+  useEffect(() => {
+    if (projects.length === 0) {
+      getProjects();
+    }
+  }, [projects]);
 
-  const handleProjectSelect = (key: React.Key | null) => {
-    if (key && typeof key === 'string') {
-      const projectKey = key;
-      if (projectKey !== currentProject && !isLoading) {
-        onProjectChange(projectKey);
-      }
+  const projectOptions = useMemo(() => {
+    return projects.map((project) => ({
+      id: project.key,
+      label: project.name,
+    }));
+  }, [projects]);
+
+  const handleProjectSelect = (key: string | null) => {
+    if (key && key !== projectKey && !loading) {
+      analytics.trackProjectSwitch(projectKey, key);
+      setProjectKey(key);
     }
   };
 
   return (
     <Select
-      selectedKey={currentProject}
+      selectedKey={projectKey}
       onSelectionChange={handleProjectSelect}
       aria-label="Select project"
       placeholder="Select project"
       data-theme="dark"
       className={styles.select}
-      isDisabled={isLoading}
-    >
-      <Button>
-        <SelectValue />
-        <ChevronDownIcon className={styles.icon} />
-      </Button>
-      <Popover data-theme="dark" className={popoverStyles.popover}>
-        <ListBox>
-          {availableProjects.map((projectKey) => (
-            <ListBoxItem id={projectKey} key={projectKey}>
-              {projectKey}
-            </ListBoxItem>
-          ))}
-        </ListBox>
-      </Popover>
-    </Select>
+      isDisabled={loading}
+      options={projectOptions}
+    />
   );
 }
 
@@ -93,14 +90,17 @@ function PositionSelector(props: PositionSelectorProps) {
       .join(' ');
   }
 
-  const handlePositionSelect = (key: React.Key | null) => {
-    if (key && typeof key === 'string') {
+  const handlePositionSelect = (key: string | null) => {
+    if (key && key !== currentPosition) {
       const position = key as ToolbarPosition;
-      if (position !== currentPosition) {
-        onPositionChange(position);
-      }
+      onPositionChange(position);
     }
   };
+
+  const options: SelectOption[] = TOOLBAR_POSITIONS.map((position) => ({
+    id: position,
+    label: getPositionsDisplayName(position),
+  }));
 
   return (
     <Select
@@ -110,21 +110,8 @@ function PositionSelector(props: PositionSelectorProps) {
       placeholder="Select position"
       data-theme="dark"
       className={styles.select}
-    >
-      <Button>
-        <SelectValue />
-        <ChevronDownIcon className={styles.icon} />
-      </Button>
-      <Popover data-theme="dark" className={popoverStyles.popover}>
-        <ListBox>
-          {TOOLBAR_POSITIONS.map((position) => (
-            <ListBoxItem id={position} key={position}>
-              {getPositionsDisplayName(position)}
-            </ListBoxItem>
-          ))}
-        </ListBox>
-      </Popover>
-    </Select>
+      options={options}
+    />
   );
 }
 
@@ -219,23 +206,26 @@ interface SettingsTabContentProps {
 export function SettingsTabContent(props: SettingsTabContentProps) {
   const { mode, reloadOnFlagChangeIsEnabled, onToggleReloadOnFlagChange, isAutoCollapseEnabled, onToggleAutoCollapse } =
     props;
-  const { state, switchProject } = useDevServerContext();
+  const { state } = useDevServerContext();
   const { position, handlePositionChange } = useToolbarUIContext();
   const { searchTerm } = useSearchContext();
   const analytics = useAnalytics();
-
-  const handleProjectSwitch = async (projectKey: string) => {
-    try {
-      await switchProject(projectKey);
-    } catch (error) {
-      console.error('Failed to switch project:', error);
-    }
-  };
+  const { logout } = useAuthContext();
 
   const handlePositionSelect = (newPosition: ToolbarPosition) => {
     // Track position change
     analytics.trackPositionChange(position, newPosition, 'settings');
     handlePositionChange(newPosition);
+  };
+
+  const handleLogout = () => {
+    // Track logout
+    analytics.trackLogout();
+    logout();
+  };
+
+  const handleFeedbackSubmit = (feedback: string, sentiment: FeedbackSentiment) => {
+    analytics.trackFeedback(feedback, sentiment);
   };
 
   // Settings data based on mode
@@ -289,6 +279,18 @@ export function SettingsTabContent(props: SettingsTabContentProps) {
             },
           ],
         },
+        {
+          title: 'Account',
+          items: [
+            {
+              id: 'logout',
+              name: 'Log out',
+              description: 'Sign the Toolbar out of LaunchDarkly',
+              icon: 'logout',
+              isLogoutButton: true,
+            },
+          ],
+        },
       ];
     } else {
       // SDK Mode
@@ -296,6 +298,12 @@ export function SettingsTabContent(props: SettingsTabContentProps) {
         {
           title: 'Toolbar Settings',
           items: [
+            {
+              id: 'project',
+              name: 'Project',
+              icon: 'folder',
+              isProjectSelector: true,
+            },
             {
               id: 'position',
               name: 'Position',
@@ -314,6 +322,18 @@ export function SettingsTabContent(props: SettingsTabContentProps) {
               name: 'Reload on flag change',
               icon: 'refresh',
               isReloadOnFlagChangeToggle: true,
+            },
+          ],
+        },
+        {
+          title: 'Account',
+          items: [
+            {
+              id: 'logout',
+              name: 'Log out',
+              description: 'Sign the Toolbar out of LaunchDarkly',
+              icon: 'logout',
+              isLogoutButton: true,
             },
           ],
         },
@@ -373,6 +393,22 @@ export function SettingsTabContent(props: SettingsTabContentProps) {
                     );
                   }
 
+                  if (item.isLogoutButton) {
+                    return (
+                      <ListItem key={item.id}>
+                        <div className={styles.settingInfo}>
+                          <div className={styles.settingDetails}>
+                            <span className={styles.settingName}>{item.name}</span>
+                            {item.description && <span className={styles.settingDescription}>{item.description}</span>}
+                          </div>
+                          <Button aria-label="Log out" data-testid="logout-button" onClick={handleLogout}>
+                            Log out
+                          </Button>
+                        </div>
+                      </ListItem>
+                    );
+                  }
+
                   return (
                     <ListItem key={item.id}>
                       <div className={styles.settingInfo}>
@@ -381,12 +417,7 @@ export function SettingsTabContent(props: SettingsTabContentProps) {
                           {item.description && <span className={styles.settingDescription}>{item.description}</span>}
                         </div>
                         {item.isProjectSelector ? (
-                          <ProjectSelector
-                            availableProjects={state.availableProjects}
-                            currentProject={state.currentProjectKey}
-                            onProjectChange={handleProjectSwitch}
-                            isLoading={state.isLoading}
-                          />
+                          <ProjectSelector />
                         ) : item.isPositionSelector ? (
                           <PositionSelector currentPosition={position} onPositionChange={handlePositionSelect} />
                         ) : item.isAutoCollapseToggle ? (
@@ -410,6 +441,9 @@ export function SettingsTabContent(props: SettingsTabContentProps) {
           </div>
         );
       })}
+      <div className={styles.settingsGroup}>
+        <Feedback onSubmit={handleFeedbackSubmit} />
+      </div>
     </div>
   );
 }

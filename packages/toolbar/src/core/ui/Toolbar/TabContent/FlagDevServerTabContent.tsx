@@ -1,19 +1,26 @@
-import { useRef, useState, useMemo, useCallback } from 'react';
+import { useState, useMemo, useCallback, useRef } from 'react';
 import { useVirtualizer } from '@tanstack/react-virtual';
 import { List } from '../../List/List';
 import { ListItem } from '../../List/ListItem';
 import { useSearchContext } from '../context/SearchProvider';
 import { useDevServerContext } from '../context/DevServerProvider';
+import { useAnalytics } from '../context';
 import { EnhancedFlag } from '../../../types/devServer';
 import { GenericHelpText } from '../components/GenericHelpText';
 import { BooleanFlagControl, MultivariateFlagControl, StringNumberFlagControl } from '../components/FlagControls';
 import { OverrideIndicator } from '../components/OverrideIndicator';
-import { ActionButtonsContainer } from '../components';
+import { StarButton } from '../components/StarButton';
+import { useStarredFlags } from '../context/StarredFlagsProvider';
+import {
+  type FlagFilterMode,
+  FlagFilterOptionsContext,
+  FILTER_MODES,
+} from '../components/FilterOptions/useFlagFilterOptions';
+import { FilterOptions } from '../components/FilterOptions/FilterOptions';
 import { VIRTUALIZATION } from '../constants';
+import { LocalObjectFlagControlListItem } from '../components/LocalObjectFlagControlListItem';
 
 import * as styles from './FlagDevServerTabContent.css';
-import * as actionStyles from '../components/ActionButtonsContainer.css';
-import { LocalObjectFlagControlListItem } from '../components/LocalObjectFlagControlListItem';
 
 interface FlagDevServerTabContentProps {
   reloadOnFlagChangeIsEnabled: boolean;
@@ -22,27 +29,76 @@ interface FlagDevServerTabContentProps {
 export function FlagDevServerTabContent(props: FlagDevServerTabContentProps) {
   const { reloadOnFlagChangeIsEnabled } = props;
   const { searchTerm } = useSearchContext();
+  const analytics = useAnalytics();
   const { state, setOverride, clearOverride, clearAllOverrides } = useDevServerContext();
   const { flags } = state;
+  const { isStarred, toggleStarred, clearAllStarred, starredCount } = useStarredFlags();
 
-  const [showOverriddenOnly, setShowOverriddenOnly] = useState(false);
-  const parentRef = useRef<HTMLDivElement>(null);
+  const [activeFilters, setActiveFilters] = useState<Set<FlagFilterMode>>(new Set([FILTER_MODES.ALL]));
+
+  // Ref for scroll container
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const getScrollElement = useCallback(() => scrollContainerRef.current, []);
+
+  const handleFilterToggle = useCallback(
+    (filter: FlagFilterMode) => {
+      setActiveFilters((prev) => {
+        // Clicking "All" resets to default state
+        if (filter === FILTER_MODES.ALL) {
+          analytics.trackFilterChange(FILTER_MODES.ALL, 'selected');
+          return new Set([FILTER_MODES.ALL]);
+        }
+
+        const next = new Set(prev);
+        next.delete(FILTER_MODES.ALL); // Remove "All" when selecting specific filters
+
+        // Toggle the selected filter
+        const wasActive = next.has(filter);
+        if (wasActive) {
+          next.delete(filter);
+          analytics.trackFilterChange(filter, 'deselected');
+        } else {
+          next.add(filter);
+          analytics.trackFilterChange(filter, 'selected');
+        }
+
+        // Default to "All" if no filters remain
+        if (next.size === 0) {
+          analytics.trackFilterChange(FILTER_MODES.ALL, 'selected');
+          return new Set([FILTER_MODES.ALL]);
+        }
+
+        return next;
+      });
+    },
+    [analytics],
+  );
 
   const flagEntries = Object.entries(flags);
-  const filteredFlags = flagEntries.filter(([flagKey, flag]) => {
-    // Apply search filter
-    const matchesSearch =
-      flag.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      flagKey.toLowerCase().includes(searchTerm.trim().toLowerCase());
+  const filteredFlags = useMemo(() => {
+    return flagEntries.filter(([flagKey, flag]) => {
+      // Apply search filter
+      const matchesSearch =
+        flag.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        flagKey.toLowerCase().includes(searchTerm.trim().toLowerCase());
 
-    // Apply override filter if enabled
-    const matchesOverrideFilter = showOverriddenOnly ? flag.isOverridden : true;
-    return matchesSearch && matchesOverrideFilter;
-  });
+      // Apply active filters (OR logic)
+      let matchesFilter = true;
+      if (activeFilters.has(FILTER_MODES.ALL)) {
+        matchesFilter = true;
+      } else {
+        matchesFilter =
+          (activeFilters.has(FILTER_MODES.OVERRIDES) && flag.isOverridden) ||
+          (activeFilters.has(FILTER_MODES.STARRED) && isStarred(flagKey));
+      }
+
+      return matchesSearch && matchesFilter;
+    });
+  }, [flagEntries, searchTerm, activeFilters, isStarred]);
 
   const virtualizer = useVirtualizer({
     count: filteredFlags.length,
-    getScrollElement: () => parentRef.current,
+    getScrollElement,
     estimateSize: () => VIRTUALIZATION.ITEM_HEIGHT,
     overscan: VIRTUALIZATION.OVERSCAN,
   });
@@ -54,6 +110,7 @@ export function FlagDevServerTabContent(props: FlagDevServerTabContentProps) {
 
   const handleSetOverride = (flagKey: string, value: any) => {
     setOverride(flagKey, value);
+    analytics.trackFlagOverride(flagKey, value, 'set');
 
     if (reloadOnFlagChangeIsEnabled) {
       window.location.reload();
@@ -80,25 +137,49 @@ export function FlagDevServerTabContent(props: FlagDevServerTabContentProps) {
   };
 
   const onRemoveAllOverrides = async () => {
+    const overrideCount = totalOverriddenFlags;
     await clearAllOverrides();
-    setShowOverriddenOnly(false);
+    analytics.trackFlagOverride('*', { count: overrideCount }, 'clear_all');
+    analytics.trackFilterChange(FILTER_MODES.ALL, 'selected');
+    setActiveFilters(new Set([FILTER_MODES.ALL]));
     if (reloadOnFlagChangeIsEnabled) {
       window.location.reload();
     }
   };
 
+  const onClearAllStarred = () => {
+    analytics.trackStarredFlag('*', 'clear_all');
+    clearAllStarred();
+    analytics.trackFilterChange(FILTER_MODES.ALL, 'selected');
+    setActiveFilters(new Set([FILTER_MODES.ALL]));
+  };
+
   const onClearOverride = useCallback(
     (flagKey: string) => {
-      if (totalOverriddenFlags <= 1) {
-        setShowOverriddenOnly(false);
+      if (
+        totalOverriddenFlags <= 1 &&
+        activeFilters.has(FILTER_MODES.OVERRIDES) &&
+        !activeFilters.has(FILTER_MODES.STARRED)
+      ) {
+        setActiveFilters(new Set([FILTER_MODES.ALL]));
       }
       clearOverride(flagKey).then(() => {
+        analytics.trackFlagOverride(flagKey, null, 'remove');
         if (reloadOnFlagChangeIsEnabled) {
           window.location.reload();
         }
       });
     },
-    [totalOverriddenFlags, setShowOverriddenOnly, clearOverride, reloadOnFlagChangeIsEnabled],
+    [totalOverriddenFlags, activeFilters, clearOverride, analytics, reloadOnFlagChangeIsEnabled],
+  );
+
+  const handleToggleStarred = useCallback(
+    (flagKey: string) => {
+      const wasPreviouslyStarred = isStarred(flagKey);
+      toggleStarred(flagKey);
+      analytics.trackStarredFlag(flagKey, wasPreviouslyStarred ? 'unstar' : 'star');
+    },
+    [isStarred, toggleStarred, analytics],
   );
 
   const handleHeightChange = useCallback(
@@ -114,89 +195,105 @@ export function FlagDevServerTabContent(props: FlagDevServerTabContentProps) {
     [virtualizer],
   );
 
-  const genericHelpTitle = showOverriddenOnly ? 'No overrides found' : 'No flags found';
-  const genericHelpSubtitle = showOverriddenOnly ? 'You have not set any overrides yet' : 'Try adjusting your search';
+  const getGenericHelpText = () => {
+    if (
+      activeFilters.has(FILTER_MODES.OVERRIDES) &&
+      !activeFilters.has(FILTER_MODES.STARRED) &&
+      totalOverriddenFlags === 0
+    ) {
+      return { title: 'No overridden flags found', subtitle: 'You have not set any overrides yet' };
+    }
+    if (activeFilters.has(FILTER_MODES.STARRED) && !activeFilters.has(FILTER_MODES.OVERRIDES) && starredCount === 0) {
+      return { title: 'No starred flags found', subtitle: 'Star flags to see them here' };
+    }
+    return { title: 'No flags found', subtitle: 'Try adjusting your search' };
+  };
+
+  const { title: genericHelpTitle, subtitle: genericHelpSubtitle } = getGenericHelpText();
 
   return (
-    <div data-testid="flag-dev-server-tab-content">
-      <>
-        <ActionButtonsContainer>
-          <button
-            className={`${actionStyles.toggleButton} ${showOverriddenOnly ? actionStyles.active : ''}`}
-            onClick={() => setShowOverriddenOnly((prev) => !prev)}
-            disabled={state.isLoading}
-          >
-            Show overrides only
-          </button>
-          <button
-            className={actionStyles.actionButton}
-            onClick={onRemoveAllOverrides}
-            disabled={state.isLoading || totalOverriddenFlags === 0}
-          >
-            Remove all overrides ({totalOverriddenFlags})
-          </button>
-        </ActionButtonsContainer>
+    <FlagFilterOptionsContext.Provider value={{ activeFilters, onFilterToggle: handleFilterToggle }}>
+      <div data-testid="flag-dev-server-tab-content">
+        <>
+          <FilterOptions
+            totalFlags={flagEntries.length}
+            filteredFlags={filteredFlags.length}
+            totalOverriddenFlags={totalOverriddenFlags}
+            starredCount={starredCount}
+            onClearOverrides={onRemoveAllOverrides}
+            onClearStarred={onClearAllStarred}
+            isLoading={state.isLoading}
+          />
 
-        {filteredFlags.length === 0 && (searchTerm.trim() || showOverriddenOnly) ? (
-          <GenericHelpText title={genericHelpTitle} subtitle={genericHelpSubtitle} />
-        ) : (
-          <div ref={parentRef} className={styles.virtualContainer}>
-            <List>
-              <div
-                className={styles.virtualInner}
-                style={{
-                  height: virtualizer.getTotalSize(),
-                }}
-              >
-                {virtualizer.getVirtualItems().map((virtualItem) => {
-                  const entry = filteredFlags[virtualItem.index];
-                  if (!entry) return null;
-                  const [_, flag] = entry;
+          {filteredFlags.length === 0 && (searchTerm.trim() || !activeFilters.has(FILTER_MODES.ALL)) ? (
+            <GenericHelpText title={genericHelpTitle} subtitle={genericHelpSubtitle} />
+          ) : (
+            <div ref={scrollContainerRef} className={styles.virtualContainer}>
+              <List>
+                <div
+                  className={styles.virtualInner}
+                  style={{
+                    height: virtualizer.getTotalSize(),
+                  }}
+                >
+                  {virtualizer.getVirtualItems().map((virtualItem) => {
+                    const entry = filteredFlags[virtualItem.index];
+                    if (!entry) return null;
+                    const [_, flag] = entry;
 
-                  if (flag.type === 'object') {
+                    if (flag.type === 'object') {
+                      return (
+                        <div key={virtualItem.key} className={styles.virtualItem}>
+                          <LocalObjectFlagControlListItem
+                            flag={flag}
+                            size={virtualItem.size}
+                            start={virtualItem.start}
+                            handleOverride={handleSetOverride}
+                            handleClearOverride={onClearOverride}
+                            handleHeightChange={(height) => handleHeightChange(virtualItem.index, height)}
+                            onToggleStarred={handleToggleStarred}
+                          />
+                        </div>
+                      );
+                    }
+
                     return (
-                      <div key={virtualItem.key} className={styles.virtualItem}>
-                        <LocalObjectFlagControlListItem
-                          flag={flag}
-                          size={virtualItem.size}
-                          start={virtualItem.start}
-                          handleOverride={handleSetOverride}
-                          handleClearOverride={onClearOverride}
-                          handleHeightChange={(height) => handleHeightChange(virtualItem.index, height)}
-                        />
+                      <div
+                        key={virtualItem.key}
+                        className={styles.virtualItem}
+                        style={{
+                          height: `${virtualItem.size}px`,
+                          transform: `translateY(${virtualItem.start}px)`,
+                          borderBottom: '1px solid var(--lp-color-gray-800)',
+                        }}
+                      >
+                        <ListItem className={styles.flagListItem}>
+                          <div className={styles.flagHeader}>
+                            <span className={styles.flagName}>
+                              <span className={styles.flagNameText}>{flag.name}</span>
+                              {flag.isOverridden && <OverrideIndicator onClear={() => onClearOverride(flag.key)} />}
+                            </span>
+                            <span className={styles.flagKey}>{flag.key}</span>
+                          </div>
+
+                          <div className={styles.flagOptions}>
+                            {renderFlagControl(flag)}
+                            <StarButton
+                              flagKey={flag.key}
+                              isStarred={isStarred(flag.key)}
+                              onToggle={handleToggleStarred}
+                            />
+                          </div>
+                        </ListItem>
                       </div>
                     );
-                  }
-
-                  return (
-                    <div
-                      key={virtualItem.key}
-                      className={styles.virtualItem}
-                      style={{
-                        height: `${virtualItem.size}px`,
-                        transform: `translateY(${virtualItem.start}px)`,
-                        borderBottom: '1px solid var(--lp-color-gray-800)',
-                      }}
-                    >
-                      <ListItem className={styles.flagListItem}>
-                        <div className={styles.flagHeader}>
-                          <span className={styles.flagName}>
-                            <span className={styles.flagNameText}>{flag.name}</span>
-                            {flag.isOverridden && <OverrideIndicator onClear={() => onClearOverride(flag.key)} />}
-                          </span>
-                          <span className={styles.flagKey}>{flag.key}</span>
-                        </div>
-
-                        <div className={styles.flagOptions}>{renderFlagControl(flag)}</div>
-                      </ListItem>
-                    </div>
-                  );
-                })}
-              </div>
-            </List>
-          </div>
-        )}
-      </>
-    </div>
+                  })}
+                </div>
+              </List>
+            </div>
+          )}
+        </>
+      </div>
+    </FlagFilterOptionsContext.Provider>
   );
 }

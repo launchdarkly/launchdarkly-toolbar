@@ -10,8 +10,13 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+      - uses: actions/checkout@1af3b93b6815bc44a9784bd300feb67ff0d1eeb3 # v6.0.0
         with:
           fetch-depth: 0 # If you only need the current version remove this line.
 
       - uses: ./.github/actions/ci
+        env:
+          TOOLBAR_INTERNAL_CLIENT_ID: ${{ vars.TOOLBAR_INTERNAL_CLIENT_ID }}
+          TOOLBAR_INTERNAL_BASE_URL: ${{ vars.TOOLBAR_INTERNAL_BASE_URL }}
+          TOOLBAR_INTERNAL_STREAM_URL: ${{ vars.TOOLBAR_INTERNAL_STREAM_URL }}
+          TOOLBAR_INTERNAL_EVENTS_URL: ${{ vars.TOOLBAR_INTERNAL_EVENTS_URL }}

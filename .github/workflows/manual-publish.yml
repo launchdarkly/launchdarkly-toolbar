@@ -19,11 +19,16 @@ jobs:
       id-token: write
       contents: read
     steps:
-      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+      - uses: actions/checkout@1af3b93b6815bc44a9784bd300feb67ff0d1eeb3 # v6.0.0
       - id: build-and-test
         # Build using the same steps from CI.
         name: Build and Test
         uses: ./.github/actions/ci
+        env:
+          TOOLBAR_INTERNAL_CLIENT_ID: ${{ vars.TOOLBAR_INTERNAL_CLIENT_ID }}
+          TOOLBAR_INTERNAL_BASE_URL: ${{ vars.TOOLBAR_INTERNAL_BASE_URL }}
+          TOOLBAR_INTERNAL_STREAM_URL: ${{ vars.TOOLBAR_INTERNAL_STREAM_URL }}
+          TOOLBAR_INTERNAL_EVENTS_URL: ${{ vars.TOOLBAR_INTERNAL_EVENTS_URL }}
 
       - uses: launchdarkly/gh-actions/actions/release-secrets@release-secrets-v1.2.0
         name: 'Get npm token'

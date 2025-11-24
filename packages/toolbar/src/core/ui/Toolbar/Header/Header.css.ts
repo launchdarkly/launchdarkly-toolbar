@@ -140,3 +140,27 @@ export const icon = style({
   height: '16px',
   fill: 'currentColor',
 });
+
+export const environmentLabelWrapper = style({
+  position: 'relative',
+  display: 'inline-block',
+});
+
+export const environmentTooltip = style({
+  position: 'absolute',
+  top: '100%',
+  left: '50%',
+  transform: 'translateX(-50%)',
+  backgroundColor: 'var(--lp-color-gray-900)',
+  color: 'var(--lp-color-gray-100)',
+  padding: '8px 12px',
+  borderRadius: '6px',
+  fontSize: '12px',
+  fontFamily: 'var(--lp-font-family-monospace)',
+  whiteSpace: 'nowrap',
+  zIndex: 1000,
+  marginTop: '4px',
+  boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
+  border: '1px solid var(--lp-color-gray-700)',
+  pointerEvents: 'none',
+});

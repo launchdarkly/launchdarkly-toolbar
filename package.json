@@ -28,12 +28,12 @@
   },
   "devDependencies": {
     "@playwright/test": "^1.56.1",
-    "@types/node": "^24.9.1",
+    "@types/node": "^24.10.1",
     "http-server": "^14.1.1",
     "prettier": "^3.5.3",
-    "storybook": "^9.1.16",
-    "storybook-addon-rslib": "^2.1.2",
-    "storybook-react-rsbuild": "^2.1.2",
+    "storybook": "^10.0.8",
+    "storybook-addon-rslib": "^2.1.6",
+    "storybook-react-rsbuild": "^2.1.6",
     "tsx": "^4.20.6"
   },
   "packageManager": "pnpm@10.14.0"

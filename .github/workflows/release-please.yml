@@ -20,25 +20,38 @@ jobs:
         with:
           token: ${{secrets.GITHUB_TOKEN}}
 
-      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+      - name: Setup Node.js
+        if: ${{ fromJson(steps.release.outputs.releases_created) }}
+        uses: actions/setup-node@2028fbc5c25fe9cf00d9f06a71cc4710d4507903 # v6.0.0
+        with:
+          node-version: '24'
+          registry-url: 'https://registry.npmjs.org'
+
+      - name: Install npm
+        if: ${{ fromJson(steps.release.outputs.releases_created) }}
+        run: npm install -g npm@latest
+
+      - uses: actions/checkout@1af3b93b6815bc44a9784bd300feb67ff0d1eeb3 # v6.0.0
         if: ${{ fromJson(steps.release.outputs.releases_created) }}
         with:
           fetch-depth: 0 # If you only need the current version remove this line.
 
-      - uses: launchdarkly/gh-actions/actions/release-secrets@release-secrets-v1.2.0
-        if: ${{ fromJson(steps.release.outputs.releases_created) }}
-        name: 'Get npm token'
-        with:
-          aws_assume_role: ${{ vars.AWS_ROLE_ARN }}
-          # This gets the npm release token and sets it into the NODE_AUTH_TOKEN environment variable
-          ssm_parameter_pairs: '/production/common/releasing/npm/token = NODE_AUTH_TOKEN'
-
       - uses: ./.github/actions/ci
         if: ${{ fromJson(steps.release.outputs.releases_created) }}
+        env:
+          TOOLBAR_INTERNAL_CLIENT_ID: ${{ vars.TOOLBAR_INTERNAL_CLIENT_ID }}
+          TOOLBAR_INTERNAL_BASE_URL: ${{ vars.TOOLBAR_INTERNAL_BASE_URL }}
+          TOOLBAR_INTERNAL_STREAM_URL: ${{ vars.TOOLBAR_INTERNAL_STREAM_URL }}
+          TOOLBAR_INTERNAL_EVENTS_URL: ${{ vars.TOOLBAR_INTERNAL_EVENTS_URL }}
 
-      - uses: ./.github/actions/publish
-        if: ${{ fromJson(steps.release.outputs.releases_created) }}
-        with:
-          token: ${{ env.NODE_AUTH_TOKEN }}
-          prerelease: ${{ contains(steps.release.outputs.tag_name, '-') }}
-          dry_run: 'false'
+      - name: Publish Package (prerelease)
+        if: ${{ fromJson(steps.release.outputs.releases_created) && contains(steps.release.outputs.tag_name, '-') }}
+        shell: bash
+        working-directory: ./packages/toolbar
+        run: npm publish --provenance --tag next
+
+      - name: Publish Package (release)
+        if: ${{ fromJson(steps.release.outputs.releases_created) && !contains(steps.release.outputs.tag_name, '-') }}
+        shell: bash
+        working-directory: ./packages/toolbar
+        run: npm publish --provenance

@@ -8,7 +8,7 @@ runs:
       uses: pnpm/action-setup@a7487c7e89a18df4991f7f222e4898a00d66ddda #v4.1.0
 
     - name: Setup Node.js
-      uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+      uses: actions/setup-node@2028fbc5c25fe9cf00d9f06a71cc4710d4507903 # v6.0.0
       with:
         node-version: '23'
         cache: 'pnpm'
@@ -38,6 +38,10 @@ runs:
         VITE_LD_BASE_URL: https://app.launchdarkly.com
         VITE_LD_STREAM_URL: https://clientstream.launchdarkly.com
         VITE_LD_EVENTS_URL: https://events.launchdarkly.com
+        TOOLBAR_INTERNAL_CLIENT_ID: ${{ env.TOOLBAR_INTERNAL_CLIENT_ID }}
+        TOOLBAR_INTERNAL_BASE_URL: ${{ env.TOOLBAR_INTERNAL_BASE_URL }}
+        TOOLBAR_INTERNAL_STREAM_URL: ${{ env.TOOLBAR_INTERNAL_STREAM_URL }}
+        TOOLBAR_INTERNAL_EVENTS_URL: ${{ env.TOOLBAR_INTERNAL_EVENTS_URL }}
         VITE_LD_DEV_SERVER_URL: http://localhost:8765
         VITE_LD_DEV_SERVER_PROJECT_KEY: developer-toolbar-sandbox
 
@@ -93,6 +97,10 @@ runs:
         VITE_LD_BASE_URL: https://app.launchdarkly.com
         VITE_LD_STREAM_URL: https://clientstream.launchdarkly.com
         VITE_LD_EVENTS_URL: https://events.launchdarkly.com
+        TOOLBAR_INTERNAL_CLIENT_ID: ${{ env.TOOLBAR_INTERNAL_CLIENT_ID }}
+        TOOLBAR_INTERNAL_BASE_URL: ${{ env.TOOLBAR_INTERNAL_BASE_URL }}
+        TOOLBAR_INTERNAL_STREAM_URL: ${{ env.TOOLBAR_INTERNAL_STREAM_URL }}
+        TOOLBAR_INTERNAL_EVENTS_URL: ${{ env.TOOLBAR_INTERNAL_EVENTS_URL }}
         VITE_LD_DEV_SERVER_URL: http://localhost:8765
         VITE_LD_DEV_SERVER_PROJECT_KEY: developer-toolbar-sandbox
 

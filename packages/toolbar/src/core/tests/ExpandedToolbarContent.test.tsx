@@ -1,39 +1,111 @@
-import { render, screen } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import { expect, test, describe, vi, beforeEach } from 'vitest';
-
 import { ExpandedToolbarContent } from '../ui/Toolbar/components/ExpandedToolbarContent';
 import { DevServerProvider } from '../ui/Toolbar/context/DevServerProvider';
 import { ToolbarUIProvider } from '../ui/Toolbar/context/ToolbarUIProvider';
 import { SearchProvider } from '../ui/Toolbar/context/SearchProvider';
 import { AnalyticsProvider } from '../ui/Toolbar/context/AnalyticsProvider';
+import { InternalClientProvider } from '../ui/Toolbar/context/InternalClientProvider';
 import { IEventInterceptionPlugin, IFlagOverridePlugin } from '../../types';
+import '@testing-library/jest-dom/vitest';
+import React from 'react';
+
+// Create mock instances that we can access in tests
+const mockDevServerClientInstance = {
+  getAvailableProjects: vi.fn().mockResolvedValue(['test-project']),
+  setProjectKey: vi.fn(),
+  getProjectKey: vi.fn().mockReturnValue('test-project'),
+  getProjectData: vi.fn().mockResolvedValue({
+    sourceEnvironmentKey: 'test-environment',
+    flagsState: {},
+    overrides: {},
+    availableVariations: {},
+    _lastSyncedFromSource: Date.now(),
+  }),
+  setOverride: vi.fn(),
+  clearOverride: vi.fn(),
+};
+
+const mockFlagStateManagerInstance = {
+  getEnhancedFlags: vi.fn().mockResolvedValue({}),
+  setOverride: vi.fn(),
+  clearOverride: vi.fn(),
+  subscribe: vi.fn().mockReturnValue(() => {}),
+};
 
 // Mock the DevServerClient and FlagStateManager
-vi.mock('../services/DevServerClient', () => ({
-  DevServerClient: vi.fn().mockImplementation(() => ({
-    getAvailableProjects: vi.fn().mockResolvedValue(['test-project']),
-    setProjectKey: vi.fn(),
-    getProjectKey: vi.fn().mockReturnValue('test-project'),
-    getProjectData: vi.fn().mockResolvedValue({
-      sourceEnvironmentKey: 'test-environment',
-      flagsState: {},
-      overrides: {},
-      availableVariations: {},
-      _lastSyncedFromSource: Date.now(),
-    }),
-    setOverride: vi.fn(),
-    clearOverride: vi.fn(),
-    healthCheck: vi.fn().mockResolvedValue(true),
-  })),
+vi.mock('../services/DevServerClient', () => {
+  function MockDevServerClient() {
+    Object.assign(this, mockDevServerClientInstance);
+    return this;
+  }
+
+  return {
+    DevServerClient: MockDevServerClient,
+  };
+});
+
+vi.mock('../services/FlagStateManager', () => {
+  function MockFlagStateManager() {
+    Object.assign(this, mockFlagStateManagerInstance);
+    return this;
+  }
+
+  return {
+    FlagStateManager: MockFlagStateManager,
+  };
+});
+
+// Mock the AuthProvider to return authenticated state
+vi.mock('../ui/Toolbar/context/AuthProvider', () => ({
+  AuthProvider: ({ children }: { children: React.ReactNode }) => <>{children}</>,
+  useAuthContext: () => ({
+    authenticated: true,
+    authenticating: false,
+    loading: false,
+    setAuthenticating: vi.fn(),
+  }),
 }));
 
-vi.mock('../services/FlagStateManager', () => ({
-  FlagStateManager: vi.fn().mockImplementation(() => ({
-    getEnhancedFlags: vi.fn().mockResolvedValue({}),
-    setOverride: vi.fn(),
-    clearOverride: vi.fn(),
-    subscribe: vi.fn().mockReturnValue(() => {}),
-  })),
+// Mock the IFrameProvider
+vi.mock('../ui/Toolbar/context/IFrameProvider', () => ({
+  IFrameProvider: ({ children }: { children: React.ReactNode }) => <>{children}</>,
+  useIFrameContext: () => ({
+    ref: { current: null },
+    iframeSrc: 'https://integrations.launchdarkly.com',
+  }),
+}));
+
+// Mock the ProjectProvider
+vi.mock('../ui/Toolbar/context/ProjectProvider', () => ({
+  ProjectProvider: ({ children }: { children: React.ReactNode }) => <>{children}</>,
+  useProjectContext: () => ({
+    projectKey: 'test-project',
+    projects: ['test-project'],
+    getProjects: vi.fn().mockResolvedValue(['test-project']),
+    loading: false,
+    error: null,
+  }),
+}));
+
+// Mock the FlagsProvider
+vi.mock('../ui/Toolbar/context/FlagsProvider', () => ({
+  FlagsProvider: ({ children }: { children: React.ReactNode }) => <>{children}</>,
+  useFlagsContext: () => ({
+    flags: {},
+    getProjectFlags: vi.fn().mockResolvedValue({}),
+    loading: false,
+    error: null,
+  }),
+}));
+
+// Mock the ActiveTabProvider
+vi.mock('../ui/Toolbar/context/ActiveTabProvider', () => ({
+  ActiveTabProvider: ({ children }: { children: React.ReactNode }) => <>{children}</>,
+  useActiveTabContext: () => ({
+    activeTab: 'settings',
+    setActiveTab: vi.fn(),
+  }),
 }));
 
 // Mock the tab content components
@@ -55,11 +127,30 @@ vi.mock('../ui/Toolbar/TabContent/SettingsTabContent', () => ({
   ),
 }));
 
+// Mock the DevServerProvider to return a controlled state
+vi.mock('../ui/Toolbar/context/DevServerProvider', () => ({
+  DevServerProvider: ({ children }: { children: React.ReactNode }) => <>{children}</>,
+  useDevServerContext: () => ({
+    state: {
+      flags: {},
+      connectionStatus: 'connected',
+      lastSyncTime: Date.now(),
+      isLoading: false,
+      error: null,
+      sourceEnvironmentKey: 'test-environment',
+    },
+    setOverride: vi.fn().mockResolvedValue(undefined),
+    clearOverride: vi.fn().mockResolvedValue(undefined),
+    clearAllOverrides: vi.fn().mockResolvedValue(undefined),
+    refresh: vi.fn().mockResolvedValue(undefined),
+  }),
+}));
+
 // Helper component to wrap ExpandedToolbarContent with necessary providers
 function TestWrapper({
   children,
-  devServerUrl,
   initialPosition = 'bottom-right',
+  devServerUrl,
 }: {
   children: React.ReactNode;
   devServerUrl?: string;
@@ -73,9 +164,11 @@ function TestWrapper({
           pollIntervalInMs: 5000,
         }}
       >
-        <AnalyticsProvider>
-          <SearchProvider>{children}</SearchProvider>
-        </AnalyticsProvider>
+        <InternalClientProvider>
+          <AnalyticsProvider>
+            <SearchProvider>{children}</SearchProvider>
+          </AnalyticsProvider>
+        </InternalClientProvider>
       </DevServerProvider>
     </ToolbarUIProvider>
   );
@@ -97,6 +190,8 @@ describe('ExpandedToolbarContent - User Interaction Flows', () => {
     onTabChange: vi.fn(),
     setSearchIsExpanded: vi.fn(),
     defaultActiveTab: 'settings' as const,
+    optInToNewFeatures: false,
+    onToggleOptInToNewFeatures: vi.fn(),
   };
 
   const createMockFlagOverridePlugin = (): IFlagOverridePlugin & {
@@ -129,6 +224,21 @@ describe('ExpandedToolbarContent - User Interaction Flows', () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
+
+    // Reset mock instances to default state
+    mockDevServerClientInstance.getAvailableProjects.mockResolvedValue(['test-project']);
+    mockDevServerClientInstance.setProjectKey.mockClear();
+    mockDevServerClientInstance.getProjectKey.mockReturnValue('test-project');
+    mockDevServerClientInstance.getProjectData.mockResolvedValue({
+      sourceEnvironmentKey: 'test-environment',
+      flagsState: {},
+      overrides: {},
+      availableVariations: {},
+      _lastSyncedFromSource: Date.now(),
+    });
+
+    mockFlagStateManagerInstance.getEnhancedFlags.mockResolvedValue({});
+    mockFlagStateManagerInstance.subscribe.mockReturnValue(() => {});
   });
 
   describe('Dev Server Mode - Server-Side Flag Management Flow', () => {
@@ -158,7 +268,7 @@ describe('ExpandedToolbarContent - User Interaction Flows', () => {
       expect(screen.getByTestId('settings-tab-content')).toHaveTextContent('Settings Tab Content - dev-server');
     });
 
-    test('developer navigates to server-side flags view', () => {
+    test('developer navigates to server-side flags view', async () => {
       // GIVEN: Developer wants to work with server-side flags
       render(
         <TestWrapper devServerUrl="http://localhost:8765">
@@ -173,7 +283,9 @@ describe('ExpandedToolbarContent - User Interaction Flows', () => {
 
       // WHEN: They select the flags tab
       // THEN: They see the server-side flag management interface
-      expect(screen.getByTestId('flag-dev-server-tab-content')).toBeInTheDocument();
+      await waitFor(() => {
+        expect(screen.getByTestId('flag-dev-server-tab-content')).toBeInTheDocument();
+      });
     });
 
     test('developer with event interception plugin can access events tab in dev-server mode', () => {
