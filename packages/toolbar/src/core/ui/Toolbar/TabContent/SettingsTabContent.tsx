@@ -39,7 +39,7 @@ interface SettingsGroup {
 function ProjectSelector() {
   const { projectKey, setProjectKey, projects, loading, getProjects } = useProjectContext();
   const analytics = useAnalytics();
-  
+
   useEffect(() => {
     if (projects.length === 0) {
       getProjects();
