@@ -17,13 +17,7 @@ import { CircleLogo } from './components';
 import { ExpandedToolbarContentLegacy } from './components/legacy';
 import { useToolbarAnimations, useToolbarVisibility, useToolbarDrag } from './hooks';
 import { ToolbarUIProvider, useToolbarUIContext } from './context';
-import {
-  ToolbarMode,
-  ToolbarPosition,
-  getToolbarMode,
-  getDefaultActiveTab,
-  ActiveTabId,
-} from './types/toolbar';
+import { ToolbarMode, ToolbarPosition, getToolbarMode, getDefaultActiveTab, ActiveTabId } from './types/toolbar';
 
 import * as styles from './LaunchDarklyToolbar.css';
 import { DevServerProvider } from './context';
@@ -275,13 +269,13 @@ export function LaunchDarklyToolbar(props: LaunchDarklyToolbarProps) {
         eventsUrl={internalClientConfig.eventsUrl}
       >
         <AnalyticsProvider mode={mode}>
-          <ToolbarStateProvider domId={domId} devServerUrl={devServerUrl}>
-            <IFrameProvider authUrl={authUrl}>
-              <AuthProvider>
-                <SearchProvider>
-                  <ApiProvider>
-                    <ProjectProvider clientSideId={clientSideId} providedProjectKey={projectKey}>
-                      <ActiveTabProvider>
+          <ActiveTabProvider>
+            <ToolbarStateProvider domId={domId} devServerUrl={devServerUrl}>
+              <IFrameProvider authUrl={authUrl}>
+                <AuthProvider>
+                  <SearchProvider>
+                    <ApiProvider>
+                      <ProjectProvider clientSideId={clientSideId} providedProjectKey={projectKey}>
                         <FlagsProvider>
                           <DevServerProvider
                             config={{
@@ -306,13 +300,13 @@ export function LaunchDarklyToolbar(props: LaunchDarklyToolbarProps) {
                             </StarredFlagsProvider>
                           </DevServerProvider>
                         </FlagsProvider>
-                      </ActiveTabProvider>
-                    </ProjectProvider>
-                  </ApiProvider>
-                </SearchProvider>
-              </AuthProvider>
-            </IFrameProvider>
-          </ToolbarStateProvider>
+                      </ProjectProvider>
+                    </ApiProvider>
+                  </SearchProvider>
+                </AuthProvider>
+              </IFrameProvider>
+            </ToolbarStateProvider>
+          </ActiveTabProvider>
         </AnalyticsProvider>
       </InternalClientProvider>
     </ToolbarUIProvider>

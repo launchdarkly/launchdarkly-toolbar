@@ -8,6 +8,7 @@ export type ToolbarMode = 'dev-server' | 'sdk';
 
 export const DEV_SERVER_TABS: readonly TabId[] = ['flag-dev-server', 'events', 'settings'] as const;
 export const SDK_MODE_TABS: readonly TabId[] = ['flag-sdk', 'events', 'settings'] as const;
+export const NEW_TOOLBAR_TABS: readonly TabId[] = ['flags', 'monitoring', 'interactive', 'settings'] as const;
 
 export function getToolbarMode(devServerUrl?: string): ToolbarMode {
   return devServerUrl ? 'dev-server' : 'sdk';
