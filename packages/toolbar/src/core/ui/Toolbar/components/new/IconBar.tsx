@@ -1,10 +1,10 @@
 import { ToggleOffIcon } from '../icons/ToggleOffIcon';
 import { ClickIcon } from '../icons/ClickIcon';
-import { EditIcon } from '../icons/EditIcon';
 import { GearIcon } from '../icons/GearIcon';
 import { ChartHistogram } from '../icons/ChartHistogram';
 import { Tooltip } from './Tooltip';
 import * as styles from './IconBar.module.css';
+import { showInteractiveIcon } from '../../../../../flags/toolbarFlags';
 
 // Placeholder for chip/processor icon
 const ChipIcon = ({ className }: { className?: string }) => (
@@ -14,12 +14,16 @@ const ChipIcon = ({ className }: { className?: string }) => (
 );
 
 export const IconBar = () => {
+  const showInteractiveIconFlag = showInteractiveIcon();
   const icons = [
     { id: 'flags', Icon: ToggleOffIcon, label: 'Flags', tooltip: 'Feature Flags' },
-    { id: 'click', Icon: ClickIcon, label: 'Click tracking', tooltip: 'Interactive Mode' },
     { id: 'chart', Icon: ChartHistogram, label: 'Analytics', tooltip: 'Monitoring' },
     { id: 'settings', Icon: GearIcon, label: 'Settings', tooltip: 'Settings' },
   ];
+
+  if (showInteractiveIconFlag) {
+    icons.push({ id: 'click', Icon: ClickIcon, label: 'Click tracking', tooltip: 'Interactive Mode' });
+  }
 
   return (
     <div className={styles.container}>

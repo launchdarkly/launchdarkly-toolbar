@@ -3,7 +3,7 @@ import { style } from '@vanilla-extract/css';
 export const container = style({
   backgroundColor: 'var(--lp-color-gray-900)',
   color: 'var(--lp-color-gray-200)',
-  maxHeight: '600px',
+  height: '600px',
   borderRadius: '12px',
   border: '1px solid var(--lp-color-gray-700)',
   display: 'flex',
