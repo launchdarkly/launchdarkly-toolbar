@@ -2,7 +2,8 @@ import { useEffect } from 'react';
 import { useActiveTabContext } from '../../context/ActiveTabProvider';
 import { useActiveSubtabContext } from './context/ActiveSubtabProvider';
 import { ContentActions } from './ContentActions';
-import { TAB_SUBTABS_MAP, getDefaultSubtab, SubTab, TabConfig } from './types';
+import { SubtabDropdown } from './SubtabDropdown';
+import { TAB_SUBTABS_MAP, getDefaultSubtab, TabConfig } from './types';
 import * as styles from './TabBar.module.css';
 
 export const TabBar = () => {
@@ -28,17 +29,7 @@ export const TabBar = () => {
 
   return (
     <div className={styles.container}>
-      <div className={styles.tabs}>
-        {subtabs.map((tab: TabConfig) => (
-          <button
-            key={tab.id}
-            className={`${styles.tab} ${activeSubtab === tab.id ? styles.active : ''}`}
-            onClick={() => setActiveSubtab(tab.id as SubTab)}
-          >
-            {tab.label}
-          </button>
-        ))}
-      </div>
+      <SubtabDropdown subtabs={subtabs} activeSubtab={activeSubtab} onSelectSubtab={setActiveSubtab} />
       <ContentActions />
     </div>
   );

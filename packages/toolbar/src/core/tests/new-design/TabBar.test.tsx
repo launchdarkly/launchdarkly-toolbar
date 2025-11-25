@@ -1,7 +1,7 @@
-import { render } from '@testing-library/react';
+import { render, screen, fireEvent } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { TabBar } from '../../ui/Toolbar/components/new/TabBar';
-import { ActiveTabProvider } from '../../ui/Toolbar/context/ActiveTabProvider';
+import { ActiveTabProvider, useActiveTabContext } from '../../ui/Toolbar/context/ActiveTabProvider';
 import { ActiveSubtabProvider } from '../../ui/Toolbar/components/new/context/ActiveSubtabProvider';
 import '@testing-library/jest-dom/vitest';
 import React from 'react';
@@ -10,6 +10,17 @@ import React from 'react';
 vi.mock('../../ui/Toolbar/components/new/ContentActions', () => ({
   ContentActions: () => <div data-testid="content-actions">Content Actions</div>,
 }));
+
+// Test wrapper that sets an active tab
+const TestWrapperWithTab = ({ tab }: { tab: 'flags' | 'monitoring' | 'settings' | 'interactive' }) => {
+  const { setActiveTab } = useActiveTabContext();
+
+  React.useEffect(() => {
+    setActiveTab(tab);
+  }, [tab, setActiveTab]);
+
+  return <TabBar />;
+};
 
 describe('TabBar', () => {
   beforeEach(() => {
@@ -29,68 +40,57 @@ describe('TabBar', () => {
     expect(container.firstChild).toBeNull();
   });
 
-  it('should render subtabs for flags tab', () => {
-    const TestWrapper = () => {
-      const [activeTab, setActiveTab] = React.useState<'flags' | 'monitoring' | 'settings'>('flags');
-
-      React.useEffect(() => {
-        setActiveTab('flags');
-      }, []);
-
-      return (
-        <ActiveTabProvider>
-          <ActiveSubtabProvider>
-            <TabBar />
-          </ActiveSubtabProvider>
-        </ActiveTabProvider>
-      );
-    };
-
-    render(<TestWrapper />);
-
-    // Flags tab should have "Flags" and "Context" subtabs
-    // Note: This test may need adjustment based on actual implementation
-  });
-
-  it('should render correctly when active tab has subtabs', () => {
-    // This is a simplified test - full functionality would require
-    // setting up the active tab state properly
-    const { container } = render(
+  it('should render dropdown for flags tab', () => {
+    render(
       <ActiveTabProvider>
         <ActiveSubtabProvider>
-          <TabBar />
+          <TestWrapperWithTab tab="flags" />
         </ActiveSubtabProvider>
       </ActiveTabProvider>,
     );
 
-    // TabBar should render without errors
-    expect(container).toBeInTheDocument();
+    // Should render dropdown trigger with "Flags" label
+    expect(screen.getByText('Flags')).toBeInTheDocument();
   });
 
-  it('should render within providers without errors', () => {
-    const { container } = render(
+  it('should render dropdown for monitoring tab', () => {
+    render(
       <ActiveTabProvider>
         <ActiveSubtabProvider>
-          <TabBar />
+          <TestWrapperWithTab tab="monitoring" />
         </ActiveSubtabProvider>
       </ActiveTabProvider>,
     );
 
-    // Should render without throwing errors
-    expect(container).toBeDefined();
+    // Should render dropdown with "Events" label
+    expect(screen.getByText('Events')).toBeInTheDocument();
   });
 
-  it('should handle case when no subtabs are available', () => {
-    const { container } = render(
+  it('should open dropdown menu when clicked', () => {
+    render(
       <ActiveTabProvider>
         <ActiveSubtabProvider>
-          <TabBar />
+          <TestWrapperWithTab tab="flags" />
         </ActiveSubtabProvider>
       </ActiveTabProvider>,
     );
 
-    // When activeTab is undefined or has no subtabs, TabBar should not render content
-    // This validates the conditional rendering logic
-    expect(container).toBeDefined();
+    const trigger = screen.getByRole('button', { expanded: false });
+    fireEvent.click(trigger);
+
+    // Dropdown should now be expanded
+    expect(screen.getByRole('button', { expanded: true })).toBeInTheDocument();
+  });
+
+  it('should render ContentActions component', () => {
+    render(
+      <ActiveTabProvider>
+        <ActiveSubtabProvider>
+          <TestWrapperWithTab tab="flags" />
+        </ActiveSubtabProvider>
+      </ActiveTabProvider>,
+    );
+
+    expect(screen.getByTestId('content-actions')).toBeInTheDocument();
   });
 });
