@@ -331,20 +331,17 @@ function FlagSdkOverrideTabContentInner(props: FlagSdkOverrideTabContentInnerPro
                             </div>
                           )}
                           <div className={sharedStyles.flagHeader}>
-                            <span className={sharedStyles.flagName}>
-                              <span className={sharedStyles.flagNameText} data-testid={`flag-name-${flagKey}`}>
-                                {flag.name}
-                              </span>
-                            </span>
-                            <FlagKeyWithCopy flagKey={flagKey} className={sharedStyles.flagKey} />
                             <a
                               href={`https://app.launchdarkly.com/projects/${projectKey}/flags/${flagKey}?env=${environment}&selectedEnv=${environment}`}
                               target="_blank"
-                              className={sharedStyles.flagLinkContainer}
+                              className={sharedStyles.flagName}
                             >
-                              <span>Open in LaunchDarkly</span>
+                              <span className={sharedStyles.flagNameText} data-testid={`flag-name-${flagKey}`}>
+                                {flag.name}
+                              </span>
                               <ExternalLinkIcon size="small" />
                             </a>
+                            <FlagKeyWithCopy flagKey={flagKey} className={sharedStyles.flagKey} />
                           </div>
 
                           <div className={sharedStyles.flagOptions}>

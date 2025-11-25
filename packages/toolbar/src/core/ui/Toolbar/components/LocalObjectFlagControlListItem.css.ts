@@ -5,7 +5,7 @@ export const flagContentWrapper = style({
   alignItems: 'center',
   width: '100%',
   gap: '16px',
-  paddingTop: '6px',
+  paddingTop: '10px',
 });
 
 export const flagNameText = style({
