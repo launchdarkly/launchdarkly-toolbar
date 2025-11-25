@@ -1,6 +1,5 @@
 import { useCallback, useState, useEffect, useRef } from 'react';
-import { CopyClipboard } from './icons/CopyClipboard';
-import { CheckIcon } from './icons/CheckIcon';
+import { AnimatePresence, motion } from 'motion/react';
 import { useAnalytics } from '../context/AnalyticsProvider';
 import * as styles from './FlagKeyWithCopy.css';
 
@@ -43,23 +42,29 @@ export function FlagKeyWithCopy({ flagKey, className }: FlagKeyWithCopyProps) {
   }, []);
 
   return (
-    <button
-      className={`${styles.container} ${isCopied ? styles.copied : ''} ${className || ''}`}
-      onClick={handleCopy}
-      aria-label={isCopied ? `Copied flag key: ${flagKey}` : `Copy flag key: ${flagKey}`}
-      title={isCopied ? `Copied flag key: ${flagKey}` : `Copy flag key: ${flagKey}`}
-    >
-      {isCopied ? (
-        <>
-          <span className={styles.copiedText}>Copied!</span>
-          <CheckIcon className={styles.checkIcon} />
-        </>
-      ) : (
-        <>
-          <span className={styles.flagKeyText}>{flagKey}</span>
-          <CopyClipboard className={styles.copyIcon} />
-        </>
-      )}
-    </button>
+    <div className={styles.wrapper}>
+      <button
+        className={`${styles.container} ${className || ''}`}
+        onClick={handleCopy}
+        aria-label={`Copy flag key: ${flagKey}`}
+      >
+        <span className={styles.flagKeyText}>{flagKey}</span>
+      </button>
+      <AnimatePresence>
+        {isCopied && (
+          <motion.div
+            className={styles.tooltip}
+            initial={{ opacity: 0, y: 5 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 5 }}
+            transition={{ duration: 0.2 }}
+            role="status"
+            aria-live="polite"
+          >
+            Copied!
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
   );
 }

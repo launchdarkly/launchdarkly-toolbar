@@ -1,14 +1,20 @@
 import { style } from '@vanilla-extract/css';
+import { Z_INDEX } from '../../constants/zIndex';
+
+export const wrapper = style({
+  position: 'relative',
+  display: 'inline-flex',
+  minWidth: 0,
+});
 
 export const container = style({
   display: 'inline-flex',
   alignItems: 'center',
-  gap: '4px',
   minWidth: 0,
   backgroundColor: 'transparent',
   border: 'none',
   cursor: 'pointer',
-  padding: '0',
+  padding: '4px',
   borderRadius: '4px',
   transition: 'background-color 0.2s ease',
   textAlign: 'left',
@@ -43,31 +49,37 @@ export const flagKeyText = style({
   },
 });
 
-export const copyIcon = style({
-  flexShrink: 0,
-  opacity: 0.7,
-  width: '16px',
-  height: '16px',
-
-  selectors: {
-    [`${container}:hover &`]: {
-      color: 'var(--lp-color-gray-200)',
-    },
-  },
-});
-
-export const copied = style({
-  cursor: 'default',
-});
-
-export const copiedText = style({
+export const tooltip = style({
+  position: 'absolute',
+  bottom: 'calc(100% + 8px)',
+  left: '15%',
+  transform: 'translateX(0)',
+  backgroundColor: 'var(--lp-color-gray-700)',
+  color: 'var(--lp-color-gray-100)',
   fontSize: '12px',
-  fontFamily: 'var(--lp-font-family-monospace)',
   fontWeight: 500,
-});
+  padding: '6px 12px',
+  borderRadius: 'var(--lp-border-radius-medium)',
+  whiteSpace: 'nowrap',
+  boxShadow: `
+    0 0 1px 0 var(--lp-color-shadow-ui-secondary),
+    0 0 4px 0 var(--lp-color-shadow-ui-secondary),
+    0 4px 8px 0 var(--lp-color-shadow-ui-secondary),
+    0 2px 12px 0 var(--lp-color-shadow-ui-secondary)
+  `,
+  zIndex: Z_INDEX.TOOLTIP,
+  pointerEvents: 'none',
 
-export const checkIcon = style({
-  flexShrink: 0,
-  width: '16px',
-  height: '16px',
+  '::after': {
+    content: '""',
+    position: 'absolute',
+    top: '100%',
+    left: '50%',
+    transform: 'translateX(-50%)',
+    width: 0,
+    height: 0,
+    borderLeft: '6px solid transparent',
+    borderRight: '6px solid transparent',
+    borderTop: '6px solid var(--lp-color-gray-700)',
+  },
 });
