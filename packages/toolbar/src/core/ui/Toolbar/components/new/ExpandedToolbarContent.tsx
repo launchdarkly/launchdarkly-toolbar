@@ -8,7 +8,8 @@ import { ActiveSubtabProvider } from './context/ActiveSubtabProvider';
 import { useActiveTabContext } from '../../context/ActiveTabProvider';
 import { useActiveSubtabContext } from './context/ActiveSubtabProvider';
 import * as styles from './ExpandedToolbarContent.module.css';
-import { TabId } from '../../types/toolbar';
+import { NEW_TOOLBAR_TABS, TabId } from '../../types/toolbar';
+import { useEffect } from 'react';
 
 interface ExpandedToolbarContentProps {
   onClose?: () => void;
@@ -18,8 +19,14 @@ interface ExpandedToolbarContentProps {
 
 const ExpandedToolbarContentInner = forwardRef<HTMLDivElement, ExpandedToolbarContentProps>(
   ({ onClose, onHeaderMouseDown, defaultActiveTab }, ref) => {
-    const { activeTab } = useActiveTabContext();
+    const { activeTab, setActiveTab } = useActiveTabContext();
     const { activeSubtab } = useActiveSubtabContext();
+
+    useEffect(() => {
+      if (activeTab && !NEW_TOOLBAR_TABS.includes(activeTab)) {
+        setActiveTab(defaultActiveTab);
+      }
+    }, [activeTab, defaultActiveTab, setActiveTab]);
 
     return (
       <motion.div
