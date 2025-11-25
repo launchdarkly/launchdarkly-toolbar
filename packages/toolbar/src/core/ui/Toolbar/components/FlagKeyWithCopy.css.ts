@@ -14,7 +14,10 @@ export const container = style({
   backgroundColor: 'transparent',
   border: 'none',
   cursor: 'pointer',
-  padding: '4px',
+  paddingRight: '4px',
+  paddingLeft: '0px',
+  paddingTop: '4px',
+  paddingBottom: '4px',
   borderRadius: '4px',
   transition: 'background-color 0.2s ease',
   textAlign: 'left',
@@ -50,7 +53,7 @@ export const flagKeyText = style({
 });
 
 export const tooltip = style({
-  position: 'absolute',
+  position: 'sticky',
   bottom: 'calc(100% + 8px)',
   left: '15%',
   transform: 'translateX(0)',
