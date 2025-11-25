@@ -9,13 +9,6 @@ export const FlagList = () => {
     { id: 'new-dashboard-ui', name: 'new-dashboard-ui', value: 'true', enabled: true },
     { id: 'enable-analytics', name: 'enable-analytics', value: 'false', enabled: false },
     { id: 'beta-features', name: 'beta-features', value: 'control', enabled: true },
-    { id: 'beta-features', name: 'beta-features', value: 'control', enabled: true },
-    { id: 'beta-features', name: 'beta-features', value: 'control', enabled: true },
-    { id: 'beta-features', name: 'beta-features', value: 'control', enabled: true },
-    { id: 'beta-features', name: 'beta-features', value: 'control', enabled: true },
-    { id: 'beta-features', name: 'beta-features', value: 'control', enabled: true },
-    { id: 'beta-features', name: 'beta-features', value: 'control', enabled: true },
-    { id: 'beta-features', name: 'beta-features', value: 'control', enabled: true },
   ]);
 
   // Ref for scroll container
