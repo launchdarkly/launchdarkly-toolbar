@@ -2,9 +2,9 @@ import React from 'react';
 import { NewActiveTabId, ActiveTabId } from '../../types/toolbar';
 import { SubTab } from './types';
 import { SettingsContent } from './Settings/SettingsContent';
+import { FlagListContent } from './FeatureFlags/FlagListContent';
 
 // Placeholder content components - these will be replaced with real implementations
-const FlagListContent = () => <div>Flags List Content</div>;
 const ContextContent = () => <div>Context Content</div>;
 const MonitoringOverviewContent = () => <div>Monitoring Overview Content</div>;
 const EventsContent = () => <div>Events Content</div>;
