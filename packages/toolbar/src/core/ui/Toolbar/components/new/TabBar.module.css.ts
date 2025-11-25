@@ -54,7 +54,7 @@ export const active = style({
   },
 });
 
-export const searchButton = style({
+export const tabButton = style({
   backgroundColor: 'transparent',
   border: 'none',
   color: 'var(--lp-color-gray-400)',

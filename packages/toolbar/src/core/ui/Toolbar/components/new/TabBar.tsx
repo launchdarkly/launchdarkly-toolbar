@@ -1,5 +1,5 @@
 import React from 'react';
-import { SearchIcon } from '../icons/SearchIcon';
+import { SearchIcon, FilterTuneIcon } from '../icons';
 import * as styles from './TabBar.module.css';
 
 export const TabBar = () => {
@@ -7,7 +7,6 @@ export const TabBar = () => {
 
   const tabs = [
     { id: 'flags', label: 'Flags' },
-    { id: 'pinned', label: 'Pinned' },
     { id: 'context', label: 'Context' },
   ];
 
@@ -25,7 +24,10 @@ export const TabBar = () => {
         ))}
       </div>
 
-      <button className={styles.searchButton} aria-label="Search">
+      <button className={styles.tabButton} aria-label="Filter">
+        <FilterTuneIcon />
+      </button>
+      <button className={styles.tabButton} aria-label="Search">
         <SearchIcon />
       </button>
     </div>

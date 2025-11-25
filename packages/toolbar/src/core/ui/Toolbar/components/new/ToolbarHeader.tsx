@@ -1,7 +1,8 @@
 import React from 'react';
-import { ChevronDownIcon } from '../icons/ChevronDownIcon';
 import * as styles from './ToolbarHeader.module.css';
 import { LaunchDarklyIcon } from '../icons/LaunchDarklyIcon';
+import { useToolbarUIContext } from '../../context/ToolbarUIProvider';
+import { ChevronUpIcon, ChevronDownIcon } from '../icons';
 
 interface ToolbarHeaderProps {
   onClose?: () => void;
@@ -9,6 +10,8 @@ interface ToolbarHeaderProps {
 }
 
 export const ToolbarHeader: React.FC<ToolbarHeaderProps> = ({ onClose, onHeaderMouseDown }) => {
+  const { position } = useToolbarUIContext();
+
   return (
     <div className={styles.header}>
       <div className={styles.leftSection} onMouseDown={onHeaderMouseDown}>
@@ -18,7 +21,7 @@ export const ToolbarHeader: React.FC<ToolbarHeaderProps> = ({ onClose, onHeaderM
 
       <div className={styles.rightSection}>
         <button className={styles.iconButton} onClick={onClose} aria-label="Collapse toolbar">
-          <ChevronDownIcon />
+          {position.startsWith('top-') ? <ChevronUpIcon /> : <ChevronDownIcon />}
         </button>
       </div>
     </div>

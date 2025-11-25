@@ -15,3 +15,6 @@ export { StarOutlineIcon } from './StarOutlineIcon';
 export { PersonPassword } from './PersonPassword';
 export { ThumbUpIcon } from './ThumbUpIcon';
 export { ThumbDownIcon } from './ThumbDownIcon';
+export { FilterTuneIcon } from './FilterTuneIcon';
+export { ClickIcon } from './ClickIcon';
+export { ChartHistogram } from './ChartHistogram';
