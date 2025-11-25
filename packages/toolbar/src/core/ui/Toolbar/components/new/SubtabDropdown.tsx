@@ -59,11 +59,7 @@ export function SubtabDropdown({ subtabs, activeSubtab, onSelectSubtab }: Subtab
         aria-haspopup="true"
       >
         <span className={styles.label}>{activeLabel}</span>
-        <motion.span
-          className={styles.chevron}
-          animate={{ rotate: isOpen ? 180 : 0 }}
-          transition={{ duration: 0.2 }}
-        >
+        <motion.span className={styles.chevron} animate={{ rotate: isOpen ? 180 : 0 }} transition={{ duration: 0.2 }}>
           <ChevronDownIcon className={styles.chevronIcon} />
         </motion.span>
       </button>
@@ -93,4 +89,3 @@ export function SubtabDropdown({ subtabs, activeSubtab, onSelectSubtab }: Subtab
     </div>
   );
 }
-

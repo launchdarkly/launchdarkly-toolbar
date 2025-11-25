@@ -110,4 +110,3 @@ export const menuItemActive = style({
   color: 'var(--lp-color-gray-100)',
   fontWeight: 500,
 });
-

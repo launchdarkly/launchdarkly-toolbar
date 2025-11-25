@@ -14,7 +14,10 @@ export interface TabConfig {
 
 // Map of main tabs to their available subtabs
 export const TAB_SUBTABS_MAP = {
-  flags: [{ id: 'flags', label: 'Flags' }, { id: 'context', label: 'Context' }] as TabConfig[],
+  flags: [
+    { id: 'flags', label: 'Flags' },
+    { id: 'context', label: 'Context' },
+  ] as TabConfig[],
   monitoring: [{ id: 'events', label: 'Events' }] as TabConfig[],
   settings: [{ id: 'general', label: 'General' }] as TabConfig[],
   interactive: [{ id: 'click-tracking', label: 'Click Tracking' }] as TabConfig[],
