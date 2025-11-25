@@ -16,7 +16,14 @@ import { CircleLogo } from './components';
 import { ExpandedToolbarContentLegacy } from './components/legacy';
 import { useToolbarAnimations, useToolbarVisibility, useToolbarDrag } from './hooks';
 import { ToolbarUIProvider, useToolbarUIContext } from './context';
-import { ToolbarMode, ToolbarPosition, getToolbarMode, getDefaultActiveTab, ActiveTabId, NewActiveTabId } from './types/toolbar';
+import {
+  ToolbarMode,
+  ToolbarPosition,
+  getToolbarMode,
+  getDefaultActiveTab,
+  ActiveTabId,
+  NewActiveTabId,
+} from './types/toolbar';
 
 import * as styles from './LaunchDarklyToolbar.css';
 import { DevServerProvider } from './context';
@@ -43,11 +50,10 @@ export function LdToolbar(props: LdToolbarProps) {
   const { searchTerm } = useSearchContext();
   const { position, handlePositionChange } = useToolbarUIContext();
   const analytics = useAnalytics();
-  const { activeTab, setActiveTab } = useActiveTabContext();
+  const { activeTab } = useActiveTabContext();
   const newToolbarDesign = useNewToolbarDesign();
 
   const defaultActiveTab = getDefaultActiveTab(mode, !!flagOverridePlugin, !!eventInterceptionPlugin, newToolbarDesign);
-  console.log('defaultActiveTab', defaultActiveTab);
 
   const toolbarState = useToolbarState();
   const circleButtonRef = useRef<HTMLButtonElement>(null);
@@ -196,7 +202,11 @@ export function LdToolbar(props: LdToolbarProps) {
           />
         )}
         {isExpanded && newToolbarDesign && (
-          <ExpandedToolbarContent onClose={handleClose} onHeaderMouseDown={handleMouseDown} defaultActiveTab={defaultActiveTab as NewActiveTabId} />
+          <ExpandedToolbarContent
+            onClose={handleClose}
+            onHeaderMouseDown={handleMouseDown}
+            defaultActiveTab={defaultActiveTab as NewActiveTabId}
+          />
         )}
       </AnimatePresence>
       <AuthenticationModal isOpen={false} onClose={() => {}} />

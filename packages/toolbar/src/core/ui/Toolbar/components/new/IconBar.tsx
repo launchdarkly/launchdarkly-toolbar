@@ -21,9 +21,7 @@ export const IconBar = ({ defaultActiveTab }: { defaultActiveTab: NewActiveTabId
   const { activeTab, setActiveTab } = useActiveTabContext();
 
   useEffect(() => {
-    console.log('activeTab', activeTab);
     if (!activeTab) {
-      console.log('setting active tab to', defaultActiveTab);
       setActiveTab(defaultActiveTab);
     }
   }, [defaultActiveTab, activeTab, setActiveTab]);

@@ -55,7 +55,6 @@ export function getDefaultActiveTab(
   hasEventInterceptionPlugin?: boolean,
   useNewToolbarDesign?: boolean,
 ): TabId | NewTabId {
-  console.log('useNewToolbarDesign', useNewToolbarDesign);
   if (useNewToolbarDesign) {
     return 'flags';
   }

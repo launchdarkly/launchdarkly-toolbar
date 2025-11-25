@@ -1,9 +1,12 @@
-import React from 'react';
+import React, { forwardRef } from 'react';
 import { motion } from 'motion/react';
 import { ToolbarHeader } from './Header/ToolbarHeader';
 import { IconBar } from './IconBar';
 import { TabBar } from './TabBar';
-import { FlagList } from './FeatureFlags/FlagList';
+import { ContentRenderer } from './ContentRenderer';
+import { ActiveSubtabProvider } from './context/ActiveSubtabProvider';
+import { useActiveTabContext } from '../../context/ActiveTabProvider';
+import { useActiveSubtabContext } from './context/ActiveSubtabProvider';
 import * as styles from './ExpandedToolbarContent.module.css';
 import { NewActiveTabId } from '../../types/toolbar';
 
@@ -13,8 +16,11 @@ interface ExpandedToolbarContentProps {
   defaultActiveTab: NewActiveTabId;
 }
 
-export const ExpandedToolbarContent = React.forwardRef<HTMLDivElement, ExpandedToolbarContentProps>(
+const ExpandedToolbarContentInner = forwardRef<HTMLDivElement, ExpandedToolbarContentProps>(
   ({ onClose, onHeaderMouseDown, defaultActiveTab }, ref) => {
+    const { activeTab } = useActiveTabContext();
+    const { activeSubtab } = useActiveSubtabContext();
+
     return (
       <motion.div
         ref={ref}
@@ -28,9 +34,17 @@ export const ExpandedToolbarContent = React.forwardRef<HTMLDivElement, ExpandedT
         <IconBar defaultActiveTab={defaultActiveTab} />
         <TabBar />
         <div className={styles.content}>
-          <FlagList />
+          <ContentRenderer activeTab={activeTab} activeSubtab={activeSubtab} />
         </div>
       </motion.div>
     );
   },
 );
+
+export const ExpandedToolbarContent = forwardRef<HTMLDivElement, ExpandedToolbarContentProps>((props, ref) => {
+  return (
+    <ActiveSubtabProvider>
+      <ExpandedToolbarContentInner ref={ref} {...props} />
+    </ActiveSubtabProvider>
+  );
+});
