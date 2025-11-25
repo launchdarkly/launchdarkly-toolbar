@@ -1,11 +1,12 @@
 import { render, screen, waitFor } from '@testing-library/react';
 import { expect, test, describe, vi, beforeEach } from 'vitest';
-import { ExpandedToolbarContent } from '../ui/Toolbar/components/ExpandedToolbarContent';
+import { ExpandedToolbarContentLegacy } from '../ui/Toolbar/components/legacy';
 import { DevServerProvider } from '../ui/Toolbar/context/DevServerProvider';
 import { ToolbarUIProvider } from '../ui/Toolbar/context/ToolbarUIProvider';
 import { SearchProvider } from '../ui/Toolbar/context/SearchProvider';
 import { AnalyticsProvider } from '../ui/Toolbar/context/AnalyticsProvider';
 import { InternalClientProvider } from '../ui/Toolbar/context/InternalClientProvider';
+import { ToolbarStateProvider } from '../ui/Toolbar/context/ToolbarStateProvider';
 import { IEventInterceptionPlugin, IFlagOverridePlugin } from '../../types';
 import '@testing-library/jest-dom/vitest';
 import React from 'react';
@@ -166,7 +167,9 @@ function TestWrapper({
       >
         <InternalClientProvider>
           <AnalyticsProvider>
-            <SearchProvider>{children}</SearchProvider>
+            <ToolbarStateProvider domId="test-toolbar">
+              <SearchProvider>{children}</SearchProvider>
+            </ToolbarStateProvider>
           </AnalyticsProvider>
         </InternalClientProvider>
       </DevServerProvider>
@@ -246,7 +249,7 @@ describe('ExpandedToolbarContent - User Interaction Flows', () => {
       // GIVEN: Developer has expanded the toolbar in dev server mode with event plugin
       render(
         <TestWrapper devServerUrl="http://localhost:8765">
-          <ExpandedToolbarContent
+          <ExpandedToolbarContentLegacy
             baseUrl="http://localhost:3002"
             {...defaultProps}
             mode="dev-server"
@@ -272,7 +275,7 @@ describe('ExpandedToolbarContent - User Interaction Flows', () => {
       // GIVEN: Developer wants to work with server-side flags
       render(
         <TestWrapper devServerUrl="http://localhost:8765">
-          <ExpandedToolbarContent
+          <ExpandedToolbarContentLegacy
             baseUrl="http://localhost:3002"
             {...defaultProps}
             activeTab="flag-dev-server"
@@ -293,7 +296,7 @@ describe('ExpandedToolbarContent - User Interaction Flows', () => {
       const mockEventPlugin = createMockEventInterceptionPlugin();
       render(
         <TestWrapper devServerUrl="http://localhost:8765">
-          <ExpandedToolbarContent
+          <ExpandedToolbarContentLegacy
             baseUrl="http://localhost:3002"
             {...defaultProps}
             mode="dev-server"
@@ -322,7 +325,7 @@ describe('ExpandedToolbarContent - User Interaction Flows', () => {
 
       render(
         <TestWrapper>
-          <ExpandedToolbarContent
+          <ExpandedToolbarContentLegacy
             baseUrl="http://localhost:3002"
             {...defaultProps}
             mode="sdk"
@@ -349,7 +352,7 @@ describe('ExpandedToolbarContent - User Interaction Flows', () => {
 
       render(
         <TestWrapper>
-          <ExpandedToolbarContent
+          <ExpandedToolbarContentLegacy
             baseUrl="http://localhost:3002"
             {...defaultProps}
             activeTab="flag-sdk"
@@ -371,7 +374,7 @@ describe('ExpandedToolbarContent - User Interaction Flows', () => {
 
       render(
         <TestWrapper>
-          <ExpandedToolbarContent
+          <ExpandedToolbarContentLegacy
             baseUrl="http://localhost:3002"
             {...defaultProps}
             activeTab="events"
@@ -390,7 +393,7 @@ describe('ExpandedToolbarContent - User Interaction Flows', () => {
       // GIVEN: Developer is using the toolbar without debug capabilities
       render(
         <TestWrapper>
-          <ExpandedToolbarContent baseUrl="http://localhost:3002" {...defaultProps} mode="sdk" />
+          <ExpandedToolbarContentLegacy baseUrl="http://localhost:3002" {...defaultProps} mode="sdk" />
         </TestWrapper>,
       );
 
@@ -413,7 +416,7 @@ describe('ExpandedToolbarContent - User Interaction Flows', () => {
       // GIVEN: Developer accidentally passes an invalid mode (edge case)
       render(
         <TestWrapper>
-          <ExpandedToolbarContent
+          <ExpandedToolbarContentLegacy
             baseUrl="http://localhost:3002"
             {...defaultProps}
             mode={'invalid-mode' as any} // TypeScript bypass for testing
@@ -434,7 +437,7 @@ describe('ExpandedToolbarContent - User Interaction Flows', () => {
       // GIVEN: Developer doesn't specify an active tab (edge case)
       render(
         <TestWrapper>
-          <ExpandedToolbarContent
+          <ExpandedToolbarContentLegacy
             baseUrl="http://localhost:3002"
             {...defaultProps}
             activeTab={undefined}

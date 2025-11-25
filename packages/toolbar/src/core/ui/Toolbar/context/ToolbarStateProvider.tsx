@@ -1,7 +1,19 @@
-import { useState, useRef, useCallback, useMemo, useEffect, Dispatch, SetStateAction } from 'react';
+import React, {
+  createContext,
+  useContext,
+  useState,
+  useRef,
+  useCallback,
+  useMemo,
+  useEffect,
+  Dispatch,
+  SetStateAction,
+  ReactNode,
+} from 'react';
 
-import { useSearchContext } from '../context/SearchProvider';
-import { useAnalytics } from '../context/AnalyticsProvider';
+import { useSearchContext } from './SearchProvider';
+import { useAnalytics } from './AnalyticsProvider';
+import { useActiveTabContext } from './ActiveTabProvider';
 import { TabId, ActiveTabId, TAB_ORDER } from '../types';
 import {
   saveToolbarAutoCollapse,
@@ -9,13 +21,8 @@ import {
   loadReloadOnFlagChange,
   saveReloadOnFlagChange,
 } from '../utils/localStorage';
-import { useActiveTabContext } from '../context/ActiveTabProvider';
 
-export interface UseToolbarStateProps {
-  domId: string;
-}
-
-export interface UseToolbarStateReturn {
+export interface ToolbarStateContextValue {
   // State values
   isExpanded: boolean;
   previousTab: ActiveTabId;
@@ -40,21 +47,31 @@ export interface UseToolbarStateReturn {
   setSearchIsExpanded: Dispatch<SetStateAction<boolean>>;
 }
 
-export function useToolbarState(props: UseToolbarStateProps): UseToolbarStateReturn {
-  const { domId } = props;
+const ToolbarStateContext = createContext<ToolbarStateContextValue | undefined>(undefined);
+
+export interface ToolbarStateProviderProps {
+  children: ReactNode;
+  domId: string;
+}
+
+export function ToolbarStateProvider({ children, domId }: ToolbarStateProviderProps) {
   const { setSearchTerm } = useSearchContext();
   const analytics = useAnalytics();
   const { activeTab, setActiveTab } = useActiveTabContext();
+
+  // State
   const [isExpanded, setIsExpanded] = useState(false);
   const [previousTab, setPreviousTab] = useState<ActiveTabId>();
   const [isAnimating, setIsAnimating] = useState(false);
   const [searchIsExpanded, setSearchIsExpanded] = useState(false);
   const [reloadOnFlagChangeIsEnabled, enableReloadOnFlagChange] = useState(() => loadReloadOnFlagChange());
   const [isAutoCollapseEnabled, setAutoCollapse] = useState(() => loadToolbarAutoCollapse());
+
   // Refs
   const hasBeenExpandedRef = useRef(false);
   const toolbarRef = useRef<HTMLDivElement | null>(null);
 
+  // Computed values
   const slideDirection = useMemo(() => {
     if (!activeTab || !previousTab) return 1; // Default direction when no tab is selected
     const currentIndex = TAB_ORDER.indexOf(activeTab);
@@ -62,6 +79,7 @@ export function useToolbarState(props: UseToolbarStateProps): UseToolbarStateRet
     return currentIndex > previousIndex ? 1 : -1; // 1 = slide left, -1 = slide right
   }, [activeTab, previousTab]);
 
+  // Handlers
   const handleTabChange = useCallback(
     (tabId: string) => {
       // Prevent tab changes during container expansion/collapse animation
@@ -91,7 +109,7 @@ export function useToolbarState(props: UseToolbarStateProps): UseToolbarStateRet
         setIsExpanded(true);
       }
     },
-    [activeTab, isExpanded, setSearchTerm, isAnimating, analytics],
+    [activeTab, isExpanded, setSearchTerm, isAnimating, analytics, setActiveTab],
   );
 
   const handleClose = useCallback(() => {
@@ -132,6 +150,7 @@ export function useToolbarState(props: UseToolbarStateProps): UseToolbarStateRet
     }
   }, [isExpanded]);
 
+  // Effects
   // Update hasBeenExpanded ref when toolbar shows
   useEffect(() => {
     if (isExpanded) {
@@ -157,36 +176,61 @@ export function useToolbarState(props: UseToolbarStateProps): UseToolbarStateRet
       }
     };
 
-    // shadowRoot.addEventListener('mousedown', handleClickOutside);
     document.addEventListener('mousedown', handleClickOutside);
     return () => {
-      // shadowRoot.removeEventListener('mousedown', handleClickOutside);
       document.removeEventListener('mousedown', handleClickOutside);
     };
   }, [isExpanded, isAutoCollapseEnabled, analytics, domId]);
 
-  return {
-    // State values
-    isExpanded,
-    previousTab,
-    isAnimating,
-    searchIsExpanded,
-    slideDirection,
-    hasBeenExpanded: hasBeenExpandedRef.current,
-    reloadOnFlagChangeIsEnabled,
-    isAutoCollapseEnabled,
+  const value = useMemo<ToolbarStateContextValue>(
+    () => ({
+      // State values
+      isExpanded,
+      previousTab,
+      isAnimating,
+      searchIsExpanded,
+      slideDirection,
+      hasBeenExpanded: hasBeenExpandedRef.current,
+      reloadOnFlagChangeIsEnabled,
+      isAutoCollapseEnabled,
 
-    // Refs
-    toolbarRef,
+      // Refs
+      toolbarRef,
 
-    // Handlers
-    handleTabChange,
-    handleClose,
-    handleSearch,
-    handleToggleReloadOnFlagChange,
-    handleToggleAutoCollapse,
-    handleCircleClick,
-    setIsAnimating,
-    setSearchIsExpanded,
-  };
+      // Handlers
+      handleTabChange,
+      handleClose,
+      handleSearch,
+      handleToggleReloadOnFlagChange,
+      handleToggleAutoCollapse,
+      handleCircleClick,
+      setIsAnimating,
+      setSearchIsExpanded,
+    }),
+    [
+      isExpanded,
+      previousTab,
+      isAnimating,
+      searchIsExpanded,
+      slideDirection,
+      reloadOnFlagChangeIsEnabled,
+      isAutoCollapseEnabled,
+      handleTabChange,
+      handleClose,
+      handleSearch,
+      handleToggleReloadOnFlagChange,
+      handleToggleAutoCollapse,
+      handleCircleClick,
+    ],
+  );
+
+  return <ToolbarStateContext.Provider value={value}>{children}</ToolbarStateContext.Provider>;
+}
+
+export function useToolbarState(): ToolbarStateContextValue {
+  const context = useContext(ToolbarStateContext);
+  if (context === undefined) {
+    throw new Error('useToolbarState must be used within a ToolbarStateProvider');
+  }
+  return context;
 }
