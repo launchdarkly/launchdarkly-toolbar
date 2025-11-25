@@ -10,4 +10,6 @@ import { createToolbarFlagFunction } from './createToolbarFlagFunction';
  * export const myFeature = createToolbarFlagFunction('my-feature-key', defaultValue);
  */
 export const useNewToolbarDesign = createToolbarFlagFunction('use-new-toolbar-design', false);
-export const showInteractiveIcon = createToolbarFlagFunction('show-interactive-icon', false);
+export const enableInteractiveIcon = createToolbarFlagFunction('enable-interactive-icon', false);
+export const enableAiIcon = createToolbarFlagFunction('enable-ai-icon', false);
+export const enableOptimizeIcon = createToolbarFlagFunction('enable-optimize-icon', false);

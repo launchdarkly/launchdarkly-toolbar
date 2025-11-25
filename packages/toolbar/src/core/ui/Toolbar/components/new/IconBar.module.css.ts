@@ -44,6 +44,16 @@ export const active = style({
   color: 'var(--lp-color-gray-200)',
 });
 
+export const disabled = style({
+  opacity: 0.4,
+  cursor: 'not-allowed',
+
+  ':hover': {
+    backgroundColor: 'transparent',
+    color: 'var(--lp-color-gray-400)',
+  },
+});
+
 export const icon = style({
   width: '24px',
   height: '24px',

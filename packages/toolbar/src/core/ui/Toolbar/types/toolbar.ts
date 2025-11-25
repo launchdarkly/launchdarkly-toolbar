@@ -1,5 +1,14 @@
 // Main toolbar types
-export type TabId = 'flag-sdk' | 'flag-dev-server' | 'events' | 'settings' | 'flags' | 'monitoring' | 'interactive';
+export type TabId =
+  | 'flag-sdk'
+  | 'flag-dev-server'
+  | 'events'
+  | 'settings'
+  | 'flags'
+  | 'monitoring'
+  | 'interactive'
+  | 'ai'
+  | 'optimize';
 export type ActiveTabId = TabId | undefined;
 
 export const TAB_ORDER: readonly TabId[] = ['flag-sdk', 'flag-dev-server', 'events', 'settings'] as const;
