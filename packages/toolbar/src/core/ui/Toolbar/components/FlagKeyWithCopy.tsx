@@ -46,6 +46,7 @@ export function FlagKeyWithCopy({ flagKey, className }: FlagKeyWithCopyProps) {
       <button
         className={`${styles.container} ${className || ''}`}
         onClick={handleCopy}
+        title={`Copy ${flagKey} to clipboard`}
         aria-label={`Copy flag key: ${flagKey}`}
       >
         <span className={styles.flagKeyText}>{flagKey}</span>
