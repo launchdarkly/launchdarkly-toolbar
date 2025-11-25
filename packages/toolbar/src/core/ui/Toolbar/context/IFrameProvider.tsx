@@ -1,16 +1,20 @@
 import { createContext, RefObject, useContext, useMemo, useRef } from 'react';
 
-export const IFRAME_API_MESSAGES = {
-  AUTHENTICATION: {
-    authenticated: 'toolbar-authenticated',
-    authenticationRequired: 'toolbar-authentication-required',
-    error: 'toolbar-authentication-error',
-  },
-  GET_FLAG: {
-    request: 'get-flag',
-    response: 'get-flag-response',
-    error: 'get-flag-error',
-  },
+export const IFRAME_COMMANDS = {
+  LOGOUT: 'logout',
+  GET_PROJECTS: 'get-projects',
+  GET_FLAGS: 'get-flags',
+  GET_FLAG: 'get-flag',
+};
+
+export const getResponseTopic = (command: string) => `${command}-response`;
+export const getErrorTopic = (command: string) => `${command}-error`;
+
+export const IFRAME_EVENTS = {
+  AUTHENTICATED: 'toolbar-authenticated',
+  AUTH_REQUIRED: 'toolbar-authentication-required',
+  AUTH_ERROR: 'toolbar-authentication-error',
+  API_READY: 'api-ready',
 };
 
 interface IFrameProviderProps {

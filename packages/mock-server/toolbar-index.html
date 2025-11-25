@@ -1,0 +1,163 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>LaunchDarkly Toolbar Auth</title>
+  </head>
+  <body>
+    <script>
+      (function () {
+        const originUrl = new URLSearchParams(window.location.search).get('originUrl');
+
+        // Mock authentication - always authenticated in test mode
+        console.log('[Mock Auth] Sending authenticated message to:', originUrl || window.parent);
+
+        const targetOrigin = originUrl || '*';
+        const message = {
+          type: 'toolbar-authenticated',
+          timestamp: Date.now(),
+        };
+
+        // Send to parent window (iframe context)
+        if (window.parent && window.parent !== window) {
+          window.parent.postMessage(message, targetOrigin);
+        }
+
+        // Send to opener (popup context)
+        if (window.opener) {
+          window.opener.postMessage(message, targetOrigin);
+        }
+
+        const apiReadyMessage = {
+          type: 'api-ready',
+          timestamp: Date.now(),
+        };
+
+        if (window.parent && window.parent !== window) {
+          window.parent.postMessage(apiReadyMessage, targetOrigin);
+        }
+
+        if (window.opener) {
+          window.opener.postMessage(apiReadyMessage, targetOrigin);
+        }
+
+        // Listen for API requests via postMessage
+        window.addEventListener('message', function (event) {
+          console.log('[Mock Auth] Received message:', event.data);
+
+          const { type, requestId } = event.data;
+
+          if (type === 'logout') {
+            // Handle logout request
+            console.log('[Mock Auth] Processing logout request');
+            event.source.postMessage(
+              {
+                type: 'logout-response',
+                requestId: requestId,
+                timestamp: Date.now(),
+              },
+              event.origin,
+            );
+          } else if (type === 'get-projects') {
+            // Return mock projects
+            event.source.postMessage(
+              {
+                type: 'get-projects-response',
+                requestId: requestId,
+                data: [
+                  { key: 'test-project', name: 'Test Project' },
+                  { key: 'demo-project', name: 'Demo Project' },
+                ],
+              },
+              event.origin,
+            );
+          } else if (type === 'get-flags') {
+            // Return mock flags for a project with pagination
+            const { projectKey, limit = 20, offset = 0 } = event.data;
+
+            // Generate a larger set of mock flags for pagination testing
+            const totalFlags = 50;
+            const allFlags = [];
+
+            for (let i = 1; i <= totalFlags; i++) {
+              allFlags.push({
+                key: `flag-${i}`,
+                name: `Flag ${i}`,
+                kind: i % 3 === 0 ? 'boolean' : i % 3 === 1 ? 'multivariate' : 'string',
+                description: `Mock flag ${i}`,
+                archived: false,
+                clientSideAvailability: {
+                  usingEnvironmentId: false,
+                  usingMobileKey: false,
+                },
+                customProperties: {},
+                variations: [],
+                environments: {
+                  production: {
+                    on: true,
+                    fallthrough: { variation: 0 },
+                  },
+                },
+              });
+            }
+
+            // Paginate the flags
+            const paginatedFlags = allFlags.slice(offset, offset + limit);
+            const hasMore = offset + limit < totalFlags;
+
+            event.source.postMessage(
+              {
+                type: 'get-flags-response',
+                requestId: requestId,
+                data: {
+                  items: paginatedFlags,
+                  _links: {
+                    self: { href: `/api/v2/flags/${projectKey}?limit=${limit}&offset=${offset}` },
+                    ...(hasMore && {
+                      next: { href: `/api/v2/flags/${projectKey}?limit=${limit}&offset=${offset + limit}` },
+                    }),
+                    ...(offset > 0 && {
+                      first: { href: `/api/v2/flags/${projectKey}?limit=${limit}&offset=0` },
+                    }),
+                  },
+                  totalCount: totalFlags,
+                },
+              },
+              event.origin,
+            );
+          } else if (type === 'get-flag') {
+            // Return detailed mock flag info
+            const { flagKey } = event.data;
+            event.source.postMessage(
+              {
+                type: 'get-flag-response',
+                requestId: requestId,
+                data: {
+                  key: flagKey,
+                  name: flagKey
+                    .split('-')
+                    .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
+                    .join(' '),
+                  kind: flagKey.includes('boolean') ? 'boolean' : 'multivariate',
+                  description: `Mock flag: ${flagKey}`,
+                  variations: [
+                    { _id: 'var-1', value: true },
+                    { _id: 'var-2', value: false },
+                  ],
+                  environments: {
+                    production: {
+                      on: true,
+                      fallthrough: { variation: 0 },
+                      rules: [],
+                    },
+                  },
+                },
+              },
+              event.origin,
+            );
+          }
+        });
+      })();
+    </script>
+  </body>
+</html>

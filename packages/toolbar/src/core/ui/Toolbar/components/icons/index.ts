@@ -13,3 +13,5 @@ export { CancelIcon } from './CancelIcon';
 export { StarIcon } from './StarIcon';
 export { StarOutlineIcon } from './StarOutlineIcon';
 export { PersonPassword } from './PersonPassword';
+export { ThumbUpIcon } from './ThumbUpIcon';
+export { ThumbDownIcon } from './ThumbDownIcon';

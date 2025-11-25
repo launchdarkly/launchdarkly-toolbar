@@ -24,26 +24,14 @@ export interface Override {
 
 export class DevServerClient {
   private baseUrl: string;
-  private projectKey: string | null = null;
+  private projectKey: string;
 
-  constructor(baseUrl: string, projectKey?: string) {
+  constructor(baseUrl: string, projectKey: string) {
     this.baseUrl = baseUrl;
-    this.projectKey = projectKey || null;
-  }
-
-  setProjectKey(projectKey: string): void {
     this.projectKey = projectKey;
   }
 
-  getProjectKey(): string | null {
-    return this.projectKey;
-  }
-
   async getProjectData(): Promise<DevServerProjectResponse> {
-    if (!this.projectKey) {
-      throw new Error('No project key set. Call setProjectKey() first.');
-    }
-
     const url = `${this.baseUrl}/dev/projects/${this.projectKey}?expand=overrides&expand=availableVariations`;
 
     try {
@@ -63,10 +51,6 @@ export class DevServerClient {
   }
 
   async setOverride(flagKey: string, value: any): Promise<{ override: boolean; value: any }> {
-    if (!this.projectKey) {
-      throw new Error('No project key set. Call setProjectKey() first.');
-    }
-
     const url = `${this.baseUrl}/dev/projects/${this.projectKey}/overrides/${flagKey}`;
 
     try {
@@ -92,10 +76,6 @@ export class DevServerClient {
   }
 
   async clearOverride(flagKey: string): Promise<void> {
-    if (!this.projectKey) {
-      throw new Error('No project key set. Call setProjectKey() first.');
-    }
-
     const url = `${this.baseUrl}/dev/projects/${this.projectKey}/overrides/${flagKey}`;
 
     try {
@@ -109,23 +89,6 @@ export class DevServerClient {
     } catch (error) {
       if (error instanceof TypeError) {
         throw new Error(`Failed to connect to dev server at ${this.baseUrl}`);
-      }
-      throw error;
-    }
-  }
-
-  async getAvailableProjects(): Promise<string[]> {
-    try {
-      const response = await fetch(`${this.baseUrl}/dev/projects`);
-
-      if (!response.ok) {
-        throw new Error(`Failed to fetch projects: ${response.status} ${response.statusText}`);
-      }
-
-      return await response.json();
-    } catch (error) {
-      if (error instanceof TypeError) {
-        throw new Error(`Failed to connect to dev server at ${this.baseUrl}. Is ldcli dev-server running?`);
       }
       throw error;
     }

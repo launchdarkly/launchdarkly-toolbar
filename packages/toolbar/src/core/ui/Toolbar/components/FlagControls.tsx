@@ -118,6 +118,10 @@ export function StringNumberFlagControl(props: StringNumberFlagControlProps) {
               value={tempValue}
               onChange={(e) => setTempValue(e.target.value)}
               type={flag.type === 'number' ? 'number' : 'text'}
+              onKeyDown={(e) => {
+                // Stop propagation to prevent parent app keyboard shortcuts from interfering
+                e.stopPropagation();
+              }}
             />
             <IconButton icon={<CheckIcon />} label="Confirm" onClick={handleConfirm} />
             <IconButton icon={<CancelIcon />} label="Cancel" onClick={handleCancel} />

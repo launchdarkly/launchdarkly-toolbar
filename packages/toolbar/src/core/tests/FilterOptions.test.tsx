@@ -1,11 +1,12 @@
 import { render, screen } from '@testing-library/react';
 import { expect, test, describe, vi } from 'vitest';
-
 import { FilterOptions, type FilterOptionsProps } from '../ui/Toolbar/components/FilterOptions/FilterOptions';
 import {
   FlagFilterOptionsContext,
   type FlagFilterMode,
 } from '../ui/Toolbar/components/FilterOptions/useFlagFilterOptions';
+import '@testing-library/jest-dom/vitest';
+import React from 'react';
 
 describe('FilterOptions', () => {
   const defaultProps: FilterOptionsProps = {

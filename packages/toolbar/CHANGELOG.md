@@ -1,5 +1,49 @@
 # Changelog
 
+## [2.0.0-beta.1](https://github.com/launchdarkly/launchdarkly-toolbar/compare/1.6.0...2.0.0-beta.1) (2025-11-24)
+
+
+### ⚠ BREAKING CHANGES
+
+* [REL-10665] display flag names via API ([#309](https://github.com/launchdarkly/launchdarkly-toolbar/issues/309))
+
+### Features
+
+* [REL-10665] display flag names via API ([#309](https://github.com/launchdarkly/launchdarkly-toolbar/issues/309)) ([6f3af66](https://github.com/launchdarkly/launchdarkly-toolbar/commit/6f3af66fb0760af9466d7d309dbc44315b7710d8))
+* improve DevServerMode api call logic ([6f3af66](https://github.com/launchdarkly/launchdarkly-toolbar/commit/6f3af66fb0760af9466d7d309dbc44315b7710d8))
+
+
+### Bug Fixes
+
+* remove provenance flag from npm publish command ([#350](https://github.com/launchdarkly/launchdarkly-toolbar/issues/350)) ([668bc27](https://github.com/launchdarkly/launchdarkly-toolbar/commit/668bc27560d187420920202302e3776c4105a5ec))
+
+## [1.6.0](https://github.com/launchdarkly/launchdarkly-toolbar/compare/1.5.0...1.6.0) (2025-11-24)
+
+
+### Features
+
+* REL-10583 - add feedback mechanism to settings tab ([#345](https://github.com/launchdarkly/launchdarkly-toolbar/issues/345)) ([3b99673](https://github.com/launchdarkly/launchdarkly-toolbar/commit/3b996730f9d5f4997577279ff8275892cf6f0ec6))
+
+## [1.5.0](https://github.com/launchdarkly/launchdarkly-toolbar/compare/1.4.1...1.5.0) (2025-11-24)
+
+
+### Features
+
+* add analytics tracking for dev server mode ([#344](https://github.com/launchdarkly/launchdarkly-toolbar/issues/344)) ([d2b0922](https://github.com/launchdarkly/launchdarkly-toolbar/commit/d2b0922f0edd72688a41080ad5f7efd94cbbbba0))
+
+
+### Bug Fixes
+
+* prevent parent app keyboard shortcuts from interfering with tool… ([#343](https://github.com/launchdarkly/launchdarkly-toolbar/issues/343)) ([4ef47bc](https://github.com/launchdarkly/launchdarkly-toolbar/commit/4ef47bcc611e87fe42ed19efb80a1fd319c68b37))
+* prevent parent app keyboard shortcuts from interfering with toolbar inputs ([4ef47bc](https://github.com/launchdarkly/launchdarkly-toolbar/commit/4ef47bcc611e87fe42ed19efb80a1fd319c68b37))
+
+## [1.4.1](https://github.com/launchdarkly/launchdarkly-toolbar/compare/1.4.0...1.4.1) (2025-11-21)
+
+
+### Bug Fixes
+
+* [REL-10878] fix Select dropdown styling issue ([#317](https://github.com/launchdarkly/launchdarkly-toolbar/issues/317)) ([7651dcb](https://github.com/launchdarkly/launchdarkly-toolbar/commit/7651dcb9768fa68f5b963352ada731f0710a77aa))
+
 ## [1.4.0](https://github.com/launchdarkly/launchdarkly-toolbar/compare/1.3.1...1.4.0) (2025-11-20)
 
 

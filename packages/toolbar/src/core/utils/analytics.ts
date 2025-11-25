@@ -1,5 +1,7 @@
 import type { LDClient } from 'launchdarkly-js-client-sdk';
+import type { FeedbackSentiment } from '../../types/analytics';
 import { isDoNotTrackEnabled } from './browser';
+import { ToolbarMode } from '../ui/Toolbar/types';
 
 export const ANALYTICS_EVENT_PREFIX = 'ld.toolbar';
 
@@ -16,6 +18,14 @@ const EVENTS = {
   RELOAD_ON_FLAG_CHANGE_TOGGLE: 'reload.on.flag.change.toggle',
   STAR_FLAG: 'star.flag',
   FILTER_CHANGED: 'filter.changed',
+  LOGIN_SUCCESS: 'login.success',
+  LOGIN_CANCELLED: 'login.cancelled',
+  LOGOUT: 'logout',
+  AUTH_ERROR: 'auth.error',
+  API_ERROR: 'api.error',
+  PROJECT_SWITCHED: 'project.switched',
+  REFRESH: 'refresh',
+  FEEDBACK_SUBMITTED: 'feedback.submitted',
 } as const;
 
 /**
@@ -23,11 +33,13 @@ const EVENTS = {
  */
 export class ToolbarAnalytics {
   private ldClient: LDClient | null = null;
+  private mode: ToolbarMode | null = null;
   // Timer id for debouncing search tracking
   private searchDebounceTimer: ReturnType<typeof setTimeout> | null = null;
 
-  constructor(ldClient?: LDClient | null) {
+  constructor(ldClient?: LDClient | null, mode?: ToolbarMode) {
     this.ldClient = ldClient || null;
+    this.mode = mode || null;
   }
 
   /**
@@ -45,8 +57,14 @@ export class ToolbarAnalytics {
       return;
     }
 
+    // Include these properties in all tracked events
+    const enrichedProperties = {
+      ...properties,
+      mode: this.mode,
+    };
+
     try {
-      this.ldClient.track(fullEventName, properties);
+      this.ldClient.track(fullEventName, enrichedProperties);
     } catch (error) {
       console.error('ToolbarAnalytics: Failed to track event:', fullEventName, error);
     }
@@ -173,6 +191,72 @@ export class ToolbarAnalytics {
   trackReloadOnFlagChangeToggle(enabled: boolean): void {
     this.track(EVENTS.RELOAD_ON_FLAG_CHANGE_TOGGLE, {
       enabled,
+    });
+  }
+
+  /**
+   * Track successful login
+   */
+  trackLoginSuccess(): void {
+    this.track(EVENTS.LOGIN_SUCCESS, {});
+  }
+
+  /**
+   * Track when user closes the login screen without logging in
+   */
+  trackLoginCancelled(): void {
+    this.track(EVENTS.LOGIN_CANCELLED, {});
+  }
+
+  /**
+   * Track when user logs out
+   */
+  trackLogout(): void {
+    this.track(EVENTS.LOGOUT, {});
+  }
+
+  /**
+   * Track authentication errors
+   */
+  trackAuthError(error: unknown): void {
+    this.track(EVENTS.AUTH_ERROR, {
+      error: error instanceof Error ? error.message : String(error),
+    });
+  }
+
+  /**
+   * Track project switching in dev server mode
+   */
+  trackProjectSwitch(fromProject: string, toProject: string): void {
+    this.track(EVENTS.PROJECT_SWITCHED, {
+      fromProject,
+      toProject,
+    });
+  }
+
+  /**
+   * Track API errors
+   */
+  trackApiError(error: unknown): void {
+    this.track(EVENTS.API_ERROR, {
+      error: error instanceof Error ? error.message : String(error),
+    });
+  }
+
+  /**
+   * Track refresh button clicks in dev server mode
+   */
+  trackRefresh(): void {
+    this.track(EVENTS.REFRESH, {});
+  }
+
+  /**
+   * Track user feedback
+   */
+  trackFeedback(feedback: string, sentiment: FeedbackSentiment): void {
+    this.track(EVENTS.FEEDBACK_SUBMITTED, {
+      sentiment,
+      comment: feedback,
     });
   }
 }

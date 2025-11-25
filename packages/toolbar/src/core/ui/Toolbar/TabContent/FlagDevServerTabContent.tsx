@@ -1,9 +1,10 @@
-import { useRef, useState, useMemo, useCallback } from 'react';
+import { useState, useMemo, useCallback, useRef } from 'react';
 import { useVirtualizer } from '@tanstack/react-virtual';
 import { List } from '../../List/List';
 import { ListItem } from '../../List/ListItem';
 import { useSearchContext } from '../context/SearchProvider';
 import { useDevServerContext } from '../context/DevServerProvider';
+import { useAnalytics } from '../context';
 import { EnhancedFlag } from '../../../types/devServer';
 import { GenericHelpText } from '../components/GenericHelpText';
 import { BooleanFlagControl, MultivariateFlagControl, StringNumberFlagControl } from '../components/FlagControls';
@@ -28,34 +29,50 @@ interface FlagDevServerTabContentProps {
 export function FlagDevServerTabContent(props: FlagDevServerTabContentProps) {
   const { reloadOnFlagChangeIsEnabled } = props;
   const { searchTerm } = useSearchContext();
+  const analytics = useAnalytics();
   const { state, setOverride, clearOverride, clearAllOverrides } = useDevServerContext();
   const { flags } = state;
   const { isStarred, toggleStarred, clearAllStarred, starredCount } = useStarredFlags();
 
   const [activeFilters, setActiveFilters] = useState<Set<FlagFilterMode>>(new Set([FILTER_MODES.ALL]));
-  const parentRef = useRef<HTMLDivElement>(null);
 
-  const handleFilterToggle = useCallback((filter: FlagFilterMode) => {
-    setActiveFilters((prev) => {
-      // Clicking "All" resets to default state
-      if (filter === FILTER_MODES.ALL) {
-        return new Set([FILTER_MODES.ALL]);
-      }
+  // Ref for scroll container
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const getScrollElement = useCallback(() => scrollContainerRef.current, []);
 
-      const next = new Set(prev);
-      next.delete(FILTER_MODES.ALL); // Remove "All" when selecting specific filters
+  const handleFilterToggle = useCallback(
+    (filter: FlagFilterMode) => {
+      setActiveFilters((prev) => {
+        // Clicking "All" resets to default state
+        if (filter === FILTER_MODES.ALL) {
+          analytics.trackFilterChange(FILTER_MODES.ALL, 'selected');
+          return new Set([FILTER_MODES.ALL]);
+        }
 
-      // Toggle the selected filter
-      if (next.has(filter)) {
-        next.delete(filter);
-      } else {
-        next.add(filter);
-      }
+        const next = new Set(prev);
+        next.delete(FILTER_MODES.ALL); // Remove "All" when selecting specific filters
 
-      // Default to "All" if no filters remain
-      return next.size === 0 ? new Set([FILTER_MODES.ALL]) : next;
-    });
-  }, []);
+        // Toggle the selected filter
+        const wasActive = next.has(filter);
+        if (wasActive) {
+          next.delete(filter);
+          analytics.trackFilterChange(filter, 'deselected');
+        } else {
+          next.add(filter);
+          analytics.trackFilterChange(filter, 'selected');
+        }
+
+        // Default to "All" if no filters remain
+        if (next.size === 0) {
+          analytics.trackFilterChange(FILTER_MODES.ALL, 'selected');
+          return new Set([FILTER_MODES.ALL]);
+        }
+
+        return next;
+      });
+    },
+    [analytics],
+  );
 
   const flagEntries = Object.entries(flags);
   const filteredFlags = useMemo(() => {
@@ -81,7 +98,7 @@ export function FlagDevServerTabContent(props: FlagDevServerTabContentProps) {
 
   const virtualizer = useVirtualizer({
     count: filteredFlags.length,
-    getScrollElement: () => parentRef.current,
+    getScrollElement,
     estimateSize: () => VIRTUALIZATION.ITEM_HEIGHT,
     overscan: VIRTUALIZATION.OVERSCAN,
   });
@@ -93,6 +110,7 @@ export function FlagDevServerTabContent(props: FlagDevServerTabContentProps) {
 
   const handleSetOverride = (flagKey: string, value: any) => {
     setOverride(flagKey, value);
+    analytics.trackFlagOverride(flagKey, value, 'set');
 
     if (reloadOnFlagChangeIsEnabled) {
       window.location.reload();
@@ -119,7 +137,10 @@ export function FlagDevServerTabContent(props: FlagDevServerTabContentProps) {
   };
 
   const onRemoveAllOverrides = async () => {
+    const overrideCount = totalOverriddenFlags;
     await clearAllOverrides();
+    analytics.trackFlagOverride('*', { count: overrideCount }, 'clear_all');
+    analytics.trackFilterChange(FILTER_MODES.ALL, 'selected');
     setActiveFilters(new Set([FILTER_MODES.ALL]));
     if (reloadOnFlagChangeIsEnabled) {
       window.location.reload();
@@ -127,7 +148,9 @@ export function FlagDevServerTabContent(props: FlagDevServerTabContentProps) {
   };
 
   const onClearAllStarred = () => {
+    analytics.trackStarredFlag('*', 'clear_all');
     clearAllStarred();
+    analytics.trackFilterChange(FILTER_MODES.ALL, 'selected');
     setActiveFilters(new Set([FILTER_MODES.ALL]));
   };
 
@@ -141,12 +164,22 @@ export function FlagDevServerTabContent(props: FlagDevServerTabContentProps) {
         setActiveFilters(new Set([FILTER_MODES.ALL]));
       }
       clearOverride(flagKey).then(() => {
+        analytics.trackFlagOverride(flagKey, null, 'remove');
         if (reloadOnFlagChangeIsEnabled) {
           window.location.reload();
         }
       });
     },
-    [totalOverriddenFlags, activeFilters, clearOverride, reloadOnFlagChangeIsEnabled],
+    [totalOverriddenFlags, activeFilters, clearOverride, analytics, reloadOnFlagChangeIsEnabled],
+  );
+
+  const handleToggleStarred = useCallback(
+    (flagKey: string) => {
+      const wasPreviouslyStarred = isStarred(flagKey);
+      toggleStarred(flagKey);
+      analytics.trackStarredFlag(flagKey, wasPreviouslyStarred ? 'unstar' : 'star');
+    },
+    [isStarred, toggleStarred, analytics],
   );
 
   const handleHeightChange = useCallback(
@@ -195,7 +228,7 @@ export function FlagDevServerTabContent(props: FlagDevServerTabContentProps) {
           {filteredFlags.length === 0 && (searchTerm.trim() || !activeFilters.has(FILTER_MODES.ALL)) ? (
             <GenericHelpText title={genericHelpTitle} subtitle={genericHelpSubtitle} />
           ) : (
-            <div ref={parentRef} className={styles.virtualContainer}>
+            <div ref={scrollContainerRef} className={styles.virtualContainer}>
               <List>
                 <div
                   className={styles.virtualInner}
@@ -218,6 +251,7 @@ export function FlagDevServerTabContent(props: FlagDevServerTabContentProps) {
                             handleOverride={handleSetOverride}
                             handleClearOverride={onClearOverride}
                             handleHeightChange={(height) => handleHeightChange(virtualItem.index, height)}
+                            onToggleStarred={handleToggleStarred}
                           />
                         </div>
                       );
@@ -244,7 +278,11 @@ export function FlagDevServerTabContent(props: FlagDevServerTabContentProps) {
 
                           <div className={styles.flagOptions}>
                             {renderFlagControl(flag)}
-                            <StarButton flagKey={flag.key} isStarred={isStarred(flag.key)} onToggle={toggleStarred} />
+                            <StarButton
+                              flagKey={flag.key}
+                              isStarred={isStarred(flag.key)}
+                              onToggle={handleToggleStarred}
+                            />
                           </div>
                         </ListItem>
                       </div>

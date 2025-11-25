@@ -1,9 +1,11 @@
 import { DevServerClient, Variation } from './DevServerClient';
 import { EnhancedFlag } from '../types/devServer';
+import { ApiFlag } from '../ui/Toolbar/types/ldApi';
 
 export class FlagStateManager {
   private devServerClient: DevServerClient;
   private listeners: Set<(flags: Record<string, EnhancedFlag>) => void> = new Set();
+  private apiFlags: ApiFlag[] = [];
 
   constructor(devServerClient: DevServerClient) {
     this.devServerClient = devServerClient;
@@ -14,11 +16,15 @@ export class FlagStateManager {
 
     const enhancedFlags: Record<string, EnhancedFlag> = {};
 
-    // Process each flag from dev server data
-    Object.keys(devServerData.flagsState).forEach((flagKey) => {
-      const flagState = devServerData.flagsState[flagKey];
-      if (!flagState) return;
+    // First, create a map of API flags for quick lookup
+    const apiFlagsMap = new Map<string, ApiFlag>();
+    this.apiFlags.forEach((apiFlag) => {
+      apiFlagsMap.set(apiFlag.key, apiFlag);
+    });
 
+    // Process all flags from the dev server
+    Object.entries(devServerData.flagsState).forEach(([flagKey, flagState]) => {
+      const apiFlag = apiFlagsMap.get(flagKey);
       const override = devServerData.overrides[flagKey];
       const variations = devServerData.availableVariations[flagKey] || [];
 
@@ -27,12 +33,13 @@ export class FlagStateManager {
 
       enhancedFlags[flagKey] = {
         key: flagKey,
-        name: this.formatFlagName(flagKey),
+        // Use API flag name if available, otherwise format the key
+        name: apiFlag?.name || this.formatFlagName(flagKey),
         currentValue,
         isOverridden: !!override,
         originalValue: flagState.value,
         availableVariations: variations,
-        type: this.determineFlagType(variations, currentValue),
+        type: apiFlag?.kind || this.determineFlagType(variations, currentValue),
         sourceEnvironment: devServerData.sourceEnvironmentKey,
         enabled: flagState.value !== null && flagState.value !== undefined,
       };
@@ -90,6 +97,10 @@ export class FlagStateManager {
     await this.devServerClient.clearOverride(flagKey);
     // Notify listeners of the change
     await this.notifyListeners();
+  }
+
+  setApiFlags(apiFlags: ApiFlag[]): void {
+    this.apiFlags = apiFlags;
   }
 
   subscribe(listener: (flags: Record<string, EnhancedFlag>) => void): () => void {
