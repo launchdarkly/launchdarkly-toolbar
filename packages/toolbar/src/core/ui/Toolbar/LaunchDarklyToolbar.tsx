@@ -10,7 +10,8 @@ import {
   ActiveTabProvider,
   useActiveTabContext,
 } from './context';
-import { CircleLogo, ExpandedToolbarContent } from './components';
+import { CircleLogo } from './components';
+import { ExpandedToolbarContentLegacy } from './components/legacy';
 import { useToolbarAnimations, useToolbarVisibility, useToolbarDrag, useToolbarState } from './hooks';
 import { ToolbarUIProvider, useToolbarUIContext } from './context';
 import { ToolbarMode, ToolbarPosition, getToolbarMode, getDefaultActiveTab } from './types/toolbar';
@@ -25,6 +26,8 @@ import { ProjectProvider } from './context/ProjectProvider';
 import { FlagsProvider } from './context/FlagsProvider';
 import { AuthenticationModal } from './components/AuthenticationModal';
 import { InternalClientProvider } from './context/InternalClientProvider';
+import { useNewToolbarDesign } from '../../../flags/toolbarFlags';
+import { ExpandedToolbarContent } from './components/new/ExpandedToolbarContent';
 
 export interface LdToolbarProps {
   mode: ToolbarMode;
@@ -139,7 +142,9 @@ export function LdToolbar(props: LdToolbarProps) {
     'top-left': styles.positionTopLeft,
     'top-right': styles.positionTopRight,
   };
-
+  
+  const newToolbarDesign = useNewToolbarDesign();
+  console.log('newToolbarDesign', newToolbarDesign);
   return (
     <motion.div
       ref={toolbarRef}
@@ -172,8 +177,8 @@ export function LdToolbar(props: LdToolbarProps) {
         )}
       </AnimatePresence>
       <AnimatePresence>
-        {isExpanded && (
-          <ExpandedToolbarContent
+        {isExpanded && !newToolbarDesign && (
+          <ExpandedToolbarContentLegacy
             ref={expandedContentRef}
             activeTab={activeTab}
             slideDirection={slideDirection}
@@ -194,6 +199,9 @@ export function LdToolbar(props: LdToolbarProps) {
             reloadOnFlagChangeIsEnabled={reloadOnFlagChangeIsEnabled}
             onToggleReloadOnFlagChange={handleToggleReloadOnFlagChange}
           />
+        )}
+        {isExpanded && newToolbarDesign && (
+          <ExpandedToolbarContent />
         )}
       </AnimatePresence>
       <AuthenticationModal isOpen={false} onClose={() => {}} />
