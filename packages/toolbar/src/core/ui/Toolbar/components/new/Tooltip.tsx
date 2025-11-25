@@ -19,8 +19,8 @@ export const Tooltip: React.FC<TooltipProps> = ({ content, children }) => {
       const rect = containerRef.current.getBoundingClientRect();
       const tooltipRect = tooltipRef.current.getBoundingClientRect();
       setPosition({
-        top: (rect.top - rect.height / 2) - 16,
-        left: (rect.left + rect.width / 2 - tooltipRect.width / 2) - 4,
+        top: rect.top - rect.height / 2 - 16,
+        left: rect.left + rect.width / 2 - tooltipRect.width / 2 - 4,
       });
       setIsPositioned(true);
     }
@@ -75,4 +75,3 @@ export const Tooltip: React.FC<TooltipProps> = ({ content, children }) => {
     </div>
   );
 };
-

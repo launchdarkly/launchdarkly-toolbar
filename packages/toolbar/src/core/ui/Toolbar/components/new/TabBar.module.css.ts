@@ -82,4 +82,3 @@ export const searchButton = style({
     outlineOffset: '-2px',
   },
 });
-

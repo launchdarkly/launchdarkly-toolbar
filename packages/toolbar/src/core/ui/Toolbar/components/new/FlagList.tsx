@@ -10,9 +10,7 @@ export const FlagList = () => {
   ]);
 
   const handleToggle = (id: string) => {
-    setFlags((prevFlags) =>
-      prevFlags.map((flag) => (flag.id === id ? { ...flag, enabled: !flag.enabled } : flag)),
-    );
+    setFlags((prevFlags) => prevFlags.map((flag) => (flag.id === id ? { ...flag, enabled: !flag.enabled } : flag)));
   };
 
   return (
@@ -29,4 +27,3 @@ export const FlagList = () => {
     </div>
   );
 };
-

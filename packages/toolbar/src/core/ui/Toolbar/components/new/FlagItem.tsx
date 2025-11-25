@@ -20,4 +20,3 @@ export const FlagItem: React.FC<FlagItemProps> = ({ name, value, enabled, onTogg
     </div>
   );
 };
-

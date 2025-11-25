@@ -200,7 +200,9 @@ export function LdToolbar(props: LdToolbarProps) {
             onToggleReloadOnFlagChange={handleToggleReloadOnFlagChange}
           />
         )}
-        {isExpanded && newToolbarDesign && <ExpandedToolbarContent />}
+        {isExpanded && newToolbarDesign && (
+          <ExpandedToolbarContent onClose={handleClose} onHeaderMouseDown={handleMouseDown} />
+        )}
       </AnimatePresence>
       <AuthenticationModal isOpen={false} onClose={() => {}} />
     </motion.div>

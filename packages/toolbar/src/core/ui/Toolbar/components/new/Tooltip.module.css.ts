@@ -33,4 +33,3 @@ export const tooltip = style({
     borderTop: '6px solid var(--lp-color-gray-700)',
   },
 });
-

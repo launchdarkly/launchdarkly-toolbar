@@ -12,6 +12,16 @@ export const leftSection = style({
   display: 'flex',
   alignItems: 'center',
   gap: '8px',
+  cursor: 'grab',
+  userSelect: 'none',
+  padding: '4px',
+  marginLeft: '-4px',
+  borderRadius: '4px',
+  transition: 'background-color 0.2s ease',
+
+  ':active': {
+    cursor: 'grabbing',
+  },
 });
 
 export const logo = style({
@@ -60,4 +70,3 @@ export const iconButton = style({
     outlineOffset: '-2px',
   },
 });
-

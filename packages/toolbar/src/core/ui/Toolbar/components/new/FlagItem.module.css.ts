@@ -33,4 +33,3 @@ export const value = style({
   fontSize: '13px',
   color: 'var(--lp-color-gray-400)',
 });
-
