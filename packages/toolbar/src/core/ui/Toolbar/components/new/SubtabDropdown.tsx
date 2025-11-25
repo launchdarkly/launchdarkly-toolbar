@@ -1,7 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { AnimatePresence, motion } from 'motion/react';
 import { ChevronDownIcon } from '../icons/ChevronDownIcon';
-import { FilterTuneIcon } from '../icons/FilterTuneIcon';
 import { SubTab, TabConfig } from './types';
 import * as styles from './SubtabDropdown.module.css.ts';
 
