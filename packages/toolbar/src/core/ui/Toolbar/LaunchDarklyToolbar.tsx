@@ -269,11 +269,11 @@ export function LaunchDarklyToolbar(props: LaunchDarklyToolbarProps) {
         eventsUrl={internalClientConfig.eventsUrl}
       >
         <AnalyticsProvider mode={mode}>
-          <ActiveTabProvider>
-            <ToolbarStateProvider domId={domId} devServerUrl={devServerUrl}>
-              <IFrameProvider authUrl={authUrl}>
-                <AuthProvider>
-                  <SearchProvider>
+          <SearchProvider>
+            <ActiveTabProvider>
+              <ToolbarStateProvider domId={domId} devServerUrl={devServerUrl}>
+                <IFrameProvider authUrl={authUrl}>
+                  <AuthProvider>
                     <ApiProvider>
                       <ProjectProvider clientSideId={clientSideId} providedProjectKey={projectKey}>
                         <FlagsProvider>
@@ -302,11 +302,11 @@ export function LaunchDarklyToolbar(props: LaunchDarklyToolbarProps) {
                         </FlagsProvider>
                       </ProjectProvider>
                     </ApiProvider>
-                  </SearchProvider>
-                </AuthProvider>
-              </IFrameProvider>
-            </ToolbarStateProvider>
-          </ActiveTabProvider>
+                  </AuthProvider>
+                </IFrameProvider>
+              </ToolbarStateProvider>
+            </ActiveTabProvider>
+          </SearchProvider>
         </AnalyticsProvider>
       </InternalClientProvider>
     </ToolbarUIProvider>
