@@ -54,7 +54,7 @@ describe('IconBar', () => {
       renderIconBar();
 
       const buttons = screen.getAllByRole('button');
-      
+
       // Verify all icons are present in order: interactive, flags, optimize, ai, monitoring, settings
       expect(buttons).toHaveLength(6);
       expect(buttons[0]).toHaveAttribute('aria-label', 'Click tracking');
