@@ -24,6 +24,7 @@ import { IFrameProvider } from './context/IFrameProvider';
 import { ProjectProvider } from './context/ProjectProvider';
 import { FlagsProvider } from './context/FlagsProvider';
 import { AuthenticationModal } from './components/AuthenticationModal';
+import { EnvironmentProvider } from './context/EnvironmentProvider';
 import { InternalClientProvider } from './context/InternalClientProvider';
 
 export interface LdToolbarProps {
@@ -261,27 +262,29 @@ export function LaunchDarklyToolbar(props: LaunchDarklyToolbarProps) {
               <SearchProvider>
                 <ApiProvider>
                   <ProjectProvider clientSideId={clientSideId} providedProjectKey={projectKey}>
-                    <ActiveTabProvider>
-                      <FlagsProvider>
-                        <DevServerProvider
-                          config={{
-                            projectKey,
-                            devServerUrl,
-                            pollIntervalInMs,
-                          }}
-                        >
-                          <StarredFlagsProvider>
-                            <LdToolbar
-                              domId={domId}
-                              mode={mode}
-                              baseUrl={baseUrl}
-                              flagOverridePlugin={flagOverridePlugin}
-                              eventInterceptionPlugin={eventInterceptionPlugin}
-                            />
-                          </StarredFlagsProvider>
-                        </DevServerProvider>
-                      </FlagsProvider>
-                    </ActiveTabProvider>
+                    <EnvironmentProvider clientSideId={clientSideId}>
+                      <ActiveTabProvider>
+                        <FlagsProvider>
+                          <DevServerProvider
+                            config={{
+                              projectKey,
+                              devServerUrl,
+                              pollIntervalInMs,
+                            }}
+                          >
+                            <StarredFlagsProvider>
+                              <LdToolbar
+                                domId={domId}
+                                mode={mode}
+                                baseUrl={baseUrl}
+                                flagOverridePlugin={flagOverridePlugin}
+                                eventInterceptionPlugin={eventInterceptionPlugin}
+                              />
+                            </StarredFlagsProvider>
+                          </DevServerProvider>
+                        </FlagsProvider>
+                      </ActiveTabProvider>
+                    </EnvironmentProvider>
                   </ProjectProvider>
                 </ApiProvider>
               </SearchProvider>

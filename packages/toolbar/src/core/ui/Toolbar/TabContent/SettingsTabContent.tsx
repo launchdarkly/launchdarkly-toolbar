@@ -14,6 +14,7 @@ import { Feedback } from '../components/Feedback/Feedback';
 
 import * as styles from './SettingsTab.css';
 import { useProjectContext } from '../context/ProjectProvider';
+import { useEnvironmentContext } from '../context/EnvironmentProvider';
 import { useEffect, useMemo } from 'react';
 import type { FeedbackSentiment } from '../../../../types/analytics';
 
@@ -23,6 +24,7 @@ interface SettingsItem {
   name: string;
   icon: string;
   isProjectSelector?: boolean;
+  isEnvironmentSelector?: boolean;
   isPositionSelector?: boolean;
   isConnectionStatus?: boolean;
   isReloadOnFlagChangeToggle?: boolean;
@@ -70,6 +72,37 @@ function ProjectSelector() {
       className={styles.select}
       isDisabled={loading}
       options={projectOptions}
+    />
+  );
+}
+
+function EnvironmentSelector() {
+  const { environment, setEnvironment } = useEnvironmentContext();
+  const { environments, loading } = useProjectContext();
+
+  const environmentOptions = useMemo(() => {
+    return environments.map((env) => ({
+      id: env.key,
+      label: env.name,
+    }));
+  }, [environments]);
+
+  const handleEnvironmentSelect = (key: string | null) => {
+    if (key && key !== environment && !loading) {
+      setEnvironment(key);
+    }
+  };
+
+  return (
+    <Select
+      selectedKey={environment}
+      onSelectionChange={handleEnvironmentSelect}
+      aria-label="Select environment"
+      placeholder="Select environment"
+      data-theme="dark"
+      className={styles.select}
+      isDisabled={loading || environments.length === 0}
+      options={environmentOptions}
     />
   );
 }
@@ -305,6 +338,12 @@ export function SettingsTabContent(props: SettingsTabContentProps) {
               isProjectSelector: true,
             },
             {
+              id: 'environment',
+              name: 'Environment',
+              icon: 'globe',
+              isEnvironmentSelector: true,
+            },
+            {
               id: 'position',
               name: 'Position',
               icon: 'move',
@@ -418,6 +457,8 @@ export function SettingsTabContent(props: SettingsTabContentProps) {
                         </div>
                         {item.isProjectSelector ? (
                           <ProjectSelector />
+                        ) : item.isEnvironmentSelector ? (
+                          <EnvironmentSelector />
                         ) : item.isPositionSelector ? (
                           <PositionSelector currentPosition={position} onPositionChange={handlePositionSelect} />
                         ) : item.isAutoCollapseToggle ? (

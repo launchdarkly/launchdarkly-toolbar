@@ -6,10 +6,15 @@ import { ListItem } from '../../List/ListItem';
 import { useSearchContext, useAnalytics } from '../context';
 import { FlagSdkOverrideProvider, useFlagSdkOverrideContext } from '../context';
 import { GenericHelpText } from '../components/GenericHelpText';
-import { LocalBooleanFlagControl, LocalStringNumberFlagControl } from '../components/LocalFlagControls';
+import {
+  LocalBooleanFlagControl,
+  LocalMultivariateFlagControl,
+  LocalStringNumberFlagControl,
+} from '../components/LocalFlagControls';
 import { OverrideIndicator } from '../components/OverrideIndicator';
 import { StarButton } from '../components/StarButton';
 import { FlagKeyWithCopy } from '../components/FlagKeyWithCopy';
+import { ExternalLinkIcon } from '../components/icons';
 import { useStarredFlags } from '../context/StarredFlagsProvider';
 import {
   type FlagFilterMode,
@@ -24,6 +29,8 @@ import type { LocalFlag } from '../context';
 import * as sharedStyles from './FlagDevServerTabContent.css';
 import { IFlagOverridePlugin } from '../../../../types';
 import { LocalObjectFlagControlListItem } from '../components/LocalObjectFlagControlListItem';
+import { useProjectContext } from '../context/ProjectProvider';
+import { useEnvironmentContext } from '../context/EnvironmentProvider';
 
 interface FlagSdkOverrideTabContentInnerProps {
   flagOverridePlugin: IFlagOverridePlugin;
@@ -37,6 +44,8 @@ function FlagSdkOverrideTabContentInner(props: FlagSdkOverrideTabContentInnerPro
   const { flags, isLoading } = useFlagSdkOverrideContext();
   const { isStarred, toggleStarred, clearAllStarred, starredCount } = useStarredFlags();
   const [activeFilters, setActiveFilters] = useState<Set<FlagFilterMode>>(new Set([FILTER_MODES.ALL]));
+  const { projectKey } = useProjectContext();
+  const { environment } = useEnvironmentContext();
 
   // Ref for scroll container
   const scrollContainerRef = useRef<HTMLDivElement>(null);
@@ -196,6 +205,9 @@ function FlagSdkOverrideTabContentInner(props: FlagSdkOverrideTabContentInnerPro
       case 'boolean':
         return <LocalBooleanFlagControl flag={flag} onOverride={handleOverride} />;
 
+      case 'multivariate':
+        return <LocalMultivariateFlagControl flag={flag} onOverride={handleOverride} />;
+
       case 'string':
       case 'number':
         return <LocalStringNumberFlagControl flag={flag} onOverride={handleOverride} />;
@@ -304,22 +316,29 @@ function FlagSdkOverrideTabContentInner(props: FlagSdkOverrideTabContentInnerPro
                     return (
                       <div
                         key={virtualItem.key}
-                        className={sharedStyles.virtualItem}
+                        className={`${sharedStyles.virtualItem} ${flag.isOverridden ? sharedStyles.virtualItemOverridden : ''}`}
                         style={{
                           height: `${virtualItem.size}px`,
                           transform: `translateY(${virtualItem.start}px)`,
-                          borderBottom: '1px solid var(--lp-color-gray-800)',
+                          borderBottom: '1px solid var(--lp-color-gray-700)',
                         }}
                         data-testid={`flag-row-${flagKey}`}
                       >
                         <ListItem className={sharedStyles.flagListItem}>
                           <div className={sharedStyles.flagHeader}>
-                            <span className={sharedStyles.flagName}>
-                              <span className={sharedStyles.flagNameText} data-testid={`flag-name-${flagKey}`}>
-                                {flag.name}
-                              </span>
+                            <div className={sharedStyles.flagNameWrapper}>
                               {flag.isOverridden && <OverrideIndicator onClear={() => handleClearOverride(flagKey)} />}
-                            </span>
+                              <a
+                                href={`https://app.launchdarkly.com/projects/${projectKey}/flags/${flagKey}?env=${environment}&selectedEnv=${environment}`}
+                                target="_blank"
+                                className={sharedStyles.flagName}
+                              >
+                                <span className={sharedStyles.flagNameText} data-testid={`flag-name-${flagKey}`}>
+                                  {flag.name}
+                                </span>
+                                <ExternalLinkIcon size="small" />
+                              </a>
+                            </div>
                             <FlagKeyWithCopy flagKey={flagKey} className={sharedStyles.flagKey} />
                           </div>
 

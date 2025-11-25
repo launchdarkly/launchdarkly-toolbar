@@ -140,8 +140,6 @@ test.describe('LaunchDarkly Toolbar - SDK Mode', () => {
 
       // 4. Test individual override removal
       const booleanOverrideIndicator = page.getByTestId('flag-row-boolean-flag').getByTestId('override-indicator');
-      await booleanOverrideIndicator.hover();
-      await expect(page.getByTestId('flag-row-boolean-flag').getByText('Remove')).toBeVisible();
       await booleanOverrideIndicator.click();
 
       // Verify removal

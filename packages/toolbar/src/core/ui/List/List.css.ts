@@ -10,7 +10,7 @@ export const listItem = style({
   alignItems: 'center',
   justifyContent: 'space-between',
   padding: '16px 20px',
-  borderBottom: '1px solid var(--lp-color-gray-800)',
+  borderBottom: '1px solid var(--lp-color-gray-700)',
   color: 'var(--lp-color-gray-200)',
   transition: 'background-color 0.2s ease',
 

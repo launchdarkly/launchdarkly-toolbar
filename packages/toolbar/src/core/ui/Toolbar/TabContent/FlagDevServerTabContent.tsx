@@ -11,6 +11,7 @@ import { BooleanFlagControl, MultivariateFlagControl, StringNumberFlagControl } 
 import { OverrideIndicator } from '../components/OverrideIndicator';
 import { StarButton } from '../components/StarButton';
 import { FlagKeyWithCopy } from '../components/FlagKeyWithCopy';
+import { ExternalLinkIcon } from '../components/icons';
 import { useStarredFlags } from '../context/StarredFlagsProvider';
 import {
   type FlagFilterMode,
@@ -22,6 +23,8 @@ import { VIRTUALIZATION } from '../constants';
 import { LocalObjectFlagControlListItem } from '../components/LocalObjectFlagControlListItem';
 
 import * as styles from './FlagDevServerTabContent.css';
+import { useEnvironmentContext } from '../context/EnvironmentProvider';
+import { useProjectContext } from '../context/ProjectProvider';
 
 interface FlagDevServerTabContentProps {
   reloadOnFlagChangeIsEnabled: boolean;
@@ -34,7 +37,8 @@ export function FlagDevServerTabContent(props: FlagDevServerTabContentProps) {
   const { state, setOverride, clearOverride, clearAllOverrides } = useDevServerContext();
   const { flags } = state;
   const { isStarred, toggleStarred, clearAllStarred, starredCount } = useStarredFlags();
-
+  const { projectKey } = useProjectContext();
+  const { environment } = useEnvironmentContext();
   const [activeFilters, setActiveFilters] = useState<Set<FlagFilterMode>>(new Set([FILTER_MODES.ALL]));
 
   // Ref for scroll container
@@ -261,19 +265,26 @@ export function FlagDevServerTabContent(props: FlagDevServerTabContentProps) {
                     return (
                       <div
                         key={virtualItem.key}
-                        className={styles.virtualItem}
+                        className={`${styles.virtualItem} ${flag.isOverridden ? styles.virtualItemOverridden : ''}`}
                         style={{
                           height: `${virtualItem.size}px`,
                           transform: `translateY(${virtualItem.start}px)`,
-                          borderBottom: '1px solid var(--lp-color-gray-800)',
+                          borderBottom: '1px solid var(--lp-color-gray-700)',
                         }}
                       >
                         <ListItem className={styles.flagListItem}>
                           <div className={styles.flagHeader}>
-                            <span className={styles.flagName}>
-                              <span className={styles.flagNameText}>{flag.name}</span>
+                            <div className={styles.flagNameWrapper}>
                               {flag.isOverridden && <OverrideIndicator onClear={() => onClearOverride(flag.key)} />}
-                            </span>
+                              <a
+                                href={`https://app.launchdarkly.com/projects/${projectKey}/flags/${flag.key}?env=${environment}&selectedEnv=${environment}`}
+                                target="_blank"
+                                className={styles.flagName}
+                              >
+                                <span className={styles.flagNameText}>{flag.name}</span>
+                                <ExternalLinkIcon size="small" />
+                              </a>
+                            </div>
                             <FlagKeyWithCopy flagKey={flag.key} className={styles.flagKey} />
                           </div>
 

@@ -27,9 +27,23 @@ export const jsonParseError = style({
   marginTop: '4px',
 });
 
+export const select = style({
+  background: 'transparent',
+  minWidth: '120px',
+  maxWidth: '140px',
+});
+
 export const editActionsContainer = style({
   display: 'flex',
   justifyContent: 'flex-end',
   gap: '4px',
   marginTop: '4px',
+});
+
+export const multivariateContainer = style({
+  display: 'flex',
+  flexDirection: 'column',
+  gap: '4px',
+  minWidth: '120px',
+  maxWidth: '140px',
 });

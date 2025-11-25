@@ -1,14 +1,15 @@
 import { IFlagOverridePlugin } from '../../../../types';
 import { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import { useFlagsContext } from './FlagsProvider';
-import { ApiFlag } from '../types/ldApi';
+import { ApiFlag, ApiVariation } from '../types/ldApi';
 
 interface LocalFlag {
   key: string;
   name: string;
   currentValue: any;
   isOverridden: boolean;
-  type: 'boolean' | 'string' | 'number' | 'object';
+  availableVariations: ApiVariation[];
+  type: 'boolean' | 'multivariate' | 'string' | 'number' | 'object';
 }
 
 interface FlagSdkOverrideContextType {
@@ -37,12 +38,23 @@ export function FlagSdkOverrideProvider({ children, flagOverridePlugin }: FlagSd
       .join(' ');
   }, []);
 
-  const inferFlagType = useCallback((value: any): 'boolean' | 'string' | 'number' | 'object' => {
-    if (typeof value === 'boolean') return 'boolean';
-    if (typeof value === 'string') return 'string';
-    if (typeof value === 'number') return 'number';
-    return 'object';
-  }, []);
+  const determineFlagType = useCallback(
+    (variations: ApiVariation[] = [], value: any): 'boolean' | 'multivariate' | 'string' | 'number' | 'object' => {
+      if (variations.length === 2 && variations.every((v) => typeof v.value === 'boolean')) {
+        return 'boolean';
+      }
+
+      if (variations.length >= 2 && !variations.some((v) => typeof v.value === 'object')) {
+        return 'multivariate';
+      }
+
+      if (typeof value === 'string') return 'string';
+      if (typeof value === 'number') return 'number';
+      if (typeof value === 'object') return 'object';
+      return 'boolean';
+    },
+    [],
+  );
 
   // Build flags from raw values and overrides
   const buildFlags = useCallback(
@@ -58,27 +70,30 @@ export function FlagSdkOverrideProvider({ children, flagOverridePlugin }: FlagSd
           name: apiFlag.name,
           currentValue,
           isOverridden: apiFlag.key in overrides,
-          type: inferFlagType(currentValue),
+          type: determineFlagType(apiFlag.variations, currentValue),
+          availableVariations: apiFlag.variations,
         };
       });
 
       // Then, add any flags from the LD client that aren't in apiFlags
       // This ensures flags are displayed even if the API hasn't loaded yet
       Object.keys(allFlags).forEach((flagKey) => {
+        const apiFlag = apiFlags.find((f) => f.key === flagKey);
         if (!result[flagKey]) {
           result[flagKey] = {
             key: flagKey,
             name: formatFlagName(flagKey),
             currentValue: allFlags[flagKey],
             isOverridden: flagKey in overrides,
-            type: inferFlagType(allFlags[flagKey]),
+            type: determineFlagType(apiFlag?.variations || [], allFlags[flagKey]),
+            availableVariations: apiFlag?.variations || [],
           };
         }
       });
 
       return result;
     },
-    [flagOverridePlugin, formatFlagName, inferFlagType],
+    [flagOverridePlugin, formatFlagName, determineFlagType],
   );
 
   useEffect(() => {

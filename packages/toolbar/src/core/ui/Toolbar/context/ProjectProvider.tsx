@@ -1,7 +1,7 @@
 import { createContext, useCallback, useContext, useEffect, useState } from 'react';
 import { useApi } from './ApiProvider';
 import { TOOLBAR_STORAGE_KEYS } from '../utils/localStorage';
-import { ApiProject, ProjectsResponse } from '../types/ldApi';
+import { ApiEnvironment, ApiProject, ProjectsResponse } from '../types/ldApi';
 
 const STORAGE_KEY = TOOLBAR_STORAGE_KEYS.PROJECT;
 
@@ -10,6 +10,7 @@ type ProjectContextType = {
   setProjectKey: (projectKey: string) => void;
   getProjects: () => Promise<ProjectsResponse>;
   projects: ApiProject[];
+  environments: ApiEnvironment[];
   loading: boolean;
 };
 
@@ -18,6 +19,7 @@ const ProjectContext = createContext<ProjectContextType>({
   setProjectKey: () => {},
   getProjects: async () => ({ items: [] }),
   projects: [],
+  environments: [],
   loading: false,
 });
 
@@ -32,6 +34,7 @@ export const ProjectProvider = ({ children, clientSideId, providedProjectKey }: 
   const [projects, setProjects] = useState<ApiProject[]>([]);
   const [projectKey, setProjectKeyState] = useState<string>('');
   const [loading, setLoading] = useState(false);
+  const [environments, setEnvironments] = useState<ApiEnvironment[]>([]);
 
   // Wrapper function to update project and save to localStorage
   const setProjectKey = useCallback((key: string) => {
@@ -66,6 +69,17 @@ export const ProjectProvider = ({ children, clientSideId, providedProjectKey }: 
   }, [apiReady, getProjects]);
 
   useEffect(() => {
+    if (!projects || projects.length === 0) {
+      return;
+    }
+
+    const environments = projects.find((project) => project.key === projectKey)?.environments;
+    if (environments) {
+      setEnvironments(environments);
+    }
+  }, [projects, projectKey]);
+
+  useEffect(() => {
     const savedProjectKey = localStorage.getItem(STORAGE_KEY);
 
     if (savedProjectKey) {
@@ -84,6 +98,7 @@ export const ProjectProvider = ({ children, clientSideId, providedProjectKey }: 
           }
 
           let project = projects.items[0];
+          let environments: ApiEnvironment[] = [];
 
           if (clientSideId) {
             project = projects.items.find((project) =>
@@ -93,6 +108,8 @@ export const ProjectProvider = ({ children, clientSideId, providedProjectKey }: 
             if (!project) {
               throw new Error(`No project found for clientSideId: ${clientSideId}`);
             }
+
+            environments = project.environments;
           }
 
           if (!project) {
@@ -100,6 +117,8 @@ export const ProjectProvider = ({ children, clientSideId, providedProjectKey }: 
           }
 
           setProjectKey(project.key);
+          setEnvironments(environments);
+          localStorage.setItem(STORAGE_KEY, project.key);
           setLoading(false);
         })
         .catch((error) => {
@@ -113,7 +132,7 @@ export const ProjectProvider = ({ children, clientSideId, providedProjectKey }: 
   }, [providedProjectKey, clientSideId, getProjects, apiReady, setProjectKey]);
 
   return (
-    <ProjectContext.Provider value={{ projectKey, setProjectKey, getProjects, projects, loading }}>
+    <ProjectContext.Provider value={{ projectKey, setProjectKey, getProjects, projects, environments, loading }}>
       {children}
     </ProjectContext.Provider>
   );

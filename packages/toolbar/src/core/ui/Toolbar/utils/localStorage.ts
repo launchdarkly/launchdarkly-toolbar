@@ -4,6 +4,7 @@ export const TOOLBAR_STORAGE_KEYS = {
   SETTINGS: 'ld-toolbar-settings',
   DISABLED: 'ld-toolbar-disabled',
   PROJECT: 'ld-toolbar-project',
+  ENVIRONMENT: 'ld-toolbar-environment',
   STARRED_FLAGS: 'ld-toolbar-starred-flags',
 } as const;
 
