@@ -16,7 +16,7 @@ import { CircleLogo } from './components';
 import { ExpandedToolbarContentLegacy } from './components/legacy';
 import { useToolbarAnimations, useToolbarVisibility, useToolbarDrag } from './hooks';
 import { ToolbarUIProvider, useToolbarUIContext } from './context';
-import { ToolbarMode, ToolbarPosition, getToolbarMode, getDefaultActiveTab } from './types/toolbar';
+import { ToolbarMode, ToolbarPosition, getToolbarMode, getDefaultActiveTab, ActiveTabId, NewActiveTabId } from './types/toolbar';
 
 import * as styles from './LaunchDarklyToolbar.css';
 import { DevServerProvider } from './context';
@@ -44,8 +44,10 @@ export function LdToolbar(props: LdToolbarProps) {
   const { position, handlePositionChange } = useToolbarUIContext();
   const analytics = useAnalytics();
   const { activeTab, setActiveTab } = useActiveTabContext();
+  const newToolbarDesign = useNewToolbarDesign();
 
-  const defaultActiveTab = getDefaultActiveTab(mode, !!flagOverridePlugin, !!eventInterceptionPlugin);
+  const defaultActiveTab = getDefaultActiveTab(mode, !!flagOverridePlugin, !!eventInterceptionPlugin, newToolbarDesign);
+  console.log('defaultActiveTab', defaultActiveTab);
 
   const toolbarState = useToolbarState();
   const circleButtonRef = useRef<HTMLButtonElement>(null);
@@ -123,12 +125,6 @@ export function LdToolbar(props: LdToolbarProps) {
     onCollapseComplete: focusCollapsedToolbar,
   });
 
-  useEffect(() => {
-    if (!activeTab) {
-      setActiveTab(defaultActiveTab);
-    }
-  }, [activeTab, setActiveTab, defaultActiveTab]);
-
   // Prevent clicks from expanding toolbar if user was dragging
   const handleCircleClickWithDragCheck = useCallback(() => {
     if (!isDragging()) {
@@ -144,7 +140,6 @@ export function LdToolbar(props: LdToolbarProps) {
     'top-right': styles.positionTopRight,
   };
 
-  const newToolbarDesign = useNewToolbarDesign();
   return (
     <motion.div
       ref={toolbarRef}
@@ -180,7 +175,7 @@ export function LdToolbar(props: LdToolbarProps) {
         {isExpanded && !newToolbarDesign && (
           <ExpandedToolbarContentLegacy
             ref={expandedContentRef}
-            activeTab={activeTab}
+            activeTab={activeTab as ActiveTabId}
             slideDirection={slideDirection}
             searchTerm={searchTerm}
             searchIsExpanded={searchIsExpanded}
@@ -194,14 +189,14 @@ export function LdToolbar(props: LdToolbarProps) {
             eventInterceptionPlugin={eventInterceptionPlugin}
             mode={mode}
             baseUrl={baseUrl}
-            defaultActiveTab={defaultActiveTab}
+            defaultActiveTab={defaultActiveTab as ActiveTabId}
             onHeaderMouseDown={handleMouseDown}
             reloadOnFlagChangeIsEnabled={reloadOnFlagChangeIsEnabled}
             onToggleReloadOnFlagChange={handleToggleReloadOnFlagChange}
           />
         )}
         {isExpanded && newToolbarDesign && (
-          <ExpandedToolbarContent onClose={handleClose} onHeaderMouseDown={handleMouseDown} />
+          <ExpandedToolbarContent onClose={handleClose} onHeaderMouseDown={handleMouseDown} defaultActiveTab={defaultActiveTab as NewActiveTabId} />
         )}
       </AnimatePresence>
       <AuthenticationModal isOpen={false} onClose={() => {}} />

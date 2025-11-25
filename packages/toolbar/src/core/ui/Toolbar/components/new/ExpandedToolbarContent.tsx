@@ -5,14 +5,16 @@ import { IconBar } from './IconBar';
 import { TabBar } from './TabBar';
 import { FlagList } from './FeatureFlags/FlagList';
 import * as styles from './ExpandedToolbarContent.module.css';
+import { NewActiveTabId } from '../../types/toolbar';
 
 interface ExpandedToolbarContentProps {
   onClose?: () => void;
   onHeaderMouseDown?: (event: React.MouseEvent) => void;
+  defaultActiveTab: NewActiveTabId;
 }
 
 export const ExpandedToolbarContent = React.forwardRef<HTMLDivElement, ExpandedToolbarContentProps>(
-  ({ onClose, onHeaderMouseDown }, ref) => {
+  ({ onClose, onHeaderMouseDown, defaultActiveTab }, ref) => {
     return (
       <motion.div
         ref={ref}
@@ -23,7 +25,7 @@ export const ExpandedToolbarContent = React.forwardRef<HTMLDivElement, ExpandedT
         transition={{ duration: 0.2 }}
       >
         <ToolbarHeader onClose={onClose} onHeaderMouseDown={onHeaderMouseDown} />
-        <IconBar />
+        <IconBar defaultActiveTab={defaultActiveTab} />
         <TabBar />
         <div className={styles.content}>
           <FlagList />

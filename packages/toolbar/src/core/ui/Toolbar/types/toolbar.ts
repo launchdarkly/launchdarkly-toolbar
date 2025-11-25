@@ -2,6 +2,9 @@
 export type TabId = 'flag-sdk' | 'flag-dev-server' | 'events' | 'settings';
 export type ActiveTabId = TabId | undefined;
 
+export type NewTabId = 'flags' | 'monitoring' | 'settings' | 'interactive';
+export type NewActiveTabId = NewTabId | undefined;
+
 export const TAB_ORDER: readonly TabId[] = ['flag-sdk', 'flag-dev-server', 'events', 'settings'] as const;
 
 export type ToolbarMode = 'dev-server' | 'sdk';
@@ -50,7 +53,13 @@ export function getDefaultActiveTab(
   mode: ToolbarMode,
   hasFlagOverridePlugin?: boolean,
   hasEventInterceptionPlugin?: boolean,
-): TabId {
+  useNewToolbarDesign?: boolean,
+): TabId | NewTabId {
+  console.log('useNewToolbarDesign', useNewToolbarDesign);
+  if (useNewToolbarDesign) {
+    return 'flags';
+  }
+
   if (mode === 'dev-server') {
     return 'flag-dev-server';
   }

@@ -5,24 +5,48 @@ import { ChartHistogram } from '../icons/ChartHistogram';
 import { Tooltip } from './Tooltip';
 import * as styles from './IconBar.module.css';
 import { showInteractiveIcon } from '../../../../../flags/toolbarFlags';
+import { useActiveTabContext } from '../../context/ActiveTabProvider';
+import { NewActiveTabId } from '../../types/toolbar';
+import { useEffect } from 'react';
 
-export const IconBar = () => {
+type Icon = {
+  id: NewActiveTabId;
+  Icon: React.ComponentType<{ className?: string }>;
+  label: string;
+  tooltip: string;
+};
+
+export const IconBar = ({ defaultActiveTab }: { defaultActiveTab: NewActiveTabId }) => {
   const showInteractiveIconFlag = showInteractiveIcon();
-  const icons = [
+  const { activeTab, setActiveTab } = useActiveTabContext();
+
+  useEffect(() => {
+    console.log('activeTab', activeTab);
+    if (!activeTab) {
+      console.log('setting active tab to', defaultActiveTab);
+      setActiveTab(defaultActiveTab);
+    }
+  }, [defaultActiveTab, activeTab, setActiveTab]);
+
+  const icons: Icon[] = [
     { id: 'flags', Icon: ToggleOffIcon, label: 'Flags', tooltip: 'Feature Flags' },
-    { id: 'chart', Icon: ChartHistogram, label: 'Analytics', tooltip: 'Monitoring' },
+    { id: 'monitoring', Icon: ChartHistogram, label: 'Analytics', tooltip: 'Monitoring' },
     { id: 'settings', Icon: GearIcon, label: 'Settings', tooltip: 'Settings' },
   ];
 
   if (showInteractiveIconFlag) {
-    icons.push({ id: 'click', Icon: ClickIcon, label: 'Click tracking', tooltip: 'Interactive Mode' });
+    icons.push({ id: 'interactive', Icon: ClickIcon, label: 'Click tracking', tooltip: 'Interactive Mode' });
   }
 
   return (
     <div className={styles.container}>
       {icons.map(({ id, Icon, label, tooltip }) => (
         <Tooltip key={id} content={tooltip}>
-          <button className={`${styles.iconButton} ${id === 'flags' ? styles.active : ''}`} aria-label={label}>
+          <button
+            onClick={() => setActiveTab(id as NewActiveTabId)}
+            className={`${styles.iconButton} ${id === activeTab ? styles.active : ''}`}
+            aria-label={label}
+          >
             <Icon className={styles.icon} />
           </button>
         </Tooltip>
