@@ -11,6 +11,7 @@ import {
   useActiveTabContext,
   ToolbarStateProvider,
   useToolbarState,
+  PluginsProvider,
 } from './context';
 import { CircleLogo } from './components';
 import { ExpandedToolbarContentLegacy } from './components/legacy';
@@ -285,12 +286,18 @@ export function LaunchDarklyToolbar(props: LaunchDarklyToolbarProps) {
                             }}
                           >
                             <StarredFlagsProvider>
-                              <LdToolbar
-                                mode={mode}
+                              <PluginsProvider
                                 baseUrl={baseUrl}
                                 flagOverridePlugin={flagOverridePlugin}
                                 eventInterceptionPlugin={eventInterceptionPlugin}
-                              />
+                              >
+                                <LdToolbar
+                                  mode={mode}
+                                  baseUrl={baseUrl}
+                                  flagOverridePlugin={flagOverridePlugin}
+                                  eventInterceptionPlugin={eventInterceptionPlugin}
+                                />
+                              </PluginsProvider>
                             </StarredFlagsProvider>
                           </DevServerProvider>
                         </FlagsProvider>

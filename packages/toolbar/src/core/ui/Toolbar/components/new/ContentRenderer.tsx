@@ -3,10 +3,10 @@ import { NewActiveTabId, ActiveTabId } from '../../types/toolbar';
 import { SubTab } from './types';
 import { SettingsContent } from './Settings/SettingsContent';
 import { FlagListContent } from './FeatureFlags/FlagListContent';
+import { EventsContent } from './Monitoring/EventsContent';
 
-// Placeholder content components - these will be replaced with real implementations
+// Placeholder content components - to be implemented later
 const ContextContent = () => <div>Context Content</div>;
-const EventsContent = () => <div>Events Content</div>;
 const ClickTrackingContent = () => <div>Click Tracking Content</div>;
 
 interface ContentRendererProps {

@@ -11,3 +11,4 @@ export {
 export { AnalyticsProvider, useAnalytics } from './AnalyticsProvider';
 export { StarredFlagsProvider, useStarredFlags } from './StarredFlagsProvider';
 export { ToolbarStateProvider, useToolbarState } from './ToolbarStateProvider';
+export { PluginsProvider, usePlugins } from './PluginsProvider';
