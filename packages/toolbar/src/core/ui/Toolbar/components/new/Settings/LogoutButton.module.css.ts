@@ -25,4 +25,3 @@ export const button = style({
     outlineOffset: '2px',
   },
 });
-

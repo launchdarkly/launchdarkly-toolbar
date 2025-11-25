@@ -14,7 +14,7 @@ import React, {
 import { useSearchContext } from './SearchProvider';
 import { useAnalytics } from './AnalyticsProvider';
 import { useActiveTabContext } from './ActiveTabProvider';
-import { TabId, ActiveTabId, TAB_ORDER } from '../types';
+import { TabId, ActiveTabId, TAB_ORDER, ToolbarMode, getToolbarMode } from '../types';
 import {
   saveToolbarAutoCollapse,
   loadToolbarAutoCollapse,
@@ -32,6 +32,7 @@ export interface ToolbarStateContextValue {
   hasBeenExpanded: boolean;
   reloadOnFlagChangeIsEnabled: boolean;
   isAutoCollapseEnabled: boolean;
+  mode: ToolbarMode;
 
   // Refs
   toolbarRef: React.RefObject<HTMLDivElement | null>;
@@ -52,9 +53,10 @@ const ToolbarStateContext = createContext<ToolbarStateContextValue | undefined>(
 export interface ToolbarStateProviderProps {
   children: ReactNode;
   domId: string;
+  devServerUrl?: string;
 }
 
-export function ToolbarStateProvider({ children, domId }: ToolbarStateProviderProps) {
+export function ToolbarStateProvider({ children, domId, devServerUrl }: ToolbarStateProviderProps) {
   const { setSearchTerm } = useSearchContext();
   const analytics = useAnalytics();
   const { activeTab, setActiveTab } = useActiveTabContext();
@@ -66,6 +68,7 @@ export function ToolbarStateProvider({ children, domId }: ToolbarStateProviderPr
   const [searchIsExpanded, setSearchIsExpanded] = useState(false);
   const [reloadOnFlagChangeIsEnabled, enableReloadOnFlagChange] = useState(() => loadReloadOnFlagChange());
   const [isAutoCollapseEnabled, setAutoCollapse] = useState(() => loadToolbarAutoCollapse());
+  const [mode, setMode] = useState<ToolbarMode>(() => getToolbarMode(devServerUrl));
 
   // Refs
   const hasBeenExpandedRef = useRef(false);
@@ -74,7 +77,7 @@ export function ToolbarStateProvider({ children, domId }: ToolbarStateProviderPr
   // Computed values
   const slideDirection = useMemo(() => {
     if (!activeTab || !previousTab) return 1; // Default direction when no tab is selected
-    const currentIndex = TAB_ORDER.indexOf(activeTab);
+    const currentIndex = TAB_ORDER.indexOf(activeTab as TabId);
     const previousIndex = TAB_ORDER.indexOf(previousTab);
     return currentIndex > previousIndex ? 1 : -1; // 1 = slide left, -1 = slide right
   }, [activeTab, previousTab]);
@@ -102,7 +105,7 @@ export function ToolbarStateProvider({ children, domId }: ToolbarStateProviderPr
       // Track tab change analytics
       analytics.trackTabChange(activeTab || null, newTabId);
 
-      setPreviousTab(activeTab);
+      setPreviousTab(activeTab as ActiveTabId);
       setActiveTab(newTabId);
 
       if (!isExpanded) {
@@ -193,6 +196,7 @@ export function ToolbarStateProvider({ children, domId }: ToolbarStateProviderPr
       hasBeenExpanded: hasBeenExpandedRef.current,
       reloadOnFlagChangeIsEnabled,
       isAutoCollapseEnabled,
+      mode,
 
       // Refs
       toolbarRef,

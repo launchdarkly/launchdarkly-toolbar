@@ -19,4 +19,3 @@ export const content = style({
   flexDirection: 'column',
   gap: '8px',
 });
-

@@ -13,22 +13,9 @@ const ClickTrackingContent = () => <div>Click Tracking Content</div>;
 interface ContentRendererProps {
   activeTab: NewActiveTabId | ActiveTabId;
   activeSubtab: SubTab | undefined;
-  mode?: ToolbarMode;
-  reloadOnFlagChangeIsEnabled?: boolean;
-  onToggleReloadOnFlagChange?: () => void;
-  isAutoCollapseEnabled?: boolean;
-  onToggleAutoCollapse?: () => void;
 }
 
-export const ContentRenderer: React.FC<ContentRendererProps> = ({
-  activeTab,
-  activeSubtab,
-  mode = 'sdk',
-  reloadOnFlagChangeIsEnabled = false,
-  onToggleReloadOnFlagChange = () => {},
-  isAutoCollapseEnabled = false,
-  onToggleAutoCollapse = () => {},
-}) => {
+export const ContentRenderer: React.FC<ContentRendererProps> = ({ activeTab, activeSubtab }) => {
   // Render content based on active tab and subtab combination
   if (activeTab === 'flags') {
     switch (activeSubtab) {
@@ -53,16 +40,7 @@ export const ContentRenderer: React.FC<ContentRendererProps> = ({
   }
 
   if (activeTab === 'settings') {
-    return (
-      <SettingsContent
-        activeSubtab={activeSubtab}
-        mode={mode}
-        reloadOnFlagChangeIsEnabled={reloadOnFlagChangeIsEnabled}
-        onToggleReloadOnFlagChange={onToggleReloadOnFlagChange}
-        isAutoCollapseEnabled={isAutoCollapseEnabled}
-        onToggleAutoCollapse={onToggleAutoCollapse}
-      />
-    );
+    return <SettingsContent activeSubtab={activeSubtab} />;
   }
 
   if (activeTab === 'interactive') {

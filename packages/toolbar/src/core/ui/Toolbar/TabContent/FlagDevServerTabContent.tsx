@@ -1,39 +1,43 @@
 import { useState, useMemo, useCallback, useRef } from 'react';
 import { useVirtualizer } from '@tanstack/react-virtual';
-import { motion } from 'motion/react';
-import { IFlagOverridePlugin } from '../../../../../../types';
-import { List } from '../../../../List/List';
-import { ListItem } from '../../../../List/ListItem';
-import { VIRTUALIZATION, EASING } from '../../../constants';
+import { List } from '../../List/List';
+import { ListItem } from '../../List/ListItem';
+import { useSearchContext } from '../context/SearchProvider';
+import { useDevServerContext } from '../context/DevServerProvider';
+import { useAnalytics } from '../context';
+import { EnhancedFlag } from '../../../types/devServer';
+import { GenericHelpText } from '../components/GenericHelpText';
 import {
-  useSearchContext,
-  useAnalytics,
-  useFlagSdkOverrideContext,
-  useStarredFlags,
-  LocalFlag,
-  FlagSdkOverrideProvider,
-} from '../../../context';
-import { FilterOptions } from '../../FilterOptions/FilterOptions';
-import { FlagFilterMode, FILTER_MODES, FlagFilterOptionsContext } from '../../FilterOptions/useFlagFilterOptions';
-import { GenericHelpText } from '../../GenericHelpText';
-import { OverrideIndicator } from '../../OverrideIndicator';
-import { StarButton } from '../../StarButton';
-import { LocalBooleanFlagControl, LocalStringNumberFlagControl } from '../LocalFlagControls';
-import { LocalObjectFlagControlListItem } from '../LocalObjectFlagControlListItem';
+  BooleanFlagControl,
+  MultivariateFlagControl,
+  StringNumberFlagControl,
+} from '../components/legacy/FlagControls';
+import { OverrideIndicator } from '../components/OverrideIndicator';
+import { StarButton } from '../components/StarButton';
+import { useStarredFlags } from '../context/StarredFlagsProvider';
+import {
+  type FlagFilterMode,
+  FlagFilterOptionsContext,
+  FILTER_MODES,
+} from '../components/FilterOptions/useFlagFilterOptions';
+import { FilterOptions } from '../components/FilterOptions/FilterOptions';
+import { VIRTUALIZATION } from '../constants';
+import { LocalObjectFlagControlListItem } from '../components/LocalObjectFlagControlListItem';
 
-import * as sharedStyles from './FlagDevServerTabContent.css';
+import * as styles from './FlagDevServerTabContent.css';
 
-interface FlagSdkOverrideTabContentInnerProps {
-  flagOverridePlugin: IFlagOverridePlugin;
+interface FlagDevServerTabContentProps {
   reloadOnFlagChangeIsEnabled: boolean;
 }
 
-function FlagSdkOverrideTabContentInner(props: FlagSdkOverrideTabContentInnerProps) {
-  const { flagOverridePlugin, reloadOnFlagChangeIsEnabled } = props;
+export function FlagDevServerTabContent(props: FlagDevServerTabContentProps) {
+  const { reloadOnFlagChangeIsEnabled } = props;
   const { searchTerm } = useSearchContext();
   const analytics = useAnalytics();
-  const { flags, isLoading } = useFlagSdkOverrideContext();
+  const { state, setOverride, clearOverride, clearAllOverrides } = useDevServerContext();
+  const { flags } = state;
   const { isStarred, toggleStarred, clearAllStarred, starredCount } = useStarredFlags();
+
   const [activeFilters, setActiveFilters] = useState<Set<FlagFilterMode>>(new Set([FILTER_MODES.ALL]));
 
   // Ref for scroll container
@@ -74,26 +78,6 @@ function FlagSdkOverrideTabContentInner(props: FlagSdkOverrideTabContentInnerPro
     [analytics],
   );
 
-  const handleClearOverride = useCallback(
-    (flagKey: string) => {
-      if (flagOverridePlugin) {
-        flagOverridePlugin.removeOverride(flagKey);
-        analytics.trackFlagOverride(flagKey, null, 'remove');
-
-        if (reloadOnFlagChangeIsEnabled) {
-          window.location.reload();
-        }
-      }
-    },
-    [flagOverridePlugin, analytics, reloadOnFlagChangeIsEnabled],
-  );
-
-  // Count total overridden flags (not just filtered ones)
-  const totalOverriddenFlags = useMemo(() => {
-    return Object.values(flags).filter((flag) => flag.isOverridden).length;
-  }, [flags]);
-
-  // Prepare data for virtualizer (must be done before useVirtualizer hook)
   const flagEntries = Object.entries(flags);
   const filteredFlags = useMemo(() => {
     return flagEntries.filter(([flagKey, flag]) => {
@@ -123,20 +107,13 @@ function FlagSdkOverrideTabContentInner(props: FlagSdkOverrideTabContentInnerPro
     overscan: VIRTUALIZATION.OVERSCAN,
   });
 
-  if (!flagOverridePlugin) {
-    return (
-      <GenericHelpText
-        title="Flag override plugin is not available"
-        subtitle="To use local flag overrides, ensure the flag override plugin is added to your LaunchDarkly client configuration."
-      />
-    );
-  }
+  // Count total overridden flags (not just filtered ones)
+  const totalOverriddenFlags = useMemo(() => {
+    return Object.values(flags).filter((flag) => flag.isOverridden).length;
+  }, [flags]);
 
-  const ldClient = flagOverridePlugin.getClient();
-
-  // Override operations
   const handleSetOverride = (flagKey: string, value: any) => {
-    flagOverridePlugin.setOverride(flagKey, value);
+    setOverride(flagKey, value);
     analytics.trackFlagOverride(flagKey, value, 'set');
 
     if (reloadOnFlagChangeIsEnabled) {
@@ -144,26 +121,61 @@ function FlagSdkOverrideTabContentInner(props: FlagSdkOverrideTabContentInnerPro
     }
   };
 
-  const handleClearAllOverrides = () => {
-    const currentOverrides = flagOverridePlugin.getAllOverrides();
-    const overrideCount = Object.keys(currentOverrides).length;
+  const renderFlagControl = (flag: EnhancedFlag) => {
+    const handleOverride = (value: any) => handleSetOverride(flag.key, value);
 
-    flagOverridePlugin.clearAllOverrides();
+    switch (flag.type) {
+      case 'boolean':
+        return <BooleanFlagControl flag={flag} onOverride={handleOverride} disabled={!flag.enabled} />;
+
+      case 'multivariate':
+        return <MultivariateFlagControl flag={flag} onOverride={handleOverride} disabled={!flag.enabled} />;
+
+      case 'string':
+      case 'number':
+        return <StringNumberFlagControl flag={flag} onOverride={handleOverride} disabled={!flag.enabled} />;
+
+      default:
+        return <div>Unsupported flag type: {flag.type}</div>;
+    }
+  };
+
+  const onRemoveAllOverrides = async () => {
+    const overrideCount = totalOverriddenFlags;
+    await clearAllOverrides();
     analytics.trackFlagOverride('*', { count: overrideCount }, 'clear_all');
     analytics.trackFilterChange(FILTER_MODES.ALL, 'selected');
     setActiveFilters(new Set([FILTER_MODES.ALL]));
-
     if (reloadOnFlagChangeIsEnabled) {
       window.location.reload();
     }
   };
 
-  const handleClearAllStarred = () => {
+  const onClearAllStarred = () => {
     analytics.trackStarredFlag('*', 'clear_all');
     clearAllStarred();
     analytics.trackFilterChange(FILTER_MODES.ALL, 'selected');
     setActiveFilters(new Set([FILTER_MODES.ALL]));
   };
+
+  const onClearOverride = useCallback(
+    (flagKey: string) => {
+      if (
+        totalOverriddenFlags <= 1 &&
+        activeFilters.has(FILTER_MODES.OVERRIDES) &&
+        !activeFilters.has(FILTER_MODES.STARRED)
+      ) {
+        setActiveFilters(new Set([FILTER_MODES.ALL]));
+      }
+      clearOverride(flagKey).then(() => {
+        analytics.trackFlagOverride(flagKey, null, 'remove');
+        if (reloadOnFlagChangeIsEnabled) {
+          window.location.reload();
+        }
+      });
+    },
+    [totalOverriddenFlags, activeFilters, clearOverride, analytics, reloadOnFlagChangeIsEnabled],
+  );
 
   const handleToggleStarred = useCallback(
     (flagKey: string) => {
@@ -187,41 +199,6 @@ function FlagSdkOverrideTabContentInner(props: FlagSdkOverrideTabContentInnerPro
     [virtualizer],
   );
 
-  const renderFlagControl = (flag: LocalFlag) => {
-    const handleOverride = (value: any) => handleSetOverride(flag.key, value);
-
-    switch (flag.type) {
-      case 'boolean':
-        return <LocalBooleanFlagControl flag={flag} onOverride={handleOverride} />;
-
-      case 'string':
-      case 'number':
-        return <LocalStringNumberFlagControl flag={flag} onOverride={handleOverride} />;
-    }
-  };
-
-  if (!ldClient) {
-    return (
-      <GenericHelpText
-        title="LaunchDarkly client is not available"
-        subtitle="To use local flag overrides, ensure your LaunchDarkly client is properly initialized."
-      />
-    );
-  }
-
-  if (isLoading) {
-    return <GenericHelpText title="Loading flags..." subtitle="Please wait while we load your feature flags" />;
-  }
-
-  if (flagEntries.length === 0) {
-    return (
-      <GenericHelpText
-        title="No flags available"
-        subtitle="Make sure your LaunchDarkly client is properly initialized with flags"
-      />
-    );
-  }
-
   const getGenericHelpText = () => {
     if (
       activeFilters.has(FILTER_MODES.OVERRIDES) &&
@@ -240,25 +217,25 @@ function FlagSdkOverrideTabContentInner(props: FlagSdkOverrideTabContentInnerPro
 
   return (
     <FlagFilterOptionsContext.Provider value={{ activeFilters, onFilterToggle: handleFilterToggle }}>
-      <div data-testid="flag-sdk-tab-content">
+      <div data-testid="flag-dev-server-tab-content">
         <>
           <FilterOptions
             totalFlags={flagEntries.length}
             filteredFlags={filteredFlags.length}
             totalOverriddenFlags={totalOverriddenFlags}
             starredCount={starredCount}
-            onClearOverrides={handleClearAllOverrides}
-            onClearStarred={handleClearAllStarred}
-            isLoading={isLoading}
+            onClearOverrides={onRemoveAllOverrides}
+            onClearStarred={onClearAllStarred}
+            isLoading={state.isLoading}
           />
 
           {filteredFlags.length === 0 && (searchTerm.trim() || !activeFilters.has(FILTER_MODES.ALL)) ? (
             <GenericHelpText title={genericHelpTitle} subtitle={genericHelpSubtitle} />
           ) : (
-            <div ref={scrollContainerRef} className={sharedStyles.virtualContainer}>
+            <div ref={scrollContainerRef} className={styles.virtualContainer}>
               <List>
                 <div
-                  className={sharedStyles.virtualInner}
+                  className={styles.virtualInner}
                   style={{
                     height: virtualizer.getTotalSize(),
                   }}
@@ -266,64 +243,44 @@ function FlagSdkOverrideTabContentInner(props: FlagSdkOverrideTabContentInnerPro
                   {virtualizer.getVirtualItems().map((virtualItem) => {
                     const entry = filteredFlags[virtualItem.index];
                     if (!entry) return null;
-                    const [flagKey, flag] = entry;
+                    const [_, flag] = entry;
 
                     if (flag.type === 'object') {
                       return (
-                        <motion.div
-                          key={virtualItem.key}
-                          layout
-                          initial={{ opacity: 0, y: 10 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          exit={{ opacity: 0, y: -10 }}
-                          transition={{
-                            duration: 0.2,
-                            ease: EASING.smooth,
-                            layout: {
-                              duration: 0.25,
-                              ease: EASING.smooth,
-                            },
-                          }}
-                        >
+                        <div key={virtualItem.key} className={styles.virtualItem}>
                           <LocalObjectFlagControlListItem
-                            handleHeightChange={(height) => handleHeightChange(virtualItem.index, height)}
                             flag={flag}
-                            key={virtualItem.key}
-                            start={virtualItem.start}
                             size={virtualItem.size}
-                            handleClearOverride={handleClearOverride}
+                            start={virtualItem.start}
                             handleOverride={handleSetOverride}
+                            handleClearOverride={onClearOverride}
+                            handleHeightChange={(height) => handleHeightChange(virtualItem.index, height)}
                             onToggleStarred={handleToggleStarred}
                           />
-                        </motion.div>
+                        </div>
                       );
                     }
 
                     return (
                       <div
                         key={virtualItem.key}
-                        className={sharedStyles.virtualItem}
+                        className={styles.virtualItem}
                         style={{
                           height: `${virtualItem.size}px`,
                           transform: `translateY(${virtualItem.start}px)`,
                           borderBottom: '1px solid var(--lp-color-gray-800)',
                         }}
-                        data-testid={`flag-row-${flagKey}`}
                       >
-                        <ListItem className={sharedStyles.flagListItem}>
-                          <div className={sharedStyles.flagHeader}>
-                            <span className={sharedStyles.flagName}>
-                              <span className={sharedStyles.flagNameText} data-testid={`flag-name-${flagKey}`}>
-                                {flag.name}
-                              </span>
-                              {flag.isOverridden && <OverrideIndicator onClear={() => handleClearOverride(flagKey)} />}
+                        <ListItem className={styles.flagListItem}>
+                          <div className={styles.flagHeader}>
+                            <span className={styles.flagName}>
+                              <span className={styles.flagNameText}>{flag.name}</span>
+                              {flag.isOverridden && <OverrideIndicator onClear={() => onClearOverride(flag.key)} />}
                             </span>
-                            <span className={sharedStyles.flagKey} data-testid={`flag-key-${flagKey}`}>
-                              {flagKey}
-                            </span>
+                            <span className={styles.flagKey}>{flag.key}</span>
                           </div>
 
-                          <div className={sharedStyles.flagOptions}>
+                          <div className={styles.flagOptions}>
                             {renderFlagControl(flag)}
                             <StarButton
                               flagKey={flag.key}
@@ -342,32 +299,5 @@ function FlagSdkOverrideTabContentInner(props: FlagSdkOverrideTabContentInnerPro
         </>
       </div>
     </FlagFilterOptionsContext.Provider>
-  );
-}
-
-interface FlagSdkOverrideTabContentProps {
-  flagOverridePlugin?: IFlagOverridePlugin;
-  reloadOnFlagChangeIsEnabled: boolean;
-}
-
-export function FlagSdkOverrideTabContent(props: FlagSdkOverrideTabContentProps) {
-  const { flagOverridePlugin, reloadOnFlagChangeIsEnabled } = props;
-
-  if (!flagOverridePlugin) {
-    return (
-      <GenericHelpText
-        title="Flag override plugin is not available"
-        subtitle="To use local flag overrides, ensure the flag override plugin is added to your LaunchDarkly client configuration."
-      />
-    );
-  }
-
-  return (
-    <FlagSdkOverrideProvider flagOverridePlugin={flagOverridePlugin}>
-      <FlagSdkOverrideTabContentInner
-        flagOverridePlugin={flagOverridePlugin}
-        reloadOnFlagChangeIsEnabled={reloadOnFlagChangeIsEnabled}
-      />
-    </FlagSdkOverrideProvider>
   );
 }

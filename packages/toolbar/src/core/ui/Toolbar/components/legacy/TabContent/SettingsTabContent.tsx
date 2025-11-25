@@ -13,7 +13,6 @@ import { Select, SelectOption } from '../../Select';
 import { StatusDot } from '../../StatusDot';
 import * as styles from './SettingsTab.css';
 
-
 interface SettingsItem {
   id: string;
   description?: string;

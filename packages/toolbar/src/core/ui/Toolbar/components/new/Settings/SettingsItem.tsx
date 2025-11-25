@@ -18,4 +18,3 @@ export const SettingsItem: React.FC<SettingsItemProps> = ({ label, description, 
     </div>
   );
 };
-

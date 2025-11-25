@@ -1,24 +1,17 @@
 import { useState, useMemo, useCallback, useRef } from 'react';
 import { useVirtualizer } from '@tanstack/react-virtual';
-import { List } from '../../List/List';
-import { ListItem } from '../../List/ListItem';
-import { useSearchContext } from '../context/SearchProvider';
-import { useDevServerContext } from '../context/DevServerProvider';
-import { useAnalytics } from '../context';
-import { EnhancedFlag } from '../../../types/devServer';
-import { GenericHelpText } from '../components/GenericHelpText';
-import { BooleanFlagControl, MultivariateFlagControl, StringNumberFlagControl } from '../components/FlagControls';
-import { OverrideIndicator } from '../components/OverrideIndicator';
-import { StarButton } from '../components/StarButton';
-import { useStarredFlags } from '../context/StarredFlagsProvider';
-import {
-  type FlagFilterMode,
-  FlagFilterOptionsContext,
-  FILTER_MODES,
-} from '../components/FilterOptions/useFlagFilterOptions';
-import { FilterOptions } from '../components/FilterOptions/FilterOptions';
-import { VIRTUALIZATION } from '../constants';
-import { LocalObjectFlagControlListItem } from '../components/LocalObjectFlagControlListItem';
+import { EnhancedFlag } from '../../../../../types/devServer';
+import { List } from '../../../../List/List';
+import { ListItem } from '../../../../List/ListItem';
+import { VIRTUALIZATION } from '../../../constants';
+import { useSearchContext, useAnalytics, useDevServerContext, useStarredFlags } from '../../../context';
+import { FilterOptions } from '../../FilterOptions/FilterOptions';
+import { FlagFilterMode, FILTER_MODES, FlagFilterOptionsContext } from '../../FilterOptions/useFlagFilterOptions';
+import { BooleanFlagControl, MultivariateFlagControl, StringNumberFlagControl } from '../FlagControls';
+import { GenericHelpText } from '../../GenericHelpText';
+import { OverrideIndicator } from '../../OverrideIndicator';
+import { StarButton } from '../../StarButton';
+import { LocalObjectFlagControlListItem } from '../LocalObjectFlagControlListItem';
 
 import * as styles from './FlagDevServerTabContent.css';
 

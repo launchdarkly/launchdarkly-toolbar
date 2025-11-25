@@ -1,5 +1,4 @@
 import React from 'react';
-import { ToolbarMode } from '../../../types/toolbar';
 import { SettingsSection } from './SettingsSection';
 import { SettingsItem } from './SettingsItem';
 import { ProjectSelector } from './ProjectSelector';
@@ -11,34 +10,28 @@ import { useDevServerContext } from '../../../context/DevServerProvider';
 import { useToolbarUIContext } from '../../../context/ToolbarUIProvider';
 import { useAnalytics } from '../../../context/AnalyticsProvider';
 import * as styles from './SettingsContent.module.css';
+import { useToolbarState } from '../../../context/ToolbarStateProvider';
 
-interface GeneralSettingsProps {
-  mode: ToolbarMode;
-  reloadOnFlagChangeIsEnabled: boolean;
-  onToggleReloadOnFlagChange: () => void;
-  isAutoCollapseEnabled: boolean;
-  onToggleAutoCollapse: () => void;
-}
-
-export const GeneralSettings: React.FC<GeneralSettingsProps> = ({
-  mode,
-  reloadOnFlagChangeIsEnabled,
-  onToggleReloadOnFlagChange,
-  isAutoCollapseEnabled,
-  onToggleAutoCollapse,
-}) => {
+export const GeneralSettings: React.FC = () => {
   const { state } = useDevServerContext();
+  const {
+    isAutoCollapseEnabled,
+    reloadOnFlagChangeIsEnabled,
+    mode,
+    handleToggleAutoCollapse,
+    handleToggleReloadOnFlagChange,
+  } = useToolbarState();
   const { position } = useToolbarUIContext();
   const analytics = useAnalytics();
 
   const handleAutoCollapseToggle = () => {
     analytics.trackAutoCollapseToggle(!isAutoCollapseEnabled ? 'enable' : 'disable');
-    onToggleAutoCollapse();
+    handleToggleAutoCollapse();
   };
 
   const handleReloadToggle = () => {
     analytics.trackReloadOnFlagChangeToggle(!reloadOnFlagChangeIsEnabled);
-    onToggleReloadOnFlagChange();
+    handleToggleReloadOnFlagChange();
   };
 
   return (
@@ -68,10 +61,7 @@ export const GeneralSettings: React.FC<GeneralSettingsProps> = ({
         <SettingsItem label="Position">
           <PositionSelector currentPosition={position} />
         </SettingsItem>
-        <SettingsItem
-          label="Auto-collapse"
-          description="Automatically collapses the toolbar when clicking outside."
-        >
+        <SettingsItem label="Auto-collapse" description="Automatically collapses the toolbar when clicking outside.">
           <Toggle checked={isAutoCollapseEnabled} onChange={handleAutoCollapseToggle} />
         </SettingsItem>
         <SettingsItem label="Reload on flag change">
@@ -88,4 +78,3 @@ export const GeneralSettings: React.FC<GeneralSettingsProps> = ({
     </div>
   );
 };
-

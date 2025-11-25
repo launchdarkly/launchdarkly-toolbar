@@ -1,21 +1,21 @@
 import { useMemo, useRef } from 'react';
 import { useVirtualizer } from '@tanstack/react-virtual';
 import { motion } from 'motion/react';
-import { List } from '../../List/List';
-import { ListItem } from '../../List/ListItem';
-import { useSearchContext, useAnalytics } from '../context';
-import { GenericHelpText } from '../components/GenericHelpText';
-import { ActionButtonsContainer, DoNotTrackWarning } from '../components';
-import { ANIMATION_CONFIG, VIRTUALIZATION } from '../constants';
-import { isDoNotTrackEnabled } from '../../../utils';
+import { IEventInterceptionPlugin, ProcessedEvent, SyntheticEventContext } from '../../../../../../types';
+import { isDoNotTrackEnabled } from '../../../../../utils';
+import { List } from '../../../../List/List';
+import { ListItem } from '../../../../List/ListItem';
+import { VIRTUALIZATION, ANIMATION_CONFIG } from '../../../constants';
+import { useSearchContext, useAnalytics } from '../../../context';
+import { useEvents, useCurrentDate } from '../../../hooks';
+import { DoNotTrackWarning } from '../../DoNotTrackWarning';
+import { GenericHelpText } from '../../GenericHelpText';
+import { IconLinkButton } from '../../IconLinkButton';
+import { AddIcon } from '../../icons/AddIcon';
+import { ActionButtonsContainer } from '../ActionButtonsContainer';
 
 import * as styles from './EventsTabContent.css';
-
-import * as actionStyles from '../components/legacy/ActionButtonsContainer.css';
-import { useCurrentDate, useEvents } from '../hooks';
-import { IconLinkButton } from '../components/IconLinkButton';
-import { AddIcon } from '../components/icons/AddIcon';
-import { IEventInterceptionPlugin, ProcessedEvent, SyntheticEventContext } from '../../../../types';
+import * as actionStyles from '../ActionButtonsContainer.css';
 
 interface EventsTabContentProps {
   baseUrl: string;

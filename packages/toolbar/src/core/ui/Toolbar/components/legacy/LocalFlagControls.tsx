@@ -1,12 +1,12 @@
 import { useState, useRef, useEffect } from 'react';
 import { Switch, TextField, Group, Input, Button } from '@launchpad-ui/components';
-import { EditIcon, CheckIcon, CancelIcon } from './icons';
-import { IconButton } from './IconButton';
-import type { LocalFlag } from '../context';
 import { enableShadowDOM } from '@react-stately/flags';
 import * as sharedStyles from './FlagControls.css';
 import * as styles from './LocalFlagControls.css';
-import { EnhancedFlag } from '../../../types/devServer';
+import { LocalFlag } from '../../context';
+import { EnhancedFlag } from '../../../../types/devServer';
+import { EditIcon, CheckIcon, CancelIcon } from '../icons';
+import { IconButton } from '../IconButton';
 
 enableShadowDOM();
 

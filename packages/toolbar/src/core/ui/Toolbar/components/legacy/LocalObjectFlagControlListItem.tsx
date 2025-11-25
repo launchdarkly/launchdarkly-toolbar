@@ -1,18 +1,16 @@
-import { ListItem } from '../../List/ListItem';
-import { LocalFlag } from '../context';
 import { LocalObjectFlagControl } from './LocalFlagControls';
-import { OverrideIndicator } from './OverrideIndicator';
-import { StarButton } from './StarButton';
-import { useStarredFlags } from '../context/StarredFlagsProvider';
-import { useEffect, useState } from 'react';
-import { motion, AnimatePresence } from 'motion/react';
-import { JsonEditor } from '../../JsonEditor/JsonEditor';
-import { EASING } from '../constants/animations';
-import { VIRTUALIZATION } from '../constants';
-import { EnhancedFlag } from '../../../types/devServer';
 import { Diagnostic } from '@codemirror/lint';
+import { AnimatePresence, motion } from 'motion/react';
+import { useState, useEffect } from 'react';
+import { EnhancedFlag } from '../../../../types/devServer';
+import { JsonEditor } from '../../../JsonEditor/JsonEditor';
+import { ListItem } from '../../../List/ListItem';
+import { VIRTUALIZATION, EASING } from '../../constants';
+import { LocalFlag, useStarredFlags } from '../../context';
+import { OverrideIndicator } from '../OverrideIndicator';
+import { StarButton } from '../StarButton';
 
-import * as sharedStyles from '../TabContent/FlagDevServerTabContent.css';
+import * as sharedStyles from './TabContent/FlagDevServerTabContent.css';
 import * as styles from './LocalObjectFlagControlListItem.css';
 
 interface LocalObjectFlagControlListItemProps {

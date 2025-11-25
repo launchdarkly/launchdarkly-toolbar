@@ -1,12 +1,11 @@
 import { Dispatch, SetStateAction, useCallback, useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { IconButton } from '../../components/IconButton';
-import { SearchIcon, SyncIcon, ChevronDownIcon, ChevronUpIcon, PersonPassword } from '../../components/icons';
-import { useToolbarUIContext } from '../../context/ToolbarUIProvider';
-import { useAnalytics } from '../../context';
+import { IconButton } from '../../../IconButton';
+import { useToolbarUIContext, useAnalytics } from '../../../../context';
+import { useAuthContext } from '../../../../context/AuthProvider';
+import { SearchIcon, PersonPassword, SyncIcon, ChevronUpIcon, ChevronDownIcon } from '../../../icons';
 
 import * as styles from '../Header.css';
-import { useAuthContext } from '../../context/AuthProvider';
 
 interface ActionButtonsProps {
   searchIsExpanded: boolean;

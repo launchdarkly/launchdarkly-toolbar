@@ -16,4 +16,3 @@ export const placeholder = style({
   color: 'var(--lp-color-gray-400)',
   textAlign: 'center',
 });
-

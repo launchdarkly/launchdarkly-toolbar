@@ -30,4 +30,3 @@ export const error = style({
   backgroundColor: 'var(--lp-color-red-500)',
   boxShadow: '0 0 8px var(--lp-color-red-500)',
 });
-

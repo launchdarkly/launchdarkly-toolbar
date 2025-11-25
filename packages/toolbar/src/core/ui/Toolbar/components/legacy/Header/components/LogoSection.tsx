@@ -1,4 +1,4 @@
-import { LaunchDarklyLogo } from '../../components/icons/LaunchDarklyLogo';
+import { LaunchDarklyLogo } from '../../../icons/LaunchDarklyLogo';
 import type React from 'react';
 
 import * as styles from '../Header.css';

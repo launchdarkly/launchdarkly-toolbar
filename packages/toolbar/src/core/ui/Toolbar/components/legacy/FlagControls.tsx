@@ -1,10 +1,10 @@
 import { useState, useRef, useEffect } from 'react';
 import { Switch, TextField, Group, Input } from '@launchpad-ui/components';
-import { EditIcon, CheckIcon, CancelIcon } from './icons';
-import { IconButton } from './IconButton';
-import { EnhancedFlag } from '../../../types/devServer';
-import { deepEqual } from '../../../utils';
-import { Select, SelectOption } from './Select';
+import { EditIcon, CheckIcon, CancelIcon } from '../icons';
+import { IconButton } from '../IconButton';
+import { EnhancedFlag } from '../../../../types/devServer';
+import { deepEqual } from '../../../../utils';
+import { Select, SelectOption } from '../Select';
 
 import * as styles from './FlagControls.css';
 

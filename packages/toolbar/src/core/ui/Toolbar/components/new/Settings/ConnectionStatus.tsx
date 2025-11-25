@@ -24,4 +24,3 @@ export const ConnectionStatus: React.FC<ConnectionStatusProps> = ({ status }) =>
     </div>
   );
 };
-

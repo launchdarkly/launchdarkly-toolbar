@@ -42,4 +42,3 @@ export const control = style({
   alignItems: 'center',
   flexShrink: 0,
 });
-

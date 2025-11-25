@@ -43,4 +43,3 @@ export const PositionSelector: React.FC<PositionSelectorProps> = ({ currentPosit
     />
   );
 };
-
