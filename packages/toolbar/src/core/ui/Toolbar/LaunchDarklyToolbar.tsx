@@ -1,5 +1,5 @@
 import { AnimatePresence, motion } from 'motion/react';
-import { useCallback, useMemo, useRef, useEffect } from 'react';
+import { useCallback, useMemo, useRef } from 'react';
 
 import {
   SearchProvider,
@@ -269,7 +269,7 @@ export function LaunchDarklyToolbar(props: LaunchDarklyToolbarProps) {
         eventsUrl={internalClientConfig.eventsUrl}
       >
         <AnalyticsProvider mode={mode}>
-          <ToolbarStateProvider domId={domId}>
+          <ToolbarStateProvider domId={domId} devServerUrl={devServerUrl}>
             <IFrameProvider authUrl={authUrl}>
               <AuthProvider>
                 <SearchProvider>

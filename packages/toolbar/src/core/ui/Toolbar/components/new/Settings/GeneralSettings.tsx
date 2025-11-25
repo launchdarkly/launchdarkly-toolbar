@@ -4,13 +4,14 @@ import { SettingsItem } from './SettingsItem';
 import { ProjectSelector } from './ProjectSelector';
 import { PositionSelector } from './PositionSelector';
 import { ConnectionStatus } from './ConnectionStatus';
-import { Toggle } from '../Toggle';
 import { LogoutButton } from './LogoutButton';
 import { useDevServerContext } from '../../../context/DevServerProvider';
 import { useToolbarUIContext } from '../../../context/ToolbarUIProvider';
 import { useAnalytics } from '../../../context/AnalyticsProvider';
 import * as styles from './SettingsContent.module.css';
 import { useToolbarState } from '../../../context/ToolbarStateProvider';
+import { Switch } from '@launchpad-ui/components';
+import * as settingsItemStyles from './SettingsItem.module.css';
 
 export const GeneralSettings: React.FC = () => {
   const { state } = useDevServerContext();
@@ -62,10 +63,22 @@ export const GeneralSettings: React.FC = () => {
           <PositionSelector currentPosition={position} />
         </SettingsItem>
         <SettingsItem label="Auto-collapse" description="Automatically collapses the toolbar when clicking outside.">
-          <Toggle checked={isAutoCollapseEnabled} onChange={handleAutoCollapseToggle} />
+          <Switch
+            data-theme="dark"
+            className={settingsItemStyles.switch_}
+            isSelected={isAutoCollapseEnabled}
+            onChange={handleAutoCollapseToggle}
+            aria-label="Auto-collapse toolbar"
+          />
         </SettingsItem>
         <SettingsItem label="Reload on flag change">
-          <Toggle checked={reloadOnFlagChangeIsEnabled} onChange={handleReloadToggle} />
+          <Switch
+            data-theme="dark"
+            className={settingsItemStyles.switch_}
+            isSelected={reloadOnFlagChangeIsEnabled}
+            onChange={handleReloadToggle}
+            aria-label="Reload on flag change"
+          />
         </SettingsItem>
       </SettingsSection>
 

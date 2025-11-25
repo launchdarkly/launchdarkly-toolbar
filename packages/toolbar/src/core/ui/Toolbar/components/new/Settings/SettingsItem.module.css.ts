@@ -10,11 +10,6 @@ export const item = style({
   borderRadius: '8px',
   transition: 'all 0.2s ease',
   gap: '16px',
-
-  ':hover': {
-    backgroundColor: 'var(--lp-color-gray-800)',
-    borderColor: 'var(--lp-color-gray-700)',
-  },
 });
 
 export const info = style({
@@ -41,4 +36,9 @@ export const control = style({
   display: 'flex',
   alignItems: 'center',
   flexShrink: 0,
+});
+
+export const switch_ = style({
+  fontSize: '12px',
+  backgroundColor: 'var(--lp-color-gray-900)',
 });

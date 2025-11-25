@@ -1,5 +1,5 @@
 import React from 'react';
-import { NewActiveTabId, ActiveTabId, ToolbarMode } from '../../types/toolbar';
+import { NewActiveTabId, ActiveTabId } from '../../types/toolbar';
 import { SubTab } from './types';
 import { SettingsContent } from './Settings/SettingsContent';
 
@@ -40,7 +40,7 @@ export const ContentRenderer: React.FC<ContentRendererProps> = ({ activeTab, act
   }
 
   if (activeTab === 'settings') {
-    return <SettingsContent activeSubtab={activeSubtab} />;
+    return <SettingsContent />;
   }
 
   if (activeTab === 'interactive') {

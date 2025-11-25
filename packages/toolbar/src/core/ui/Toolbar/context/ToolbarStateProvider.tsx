@@ -68,7 +68,7 @@ export function ToolbarStateProvider({ children, domId, devServerUrl }: ToolbarS
   const [searchIsExpanded, setSearchIsExpanded] = useState(false);
   const [reloadOnFlagChangeIsEnabled, enableReloadOnFlagChange] = useState(() => loadReloadOnFlagChange());
   const [isAutoCollapseEnabled, setAutoCollapse] = useState(() => loadToolbarAutoCollapse());
-  const [mode, setMode] = useState<ToolbarMode>(() => getToolbarMode(devServerUrl));
+  const [mode] = useState<ToolbarMode>(() => getToolbarMode(devServerUrl));
 
   // Refs
   const hasBeenExpandedRef = useRef(false);
