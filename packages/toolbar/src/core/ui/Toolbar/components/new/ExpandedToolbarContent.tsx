@@ -8,12 +8,12 @@ import { ActiveSubtabProvider } from './context/ActiveSubtabProvider';
 import { useActiveTabContext } from '../../context/ActiveTabProvider';
 import { useActiveSubtabContext } from './context/ActiveSubtabProvider';
 import * as styles from './ExpandedToolbarContent.module.css';
-import { NewActiveTabId } from '../../types/toolbar';
+import { TabId } from '../../types/toolbar';
 
 interface ExpandedToolbarContentProps {
   onClose?: () => void;
   onHeaderMouseDown?: (event: React.MouseEvent) => void;
-  defaultActiveTab: NewActiveTabId;
+  defaultActiveTab: TabId;
 }
 
 const ExpandedToolbarContentInner = forwardRef<HTMLDivElement, ExpandedToolbarContentProps>(

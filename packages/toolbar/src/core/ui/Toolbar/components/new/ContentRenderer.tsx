@@ -1,5 +1,5 @@
 import React from 'react';
-import { NewActiveTabId, ActiveTabId } from '../../types/toolbar';
+import { ActiveTabId } from '../../types/toolbar';
 import { SubTab } from './types';
 import { SettingsContent } from './Settings/SettingsContent';
 import { FlagListContent } from './FeatureFlags/FlagListContent';
@@ -10,7 +10,7 @@ const ContextContent = () => <div>Context Content</div>;
 const ClickTrackingContent = () => <div>Click Tracking Content</div>;
 
 interface ContentRendererProps {
-  activeTab: NewActiveTabId | ActiveTabId;
+  activeTab: ActiveTabId;
   activeSubtab: SubTab | undefined;
 }
 

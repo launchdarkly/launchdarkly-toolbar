@@ -23,7 +23,6 @@ import {
   getToolbarMode,
   getDefaultActiveTab,
   ActiveTabId,
-  NewActiveTabId,
 } from './types/toolbar';
 
 import * as styles from './LaunchDarklyToolbar.css';
@@ -38,6 +37,7 @@ import { AuthenticationModal } from './components/AuthenticationModal';
 import { InternalClientProvider } from './context/InternalClientProvider';
 import { useNewToolbarDesign } from '../../../flags/toolbarFlags';
 import { ExpandedToolbarContent } from './components/new/ExpandedToolbarContent';
+import { useEffect } from 'react';
 
 export interface LdToolbarProps {
   mode: ToolbarMode;
@@ -51,9 +51,8 @@ export function LdToolbar(props: LdToolbarProps) {
   const { searchTerm } = useSearchContext();
   const { position, handlePositionChange } = useToolbarUIContext();
   const analytics = useAnalytics();
-  const { activeTab } = useActiveTabContext();
+  const { activeTab, setActiveTab } = useActiveTabContext();
   const newToolbarDesign = useNewToolbarDesign();
-
   const defaultActiveTab = getDefaultActiveTab(mode, !!flagOverridePlugin, !!eventInterceptionPlugin, newToolbarDesign);
 
   const toolbarState = useToolbarState();
@@ -132,6 +131,12 @@ export function LdToolbar(props: LdToolbarProps) {
     onCollapseComplete: focusCollapsedToolbar,
   });
 
+  useEffect(() => {
+    if (!activeTab) {
+      setActiveTab(defaultActiveTab);
+    }
+  }, [activeTab, setActiveTab, defaultActiveTab]);
+
   // Prevent clicks from expanding toolbar if user was dragging
   const handleCircleClickWithDragCheck = useCallback(() => {
     if (!isDragging()) {
@@ -196,7 +201,7 @@ export function LdToolbar(props: LdToolbarProps) {
             eventInterceptionPlugin={eventInterceptionPlugin}
             mode={mode}
             baseUrl={baseUrl}
-            defaultActiveTab={defaultActiveTab as ActiveTabId}
+            defaultActiveTab={defaultActiveTab}
             onHeaderMouseDown={handleMouseDown}
             reloadOnFlagChangeIsEnabled={reloadOnFlagChangeIsEnabled}
             onToggleReloadOnFlagChange={handleToggleReloadOnFlagChange}
@@ -206,7 +211,7 @@ export function LdToolbar(props: LdToolbarProps) {
           <ExpandedToolbarContent
             onClose={handleClose}
             onHeaderMouseDown={handleMouseDown}
-            defaultActiveTab={defaultActiveTab as NewActiveTabId}
+            defaultActiveTab={defaultActiveTab}
           />
         )}
       </AnimatePresence>

@@ -1,9 +1,9 @@
 import { createContext, useContext, useState, useCallback } from 'react';
-import type { ActiveTabId, NewActiveTabId } from '../types/toolbar';
+import type { ActiveTabId } from '../types/toolbar';
 
 type ActiveTabContextType = {
-  activeTab: ActiveTabId | NewActiveTabId;
-  setActiveTab: (tab: ActiveTabId | NewActiveTabId) => void;
+  activeTab: ActiveTabId;
+  setActiveTab: (tab: ActiveTabId) => void;
 };
 
 const ActiveTabContext = createContext<ActiveTabContextType>({
@@ -12,9 +12,9 @@ const ActiveTabContext = createContext<ActiveTabContextType>({
 });
 
 export function ActiveTabProvider({ children }: { children: React.ReactNode }) {
-  const [activeTab, setActiveTabState] = useState<ActiveTabId | NewActiveTabId>(undefined);
+  const [activeTab, setActiveTabState] = useState<ActiveTabId>(undefined);
 
-  const setActiveTab = useCallback((tab: ActiveTabId | NewActiveTabId) => {
+  const setActiveTab = useCallback((tab: ActiveTabId) => {
     setActiveTabState(tab);
   }, []);
 

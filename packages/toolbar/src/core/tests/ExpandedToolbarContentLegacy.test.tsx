@@ -7,6 +7,8 @@ import { SearchProvider } from '../ui/Toolbar/context/SearchProvider';
 import { AnalyticsProvider } from '../ui/Toolbar/context/AnalyticsProvider';
 import { InternalClientProvider } from '../ui/Toolbar/context/InternalClientProvider';
 import { ToolbarStateProvider } from '../ui/Toolbar/context/ToolbarStateProvider';
+import { StarredFlagsProvider } from '../ui/Toolbar/context/StarredFlagsProvider';
+import { PluginsProvider } from '../ui/Toolbar/context/PluginsProvider';
 import { IEventInterceptionPlugin, IFlagOverridePlugin } from '../../types';
 import '@testing-library/jest-dom/vitest';
 import React from 'react';
@@ -110,19 +112,19 @@ vi.mock('../ui/Toolbar/context/ActiveTabProvider', () => ({
 }));
 
 // Mock the tab content components
-vi.mock('../ui/Toolbar/TabContent/FlagDevServerTabContent', () => ({
+vi.mock('../ui/Toolbar/components/legacy/TabContent/FlagDevServerTabContent', () => ({
   FlagDevServerTabContent: () => <div data-testid="flag-dev-server-tab-content">Flag Tab Content</div>,
 }));
 
-vi.mock('../ui/Toolbar/TabContent/FlagSdkOverrideTabContent', () => ({
+vi.mock('../ui/Toolbar/components/legacy/TabContent/FlagSdkOverrideTabContent', () => ({
   FlagSdkOverrideTabContent: () => <div data-testid="flag-sdk-tab-content">Flag SDK Override Tab Content</div>,
 }));
 
-vi.mock('../ui/Toolbar/TabContent/EventsTabContent', () => ({
+vi.mock('../ui/Toolbar/components/legacy/TabContent/EventsTabContent', () => ({
   EventsTabContent: () => <div data-testid="events-tab-content">Events Tab Content</div>,
 }));
 
-vi.mock('../ui/Toolbar/TabContent/SettingsTabContent', () => ({
+vi.mock('../ui/Toolbar/components/legacy/TabContent/SettingsTabContent', () => ({
   SettingsTabContent: ({ mode }: { mode: string }) => (
     <div data-testid="settings-tab-content">Settings Tab Content - {mode}</div>
   ),
@@ -152,10 +154,16 @@ function TestWrapper({
   children,
   initialPosition = 'bottom-right',
   devServerUrl,
+  baseUrl = 'https://app.launchdarkly.com',
+  eventInterceptionPlugin,
+  flagOverridePlugin,
 }: {
   children: React.ReactNode;
   devServerUrl?: string;
   initialPosition?: 'bottom-left' | 'bottom-right' | 'top-left' | 'top-right';
+  baseUrl?: string;
+  eventInterceptionPlugin?: IEventInterceptionPlugin;
+  flagOverridePlugin?: IFlagOverridePlugin;
 }) {
   return (
     <ToolbarUIProvider initialPosition={initialPosition}>
@@ -168,7 +176,17 @@ function TestWrapper({
         <InternalClientProvider>
           <AnalyticsProvider>
             <ToolbarStateProvider domId="test-toolbar">
-              <SearchProvider>{children}</SearchProvider>
+              <SearchProvider>
+                <StarredFlagsProvider>
+                  <PluginsProvider
+                    baseUrl={baseUrl}
+                    eventInterceptionPlugin={eventInterceptionPlugin}
+                    flagOverridePlugin={flagOverridePlugin}
+                  >
+                    {children}
+                  </PluginsProvider>
+                </StarredFlagsProvider>
+              </SearchProvider>
             </ToolbarStateProvider>
           </AnalyticsProvider>
         </InternalClientProvider>

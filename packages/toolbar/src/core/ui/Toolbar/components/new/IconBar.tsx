@@ -6,17 +6,17 @@ import { Tooltip } from './Tooltip';
 import * as styles from './IconBar.module.css';
 import { showInteractiveIcon } from '../../../../../flags/toolbarFlags';
 import { useActiveTabContext } from '../../context/ActiveTabProvider';
-import { NewActiveTabId } from '../../types/toolbar';
+import { TabId } from '../../types/toolbar';
 import { useEffect } from 'react';
 
 type Icon = {
-  id: NewActiveTabId;
+  id: TabId;
   Icon: React.ComponentType<{ className?: string }>;
   label: string;
   tooltip: string;
 };
 
-export const IconBar = ({ defaultActiveTab }: { defaultActiveTab: NewActiveTabId }) => {
+export const IconBar = ({ defaultActiveTab }: { defaultActiveTab: TabId }) => {
   const showInteractiveIconFlag = showInteractiveIcon();
   const { activeTab, setActiveTab } = useActiveTabContext();
 
@@ -41,7 +41,7 @@ export const IconBar = ({ defaultActiveTab }: { defaultActiveTab: NewActiveTabId
       {icons.map(({ id, Icon, label, tooltip }) => (
         <Tooltip key={id} content={tooltip}>
           <button
-            onClick={() => setActiveTab(id as NewActiveTabId)}
+            onClick={() => setActiveTab(id as TabId)}
             className={`${styles.iconButton} ${id === activeTab ? styles.active : ''}`}
             aria-label={label}
           >

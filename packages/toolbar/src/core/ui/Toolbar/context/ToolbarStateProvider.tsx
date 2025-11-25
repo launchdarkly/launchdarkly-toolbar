@@ -89,6 +89,7 @@ export function ToolbarStateProvider({ children, domId, devServerUrl }: ToolbarS
       if (isAnimating) return;
 
       const newTabId = tabId as TabId;
+      console.log('newTabId', newTabId);
 
       // If clicking the currently active tab, toggle the toolbar
       if (newTabId === activeTab && isExpanded) {
