@@ -316,31 +316,29 @@ function FlagSdkOverrideTabContentInner(props: FlagSdkOverrideTabContentInnerPro
                     return (
                       <div
                         key={virtualItem.key}
-                        className={sharedStyles.virtualItem}
+                        className={`${sharedStyles.virtualItem} ${flag.isOverridden ? sharedStyles.virtualItemOverridden : ''}`}
                         style={{
                           height: `${virtualItem.size}px`,
                           transform: `translateY(${virtualItem.start}px)`,
-                          borderBottom: '1px solid var(--lp-color-gray-800)',
+                          borderBottom: '1px solid var(--lp-color-gray-700)',
                         }}
                         data-testid={`flag-row-${flagKey}`}
                       >
                         <ListItem className={sharedStyles.flagListItem}>
-                          {flag.isOverridden && (
-                            <div className={sharedStyles.overrideIndicatorContainer}>
-                              <OverrideIndicator onClear={() => handleClearOverride(flagKey)} />
-                            </div>
-                          )}
                           <div className={sharedStyles.flagHeader}>
-                            <a
-                              href={`https://app.launchdarkly.com/projects/${projectKey}/flags/${flagKey}?env=${environment}&selectedEnv=${environment}`}
-                              target="_blank"
-                              className={sharedStyles.flagName}
-                            >
-                              <span className={sharedStyles.flagNameText} data-testid={`flag-name-${flagKey}`}>
-                                {flag.name}
-                              </span>
-                              <ExternalLinkIcon size="small" />
-                            </a>
+                            <div className={sharedStyles.flagNameWrapper}>
+                              {flag.isOverridden && <OverrideIndicator onClear={() => handleClearOverride(flagKey)} />}
+                              <a
+                                href={`https://app.launchdarkly.com/projects/${projectKey}/flags/${flagKey}?env=${environment}&selectedEnv=${environment}`}
+                                target="_blank"
+                                className={sharedStyles.flagName}
+                              >
+                                <span className={sharedStyles.flagNameText} data-testid={`flag-name-${flagKey}`}>
+                                  {flag.name}
+                                </span>
+                                <ExternalLinkIcon size="small" />
+                              </a>
+                            </div>
                             <FlagKeyWithCopy flagKey={flagKey} className={sharedStyles.flagKey} />
                           </div>
 

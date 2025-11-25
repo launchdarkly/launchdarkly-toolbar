@@ -1,5 +1,4 @@
-import { useState } from 'react';
-import { motion, AnimatePresence } from 'motion/react';
+import { motion } from 'motion/react';
 import * as styles from './OverrideIndicator.css';
 
 interface OverrideIndicatorProps {
@@ -8,56 +7,33 @@ interface OverrideIndicatorProps {
 
 export function OverrideIndicator(props: OverrideIndicatorProps) {
   const { onClear } = props;
-  const [isHovered, setIsHovered] = useState(false);
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (onClear && (e.key === 'Enter' || e.key === ' ')) {
+      e.preventDefault();
+      e.stopPropagation();
       onClear();
     }
   };
 
+  const handleClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    onClear?.();
+  };
+
   return (
     <motion.span
-      className={`${styles.overrideIndicator} ${onClear ? styles.interactive : ''}`}
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
-      onClick={onClear}
+      className={`${styles.overrideDot} ${onClear ? styles.interactive : ''}`}
+      onClick={handleClick}
       onKeyDown={handleKeyDown}
       tabIndex={onClear ? 0 : undefined}
-      title={onClear ? 'Click to remove override' : 'Override active'}
-      whileHover={onClear ? { scale: 1.05 } : {}}
+      title={onClear ? 'Remove override' : 'Flag is overridden'}
+      whileHover={onClear ? { scale: 1.2, backgroundColor: 'var(--lp-color-red-500)' } : {}}
       transition={{ duration: 0.2 }}
       data-testid="override-indicator"
       role={onClear ? 'button' : 'status'}
       aria-label={onClear ? 'Remove flag override' : 'Flag override active'}
-    >
-      <motion.span
-        className={styles.overrideDot}
-        animate={
-          isHovered && onClear
-            ? { backgroundColor: 'var(--lp-color-red-500)' }
-            : { backgroundColor: 'var(--lp-color-brand-cyan-base)' }
-        }
-        transition={{ duration: 0.2 }}
-      />
-      <div className={styles.overrideTextContainer}>
-        <AnimatePresence mode="wait">
-          <motion.span
-            key={isHovered && onClear ? 'remove' : 'override'}
-            className={styles.overrideText}
-            initial={{ opacity: 0, y: -2 }}
-            animate={{
-              opacity: 1,
-              y: 0,
-              color: isHovered && onClear ? 'var(--lp-color-red-500)' : 'var(--lp-color-brand-cyan-base)',
-            }}
-            exit={{ opacity: 0, y: 2 }}
-            transition={{ duration: 0.15 }}
-          >
-            {isHovered && onClear ? 'Remove' : 'Override'}
-          </motion.span>
-        </AnimatePresence>
-      </div>
-    </motion.span>
+    />
   );
 }

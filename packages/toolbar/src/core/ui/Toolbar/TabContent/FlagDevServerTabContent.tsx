@@ -265,28 +265,26 @@ export function FlagDevServerTabContent(props: FlagDevServerTabContentProps) {
                     return (
                       <div
                         key={virtualItem.key}
-                        className={styles.virtualItem}
+                        className={`${styles.virtualItem} ${flag.isOverridden ? styles.virtualItemOverridden : ''}`}
                         style={{
                           height: `${virtualItem.size}px`,
                           transform: `translateY(${virtualItem.start}px)`,
-                          borderBottom: '1px solid var(--lp-color-gray-800)',
+                          borderBottom: '1px solid var(--lp-color-gray-700)',
                         }}
                       >
                         <ListItem className={styles.flagListItem}>
-                          {flag.isOverridden && (
-                            <div className={styles.overrideIndicatorContainer}>
-                              <OverrideIndicator onClear={() => onClearOverride(flag.key)} />
-                            </div>
-                          )}
                           <div className={styles.flagHeader}>
-                            <a
-                              href={`https://app.launchdarkly.com/projects/${projectKey}/flags/${flag.key}?env=${environment}&selectedEnv=${environment}`}
-                              target="_blank"
-                              className={styles.flagName}
-                            >
-                              <span className={styles.flagNameText}>{flag.name}</span>
-                              <ExternalLinkIcon size="small" />
-                            </a>
+                            <div className={styles.flagNameWrapper}>
+                              {flag.isOverridden && <OverrideIndicator onClear={() => onClearOverride(flag.key)} />}
+                              <a
+                                href={`https://app.launchdarkly.com/projects/${projectKey}/flags/${flag.key}?env=${environment}&selectedEnv=${environment}`}
+                                target="_blank"
+                                className={styles.flagName}
+                              >
+                                <span className={styles.flagNameText}>{flag.name}</span>
+                                <ExternalLinkIcon size="small" />
+                              </a>
+                            </div>
                             <FlagKeyWithCopy flagKey={flag.key} className={styles.flagKey} />
                           </div>
 

@@ -5,7 +5,7 @@ export const connectionStatus = style({
   alignItems: 'center',
   justifyContent: 'space-between',
   padding: '8px 16px',
-  borderBottom: '1px solid var(--lp-color-gray-800)',
+  borderBottom: '1px solid var(--lp-color-gray-700)',
 });
 
 export const statusIndicator = style({

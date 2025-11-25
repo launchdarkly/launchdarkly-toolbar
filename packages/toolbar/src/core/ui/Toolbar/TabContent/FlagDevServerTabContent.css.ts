@@ -6,7 +6,7 @@ export const flagName = style({
   color: 'var(--lp-color-gray-200)',
   display: 'flex',
   alignItems: 'center',
-  gap: '8px',
+  gap: '4px',
   minWidth: 0,
   flex: 1,
   cursor: 'pointer',
@@ -23,6 +23,14 @@ export const flagNameText = style({
   textOverflow: 'ellipsis',
   whiteSpace: 'nowrap',
   minWidth: 0,
+});
+
+export const flagNameWrapper = style({
+  display: 'flex',
+  alignItems: 'center',
+  gap: '4px',
+  minWidth: 0,
+  flex: 1,
 });
 
 export const flagHeader = style({
@@ -96,16 +104,18 @@ export const virtualItem = style({
   },
 });
 
+export const virtualItemOverridden = style({
+  backgroundColor: 'rgba(from var(--lp-color-brand-cyan-base) r g b / 0.05)',
+
+  ':hover': {
+    backgroundColor: 'rgba(from var(--lp-color-brand-cyan-base) r g b / 0.1)',
+    transition: 'background-color 0.2s ease',
+  },
+});
+
 export const flagListItem = style({
   height: '100%',
   position: 'relative',
-});
-
-export const overrideIndicatorContainer = style({
-  position: 'absolute',
-  top: '4px',
-  right: '4px',
-  zIndex: 1,
 });
 
 export const flagListItemBlock = style({

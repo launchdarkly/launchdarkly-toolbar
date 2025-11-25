@@ -78,31 +78,29 @@ export function LocalObjectFlagControlListItem(props: LocalObjectFlagControlList
   return (
     <div
       data-testid={`flag-row-${flag.key}`}
-      className={sharedStyles.virtualItem}
+      className={`${sharedStyles.virtualItem} ${flag.isOverridden ? sharedStyles.virtualItemOverridden : ''}`}
       style={{
         height: size,
         transform: `translateY(${start}px)`,
-        borderBottom: '1px solid var(--lp-color-gray-800)',
+        borderBottom: '1px solid var(--lp-color-gray-700)',
       }}
-    >
+      >
       <ListItem className={sharedStyles.flagListItemBlock}>
-        {flag.isOverridden && (
-          <div className={sharedStyles.overrideIndicatorContainer}>
-            <OverrideIndicator onClear={() => handleClearOverride(flag.key)} />
-          </div>
-        )}
         <div className={styles.flagContentWrapper}>
           <div className={sharedStyles.flagHeader}>
-            <a
-              href={`https://app.launchdarkly.com/projects/${projectKey}/flags/${flag.key}?env=${environment}&selectedEnv=${environment}`}
-              target="_blank"
-              className={sharedStyles.flagName}
-            >
-              <span className={styles.flagNameText} data-testid={`flag-name-${flag.key}`}>
-                {flag.name}
-              </span>
-              <ExternalLinkIcon size="small" />
-            </a>
+            <div className={sharedStyles.flagNameWrapper}>
+              {flag.isOverridden && <OverrideIndicator onClear={() => handleClearOverride(flag.key)} />}
+              <a
+                href={`https://app.launchdarkly.com/projects/${projectKey}/flags/${flag.key}?env=${environment}&selectedEnv=${environment}`}
+                target="_blank"
+                className={sharedStyles.flagName}
+              >
+                <span className={styles.flagNameText} data-testid={`flag-name-${flag.key}`}>
+                  {flag.name}
+                </span>
+                <ExternalLinkIcon size="small" />
+              </a>
+            </div>
             <FlagKeyWithCopy flagKey={flag.key} className={sharedStyles.flagKey} />
           </div>
 
