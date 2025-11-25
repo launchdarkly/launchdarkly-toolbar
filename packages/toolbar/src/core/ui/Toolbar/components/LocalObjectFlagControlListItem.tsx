@@ -93,20 +93,17 @@ export function LocalObjectFlagControlListItem(props: LocalObjectFlagControlList
         )}
         <div className={styles.flagContentWrapper}>
           <div className={sharedStyles.flagHeader}>
-            <span className={sharedStyles.flagName}>
-              <span className={styles.flagNameText} data-testid={`flag-name-${flag.key}`}>
-                {flag.name}
-              </span>
-            </span>
-            <FlagKeyWithCopy flagKey={flag.key} className={sharedStyles.flagKey} />
             <a
               href={`https://app.launchdarkly.com/projects/${projectKey}/flags/${flag.key}?env=${environment}&selectedEnv=${environment}`}
               target="_blank"
-              className={sharedStyles.flagLinkContainer}
+              className={sharedStyles.flagName}
             >
-              <span>Open in LaunchDarkly</span>
+              <span className={styles.flagNameText} data-testid={`flag-name-${flag.key}`}>
+                {flag.name}
+              </span>
               <ExternalLinkIcon size="small" />
             </a>
+            <FlagKeyWithCopy flagKey={flag.key} className={sharedStyles.flagKey} />
           </div>
 
           <div className={sharedStyles.flagOptions}>

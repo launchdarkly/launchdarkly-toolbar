@@ -9,6 +9,13 @@ export const flagName = style({
   gap: '8px',
   minWidth: 0,
   flex: 1,
+  cursor: 'pointer',
+  textDecoration: 'none',
+  transition: 'color 0.2s ease',
+
+  ':hover': {
+    color: 'var(--lp-color-gray-100)',
+  },
 });
 
 export const flagNameText = style({
@@ -99,20 +106,6 @@ export const overrideIndicatorContainer = style({
   top: '4px',
   right: '4px',
   zIndex: 1,
-});
-
-export const flagLinkContainer = style({
-  display: 'flex',
-  alignItems: 'center',
-  gap: '4px',
-  marginTop: '6px',
-  fontSize: '11px',
-  color: 'var(--lp-color-gray-400)',
-  cursor: 'pointer',
-
-  ':hover': {
-    color: 'var(--lp-color-gray-200)',
-  },
 });
 
 export const flagListItemBlock = style({
