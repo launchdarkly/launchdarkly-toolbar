@@ -53,7 +53,7 @@ export const flagKeyText = style({
 });
 
 export const tooltip = style({
-  position: 'sticky',
+  position: 'absolute',
   bottom: 'calc(100% + 8px)',
   left: '15%',
   transform: 'translateX(0)',
