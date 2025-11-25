@@ -8,16 +8,33 @@ import { ActiveSubtabProvider } from './context/ActiveSubtabProvider';
 import { useActiveTabContext } from '../../context/ActiveTabProvider';
 import { useActiveSubtabContext } from './context/ActiveSubtabProvider';
 import * as styles from './ExpandedToolbarContent.module.css';
-import { NewActiveTabId } from '../../types/toolbar';
+import { NewActiveTabId, ToolbarMode } from '../../types/toolbar';
 
 interface ExpandedToolbarContentProps {
   onClose?: () => void;
   onHeaderMouseDown?: (event: React.MouseEvent) => void;
   defaultActiveTab: NewActiveTabId;
+  mode?: ToolbarMode;
+  reloadOnFlagChangeIsEnabled?: boolean;
+  onToggleReloadOnFlagChange?: () => void;
+  isAutoCollapseEnabled?: boolean;
+  onToggleAutoCollapse?: () => void;
 }
 
 const ExpandedToolbarContentInner = forwardRef<HTMLDivElement, ExpandedToolbarContentProps>(
-  ({ onClose, onHeaderMouseDown, defaultActiveTab }, ref) => {
+  (
+    {
+      onClose,
+      onHeaderMouseDown,
+      defaultActiveTab,
+      mode,
+      reloadOnFlagChangeIsEnabled,
+      onToggleReloadOnFlagChange,
+      isAutoCollapseEnabled,
+      onToggleAutoCollapse,
+    },
+    ref,
+  ) => {
     const { activeTab } = useActiveTabContext();
     const { activeSubtab } = useActiveSubtabContext();
 
@@ -34,7 +51,15 @@ const ExpandedToolbarContentInner = forwardRef<HTMLDivElement, ExpandedToolbarCo
         <IconBar defaultActiveTab={defaultActiveTab} />
         <TabBar />
         <div className={styles.content}>
-          <ContentRenderer activeTab={activeTab} activeSubtab={activeSubtab} />
+          <ContentRenderer
+            activeTab={activeTab}
+            activeSubtab={activeSubtab}
+            mode={mode}
+            reloadOnFlagChangeIsEnabled={reloadOnFlagChangeIsEnabled}
+            onToggleReloadOnFlagChange={onToggleReloadOnFlagChange}
+            isAutoCollapseEnabled={isAutoCollapseEnabled}
+            onToggleAutoCollapse={onToggleAutoCollapse}
+          />
         </div>
       </motion.div>
     );

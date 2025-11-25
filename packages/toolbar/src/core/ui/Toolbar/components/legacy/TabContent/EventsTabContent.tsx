@@ -11,7 +11,7 @@ import { isDoNotTrackEnabled } from '../../../utils';
 
 import * as styles from './EventsTabContent.css';
 
-import * as actionStyles from '../components/ActionButtonsContainer.css';
+import * as actionStyles from '../components/legacy/ActionButtonsContainer.css';
 import { useCurrentDate, useEvents } from '../hooks';
 import { IconLinkButton } from '../components/IconLinkButton';
 import { AddIcon } from '../components/icons/AddIcon';

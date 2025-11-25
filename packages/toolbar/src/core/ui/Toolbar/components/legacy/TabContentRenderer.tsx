@@ -1,12 +1,12 @@
 import { motion } from 'motion/react';
-import { FlagDevServerTabContent } from '../TabContent/FlagDevServerTabContent';
-import { FlagSdkOverrideTabContent } from '../TabContent/FlagSdkOverrideTabContent';
-import { EventsTabContent } from '../TabContent/EventsTabContent';
-import { SettingsTabContent } from '../TabContent/SettingsTabContent';
-import { ANIMATION_CONFIG, DIMENSIONS } from '../constants';
-import { TabId, ToolbarMode } from '../types';
-import { IEventInterceptionPlugin, IFlagOverridePlugin } from '../../../../types';
+import { ANIMATION_CONFIG, DIMENSIONS } from '../../constants';
+import { TabId, ToolbarMode } from '../../types';
+import { IEventInterceptionPlugin, IFlagOverridePlugin } from '../../../../../types';
 import * as styles from './TabContentRenderer.css';
+import { FlagSdkOverrideTabContent } from './TabContent/FlagSdkOverrideTabContent';
+import { EventsTabContent } from './TabContent/EventsTabContent';
+import { FlagDevServerTabContent } from './TabContent/FlagDevServerTabContent';
+import { SettingsTabContent } from './TabContent/SettingsTabContent';
 
 interface TabContentRendererProps {
   activeTab: TabId;

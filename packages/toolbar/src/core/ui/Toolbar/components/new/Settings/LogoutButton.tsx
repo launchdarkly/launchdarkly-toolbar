@@ -1,0 +1,21 @@
+import React from 'react';
+import { useAuthContext } from '../../../context/AuthProvider';
+import { useAnalytics } from '../../../context/AnalyticsProvider';
+import * as styles from './LogoutButton.module.css';
+
+export const LogoutButton: React.FC = () => {
+  const { logout } = useAuthContext();
+  const analytics = useAnalytics();
+
+  const handleLogout = () => {
+    analytics.trackLogout();
+    logout();
+  };
+
+  return (
+    <button className={styles.button} onClick={handleLogout} aria-label="Log out">
+      Log out
+    </button>
+  );
+};
+

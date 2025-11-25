@@ -1,9 +1,9 @@
 import { createContext, useContext, useState, useMemo, ReactNode } from 'react';
-import { Subtab } from '../types';
+import { SubTab } from '../types';
 
 interface ActiveSubtabContextValue {
-  activeSubtab: Subtab | undefined;
-  setActiveSubtab: (subtab: Subtab) => void;
+  activeSubtab: SubTab | undefined;
+  setActiveSubtab: (subtab: SubTab) => void;
 }
 
 const ActiveSubtabContext = createContext<ActiveSubtabContextValue | undefined>(undefined);
@@ -13,7 +13,7 @@ export interface ActiveSubtabProviderProps {
 }
 
 export function ActiveSubtabProvider({ children }: ActiveSubtabProviderProps) {
-  const [activeSubtab, setActiveSubtab] = useState<Subtab | undefined>('flags');
+  const [activeSubtab, setActiveSubtab] = useState<SubTab | undefined>('flags');
 
   const value = useMemo(
     () => ({

@@ -1,21 +1,18 @@
 import { Button, Switch } from '@launchpad-ui/components';
-import { List } from '../../List/List';
-import { ListItem } from '../../List/ListItem';
-import { useSearchContext } from '../context/SearchProvider';
-import { useDevServerContext } from '../context/DevServerProvider';
-import { useToolbarUIContext } from '../context/ToolbarUIProvider';
-import { useAnalytics } from '../context/AnalyticsProvider';
-import { useAuthContext } from '../context/AuthProvider';
-import { StatusDot } from '../components/StatusDot';
-import { GenericHelpText } from '../components/GenericHelpText';
-import { TOOLBAR_POSITIONS, type ToolbarPosition, type ToolbarMode } from '../types/toolbar';
-import { Select, SelectOption } from '../components/Select';
-import { Feedback } from '../components/Feedback/Feedback';
-
-import * as styles from './SettingsTab.css';
-import { useProjectContext } from '../context/ProjectProvider';
 import { useEffect, useMemo } from 'react';
-import type { FeedbackSentiment } from '../../../../types/analytics';
+import { FeedbackSentiment } from '../../../../../../types';
+import { List } from '../../../../List/List';
+import { ListItem } from '../../../../List/ListItem';
+import { useAnalytics, useDevServerContext, useToolbarUIContext, useSearchContext } from '../../../context';
+import { useAuthContext } from '../../../context/AuthProvider';
+import { useProjectContext } from '../../../context/ProjectProvider';
+import { ToolbarPosition, TOOLBAR_POSITIONS, ToolbarMode } from '../../../types';
+import { GenericHelpText } from '../../GenericHelpText';
+import { Feedback } from '../../Feedback/Feedback';
+import { Select, SelectOption } from '../../Select';
+import { StatusDot } from '../../StatusDot';
+import * as styles from './SettingsTab.css';
+
 
 interface SettingsItem {
   id: string;

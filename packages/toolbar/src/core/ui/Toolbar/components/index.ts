@@ -1,11 +1,11 @@
-export { ActionButtonsContainer } from './ActionButtonsContainer';
+export { ActionButtonsContainer } from './legacy/ActionButtonsContainer';
 export { LoginScreen } from './LoginScreen';
 export { CircleLogo } from './CircleLogo';
 export { ConnectionStatus } from './ConnectionStatus';
 export { DoNotTrackWarning } from './DoNotTrackWarning';
 export { LaunchDarklyIcon } from './icons/LaunchDarklyIcon';
 export { StatusDot } from './StatusDot';
-export { TabContentRenderer } from './TabContentRenderer';
+export { TabContentRenderer } from './legacy/TabContentRenderer';
 export { ErrorMessage } from './ErrorMessage';
 export {
   type FlagFilterMode,

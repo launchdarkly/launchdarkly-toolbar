@@ -1,10 +1,9 @@
 import React, { Dispatch, SetStateAction } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 
-import { Header } from '../../Header/Header';
 import { Tabs } from '../../../Tabs/Tabs';
 import { TabButton } from '../../../Tabs/TabButton';
-import { TabContentRenderer } from '../TabContentRenderer';
+import { TabContentRenderer } from './TabContentRenderer';
 import { ANIMATION_CONFIG, EASING } from '../../constants';
 import { ActiveTabId, ToolbarMode, getTabsForMode, TAB_ORDER } from '../../types';
 import { useDevServerContext } from '../../context/DevServerProvider';
@@ -17,6 +16,7 @@ import { GearIcon, SyncIcon, ToggleOffIcon } from '../icons';
 import { ErrorMessage } from '../ErrorMessage';
 import { FocusScope } from '@react-aria/focus';
 import { IEventInterceptionPlugin, IFlagOverridePlugin } from '../../../../../types';
+import { Header } from './Header/Header';
 
 interface ExpandedToolbarContentProps {
   activeTab: ActiveTabId;

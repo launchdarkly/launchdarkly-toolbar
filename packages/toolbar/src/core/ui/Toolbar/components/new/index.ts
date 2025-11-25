@@ -6,3 +6,4 @@ export * from './Tooltip';
 export * from './ContentRenderer';
 export * from './context/ActiveSubtabProvider';
 export * from './types';
+export * from './Settings';
