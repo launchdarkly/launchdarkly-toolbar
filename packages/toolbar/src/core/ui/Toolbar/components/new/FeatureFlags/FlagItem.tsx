@@ -1,6 +1,6 @@
 import React from 'react';
-import { Toggle } from '../Toggle';
 import * as styles from './FlagItem.module.css';
+import { Switch } from '@launchpad-ui/components';
 
 interface FlagItemProps {
   name: string;
@@ -16,7 +16,7 @@ export const FlagItem: React.FC<FlagItemProps> = ({ name, value, enabled, onTogg
         <div className={styles.name}>{name}</div>
         <div className={styles.value}>{value}</div>
       </div>
-      <Toggle checked={enabled} onChange={onToggle} />
+      <Switch isSelected={enabled} onChange={onToggle} />
     </div>
   );
 };
