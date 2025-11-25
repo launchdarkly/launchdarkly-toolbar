@@ -1,9 +1,9 @@
 import React from 'react';
 import { motion } from 'motion/react';
-import { ToolbarHeader } from './ToolbarHeader';
+import { ToolbarHeader } from './Header/ToolbarHeader';
 import { IconBar } from './IconBar';
 import { TabBar } from './TabBar';
-import { FlagList } from './FlagList';
+import { FlagList } from './FeatureFlags/FlagList';
 import * as styles from './ExpandedToolbarContent.module.css';
 
 interface ExpandedToolbarContentProps {
