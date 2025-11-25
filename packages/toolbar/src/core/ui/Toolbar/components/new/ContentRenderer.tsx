@@ -6,7 +6,6 @@ import { FlagListContent } from './FeatureFlags/FlagListContent';
 
 // Placeholder content components - these will be replaced with real implementations
 const ContextContent = () => <div>Context Content</div>;
-const MonitoringOverviewContent = () => <div>Monitoring Overview Content</div>;
 const EventsContent = () => <div>Events Content</div>;
 const ClickTrackingContent = () => <div>Click Tracking Content</div>;
 
@@ -30,12 +29,10 @@ export const ContentRenderer: React.FC<ContentRendererProps> = ({ activeTab, act
 
   if (activeTab === 'monitoring') {
     switch (activeSubtab) {
-      case 'overview':
-        return <MonitoringOverviewContent />;
       case 'events':
         return <EventsContent />;
       default:
-        return <MonitoringOverviewContent />;
+        return <EventsContent />;
     }
   }
 

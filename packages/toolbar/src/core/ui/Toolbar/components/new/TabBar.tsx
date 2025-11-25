@@ -26,6 +26,9 @@ export const TabBar = () => {
     return null;
   }
 
+  // Check if current tab/subtab combination supports filtering
+  const supportsFiltering = activeTab === 'flags' && activeSubtab === 'flags';
+
   return (
     <div className={styles.container}>
       <div className={styles.tabs}>
@@ -40,9 +43,11 @@ export const TabBar = () => {
         ))}
       </div>
 
-      <button className={styles.tabButton} aria-label="Filter">
-        <FilterTuneIcon />
-      </button>
+      {supportsFiltering && (
+        <button className={styles.tabButton} aria-label="Filter">
+          <FilterTuneIcon />
+        </button>
+      )}
       <button className={styles.tabButton} aria-label="Search">
         <SearchIcon />
       </button>

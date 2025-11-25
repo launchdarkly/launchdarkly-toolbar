@@ -16,10 +16,8 @@ export interface TabConfig {
 export const TAB_SUBTABS_MAP = {
   flags: [
     { id: 'flags', label: 'Flags' },
-    { id: 'context', label: 'Context' },
   ] as TabConfig[],
   monitoring: [
-    { id: 'overview', label: 'Overview' },
     { id: 'events', label: 'Events' },
   ] as TabConfig[],
   settings: [{ id: 'general', label: 'General' }] as TabConfig[],
