@@ -53,32 +53,3 @@ export const active = style({
     backgroundColor: 'var(--lp-color-gray-100)',
   },
 });
-
-export const tabButton = style({
-  backgroundColor: 'transparent',
-  border: 'none',
-  color: 'var(--lp-color-gray-400)',
-  cursor: 'pointer',
-  padding: '8px',
-  borderRadius: '4px',
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center',
-  width: '32px',
-  height: '32px',
-  transition: 'all 0.2s ease',
-
-  ':hover': {
-    backgroundColor: 'var(--lp-color-gray-800)',
-    color: 'var(--lp-color-gray-200)',
-  },
-
-  ':focus': {
-    outline: 'none',
-  },
-
-  ':focus-visible': {
-    outline: '2px solid var(--lp-color-shadow-interactive-focus)',
-    outlineOffset: '-2px',
-  },
-});

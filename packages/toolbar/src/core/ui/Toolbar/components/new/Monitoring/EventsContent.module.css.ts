@@ -3,7 +3,7 @@ import { style, keyframes } from '@vanilla-extract/css';
 export const statsHeader = style({
   padding: '8px 20px',
   borderBottom: '1px solid var(--lp-color-gray-700)',
-  backgroundColor: 'var(--lp-color-gray-800)',
+  backgroundColor: 'var(--lp-color-gray-900)',
 });
 
 export const statsText = style({
@@ -217,35 +217,4 @@ export const liveTailSubtext = style({
 
 export const eventListItem = style({
   height: '100%',
-});
-
-export const actionButton = style({
-  padding: '8px 16px',
-  fontSize: '14px',
-  fontWeight: 500,
-  color: 'var(--lp-color-gray-200)',
-  backgroundColor: 'var(--lp-color-gray-700)',
-  border: '1px solid var(--lp-color-gray-600)',
-  borderRadius: '6px',
-  cursor: 'pointer',
-  transition: 'all 0.2s ease',
-
-  selectors: {
-    '&:hover:not(:disabled)': {
-      backgroundColor: 'var(--lp-color-gray-600)',
-      borderColor: 'var(--lp-color-gray-500)',
-    },
-    '&:disabled': {
-      opacity: 0.5,
-      cursor: 'not-allowed',
-    },
-  },
-});
-
-export const actionButtonsContainer = style({
-  display: 'flex',
-  gap: '8px',
-  padding: '12px 20px',
-  borderBottom: '1px solid var(--lp-color-gray-700)',
-  backgroundColor: 'var(--lp-color-gray-800)',
 });

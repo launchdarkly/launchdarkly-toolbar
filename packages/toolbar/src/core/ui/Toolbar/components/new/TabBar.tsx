@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
-import { SearchIcon, FilterTuneIcon } from '../icons';
 import { useActiveTabContext } from '../../context/ActiveTabProvider';
 import { useActiveSubtabContext } from './context/ActiveSubtabProvider';
+import { ContentActions } from './ContentActions';
 import { TAB_SUBTABS_MAP, getDefaultSubtab, SubTab, TabConfig } from './types';
 import * as styles from './TabBar.module.css';
 
@@ -26,9 +26,6 @@ export const TabBar = () => {
     return null;
   }
 
-  // Check if current tab/subtab combination supports filtering
-  const supportsFiltering = activeTab === 'flags' && activeSubtab === 'flags';
-
   return (
     <div className={styles.container}>
       <div className={styles.tabs}>
@@ -42,15 +39,7 @@ export const TabBar = () => {
           </button>
         ))}
       </div>
-
-      {supportsFiltering && (
-        <button className={styles.tabButton} aria-label="Filter">
-          <FilterTuneIcon />
-        </button>
-      )}
-      <button className={styles.tabButton} aria-label="Search">
-        <SearchIcon />
-      </button>
+      <ContentActions />
     </div>
   );
 };

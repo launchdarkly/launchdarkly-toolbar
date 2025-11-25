@@ -39,12 +39,6 @@ export function EventsContent() {
 
   const doNotTrackEnabled = useMemo(() => isDoNotTrackEnabled(), []);
 
-  const handleClearEvents = () => {
-    if (eventInterceptionPlugin) {
-      eventInterceptionPlugin.clearEvents();
-    }
-  };
-
   const handleEventClick = (event: ProcessedEvent) => {
     analytics.trackEventClick(event?.key ?? event.displayName);
     console.group(`📝 Event Details: [kind: ${event.kind}, displayName: ${event.displayName}]`);
@@ -137,12 +131,6 @@ export function EventsContent() {
 
   return (
     <div data-testid="events-tab-content">
-      <div className={styles.actionButtonsContainer}>
-        <button className={styles.actionButton} onClick={handleClearEvents} disabled={events.length === 0}>
-          Clear all events ({events.length})
-        </button>
-      </div>
-
       <div className={styles.statsHeader}>
         <span className={styles.statsText}>{eventStats.totalEvents} events captured</span>
       </div>
