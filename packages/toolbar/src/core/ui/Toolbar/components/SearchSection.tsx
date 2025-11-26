@@ -1,10 +1,10 @@
 import { Dispatch, SetStateAction } from 'react';
 import { motion } from 'motion/react';
 import { Group, Input, SearchField } from '@launchpad-ui/components';
-import { IconButton } from '../../../../../Buttons/IconButton';
-import { CancelCircleIcon } from '../../../icons';
+import { IconButton } from '../../Buttons/IconButton';
+import { CancelCircleIcon } from './icons';
 
-import * as styles from '../Header.css';
+import * as styles from './legacy/Header/Header.css';
 
 interface SearchSectionProps {
   searchTerm: string;

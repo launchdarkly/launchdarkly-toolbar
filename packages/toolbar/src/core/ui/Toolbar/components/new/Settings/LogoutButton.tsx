@@ -1,9 +1,8 @@
-import React from 'react';
 import { useAuthContext } from '../../../context/AuthProvider';
 import { useAnalytics } from '../../../context/AnalyticsProvider';
 import * as styles from './LogoutButton.module.css';
 
-export const LogoutButton: React.FC = () => {
+export function LogoutButton() {
   const { logout } = useAuthContext();
   const analytics = useAnalytics();
 
@@ -17,4 +16,4 @@ export const LogoutButton: React.FC = () => {
       Log out
     </button>
   );
-};
+}

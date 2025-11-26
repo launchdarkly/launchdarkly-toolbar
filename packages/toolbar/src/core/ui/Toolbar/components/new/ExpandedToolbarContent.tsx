@@ -6,7 +6,6 @@ import { TabBar } from './TabBar';
 import { ContentRenderer } from './ContentRenderer';
 import { ActiveSubtabProvider } from './context/ActiveSubtabProvider';
 import { useActiveTabContext } from '../../context/ActiveTabProvider';
-import { useActiveSubtabContext } from './context/ActiveSubtabProvider';
 import * as styles from './ExpandedToolbarContent.module.css';
 import { NEW_TOOLBAR_TABS, TabId } from '../../types/toolbar';
 import { useEffect } from 'react';
@@ -17,6 +16,7 @@ import { AuthenticationModal } from '../AuthenticationModal/AuthenticationModal'
 import { LoginScreen } from '../LoginScreen/LoginScreen';
 import * as toolbarStyles from '../../LaunchDarklyToolbar.css';
 import { ANIMATION_CONFIG } from '../../constants';
+import { TabSearchProvider } from './context/TabSearchProvider';
 
 interface ExpandedToolbarContentProps {
   onClose?: () => void;
@@ -30,7 +30,6 @@ const ExpandedToolbarContentInner = forwardRef<HTMLDivElement, ExpandedToolbarCo
     const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
     const { handleClose } = useToolbarState();
     const { activeTab, setActiveTab } = useActiveTabContext();
-    const { activeSubtab } = useActiveSubtabContext();
 
     useEffect(() => {
       if (activeTab && !NEW_TOOLBAR_TABS.includes(activeTab)) {
@@ -78,7 +77,7 @@ const ExpandedToolbarContentInner = forwardRef<HTMLDivElement, ExpandedToolbarCo
           <IconBar defaultActiveTab={defaultActiveTab} />
           <TabBar />
           <div className={styles.content}>
-            <ContentRenderer activeTab={activeTab} activeSubtab={activeSubtab} />
+            <ContentRenderer />
           </div>
         </motion.div>
       </>
@@ -89,7 +88,9 @@ const ExpandedToolbarContentInner = forwardRef<HTMLDivElement, ExpandedToolbarCo
 export const ExpandedToolbarContent = forwardRef<HTMLDivElement, ExpandedToolbarContentProps>((props, ref) => {
   return (
     <ActiveSubtabProvider>
-      <ExpandedToolbarContentInner ref={ref} {...props} />
+      <TabSearchProvider>
+        <ExpandedToolbarContentInner ref={ref} {...props} />
+      </TabSearchProvider>
     </ActiveSubtabProvider>
   );
 });

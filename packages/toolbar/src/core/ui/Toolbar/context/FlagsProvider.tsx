@@ -48,7 +48,8 @@ export const FlagsProvider = ({ children }: { children: React.ReactNode }) => {
     // Only fetch flags when a flag tab is active'
     let isMounted = true;
 
-    const isFlagTabActive = activeTab === 'flag-sdk' || activeTab === 'flag-dev-server';
+    // Support both legacy tab IDs and new design tab ID
+    const isFlagTabActive = activeTab === 'flag-sdk' || activeTab === 'flag-dev-server' || activeTab === 'flags';
 
     if (!isFlagTabActive) {
       return;

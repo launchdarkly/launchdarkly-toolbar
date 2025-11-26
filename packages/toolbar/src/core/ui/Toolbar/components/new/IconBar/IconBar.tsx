@@ -19,7 +19,11 @@ type Icon = {
   disabled?: boolean;
 };
 
-export const IconBar = ({ defaultActiveTab }: { defaultActiveTab: TabId }) => {
+interface IconBarProps {
+  defaultActiveTab: TabId;
+}
+
+export function IconBar({ defaultActiveTab }: IconBarProps) {
   const interactiveIconEnabled = enableInteractiveIcon();
   const aiIconEnabled = enableAiIcon();
   const optimizeIconEnabled = enableOptimizeIcon();
@@ -80,4 +84,4 @@ export const IconBar = ({ defaultActiveTab }: { defaultActiveTab: TabId }) => {
       ))}
     </div>
   );
-};
+}

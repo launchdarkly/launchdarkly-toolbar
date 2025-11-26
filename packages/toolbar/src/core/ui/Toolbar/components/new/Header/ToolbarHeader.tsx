@@ -9,7 +9,7 @@ interface ToolbarHeaderProps {
   onHeaderMouseDown?: (event: React.MouseEvent) => void;
 }
 
-export const ToolbarHeader: React.FC<ToolbarHeaderProps> = ({ onClose, onHeaderMouseDown }) => {
+export function ToolbarHeader({ onClose, onHeaderMouseDown }: ToolbarHeaderProps) {
   const { position } = useToolbarUIContext();
 
   return (
@@ -26,4 +26,4 @@ export const ToolbarHeader: React.FC<ToolbarHeaderProps> = ({ onClose, onHeaderM
       </div>
     </div>
   );
-};
+}
