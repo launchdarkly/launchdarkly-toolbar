@@ -156,117 +156,111 @@ export function StringNumberFlagControl(props: StringNumberFlagControlProps) {
   );
 }
 
-interface ObjectFlagControlProps {
-  handleOverride: (flagKey: string, value: any) => void;
-  handleHeightChange: (height: number) => void;
+interface ObjectFlagControlButtonsProps {
   flag: NormalizedFlag;
+  isEditing: boolean;
+  onEditStart: () => void;
+  onConfirm: () => void;
+  onCancel: () => void;
+  hasErrors: boolean;
+  handleHeightChange: (height: number) => void;
 }
 
-export function ObjectFlagControl(props: ObjectFlagControlProps) {
-  const { handleOverride, handleHeightChange, flag } = props;
-  const currentValue = JSON.stringify(flag.currentValue, null, 2);
-  const [isEditing, setIsEditing] = useState(false);
-  const [tempValue, setTempValue] = useState(currentValue);
-  const [hasErrors, setHasErrors] = useState(false);
+export function ObjectFlagControlButtons(props: ObjectFlagControlButtonsProps) {
+  const { isEditing, onEditStart, onConfirm, onCancel, hasErrors, handleHeightChange } = props;
 
   // Since this is a virtualized item, we need to set the height to the standard item height when the component mounts
-  // This happens specifically if the user is editing a JSON flag, scrolls to the point where the item is no longer visible,
-  // and then scrolls back to the point where the item is visible again.
   useEffect(() => {
-    handleEditorHeightChange(VIRTUALIZATION.ITEM_HEIGHT);
-  }, []);
-
-  const handleValueChange = (value: string) => {
-    setTempValue(value);
-  };
-
-  const handleLintErrors = (diagnostics: Diagnostic[]) => {
-    setHasErrors(diagnostics.length > 0);
-  };
-
-  const handleEdit = () => {
-    setTempValue(currentValue);
-    setIsEditing(true);
-  };
-
-  const handleConfirm = () => {
-    handleOverride(flag.key, JSON.parse(tempValue));
-    setIsEditing(false);
     handleHeightChange(VIRTUALIZATION.ITEM_HEIGHT);
-  };
-
-  const handleCancel = () => {
-    setIsEditing(false);
-    handleHeightChange(VIRTUALIZATION.ITEM_HEIGHT);
-  };
-
-  const handleEditorHeightChange = (height: number) => {
-    handleHeightChange(VIRTUALIZATION.ITEM_HEIGHT + height + 20); // 20px for padding
-  };
+  }, [handleHeightChange]);
 
   return (
-    <div className={styles.jsonEditorContainer}>
+    <div className={styles.jsonEditorActions}>
       {!isEditing ? (
-        <Button onClick={handleEdit} data-theme="dark">
+        <Button onClick={onEditStart} data-theme="dark">
           Edit JSON
         </Button>
       ) : (
-        <div className={styles.jsonEditorActions}>
-          <Button variant="primary" onClick={handleConfirm} isDisabled={hasErrors} data-theme="dark">
+        <>
+          <Button variant="primary" onClick={onConfirm} isDisabled={hasErrors} data-theme="dark">
             Save
           </Button>
-          <Button onClick={handleCancel} data-theme="dark">
+          <Button onClick={onCancel} data-theme="dark">
             Cancel
           </Button>
-        </div>
+        </>
       )}
-
-      <AnimatePresence data-testid={`json-editor-${flag.key}`} mode="wait">
-        {isEditing && (
-          <motion.div
-            key={`json-editor-${flag.key}`}
-            initial={{
-              opacity: 0,
-              height: 0,
-              y: -10,
-            }}
-            animate={{
-              opacity: 1,
-              height: 'auto',
-              y: 0,
-            }}
-            exit={{
-              opacity: 0,
-              height: 0,
-              y: -10,
-            }}
-            transition={{
-              duration: 0.25,
-              ease: EASING.smooth,
-              height: {
-                duration: 0.3,
-                ease: EASING.smooth,
-              },
-            }}
-            style={{
-              overflow: 'hidden',
-            }}
-          >
-            <JsonEditor
-              docString={tempValue}
-              onChange={handleValueChange}
-              onLintErrors={handleLintErrors}
-              data-testid={`flag-input-${flag.key}`}
-              editorId={`json-editor-${flag.key}`}
-              initialState={{
-                startCursorAtLine: 0,
-                autoFocus: true,
-              }}
-              onEditorHeightChange={handleEditorHeightChange}
-            />
-          </motion.div>
-        )}
-      </AnimatePresence>
     </div>
+  );
+}
+
+interface ObjectFlagEditorProps {
+  flag: NormalizedFlag;
+  isEditing: boolean;
+  tempValue: string;
+  onValueChange: (value: string) => void;
+  onLintErrors: (hasErrors: boolean) => void;
+  handleHeightChange: (height: number) => void;
+}
+
+export function ObjectFlagEditor(props: ObjectFlagEditorProps) {
+  const { flag, isEditing, tempValue, onValueChange, onLintErrors, handleHeightChange } = props;
+
+  const handleEditorHeightChange = (height: number) => {
+    console.log('handleEditorHeightChange', height);
+    handleHeightChange(VIRTUALIZATION.ITEM_HEIGHT + height + 20); // 20px for padding
+  };
+
+  const handleLintErrors = (diagnostics: Diagnostic[]) => {
+    onLintErrors(diagnostics.length > 0);
+  };
+
+  return (
+    <AnimatePresence data-testid={`json-editor-${flag.key}`} mode="wait">
+      {isEditing && (
+        <motion.div
+          key={`json-editor-${flag.key}`}
+          initial={{
+            opacity: 0,
+            height: 0,
+            y: -10,
+          }}
+          animate={{
+            opacity: 1,
+            height: 'auto',
+            y: 0,
+          }}
+          exit={{
+            opacity: 0,
+            height: 0,
+            y: -10,
+          }}
+          transition={{
+            duration: 0.25,
+            ease: EASING.smooth,
+            height: {
+              duration: 0.3,
+              ease: EASING.smooth,
+            },
+          }}
+          style={{
+            overflow: 'hidden',
+          }}
+        >
+          <JsonEditor
+            docString={tempValue}
+            onChange={onValueChange}
+            onLintErrors={handleLintErrors}
+            data-testid={`flag-input-${flag.key}`}
+            editorId={`json-editor-${flag.key}`}
+            initialState={{
+              startCursorAtLine: 0,
+              autoFocus: true,
+            }}
+            onEditorHeightChange={handleEditorHeightChange}
+          />
+        </motion.div>
+      )}
+    </AnimatePresence>
   );
 }

@@ -207,6 +207,7 @@ function SdkFlagList() {
 
   const handleHeightChange = useCallback(
     (index: number, height: number) => {
+      console.log('handleHeightChange', index, height);
       if (height > VIRTUALIZATION.ITEM_HEIGHT) {
         virtualizer.resizeItem(index, height);
       } else {

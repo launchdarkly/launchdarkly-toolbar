@@ -18,6 +18,30 @@ export const container = style({
   },
 });
 
+export const containerBlock = style({
+  backgroundColor: 'var(--lp-color-gray-850)',
+  border: '1px solid var(--lp-color-gray-800)',
+  marginBottom: '8px',
+  borderRadius: '8px',
+  padding: '16px',
+  display: 'flex',
+  flexDirection: 'column',
+  gap: '16px',
+  transition: 'all 0.2s ease',
+
+  ':hover': {
+    backgroundColor: 'var(--lp-color-gray-800)',
+    borderColor: 'var(--lp-color-gray-700)',
+  },
+});
+
+export const header = style({
+  display: 'flex',
+  alignItems: 'center',
+  gap: '16px',
+  justifyContent: 'space-between',
+});
+
 export const info = style({
   display: 'flex',
   flexDirection: 'column',

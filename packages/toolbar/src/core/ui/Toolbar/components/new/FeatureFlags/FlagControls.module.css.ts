@@ -69,17 +69,9 @@ export const customVariantFieldGroup = style({
   width: '100%',
 });
 
-export const jsonEditorContainer = style({
-  display: 'flex',
-  alignItems: 'center',
-  flexDirection: 'row-reverse',
-  gap: '4px',
-  minWidth: '120px',
-  maxWidth: '160px',
-});
-
 export const jsonEditorActions = style({
   display: 'flex',
   gap: '8px',
   alignItems: 'center',
+  flexShrink: 0,
 });
