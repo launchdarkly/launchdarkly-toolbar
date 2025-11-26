@@ -2,6 +2,10 @@ import { render, screen } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { ExpandedToolbarContent } from '../../ui/Toolbar/components/new/ExpandedToolbarContent';
 import { ActiveTabProvider } from '../../ui/Toolbar/context/ActiveTabProvider';
+import { SearchProvider } from '../../ui/Toolbar/context/SearchProvider';
+import { AnalyticsProvider } from '../../ui/Toolbar/context/AnalyticsProvider';
+import { ToolbarStateProvider } from '../../ui/Toolbar/context/ToolbarStateProvider';
+import { InternalClientProvider } from '../../ui/Toolbar/context/InternalClientProvider';
 import '@testing-library/jest-dom/vitest';
 import React from 'react';
 
@@ -14,7 +18,7 @@ vi.mock('../../ui/Toolbar/components/new/Header/ToolbarHeader', () => ({
   ),
 }));
 
-vi.mock('../../ui/Toolbar/components/new/IconBar', () => ({
+vi.mock('../../ui/Toolbar/components/new/IconBar/IconBar', () => ({
   IconBar: ({ defaultActiveTab }: { defaultActiveTab: string }) => (
     <div data-testid="icon-bar">Icon Bar - Default: {defaultActiveTab}</div>
   ),
@@ -37,6 +41,42 @@ vi.mock('../../../flags/toolbarFlags', () => ({
   showInteractiveIcon: vi.fn().mockReturnValue(false),
 }));
 
+// Mock the AuthProvider to return authenticated state
+vi.mock('../../ui/Toolbar/context/AuthProvider', () => ({
+  AuthProvider: ({ children }: { children: React.ReactNode }) => <>{children}</>,
+  useAuthContext: () => ({
+    authenticated: true,
+    authenticating: false,
+    loading: false,
+    setAuthenticating: vi.fn(),
+    logout: vi.fn(),
+  }),
+}));
+
+// Mock the IFrameProvider
+vi.mock('../../ui/Toolbar/context/IFrameProvider', () => ({
+  IFrameProvider: ({ children }: { children: React.ReactNode }) => <>{children}</>,
+  useIFrameContext: () => ({
+    ref: { current: null },
+    iframeSrc: 'https://integrations.launchdarkly.com',
+  }),
+}));
+
+// Helper component to wrap ExpandedToolbarContent with necessary providers
+function TestWrapper({ children }: { children: React.ReactNode }) {
+  return (
+    <InternalClientProvider>
+      <AnalyticsProvider>
+        <SearchProvider>
+          <ActiveTabProvider>
+            <ToolbarStateProvider domId="test-toolbar">{children}</ToolbarStateProvider>
+          </ActiveTabProvider>
+        </SearchProvider>
+      </AnalyticsProvider>
+    </InternalClientProvider>
+  );
+}
+
 describe('ExpandedToolbarContent', () => {
   const defaultProps = {
     defaultActiveTab: 'flags' as const,
@@ -46,9 +86,9 @@ describe('ExpandedToolbarContent', () => {
 
   const renderExpandedToolbarContent = (props = defaultProps) => {
     return render(
-      <ActiveTabProvider>
+      <TestWrapper>
         <ExpandedToolbarContent {...props} />
-      </ActiveTabProvider>,
+      </TestWrapper>,
     );
   };
 
@@ -73,9 +113,9 @@ describe('ExpandedToolbarContent', () => {
 
   it('should pass different defaultActiveTab to IconBar', () => {
     render(
-      <ActiveTabProvider>
+      <TestWrapper>
         <ExpandedToolbarContent defaultActiveTab="settings" onClose={vi.fn()} onHeaderMouseDown={vi.fn()} />
-      </ActiveTabProvider>,
+      </TestWrapper>,
     );
 
     expect(screen.getByText(/Default: settings/)).toBeInTheDocument();
@@ -84,9 +124,9 @@ describe('ExpandedToolbarContent', () => {
   it('should call onClose when header close button is clicked', () => {
     const onClose = vi.fn();
     render(
-      <ActiveTabProvider>
+      <TestWrapper>
         <ExpandedToolbarContent defaultActiveTab="flags" onClose={onClose} onHeaderMouseDown={vi.fn()} />
-      </ActiveTabProvider>,
+      </TestWrapper>,
     );
 
     const closeButton = screen.getByText('Close');
@@ -107,9 +147,9 @@ describe('ExpandedToolbarContent', () => {
     const ref = React.createRef<HTMLDivElement>();
 
     render(
-      <ActiveTabProvider>
+      <TestWrapper>
         <ExpandedToolbarContent ref={ref} defaultActiveTab="flags" onClose={vi.fn()} onHeaderMouseDown={vi.fn()} />
-      </ActiveTabProvider>,
+      </TestWrapper>,
     );
 
     expect(ref.current).toBeInstanceOf(HTMLDivElement);
@@ -117,9 +157,9 @@ describe('ExpandedToolbarContent', () => {
 
   it('should render with monitoring as default tab', () => {
     render(
-      <ActiveTabProvider>
+      <TestWrapper>
         <ExpandedToolbarContent defaultActiveTab="monitoring" onClose={vi.fn()} onHeaderMouseDown={vi.fn()} />
-      </ActiveTabProvider>,
+      </TestWrapper>,
     );
 
     expect(screen.getByText(/Default: monitoring/)).toBeInTheDocument();
