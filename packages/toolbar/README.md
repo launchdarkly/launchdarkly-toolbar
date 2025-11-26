@@ -1,16 +1,18 @@
 # LaunchDarkly Toolbar
 
-A developer-friendly React component that provides real-time feature flag management and debugging capabilities during development. The toolbar integrates seamlessly with LaunchDarkly, allowing developers to inspect, override, and test feature flags without leaving their application.
+A framework-agnostic developer toolbar that provides real-time feature flag management and debugging capabilities during development. The toolbar integrates seamlessly with LaunchDarkly, allowing developers to inspect, override, and test feature flags without leaving their application.
 
 ## Features
 
 - 🎯 **Dual Mode Operation**: Works with both LaunchDarkly Dev Server and SDK
 - 🔄 **Real-time Flag Management**: View and toggle feature flags instantly
 - 🎨 **Shadow DOM Isolation**: Zero CSS conflicts with your application
+- 🔐 **Built-in Authentication**: Secure toolbar access with LaunchDarkly authentication
 - 📍 **Flexible Positioning**: Place toolbar in any corner of your screen
 - 🔌 **Plugin System**: Extend functionality with custom plugins
 - 📊 **Event Monitoring**: Track and inspect LaunchDarkly events
 - 🔍 **Search & Filter**: Quickly find flags in large projects
+- ⭐ **Flag Starring**: Mark important flags for quick access
 - ⚡ **Hot Reload Support**: Automatically reflects flag changes
 
 ## Installation
@@ -32,7 +34,7 @@ The Developer Toolbar depends on your LaunchDarkly JS client having a reference 
 `EventInterceptionPlugin` that you pass into the Developer Toolbar. As such, ensure that you instantiate the Developer Toolbar at the same time or immediately after the LaunchDarkly JS client is instantiated.
 Below are a few examples on how to instantiate the toolbar, one using the `useLaunchDarklyToolbar` react hook, and one using the CDN hosted toolbar script.
 
-### React Hook (Recommended for React developers)
+### React Hook (Recommended for React Applications)
 
 ```tsx
 import { render } from 'react-dom';
@@ -88,9 +90,9 @@ const eventInterceptionPlugin = new EventInterceptionPlugin();
 })();
 ```
 
-### CDN Script Tag
+### CDN Script Tag (Framework-Agnostic)
 
-Add this script to your `index.html` file.
+Works with any JavaScript framework (Vue, Angular, Svelte, vanilla JS, etc.). Add this script to your `index.html` file.
 
 ```html
 <script src="https://unpkg.com/@launchdarkly/toolbar@latest/cdn/toolbar.min.js"></script>
