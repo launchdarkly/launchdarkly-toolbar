@@ -22,6 +22,7 @@ import { LocalBooleanFlagControl, LocalStringNumberFlagControl } from '../LocalF
 import { LocalObjectFlagControlListItem } from '../LocalObjectFlagControlListItem';
 
 import * as sharedStyles from './FlagDevServerTabContent.css';
+import { FlagKeyWithCopy } from '../../FlagKeyWithCopy';
 
 interface FlagSdkOverrideTabContentInnerProps {
   flagOverridePlugin: IFlagOverridePlugin;
@@ -318,9 +319,7 @@ function FlagSdkOverrideTabContentInner(props: FlagSdkOverrideTabContentInnerPro
                               </span>
                               {flag.isOverridden && <OverrideIndicator onClear={() => handleClearOverride(flagKey)} />}
                             </span>
-                            <span className={sharedStyles.flagKey} data-testid={`flag-key-${flagKey}`}>
-                              {flagKey}
-                            </span>
+                            <FlagKeyWithCopy flagKey={flagKey} className={sharedStyles.flagKey} />
                           </div>
 
                           <div className={sharedStyles.flagOptions}>

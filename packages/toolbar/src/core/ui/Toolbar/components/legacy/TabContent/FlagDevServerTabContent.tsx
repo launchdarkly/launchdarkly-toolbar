@@ -17,6 +17,7 @@ import { VIRTUALIZATION } from '../../../constants';
 import { LocalObjectFlagControlListItem } from '../LocalObjectFlagControlListItem';
 
 import * as styles from './FlagDevServerTabContent.css';
+import { FlagKeyWithCopy } from '../../FlagKeyWithCopy';
 
 interface FlagDevServerTabContentProps {
   reloadOnFlagChangeIsEnabled: boolean;
@@ -269,7 +270,7 @@ export function FlagDevServerTabContent(props: FlagDevServerTabContentProps) {
                               <span className={styles.flagNameText}>{flag.name}</span>
                               {flag.isOverridden && <OverrideIndicator onClear={() => onClearOverride(flag.key)} />}
                             </span>
-                            <span className={styles.flagKey}>{flag.key}</span>
+                            <FlagKeyWithCopy flagKey={flag.key} className={styles.flagKey} />
                           </div>
 
                           <div className={styles.flagOptions}>

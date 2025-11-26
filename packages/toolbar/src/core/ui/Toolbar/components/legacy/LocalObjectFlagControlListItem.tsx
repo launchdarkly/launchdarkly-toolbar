@@ -12,6 +12,7 @@ import { StarButton } from '../StarButton';
 
 import * as sharedStyles from './TabContent/FlagDevServerTabContent.css';
 import * as styles from './LocalObjectFlagControlListItem.css';
+import { FlagKeyWithCopy } from '../FlagKeyWithCopy';
 
 interface LocalObjectFlagControlListItemProps {
   handleClearOverride: (key: string) => void;
@@ -87,9 +88,7 @@ export function LocalObjectFlagControlListItem(props: LocalObjectFlagControlList
                 </span>
                 {flag.isOverridden && <OverrideIndicator onClear={() => handleClearOverride(flag.key)} />}
               </span>
-              <span className={sharedStyles.flagKey} data-testid={`flag-key-${flag.key}`}>
-                {flag.key}
-              </span>
+              <FlagKeyWithCopy flagKey={flag.key} className={sharedStyles.flagKey} />
             </div>
             <div className={sharedStyles.flagOptions}>
               <LocalObjectFlagControl

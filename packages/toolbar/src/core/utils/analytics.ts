@@ -23,6 +23,7 @@ const EVENTS = {
   LOGOUT: 'logout',
   AUTH_ERROR: 'auth.error',
   API_ERROR: 'api.error',
+  COPY_FLAG_KEY: 'copy.flag.key',
   PROJECT_SWITCHED: 'project.switched',
   REFRESH: 'refresh',
   FEEDBACK_SUBMITTED: 'feedback.submitted',
@@ -257,6 +258,15 @@ export class ToolbarAnalytics {
     this.track(EVENTS.FEEDBACK_SUBMITTED, {
       sentiment,
       comment: feedback,
+    });
+  }
+
+  /**
+   * Track flag key copy
+   */
+  trackFlagKeyCopy(flagKey: string): void {
+    this.track(EVENTS.COPY_FLAG_KEY, {
+      flagKey,
     });
   }
 }
