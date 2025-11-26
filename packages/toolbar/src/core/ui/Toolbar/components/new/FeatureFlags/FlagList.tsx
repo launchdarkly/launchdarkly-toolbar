@@ -64,12 +64,10 @@ function DevServerFlagList() {
       .map(({ index }) => index);
   }, [normalizedFlags, searchTerm, allFlags]);
 
-  const GAP = 12;
-
   const virtualizer = useVirtualizer({
     count: filteredFlagIndices.length,
     getScrollElement,
-    estimateSize: () => VIRTUALIZATION.ITEM_HEIGHT + GAP,
+    estimateSize: () => VIRTUALIZATION.ITEM_HEIGHT + VIRTUALIZATION.GAP,
     overscan: VIRTUALIZATION.OVERSCAN,
   });
 
@@ -131,14 +129,15 @@ function DevServerFlagList() {
                 top: 0,
                 left: 0,
                 width: '100%',
-                height: `${VIRTUALIZATION.ITEM_HEIGHT}px`,
+                height: `${virtualItem.size}px`,
                 transform: `translateY(${virtualItem.start}px)`,
               }}
             >
               <FlagItem
                 flag={normalizedFlag}
                 onOverride={(value: any) => handleOverride(normalizedFlag.key, value)}
-                handleHeightChange={(height: number) => handleHeightChange(virtualItem.index, height)}
+                handleHeightChange={handleHeightChange}
+                index={virtualItem.index}
               />
             </div>
           );
@@ -189,12 +188,10 @@ function SdkFlagList() {
       .map(({ index }) => index);
   }, [normalizedFlags, searchTerm, allFlags]);
 
-  const GAP = 12;
-
   const virtualizer = useVirtualizer({
     count: filteredFlagIndices.length,
     getScrollElement,
-    estimateSize: () => VIRTUALIZATION.ITEM_HEIGHT + GAP,
+    estimateSize: () => VIRTUALIZATION.ITEM_HEIGHT + VIRTUALIZATION.GAP,
     overscan: VIRTUALIZATION.OVERSCAN,
   });
 
@@ -257,14 +254,15 @@ function SdkFlagList() {
                 top: 0,
                 left: 0,
                 width: '100%',
-                height: `${VIRTUALIZATION.ITEM_HEIGHT}px`,
+                height: `${virtualItem.size}px`,
                 transform: `translateY(${virtualItem.start}px)`,
               }}
             >
               <FlagItem
                 flag={normalizedFlag}
                 onOverride={(value: any) => handleOverride(normalizedFlag.key, value)}
-                handleHeightChange={(height: number) => handleHeightChange(virtualItem.index, height)}
+                handleHeightChange={handleHeightChange}
+                index={virtualItem.index}
               />
             </div>
           );

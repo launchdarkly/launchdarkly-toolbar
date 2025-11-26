@@ -163,16 +163,10 @@ interface ObjectFlagControlButtonsProps {
   onConfirm: () => void;
   onCancel: () => void;
   hasErrors: boolean;
-  handleHeightChange: (height: number) => void;
 }
 
 export function ObjectFlagControlButtons(props: ObjectFlagControlButtonsProps) {
-  const { isEditing, onEditStart, onConfirm, onCancel, hasErrors, handleHeightChange } = props;
-
-  // Since this is a virtualized item, we need to set the height to the standard item height when the component mounts
-  useEffect(() => {
-    handleHeightChange(VIRTUALIZATION.ITEM_HEIGHT);
-  }, [handleHeightChange]);
+  const { isEditing, onEditStart, onConfirm, onCancel, hasErrors } = props;
 
   return (
     <div className={styles.jsonEditorActions}>
@@ -208,7 +202,7 @@ export function ObjectFlagEditor(props: ObjectFlagEditorProps) {
 
   const handleEditorHeightChange = (height: number) => {
     console.log('handleEditorHeightChange', height);
-    handleHeightChange(VIRTUALIZATION.ITEM_HEIGHT + height + 20); // 20px for padding
+    handleHeightChange(VIRTUALIZATION.ITEM_HEIGHT + height + 36); // 36px for padding
   };
 
   const handleLintErrors = (diagnostics: Diagnostic[]) => {

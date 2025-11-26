@@ -14,11 +14,18 @@ import { VIRTUALIZATION } from '../../../constants';
 interface FlagItemProps {
   flag: NormalizedFlag;
   onOverride: (value: any) => void;
-  handleHeightChange: (height: number) => void;
+  handleHeightChange: (index: number, height: number) => void;
   disabled?: boolean;
+  index: number;
 }
 
-export const FlagItem: React.FC<FlagItemProps> = ({ flag, onOverride, handleHeightChange, disabled = false }) => {
+export const FlagItem: React.FC<FlagItemProps> = ({
+  flag,
+  onOverride,
+  handleHeightChange,
+  disabled = false,
+  index,
+}) => {
   const [isEditingObject, setIsEditingObject] = useState(false);
   const [tempValue, setTempValue] = useState('');
   const [hasErrors, setHasErrors] = useState(false);
@@ -45,15 +52,14 @@ export const FlagItem: React.FC<FlagItemProps> = ({ flag, onOverride, handleHeig
               }}
               onConfirm={() => {
                 onOverride(JSON.parse(tempValue));
-                handleHeightChange(VIRTUALIZATION.ITEM_HEIGHT);
+                handleHeightChange(index, VIRTUALIZATION.ITEM_HEIGHT + VIRTUALIZATION.GAP);
                 setIsEditingObject(false);
               }}
               onCancel={() => {
-                handleHeightChange(VIRTUALIZATION.ITEM_HEIGHT);
+                handleHeightChange(index, VIRTUALIZATION.ITEM_HEIGHT + VIRTUALIZATION.GAP);
                 setIsEditingObject(false);
               }}
               hasErrors={hasErrors}
-              handleHeightChange={handleHeightChange}
             />
           </div>
         </div>
@@ -63,7 +69,7 @@ export const FlagItem: React.FC<FlagItemProps> = ({ flag, onOverride, handleHeig
           tempValue={tempValue}
           onValueChange={setTempValue}
           onLintErrors={setHasErrors}
-          handleHeightChange={handleHeightChange}
+          handleHeightChange={(height) => handleHeightChange(index, height)}
         />
       </div>
     );
