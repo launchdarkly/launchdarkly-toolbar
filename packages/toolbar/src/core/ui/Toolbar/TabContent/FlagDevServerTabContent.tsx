@@ -10,6 +10,7 @@ import { GenericHelpText } from '../components/GenericHelpText';
 import { BooleanFlagControl, MultivariateFlagControl, StringNumberFlagControl } from '../components/FlagControls';
 import { OverrideIndicator } from '../components/OverrideIndicator';
 import { StarButton } from '../components/StarButton';
+import { FlagKeyWithCopy } from '../components/FlagKeyWithCopy';
 import { useStarredFlags } from '../context/StarredFlagsProvider';
 import {
   type FlagFilterMode,
@@ -273,7 +274,7 @@ export function FlagDevServerTabContent(props: FlagDevServerTabContentProps) {
                               <span className={styles.flagNameText}>{flag.name}</span>
                               {flag.isOverridden && <OverrideIndicator onClear={() => onClearOverride(flag.key)} />}
                             </span>
-                            <span className={styles.flagKey}>{flag.key}</span>
+                            <FlagKeyWithCopy flagKey={flag.key} className={styles.flagKey} />
                           </div>
 
                           <div className={styles.flagOptions}>

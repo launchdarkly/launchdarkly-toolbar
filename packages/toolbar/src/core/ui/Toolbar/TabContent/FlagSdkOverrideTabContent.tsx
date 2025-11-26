@@ -9,6 +9,7 @@ import { GenericHelpText } from '../components/GenericHelpText';
 import { LocalBooleanFlagControl, LocalStringNumberFlagControl } from '../components/LocalFlagControls';
 import { OverrideIndicator } from '../components/OverrideIndicator';
 import { StarButton } from '../components/StarButton';
+import { FlagKeyWithCopy } from '../components/FlagKeyWithCopy';
 import { useStarredFlags } from '../context/StarredFlagsProvider';
 import {
   type FlagFilterMode,
@@ -319,9 +320,7 @@ function FlagSdkOverrideTabContentInner(props: FlagSdkOverrideTabContentInnerPro
                               </span>
                               {flag.isOverridden && <OverrideIndicator onClear={() => handleClearOverride(flagKey)} />}
                             </span>
-                            <span className={sharedStyles.flagKey} data-testid={`flag-key-${flagKey}`}>
-                              {flagKey}
-                            </span>
+                            <FlagKeyWithCopy flagKey={flagKey} className={sharedStyles.flagKey} />
                           </div>
 
                           <div className={sharedStyles.flagOptions}>
