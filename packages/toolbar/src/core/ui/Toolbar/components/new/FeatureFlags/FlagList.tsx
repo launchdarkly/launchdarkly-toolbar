@@ -7,17 +7,19 @@ import { useToolbarState } from '../../../context/ToolbarStateProvider';
 import { useDevServerContext } from '../../../context/DevServerProvider';
 import { FlagSdkOverrideProvider, useFlagSdkOverrideContext } from '../../../context/FlagSdkOverrideProvider';
 import { useTabSearchContext } from '../context/TabSearchProvider';
-import { EnhancedFlag } from '../../../../../types/devServer';
+import { EnhancedFlag, Variation } from '../../../../../types/devServer';
 import { LocalFlag } from '../../../context/FlagSdkOverrideProvider';
 import { GenericHelpText } from '../../GenericHelpText';
 import { usePlugins } from '../../../context/PluginsProvider.tsx';
 
-interface NormalizedFlag {
+export interface NormalizedFlag {
   key: string;
   name: string;
-  value: string;
   enabled: boolean;
   isOverridden: boolean;
+  type: 'boolean' | 'multivariate' | 'string' | 'number' | 'object';
+  currentValue: any;
+  availableVariations: Variation[];
 }
 
 // Dev Server Mode Component
@@ -29,50 +31,69 @@ function DevServerFlagList() {
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const getScrollElement = useCallback(() => scrollContainerRef.current, []);
 
+  // Get all flags
+  const allFlags = useMemo(() => Object.values(state.flags) as EnhancedFlag[], [state.flags]);
+
   // Normalize flags from dev server
   const normalizedFlags: NormalizedFlag[] = useMemo(() => {
-    return Object.values(state.flags).map((flag: EnhancedFlag) => ({
+    return allFlags.map((flag: EnhancedFlag) => ({
       key: flag.key,
       name: flag.name,
+      currentValue: flag.currentValue,
       value: formatValue(flag.currentValue),
       enabled: flag.enabled,
       isOverridden: flag.isOverridden,
+      type: flag.type,
+      availableVariations: flag.availableVariations,
     }));
-  }, [state.flags]);
+  }, [allFlags]);
 
   // Filter flags based on search term
-  const filteredFlags = useMemo(() => {
-    if (!searchTerm) return normalizedFlags;
+  const filteredFlagIndices = useMemo(() => {
+    if (!searchTerm) return allFlags.map((_, index) => index);
 
     const searchLower = searchTerm.toLowerCase();
-    return normalizedFlags.filter(
-      (flag) =>
-        flag.name.toLowerCase().includes(searchLower) ||
-        flag.key.toLowerCase().includes(searchLower) ||
-        flag.value.toLowerCase().includes(searchLower),
-    );
-  }, [normalizedFlags, searchTerm]);
+    return normalizedFlags
+      .map((flag, index) => ({ flag, index }))
+      .filter(
+        ({ flag }) =>
+          flag.name.toLowerCase().includes(searchLower) ||
+          flag.key.toLowerCase().includes(searchLower) ||
+          flag.currentValue.toLowerCase().includes(searchLower),
+      )
+      .map(({ index }) => index);
+  }, [normalizedFlags, searchTerm, allFlags]);
 
   const GAP = 12;
 
   const virtualizer = useVirtualizer({
-    count: filteredFlags.length,
+    count: filteredFlagIndices.length,
     getScrollElement,
     estimateSize: () => VIRTUALIZATION.ITEM_HEIGHT + GAP,
     overscan: VIRTUALIZATION.OVERSCAN,
   });
 
-  const handleToggle = useCallback(
-    async (flagKey: string) => {
-      const flag = state.flags[flagKey];
-      if (flag && flag.type === 'boolean') {
-        await setOverride(flagKey, !flag.currentValue);
+  const handleHeightChange = useCallback(
+    (index: number, height: number) => {
+      if (height > VIRTUALIZATION.ITEM_HEIGHT) {
+        virtualizer.resizeItem(index, height);
+      } else {
+        setTimeout(() => {
+          virtualizer.resizeItem(index, height);
+        }, 125);
       }
     },
-    [state.flags, setOverride],
+    [virtualizer],
   );
 
-  if (filteredFlags.length === 0 && !searchTerm) {
+  const handleOverride = useCallback(
+    async (flagKey: string, value: any) => {
+      await setOverride(flagKey, value);
+    },
+    [setOverride],
+  );
+
+  if (filteredFlagIndices.length === 0 && !searchTerm) {
     return (
       <GenericHelpText
         title="No feature flags found"
@@ -81,7 +102,7 @@ function DevServerFlagList() {
     );
   }
 
-  if (filteredFlags.length === 0 && searchTerm) {
+  if (filteredFlagIndices.length === 0 && searchTerm) {
     return <GenericHelpText title="No matching flags" subtitle="Try adjusting your search" />;
   }
 
@@ -95,8 +116,12 @@ function DevServerFlagList() {
         }}
       >
         {virtualizer.getVirtualItems().map((virtualItem) => {
-          const flag = filteredFlags[virtualItem.index];
-          if (!flag) return null;
+          const flagIndex = filteredFlagIndices[virtualItem.index];
+          if (flagIndex === undefined) return null;
+
+          const normalizedFlag = normalizedFlags[flagIndex];
+
+          if (!normalizedFlag) return null;
 
           return (
             <div
@@ -110,13 +135,7 @@ function DevServerFlagList() {
                 transform: `translateY(${virtualItem.start}px)`,
               }}
             >
-              <FlagItem
-                name={flag.name}
-                value={flag.value}
-                enabled={flag.enabled}
-                isOverridden={flag.isOverridden}
-                onToggle={() => handleToggle(flag.key)}
-              />
+              <FlagItem flag={normalizedFlag} onOverride={(value: any) => handleOverride(normalizedFlag.key, value)} handleHeightChange={(height: number) => handleHeightChange(virtualItem.index, height)} />
             </div>
           );
         })}
@@ -127,47 +146,75 @@ function DevServerFlagList() {
 
 // SDK Mode Component
 function SdkFlagList() {
-  const { flags } = useFlagSdkOverrideContext();
+  const { flags, setOverride } = useFlagSdkOverrideContext();
   const { searchTerms } = useTabSearchContext();
   const searchTerm = useMemo(() => searchTerms['flags'] || '', [searchTerms]);
 
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const getScrollElement = useCallback(() => scrollContainerRef.current, []);
 
+  // Get all flags
+  const allFlags = useMemo(() => Object.values(flags) as LocalFlag[], [flags]);
+
   // Normalize flags from SDK
   const normalizedFlags: NormalizedFlag[] = useMemo(() => {
-    return Object.values(flags).map((flag: LocalFlag) => ({
+    return allFlags.map((flag: LocalFlag) => ({
       key: flag.key,
       name: flag.name,
-      value: formatValue(flag.currentValue),
+      currentValue: flag.currentValue,
       enabled: true, // SDK flags are always enabled
       isOverridden: flag.isOverridden,
+      type: flag.type,
+      availableVariations: [],
     }));
-  }, [flags]);
+  }, [allFlags]);
 
   // Filter flags based on search term
-  const filteredFlags = useMemo(() => {
-    if (!searchTerm) return normalizedFlags;
+  const filteredFlagIndices = useMemo(() => {
+    if (!searchTerm) return allFlags.map((_, index) => index);
 
     const searchLower = searchTerm.toLowerCase();
-    return normalizedFlags.filter(
-      (flag) =>
-        flag.name.toLowerCase().includes(searchLower) ||
-        flag.key.toLowerCase().includes(searchLower) ||
-        flag.value.toLowerCase().includes(searchLower),
-    );
-  }, [normalizedFlags, searchTerm]);
+    return normalizedFlags
+      .map((flag, index) => ({ flag, index }))
+      .filter(
+        ({ flag }) =>
+          flag.name.toLowerCase().includes(searchLower) ||
+          flag.key.toLowerCase().includes(searchLower) ||
+          flag.currentValue.toLowerCase().includes(searchLower),
+      )
+      .map(({ index }) => index);
+  }, [normalizedFlags, searchTerm, allFlags]);
 
   const GAP = 12;
 
   const virtualizer = useVirtualizer({
-    count: filteredFlags.length,
+    count: filteredFlagIndices.length,
     getScrollElement,
     estimateSize: () => VIRTUALIZATION.ITEM_HEIGHT + GAP,
     overscan: VIRTUALIZATION.OVERSCAN,
   });
 
-  if (filteredFlags.length === 0 && !searchTerm) {
+  const handleOverride = useCallback(
+    (flagKey: string, value: any) => {
+      setOverride(flagKey, value);
+    },
+    [setOverride],
+  );
+
+  const handleHeightChange = useCallback(
+    (index: number, height: number) => {
+      if (height > VIRTUALIZATION.ITEM_HEIGHT) {
+        virtualizer.resizeItem(index, height);
+      } else {
+        setTimeout(() => {
+          virtualizer.resizeItem(index, height);
+        }, 125);
+      }
+    },
+    [virtualizer],
+  );
+
+  if (filteredFlagIndices.length === 0 && !searchTerm) {
     return (
       <GenericHelpText
         title="No feature flags found"
@@ -176,7 +223,7 @@ function SdkFlagList() {
     );
   }
 
-  if (filteredFlags.length === 0 && searchTerm) {
+  if (filteredFlagIndices.length === 0 && searchTerm) {
     return <GenericHelpText title="No matching flags" subtitle="Try adjusting your search" />;
   }
 
@@ -190,8 +237,12 @@ function SdkFlagList() {
         }}
       >
         {virtualizer.getVirtualItems().map((virtualItem) => {
-          const flag = filteredFlags[virtualItem.index];
-          if (!flag) return null;
+          const flagIndex = filteredFlagIndices[virtualItem.index];
+          if (flagIndex === undefined) return null;
+
+          const normalizedFlag = normalizedFlags[flagIndex];
+
+          if (!normalizedFlag) return null;
 
           return (
             <div
@@ -205,15 +256,7 @@ function SdkFlagList() {
                 transform: `translateY(${virtualItem.start}px)`,
               }}
             >
-              <FlagItem
-                name={flag.name}
-                value={flag.value}
-                enabled={flag.enabled}
-                isOverridden={flag.isOverridden}
-                onToggle={() => {
-                  console.log('SDK toggle not yet implemented');
-                }}
-              />
+              <FlagItem flag={normalizedFlag} onOverride={(value: any) => handleOverride(normalizedFlag.key, value)} handleHeightChange={(height: number) => handleHeightChange(virtualItem.index, height)} />
             </div>
           );
         })}
