@@ -17,7 +17,6 @@ interface FlagItemProps {
 }
 
 export const FlagItem: React.FC<FlagItemProps> = ({ flag, onOverride, handleHeightChange, disabled = false }) => {
-
   const renderControl = () => {
     // Boolean flags
     if (flag.type === 'boolean') {
@@ -37,10 +36,10 @@ export const FlagItem: React.FC<FlagItemProps> = ({ flag, onOverride, handleHeig
     // Object/JSON flags
     if (flag.type === 'object') {
       return (
-        <ObjectFlagControl 
-          flag={flag} 
-          handleOverride={(_flagKey: string, value: any) => onOverride(value)} 
-          handleHeightChange={handleHeightChange}  
+        <ObjectFlagControl
+          flag={flag}
+          handleOverride={(_flagKey: string, value: any) => onOverride(value)}
+          handleHeightChange={handleHeightChange}
         />
       );
     }

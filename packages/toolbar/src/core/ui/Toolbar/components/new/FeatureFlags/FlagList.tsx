@@ -135,7 +135,11 @@ function DevServerFlagList() {
                 transform: `translateY(${virtualItem.start}px)`,
               }}
             >
-              <FlagItem flag={normalizedFlag} onOverride={(value: any) => handleOverride(normalizedFlag.key, value)} handleHeightChange={(height: number) => handleHeightChange(virtualItem.index, height)} />
+              <FlagItem
+                flag={normalizedFlag}
+                onOverride={(value: any) => handleOverride(normalizedFlag.key, value)}
+                handleHeightChange={(height: number) => handleHeightChange(virtualItem.index, height)}
+              />
             </div>
           );
         })}
@@ -256,7 +260,11 @@ function SdkFlagList() {
                 transform: `translateY(${virtualItem.start}px)`,
               }}
             >
-              <FlagItem flag={normalizedFlag} onOverride={(value: any) => handleOverride(normalizedFlag.key, value)} handleHeightChange={(height: number) => handleHeightChange(virtualItem.index, height)} />
+              <FlagItem
+                flag={normalizedFlag}
+                onOverride={(value: any) => handleOverride(normalizedFlag.key, value)}
+                handleHeightChange={(height: number) => handleHeightChange(virtualItem.index, height)}
+              />
             </div>
           );
         })}
