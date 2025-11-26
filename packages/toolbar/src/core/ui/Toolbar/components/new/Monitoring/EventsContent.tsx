@@ -6,12 +6,13 @@ import { isDoNotTrackEnabled } from '../../../../../utils';
 import { List } from '../../../../List/List';
 import { ListItem } from '../../../../List/ListItem';
 import { VIRTUALIZATION, ANIMATION_CONFIG } from '../../../constants';
-import { useSearchContext, useAnalytics, usePlugins } from '../../../context';
+import { useAnalytics, usePlugins } from '../../../context';
 import { useEvents, useCurrentDate } from '../../../hooks';
 import { DoNotTrackWarning } from '../../DoNotTrackWarning';
 import { GenericHelpText } from '../../GenericHelpText';
 import { IconLinkButton } from '../../../../Buttons/IconLinkButton';
 import { AddIcon } from '../../icons/AddIcon';
+import { useTabSearchContext } from '../context/TabSearchProvider';
 
 import * as styles from './EventsContent.module.css';
 
@@ -31,7 +32,8 @@ function formatTimeAgo(timestamp: number, currentDate: Date): string {
 
 export function EventsContent() {
   const { eventInterceptionPlugin, baseUrl } = usePlugins();
-  const { searchTerm } = useSearchContext();
+  const { searchTerms } = useTabSearchContext();
+  const searchTerm = useMemo(() => searchTerms['monitoring'] || '', [searchTerms]);
   const analytics = useAnalytics();
   const { events, eventStats } = useEvents(eventInterceptionPlugin, searchTerm);
   const currentDate = useCurrentDate(); // Updates every second by default

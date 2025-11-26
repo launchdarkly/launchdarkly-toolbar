@@ -41,7 +41,6 @@ export const ContentActions = () => {
 
   const handleSearch = useCallback((input: string) => {
     if (!activeTab) return;
-    console.log('searchTerm', input);
     setSearchTerm(activeTab, input);
   }, [activeTab, searchTerm, setSearchTerm]);
 
