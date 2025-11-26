@@ -11,7 +11,7 @@ export const container = style({
   display: 'inline-flex',
   alignItems: 'center',
   minWidth: 0,
-  backgroundColor: 'transparent',
+  backgroundColor: 'inherit',
   border: 'none',
   cursor: 'pointer',
   paddingRight: '4px',
@@ -21,10 +21,6 @@ export const container = style({
   borderRadius: '4px',
   transition: 'background-color 0.2s ease',
   textAlign: 'left',
-
-  ':hover': {
-    backgroundColor: 'var(--lp-color-gray-800)',
-  },
 
   ':focus': {
     outline: 'none',

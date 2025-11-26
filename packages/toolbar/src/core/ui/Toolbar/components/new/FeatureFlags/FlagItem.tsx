@@ -79,7 +79,7 @@ export const FlagItem: React.FC<FlagItemProps> = ({
   // Object/JSON flags have a different layout structure
   if (flag.type === 'object') {
     return (
-      <div className={styles.containerBlock}>
+      <div className={`${styles.containerBlock} ${flag.isOverridden ? styles.containerBlockOverridden : ''}`}>
         <div className={styles.header}>
           <div className={styles.info}>
             <div className={styles.nameRow}>
@@ -142,7 +142,7 @@ export const FlagItem: React.FC<FlagItemProps> = ({
   };
 
   return (
-    <div className={styles.container}>
+    <div className={`${styles.container} ${flag.isOverridden ? styles.containerOverridden : ''}`}>
       <div className={styles.info}>
         <div className={styles.nameRow}>
           {flag.isOverridden && onClearOverride && <OverrideDot onClear={onClearOverride} />}

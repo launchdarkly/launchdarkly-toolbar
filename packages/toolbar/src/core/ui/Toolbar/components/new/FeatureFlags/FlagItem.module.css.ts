@@ -18,6 +18,16 @@ export const container = style({
   },
 });
 
+export const containerOverridden = style({
+  backgroundColor: 'rgba(from var(--lp-color-brand-cyan-base) r g b / 0.08)',
+  border: '1px solid rgba(from var(--lp-color-brand-cyan-base) r g b / 0.2)',
+
+  ':hover': {
+    backgroundColor: 'rgba(from var(--lp-color-brand-cyan-base) r g b / 0.12)',
+    borderColor: 'rgba(from var(--lp-color-brand-cyan-base) r g b / 0.3)',
+  },
+});
+
 export const containerBlock = style({
   backgroundColor: 'var(--lp-color-gray-850)',
   border: '1px solid var(--lp-color-gray-800)',
@@ -32,6 +42,16 @@ export const containerBlock = style({
   ':hover': {
     backgroundColor: 'var(--lp-color-gray-800)',
     borderColor: 'var(--lp-color-gray-700)',
+  },
+});
+
+export const containerBlockOverridden = style({
+  backgroundColor: 'rgba(from var(--lp-color-brand-cyan-base) r g b / 0.08)',
+  border: '1px solid rgba(from var(--lp-color-brand-cyan-base) r g b / 0.2)',
+
+  ':hover': {
+    backgroundColor: 'rgba(from var(--lp-color-brand-cyan-base) r g b / 0.12)',
+    borderColor: 'rgba(from var(--lp-color-brand-cyan-base) r g b / 0.3)',
   },
 });
 
