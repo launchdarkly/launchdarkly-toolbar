@@ -24,7 +24,7 @@ export interface NormalizedFlag {
 
 // Dev Server Mode Component
 function DevServerFlagList() {
-  const { state, setOverride } = useDevServerContext();
+  const { state, setOverride, clearOverride } = useDevServerContext();
   const { searchTerms } = useTabSearchContext();
   const searchTerm = useMemo(() => searchTerms['flags'] || '', [searchTerms]);
 
@@ -91,6 +91,13 @@ function DevServerFlagList() {
     [setOverride],
   );
 
+  const handleClearOverride = useCallback(
+    async (flagKey: string) => {
+      await clearOverride(flagKey);
+    },
+    [clearOverride],
+  );
+
   if (filteredFlagIndices.length === 0 && !searchTerm) {
     return (
       <GenericHelpText
@@ -136,6 +143,7 @@ function DevServerFlagList() {
               <FlagItem
                 flag={normalizedFlag}
                 onOverride={(value: any) => handleOverride(normalizedFlag.key, value)}
+                onClearOverride={() => handleClearOverride(normalizedFlag.key)}
                 handleHeightChange={handleHeightChange}
                 index={virtualItem.index}
               />
@@ -149,7 +157,7 @@ function DevServerFlagList() {
 
 // SDK Mode Component
 function SdkFlagList() {
-  const { flags, setOverride } = useFlagSdkOverrideContext();
+  const { flags, setOverride, removeOverride } = useFlagSdkOverrideContext();
   const { searchTerms } = useTabSearchContext();
   const searchTerm = useMemo(() => searchTerms['flags'] || '', [searchTerms]);
 
@@ -200,6 +208,13 @@ function SdkFlagList() {
       setOverride(flagKey, value);
     },
     [setOverride],
+  );
+
+  const handleClearOverride = useCallback(
+    (flagKey: string) => {
+      removeOverride(flagKey);
+    },
+    [removeOverride],
   );
 
   const handleHeightChange = useCallback(
@@ -261,6 +276,7 @@ function SdkFlagList() {
               <FlagItem
                 flag={normalizedFlag}
                 onOverride={(value: any) => handleOverride(normalizedFlag.key, value)}
+                onClearOverride={() => handleClearOverride(normalizedFlag.key)}
                 handleHeightChange={handleHeightChange}
                 index={virtualItem.index}
               />

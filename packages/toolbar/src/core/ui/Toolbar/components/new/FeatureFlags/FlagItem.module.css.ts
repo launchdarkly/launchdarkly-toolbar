@@ -69,16 +69,22 @@ export const name = style({
   flex: 1,
 });
 
-export const overrideBadge = style({
-  fontSize: '11px',
-  fontWeight: 600,
-  color: 'var(--lp-color-blue-400)',
-  backgroundColor: 'var(--lp-color-blue-900)',
-  padding: '2px 6px',
-  borderRadius: '4px',
-  textTransform: 'uppercase',
-  letterSpacing: '0.5px',
-  flexShrink: 0, // Don't shrink the badge
+export const overrideDot = style({
+  display: 'inline-flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  width: '8px',
+  height: '8px',
+  flexShrink: 0,
+  cursor: 'pointer',
+});
+
+export const overrideDotInner = style({
+  width: '8px',
+  height: '8px',
+  backgroundColor: 'var(--lp-color-brand-cyan-base)',
+  borderRadius: '50%',
+  transition: 'background-color 0.2s ease',
 });
 
 export const control = style({

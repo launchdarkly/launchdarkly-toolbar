@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { motion } from 'motion/react';
 import * as styles from './FlagItem.module.css';
 import { FlagKeyWithCopy } from '../../FlagKeyWithCopy';
 import { NormalizedFlag } from './FlagList';
@@ -11,9 +12,53 @@ import {
 } from './FlagControls';
 import { VIRTUALIZATION } from '../../../constants';
 
+interface OverrideDotProps {
+  onClear: () => void;
+}
+
+const OverrideDot: React.FC<OverrideDotProps> = ({ onClear }) => {
+  const [isHovered, setIsHovered] = useState(false);
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      onClear();
+    }
+  };
+
+  return (
+    <motion.span
+      className={styles.overrideDot}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+      onClick={onClear}
+      onKeyDown={handleKeyDown}
+      tabIndex={0}
+      role="button"
+      aria-label="Remove flag override"
+      title={isHovered ? 'Click to remove override' : 'Override active'}
+      whileHover={{ scale: 1.1 }}
+      transition={{ duration: 0.1 }}
+      data-testid="override-dot"
+      style={{
+        cursor: 'pointer',
+      }}
+    >
+      <motion.span
+        className={styles.overrideDotInner}
+        animate={{
+          backgroundColor: isHovered ? 'var(--lp-color-red-500)' : 'var(--lp-color-brand-cyan-base)',
+        }}
+        transition={{ duration: 0.05 }}
+      />
+    </motion.span>
+  );
+};
+
 interface FlagItemProps {
   flag: NormalizedFlag;
   onOverride: (value: any) => void;
+  onClearOverride?: () => void;
   handleHeightChange: (index: number, height: number) => void;
   disabled?: boolean;
   index: number;
@@ -22,6 +67,7 @@ interface FlagItemProps {
 export const FlagItem: React.FC<FlagItemProps> = ({
   flag,
   onOverride,
+  onClearOverride,
   handleHeightChange,
   disabled = false,
   index,
@@ -37,8 +83,8 @@ export const FlagItem: React.FC<FlagItemProps> = ({
         <div className={styles.header}>
           <div className={styles.info}>
             <div className={styles.nameRow}>
+              {flag.isOverridden && onClearOverride && <OverrideDot onClear={onClearOverride} />}
               <div className={styles.name}>{flag.name}</div>
-              {flag.isOverridden && <div className={styles.overrideBadge}>Override</div>}
             </div>
             <FlagKeyWithCopy flagKey={flag.key} />
           </div>
@@ -99,8 +145,8 @@ export const FlagItem: React.FC<FlagItemProps> = ({
     <div className={styles.container}>
       <div className={styles.info}>
         <div className={styles.nameRow}>
+          {flag.isOverridden && onClearOverride && <OverrideDot onClear={onClearOverride} />}
           <div className={styles.name}>{flag.name}</div>
-          {flag.isOverridden && <div className={styles.overrideBadge}>Override</div>}
         </div>
         <FlagKeyWithCopy flagKey={flag.key} />
       </div>
