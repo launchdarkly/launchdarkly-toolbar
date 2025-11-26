@@ -1,15 +1,11 @@
+import { ApiVariation } from '../ui/Toolbar/types/ldApi';
+
 export interface DevServerProjectResponse {
   _lastSyncedFromSource: number;
-  availableVariations: Record<string, Variation[]>;
+  availableVariations: Record<string, ApiVariation[]>;
   flagsState: Record<string, FlagState>;
   overrides: Record<string, Override>;
   sourceEnvironmentKey: string;
-}
-
-export interface Variation {
-  _id: string;
-  name: string;
-  value: any;
 }
 
 export interface FlagState {

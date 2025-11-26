@@ -1,6 +1,6 @@
-import { DevServerClient, Variation } from './DevServerClient';
+import { DevServerClient } from './DevServerClient';
 import { EnhancedFlag } from '../types/devServer';
-import { ApiFlag } from '../ui/Toolbar/types/ldApi';
+import { ApiFlag, ApiVariation } from '../ui/Toolbar/types/ldApi';
 
 export class FlagStateManager {
   private devServerClient: DevServerClient;
@@ -57,7 +57,7 @@ export class FlagStateManager {
   }
 
   private determineFlagType(
-    variations: Variation[],
+    variations: ApiVariation[],
     currentValue: any,
   ): 'boolean' | 'multivariate' | 'string' | 'number' | 'object' {
     // If we have exactly 2 variations and they're both boolean, it's a boolean flag

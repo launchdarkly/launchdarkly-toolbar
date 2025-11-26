@@ -46,7 +46,7 @@ export function MultivariateFlagControl(props: MultivariateFlagControlProps) {
 
   const options: SelectOption[] = flag.availableVariations.map((variation) => ({
     id: variation._id,
-    label: variation.name,
+    label: variation.value,
     value: variation.value,
   }));
 

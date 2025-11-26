@@ -1,7 +1,4 @@
-import { Variation } from '../services/DevServerClient';
-
-// Re-export Variation for convenience
-export type { Variation } from '../services/DevServerClient';
+import { ApiVariation } from '../ui/Toolbar/types/ldApi';
 
 // Enhanced Flag Interface for UI
 export interface EnhancedFlag {
@@ -10,7 +7,7 @@ export interface EnhancedFlag {
   currentValue: any; // Override value if exists, otherwise original value
   isOverridden: boolean; // Exists in overrides object
   originalValue: any; // Value from dev server flagsState
-  availableVariations: Variation[]; // For UI selection
+  availableVariations: ApiVariation[]; // For UI selection
   type: 'boolean' | 'multivariate' | 'string' | 'number' | 'object';
   sourceEnvironment: string; // e.g., "production", "test"
   enabled: boolean; // Whether flag is active

@@ -7,10 +7,11 @@ import { useToolbarState } from '../../../context/ToolbarStateProvider';
 import { useDevServerContext } from '../../../context/DevServerProvider';
 import { FlagSdkOverrideProvider, useFlagSdkOverrideContext } from '../../../context/FlagSdkOverrideProvider';
 import { useTabSearchContext } from '../context/TabSearchProvider';
-import { EnhancedFlag, Variation } from '../../../../../types/devServer';
+import { EnhancedFlag } from '../../../../../types/devServer';
 import { LocalFlag } from '../../../context/FlagSdkOverrideProvider';
 import { GenericHelpText } from '../../GenericHelpText';
 import { usePlugins } from '../../../context/PluginsProvider.tsx';
+import { ApiVariation } from '../../../types/ldApi.ts';
 
 export interface NormalizedFlag {
   key: string;
@@ -19,7 +20,7 @@ export interface NormalizedFlag {
   isOverridden: boolean;
   type: 'boolean' | 'multivariate' | 'string' | 'number' | 'object';
   currentValue: any;
-  availableVariations: Variation[];
+  availableVariations: ApiVariation[];
 }
 
 // Dev Server Mode Component
@@ -176,7 +177,7 @@ function SdkFlagList() {
       enabled: true, // SDK flags are always enabled
       isOverridden: flag.isOverridden,
       type: flag.type,
-      availableVariations: [],
+      availableVariations: flag.availableVariations,
     }));
   }, [allFlags]);
 
