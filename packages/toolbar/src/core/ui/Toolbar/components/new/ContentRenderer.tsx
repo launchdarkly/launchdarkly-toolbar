@@ -1,20 +1,18 @@
 import React from 'react';
-import { ActiveTabId } from '../../types/toolbar';
-import { SubTab } from './types';
 import { SettingsContent } from './Settings/SettingsContent';
 import { FlagListContent } from './FeatureFlags/FlagListContent';
 import { EventsContent } from './Monitoring/EventsContent';
+import { useActiveTabContext } from '../../context/ActiveTabProvider';
+import { useActiveSubtabContext } from './context/ActiveSubtabProvider';
 
 // Placeholder content components - to be implemented later
 const ContextContent = () => <div>Context Content</div>;
 const ClickTrackingContent = () => <div>Click Tracking Content</div>;
 
-interface ContentRendererProps {
-  activeTab: ActiveTabId;
-  activeSubtab: SubTab | undefined;
-}
+export const ContentRenderer: React.FC = () => {
+  const { activeTab } = useActiveTabContext();
+  const { activeSubtab } = useActiveSubtabContext();
 
-export const ContentRenderer: React.FC<ContentRendererProps> = ({ activeTab, activeSubtab }) => {
   // Render content based on active tab and subtab combination
   if (activeTab === 'flags') {
     switch (activeSubtab) {

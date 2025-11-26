@@ -90,7 +90,6 @@ export const FlagItem: React.FC<FlagItemProps> = ({
           </div>
           <div className={styles.control}>
             <ObjectFlagControlButtons
-              flag={flag}
               isEditing={isEditingObject}
               onEditStart={() => {
                 setTempValue(JSON.stringify(flag.currentValue, null, 2));

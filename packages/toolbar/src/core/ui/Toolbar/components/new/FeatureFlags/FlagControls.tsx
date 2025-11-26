@@ -157,7 +157,6 @@ export function StringNumberFlagControl(props: StringNumberFlagControlProps) {
 }
 
 interface ObjectFlagControlButtonsProps {
-  flag: NormalizedFlag;
   isEditing: boolean;
   onEditStart: () => void;
   onConfirm: () => void;
