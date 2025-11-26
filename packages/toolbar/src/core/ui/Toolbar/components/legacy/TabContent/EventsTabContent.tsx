@@ -10,7 +10,7 @@ import { useSearchContext, useAnalytics } from '../../../context';
 import { useEvents, useCurrentDate } from '../../../hooks';
 import { DoNotTrackWarning } from '../../DoNotTrackWarning';
 import { GenericHelpText } from '../../GenericHelpText';
-import { IconLinkButton } from '../../IconLinkButton';
+import { IconLinkButton } from '../../../../Buttons/IconLinkButton';
 import { AddIcon } from '../../icons/AddIcon';
 import { ActionButtonsContainer } from '../ActionButtonsContainer';
 

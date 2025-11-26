@@ -9,7 +9,7 @@ import { useProjectContext } from '../../../context/ProjectProvider';
 import { ToolbarPosition, TOOLBAR_POSITIONS, ToolbarMode } from '../../../types';
 import { GenericHelpText } from '../../GenericHelpText';
 import { Feedback } from '../../Feedback/Feedback';
-import { Select, SelectOption } from '../../Select';
+import { Select, SelectOption } from '../../../../Select/Select';
 import { StatusDot } from '../../StatusDot';
 import * as styles from './SettingsTab.css';
 

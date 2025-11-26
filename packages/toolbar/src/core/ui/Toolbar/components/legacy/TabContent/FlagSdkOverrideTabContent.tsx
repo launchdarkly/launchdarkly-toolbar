@@ -17,7 +17,7 @@ import { FilterOptions } from '../../FilterOptions/FilterOptions';
 import { FlagFilterMode, FILTER_MODES, FlagFilterOptionsContext } from '../../FilterOptions/useFlagFilterOptions';
 import { GenericHelpText } from '../../GenericHelpText';
 import { OverrideIndicator } from '../../OverrideIndicator';
-import { StarButton } from '../../StarButton';
+import { StarButton } from '../../../../Buttons/StarButton';
 import { LocalBooleanFlagControl, LocalStringNumberFlagControl } from '../LocalFlagControls';
 import { LocalObjectFlagControlListItem } from '../LocalObjectFlagControlListItem';
 

@@ -8,8 +8,8 @@ import { ANIMATION_CONFIG, EASING } from '../../constants';
 import { ActiveTabId, ToolbarMode, getTabsForMode, TAB_ORDER } from '../../types';
 import { useDevServerContext } from '../../context/DevServerProvider';
 import { useAuthContext } from '../../context/AuthProvider';
-import { LoginScreen } from '../LoginScreen';
-import { AuthenticationModal } from '../AuthenticationModal';
+import { LoginScreen } from '../LoginScreen/LoginScreen';
+import { AuthenticationModal } from '../AuthenticationModal/AuthenticationModal';
 
 import * as styles from '../../LaunchDarklyToolbar.css';
 import { GearIcon, SyncIcon, ToggleOffIcon } from '../icons';

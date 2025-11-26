@@ -9,7 +9,7 @@ import { EnhancedFlag } from '../../../../../types/devServer';
 import { GenericHelpText } from '../../GenericHelpText';
 import { BooleanFlagControl, MultivariateFlagControl, StringNumberFlagControl } from '../FlagControls';
 import { OverrideIndicator } from '../../OverrideIndicator';
-import { StarButton } from '../../StarButton';
+import { StarButton } from '../../../../Buttons/StarButton';
 import { useStarredFlags } from '../../../context/StarredFlagsProvider';
 import { type FlagFilterMode, FlagFilterOptionsContext, FILTER_MODES } from '../../FilterOptions/useFlagFilterOptions';
 import { FilterOptions } from '../../FilterOptions/FilterOptions';

@@ -1,5 +1,4 @@
 export { ActionButtonsContainer } from './legacy/ActionButtonsContainer';
-export { LoginScreen } from './LoginScreen';
 export { CircleLogo } from './CircleLogo';
 export { ConnectionStatus } from './ConnectionStatus';
 export { DoNotTrackWarning } from './DoNotTrackWarning';

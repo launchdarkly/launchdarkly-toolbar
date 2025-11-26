@@ -1,6 +1,6 @@
 import { Dispatch, SetStateAction, useCallback, useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { IconButton } from '../../../IconButton';
+import { IconButton } from '../../../../../Buttons/IconButton';
 import { useToolbarUIContext, useAnalytics } from '../../../../context';
 import { useAuthContext } from '../../../../context/AuthProvider';
 import { SearchIcon, PersonPassword, SyncIcon, ChevronUpIcon, ChevronDownIcon } from '../../../icons';

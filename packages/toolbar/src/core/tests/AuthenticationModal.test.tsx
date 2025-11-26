@@ -1,7 +1,7 @@
 import React from 'react';
 import { render, screen } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { AuthenticationModal } from '../ui/Toolbar/components/AuthenticationModal';
+import { AuthenticationModal } from '../ui/Toolbar/components/AuthenticationModal/AuthenticationModal';
 import { IFrameProvider } from '../ui/Toolbar/context/IFrameProvider';
 
 // Mock the oauthPopup utility
