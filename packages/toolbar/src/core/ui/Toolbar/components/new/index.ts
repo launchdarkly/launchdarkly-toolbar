@@ -1,5 +1,5 @@
 export * from './ExpandedToolbarContent';
-export * from './IconBar';
+export * from './IconBar/IconBar';
 export * from './TabBar';
 export * from './ContentActions';
 export * from './Tooltip';

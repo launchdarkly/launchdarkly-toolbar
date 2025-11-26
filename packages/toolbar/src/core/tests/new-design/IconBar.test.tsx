@@ -1,6 +1,6 @@
 import { render, screen, fireEvent, within } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { IconBar } from '../../ui/Toolbar/components/new/IconBar';
+import { IconBar } from '../../ui/Toolbar/components/new/IconBar/IconBar';
 import { ActiveTabProvider } from '../../ui/Toolbar/context/ActiveTabProvider';
 import '@testing-library/jest-dom/vitest';
 import React from 'react';

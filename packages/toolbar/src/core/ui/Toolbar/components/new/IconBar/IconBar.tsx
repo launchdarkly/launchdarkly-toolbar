@@ -1,14 +1,14 @@
-import { ToggleOffIcon } from '../icons/ToggleOffIcon';
-import { ClickIcon } from '../icons/ClickIcon';
-import { GearIcon } from '../icons/GearIcon';
-import { ChartHistogram } from '../icons/ChartHistogram';
-import { ChipAiIcon } from '../icons/ChipAiIcon';
-import { FlaskIcon } from '../icons/FlaskIcon';
-import { Tooltip } from './Tooltip';
+import { ToggleOffIcon } from '../../icons/ToggleOffIcon';
+import { ClickIcon } from '../../icons/ClickIcon';
+import { GearIcon } from '../../icons/GearIcon';
+import { ChartHistogram } from '../../icons/ChartHistogram';
+import { ChipAiIcon } from '../../icons/ChipAiIcon';
+import { FlaskIcon } from '../../icons/FlaskIcon';
+import { Tooltip } from '../Tooltip';
 import * as styles from './IconBar.module.css';
-import { enableInteractiveIcon, enableAiIcon, enableOptimizeIcon } from '../../../../../flags/toolbarFlags';
-import { useActiveTabContext } from '../../context/ActiveTabProvider';
-import { TabId } from '../../types/toolbar';
+import { enableInteractiveIcon, enableAiIcon, enableOptimizeIcon } from '../../../../../../flags/toolbarFlags';
+import { useActiveTabContext } from '../../../context/ActiveTabProvider';
+import { TabId } from '../../../types/toolbar';
 import { useEffect } from 'react';
 
 type Icon = {

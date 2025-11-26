@@ -1,6 +1,6 @@
 // Subtab types for each main tab
 export type FlagsSubtab = 'flags' | 'context';
-export type MonitoringSubtab = 'overview' | 'events';
+export type MonitoringSubtab = 'events';
 export type SettingsSubtab = 'general';
 export type InteractiveSubtab = 'click-tracking';
 

@@ -12,7 +12,7 @@ export const loginContainer = style({
   border: '1px solid var(--lp-color-gray-700)',
   borderRadius: '0px',
   width: '100%',
-  minHeight: '450px',
+  height: '600px',
   overflow: 'hidden',
 });
 
