@@ -1,13 +1,13 @@
-import { createContext } from "react";
-import { useState } from "react";
-import { TabId } from "../../../types";
-import { useCallback } from "react";
-import { useContext } from "react";
+import { createContext } from 'react';
+import { useState } from 'react';
+import { TabId } from '../../../types';
+import { useCallback } from 'react';
+import { useContext } from 'react';
 
 type TabSearchContextType = {
   searchTerms: Record<TabId, string>;
   setSearchTerm: (tab: TabId, searchTerm: string) => void;
-}
+};
 
 const TabSearchContext = createContext<TabSearchContextType>({
   searchTerms: {
@@ -15,11 +15,11 @@ const TabSearchContext = createContext<TabSearchContextType>({
     'flag-dev-server': '',
     events: '',
     settings: '',
-    flags: "",
-    monitoring: "",
-    interactive: "",
-    ai: "",
-    optimize: ""
+    flags: '',
+    monitoring: '',
+    interactive: '',
+    ai: '',
+    optimize: '',
   },
   setSearchTerm: () => {},
 });
@@ -30,11 +30,11 @@ export function TabSearchProvider({ children }: { children: React.ReactNode }) {
     'flag-dev-server': '',
     events: '',
     settings: '',
-    flags: "",
-    monitoring: "",
-    interactive: "",
-    ai: "",
-    optimize: ""
+    flags: '',
+    monitoring: '',
+    interactive: '',
+    ai: '',
+    optimize: '',
   });
 
   const setSearchTerm = useCallback((tab: TabId, searchTerm: string) => {

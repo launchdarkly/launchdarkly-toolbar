@@ -31,6 +31,8 @@ export class FlagStateManager {
       // Current value is override if exists, otherwise original value
       const currentValue = override ? override.value : flagState.value;
 
+      console.log(apiFlag);
+
       enhancedFlags[flagKey] = {
         key: flagKey,
         // Use API flag name if available, otherwise format the key

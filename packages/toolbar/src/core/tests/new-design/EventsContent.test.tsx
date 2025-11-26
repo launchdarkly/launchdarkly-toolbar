@@ -352,4 +352,3 @@ describe('EventsContent - Search Filtering', () => {
     });
   });
 });
-

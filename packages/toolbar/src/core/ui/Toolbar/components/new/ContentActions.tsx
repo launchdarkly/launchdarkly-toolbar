@@ -16,7 +16,7 @@ export const ContentActions = () => {
   const { activeTab } = useActiveTabContext();
   const { activeSubtab } = useActiveSubtabContext();
   const { eventInterceptionPlugin } = usePlugins();
-  const { searchTerms } = useTabSearchContext()
+  const { searchTerms } = useTabSearchContext();
   const searchTerm = useMemo(() => searchTerms[activeTab as TabId] || '', [searchTerms, activeTab]);
   const { events } = useEvents(eventInterceptionPlugin, searchTerm);
   const { setSearchTerm } = useTabSearchContext();
@@ -33,27 +33,29 @@ export const ContentActions = () => {
     }
   }, [eventInterceptionPlugin]);
 
-
   const handleFilter = useCallback(() => {
     // TODO: Implement filter functionality
     console.log('Filter clicked');
   }, []);
 
-  const handleSearch = useCallback((input: string) => {
-    if (!activeTab) return;
-    setSearchTerm(activeTab, input);
-  }, [activeTab, searchTerm, setSearchTerm]);
+  const handleSearch = useCallback(
+    (input: string) => {
+      if (!activeTab) return;
+      setSearchTerm(activeTab, input);
+    },
+    [activeTab, searchTerm, setSearchTerm],
+  );
 
   return (
     <div className={styles.container}>
       {showSearch && (
         <>
-        {searchIsExpanded && (
-          <SearchSection searchTerm={searchTerm} onSearch={handleSearch} setSearchIsExpanded={setSearchIsExpanded} />
-        )}
-        {!searchIsExpanded && (
-          <IconButton icon={<SearchIcon />} label="Search" onClick={() => setSearchIsExpanded(true)} />
-        )}
+          {searchIsExpanded && (
+            <SearchSection searchTerm={searchTerm} onSearch={handleSearch} setSearchIsExpanded={setSearchIsExpanded} />
+          )}
+          {!searchIsExpanded && (
+            <IconButton icon={<SearchIcon />} label="Search" onClick={() => setSearchIsExpanded(true)} />
+          )}
         </>
       )}
       {showClearEvents && (

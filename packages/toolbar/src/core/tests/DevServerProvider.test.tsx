@@ -80,6 +80,17 @@ vi.mock('../ui/Toolbar/context/FlagsProvider', () => ({
   }),
 }));
 
+// Mock the ApiProvider
+vi.mock('../ui/Toolbar/context/ApiProvider', () => ({
+  ApiProvider: ({ children }: { children: React.ReactNode }) => <>{children}</>,
+  useApi: () => ({
+    apiReady: true,
+    getFlag: vi.fn(),
+    getProjects: vi.fn(),
+    getFlags: vi.fn(),
+  }),
+}));
+
 // Test component that consumes the context
 function TestConsumer() {
   const { state, refresh } = useDevServerContext();

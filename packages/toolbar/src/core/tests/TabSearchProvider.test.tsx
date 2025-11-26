@@ -1,9 +1,6 @@
 import { render, screen, fireEvent } from '@testing-library/react';
 import { expect, test, describe, beforeEach } from 'vitest';
-import {
-  TabSearchProvider,
-  useTabSearchContext,
-} from '../ui/Toolbar/components/new/context/TabSearchProvider';
+import { TabSearchProvider, useTabSearchContext } from '../ui/Toolbar/components/new/context/TabSearchProvider';
 import '@testing-library/jest-dom/vitest';
 import React from 'react';
 import { TabId } from '../ui/Toolbar/types';
@@ -23,15 +20,9 @@ function TestConsumer() {
       <div data-testid="interactive-term">{searchTerms.interactive}</div>
       <div data-testid="ai-term">{searchTerms.ai}</div>
       <div data-testid="optimize-term">{searchTerms.optimize}</div>
-      <button onClick={() => setSearchTerm('flag-sdk', 'test flag')}>
-        Set Flag SDK Term
-      </button>
-      <button onClick={() => setSearchTerm('events', 'test event')}>
-        Set Events Term
-      </button>
-      <button onClick={() => setSearchTerm('settings', 'test setting')}>
-        Set Settings Term
-      </button>
+      <button onClick={() => setSearchTerm('flag-sdk', 'test flag')}>Set Flag SDK Term</button>
+      <button onClick={() => setSearchTerm('events', 'test event')}>Set Events Term</button>
+      <button onClick={() => setSearchTerm('settings', 'test setting')}>Set Settings Term</button>
     </div>
   );
 }
@@ -144,12 +135,8 @@ describe('TabSearchProvider', () => {
         return (
           <div>
             <div data-testid="flag-sdk-term">{searchTerms['flag-sdk']}</div>
-            <button onClick={() => setSearchTerm('flag-sdk', 'test flag')}>
-              Set Flag SDK Term
-            </button>
-            <button onClick={() => setSearchTerm('flag-sdk', 'updated flag')}>
-              Update Flag SDK Term
-            </button>
+            <button onClick={() => setSearchTerm('flag-sdk', 'test flag')}>Set Flag SDK Term</button>
+            <button onClick={() => setSearchTerm('flag-sdk', 'updated flag')}>Update Flag SDK Term</button>
           </div>
         );
       };
@@ -209,9 +196,7 @@ describe('TabSearchProvider', () => {
         return (
           <div>
             <div data-testid="first-flag-sdk">{searchTerms['flag-sdk']}</div>
-            <button onClick={() => setSearchTerm('flag-sdk', 'shared term')}>
-              Set From First
-            </button>
+            <button onClick={() => setSearchTerm('flag-sdk', 'shared term')}>Set From First</button>
           </div>
         );
       };
@@ -331,9 +316,7 @@ describe('TabSearchProvider', () => {
           <div>
             <div data-testid="render-count">{renderCount}</div>
             <div data-testid="flag-sdk-term">{searchTerms['flag-sdk']}</div>
-            <button onClick={() => setSearchTerm('flag-sdk', 'persistent term')}>
-              Set Term
-            </button>
+            <button onClick={() => setSearchTerm('flag-sdk', 'persistent term')}>Set Term</button>
             <button onClick={() => setRenderCount((c) => c + 1)}>Re-render</button>
           </div>
         );
@@ -366,9 +349,7 @@ describe('TabSearchProvider', () => {
         return (
           <div>
             <div data-testid="search-term">{searchTerms['flag-sdk']}</div>
-            <button onClick={() => setSearchTerm('flag-sdk', '!@#$%^&*()_+-=[]{}|;:,.<>?')}>
-              Set Special Chars
-            </button>
+            <button onClick={() => setSearchTerm('flag-sdk', '!@#$%^&*()_+-=[]{}|;:,.<>?')}>Set Special Chars</button>
           </div>
         );
       };
@@ -419,9 +400,7 @@ describe('TabSearchProvider', () => {
         return (
           <div>
             <div data-testid="search-term">{searchTerms['flag-sdk']}</div>
-            <button onClick={() => setSearchTerm('flag-sdk', '🚀 émojis & àccents')}>
-              Set Unicode
-            </button>
+            <button onClick={() => setSearchTerm('flag-sdk', '🚀 émojis & àccents')}>Set Unicode</button>
           </div>
         );
       };
@@ -478,4 +457,3 @@ describe('TabSearchProvider', () => {
     });
   });
 });
-

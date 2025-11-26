@@ -8,7 +8,6 @@ export const container = style({
   borderBottom: '1px solid var(--lp-color-gray-800)',
   minHeight: '48px',
   gap: '8px',
-
 });
 
 export const tabs = style({

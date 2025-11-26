@@ -61,9 +61,7 @@ vi.mock('../../ui/Toolbar/components/new/Settings/PositionSelector', () => ({
 }));
 
 vi.mock('../../ui/Toolbar/components/new/Settings/ConnectionStatus', () => ({
-  ConnectionStatus: ({ status }: { status: string }) => (
-    <div data-testid="connection-status">Status: {status}</div>
-  ),
+  ConnectionStatus: ({ status }: { status: string }) => <div data-testid="connection-status">Status: {status}</div>,
 }));
 
 vi.mock('../../ui/Toolbar/components/new/Settings/LogoutButton', () => ({
@@ -330,4 +328,3 @@ describe('GeneralSettings - Search Filtering', () => {
     });
   });
 });
-

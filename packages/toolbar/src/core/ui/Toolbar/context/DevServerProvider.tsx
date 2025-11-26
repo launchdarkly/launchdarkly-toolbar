@@ -5,6 +5,7 @@ import { FlagStateManager } from '../../../services/FlagStateManager';
 import { LdToolbarConfig, ToolbarState } from '../../../types/devServer';
 import { useFlagsContext } from './FlagsProvider';
 import { useProjectContext } from './ProjectProvider';
+import { useApi } from './ApiProvider';
 
 interface DevServerContextValue {
   state: ToolbarState;
@@ -32,6 +33,7 @@ export interface DevServerProviderProps {
 export const DevServerProvider: FC<DevServerProviderProps> = ({ children, config }) => {
   const { getProjectFlags } = useFlagsContext();
   const { projectKey, getProjects } = useProjectContext();
+  const { apiReady } = useApi();
 
   const [toolbarState, setToolbarState] = useState<ToolbarState>(() => {
     return {
@@ -101,6 +103,12 @@ export const DevServerProvider: FC<DevServerProviderProps> = ({ children, config
         throw new Error('Dev server client, flag state manager, or project key not available');
       }
 
+      // Wait for API to be ready before attempting to fetch
+      if (!apiReady) {
+        console.warn('API not ready yet, skipping flag sync');
+        return;
+      }
+
       // Always fetch dev server data (lightweight, local)
       const projectData = await devServerClient.getProjectData();
 
@@ -130,7 +138,7 @@ export const DevServerProvider: FC<DevServerProviderProps> = ({ children, config
         isLoading: false,
       }));
     },
-    [devServerClient, flagStateManager, projectKey, getProjectFlags, lastDevServerSync],
+    [devServerClient, flagStateManager, projectKey, getProjectFlags, lastDevServerSync, apiReady],
   );
 
   const initializeProjectSelection = useCallback(async () => {
@@ -178,6 +186,11 @@ export const DevServerProvider: FC<DevServerProviderProps> = ({ children, config
         return;
       }
 
+      // Wait for API to be ready before syncing
+      if (!apiReady) {
+        return;
+      }
+
       try {
         setToolbarState((prev) => ({ ...prev, isLoading: true }));
         await syncFlags();
@@ -187,7 +200,7 @@ export const DevServerProvider: FC<DevServerProviderProps> = ({ children, config
     };
 
     loadProjectData();
-  }, [toolbarState.connectionStatus, devServerClient, flagStateManager, projectKey, syncFlags, handleError]);
+  }, [toolbarState.connectionStatus, devServerClient, flagStateManager, projectKey, syncFlags, handleError, apiReady]);
 
   // Setup real-time updates
   useEffect(() => {
@@ -210,6 +223,11 @@ export const DevServerProvider: FC<DevServerProviderProps> = ({ children, config
   useEffect(() => {
     // Skip polling if not in dev-server mode
     if (!config.devServerUrl || !devServerClient || !flagStateManager) {
+      return;
+    }
+
+    // Wait for API to be ready before polling
+    if (!apiReady) {
       return;
     }
 
@@ -241,6 +259,7 @@ export const DevServerProvider: FC<DevServerProviderProps> = ({ children, config
     getProjectFlags,
     syncFlags,
     handleError,
+    apiReady,
   ]);
 
   const setOverride = useCallback(

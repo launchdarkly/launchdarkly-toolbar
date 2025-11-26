@@ -24,10 +24,27 @@ export const info = style({
   flex: 1,
 });
 
+export const nameRow = style({
+  display: 'flex',
+  alignItems: 'center',
+  gap: '8px',
+});
+
 export const name = style({
   fontSize: '14px',
   fontWeight: 500,
   color: 'var(--lp-color-gray-100)',
+});
+
+export const overrideBadge = style({
+  fontSize: '11px',
+  fontWeight: 600,
+  color: 'var(--lp-color-blue-400)',
+  backgroundColor: 'var(--lp-color-blue-900)',
+  padding: '2px 6px',
+  borderRadius: '4px',
+  textTransform: 'uppercase',
+  letterSpacing: '0.5px',
 });
 
 export const value = style({
