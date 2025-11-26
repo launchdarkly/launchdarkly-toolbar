@@ -29,7 +29,7 @@ interface SettingsSectionData {
   items: SettingItemData[];
 }
 
-export const GeneralSettings: React.FC = () => {
+export function GeneralSettings() {
   const { state } = useDevServerContext();
   const {
     isAutoCollapseEnabled,
@@ -238,4 +238,4 @@ export const GeneralSettings: React.FC = () => {
       })}
     </div>
   );
-};
+}

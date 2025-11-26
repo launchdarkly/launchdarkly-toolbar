@@ -1,4 +1,3 @@
-import React from 'react';
 import { SettingsContent } from './Settings/SettingsContent';
 import { FlagListContent } from './FeatureFlags/FlagListContent';
 import { EventsContent } from './Monitoring/EventsContent';
@@ -6,10 +5,15 @@ import { useActiveTabContext } from '../../context/ActiveTabProvider';
 import { useActiveSubtabContext } from './context/ActiveSubtabProvider';
 
 // Placeholder content components - to be implemented later
-const ContextContent = () => <div>Context Content</div>;
-const ClickTrackingContent = () => <div>Click Tracking Content</div>;
+function ContextContent() {
+  return <div>Context Content</div>;
+}
 
-export const ContentRenderer: React.FC = () => {
+function ClickTrackingContent() {
+  return <div>Click Tracking Content</div>;
+}
+
+export function ContentRenderer() {
   const { activeTab } = useActiveTabContext();
   const { activeSubtab } = useActiveSubtabContext();
 
@@ -44,4 +48,4 @@ export const ContentRenderer: React.FC = () => {
 
   // Fallback
   return <div>No content available</div>;
-};
+}

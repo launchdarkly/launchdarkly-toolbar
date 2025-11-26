@@ -1,6 +1,5 @@
-import React from 'react';
 import { FlagList } from './FlagList';
 
-export const FlagListContent: React.FC = () => {
+export function FlagListContent() {
   return <FlagList />;
-};
+}

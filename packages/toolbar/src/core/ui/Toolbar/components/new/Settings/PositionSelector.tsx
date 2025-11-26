@@ -1,4 +1,3 @@
-import React from 'react';
 import { ToolbarPosition, TOOLBAR_POSITIONS } from '../../../types/toolbar';
 import { Select, SelectOption } from '../../../../Select/Select';
 import { useToolbarUIContext } from '../../../context/ToolbarUIProvider';
@@ -8,7 +7,7 @@ interface PositionSelectorProps {
   currentPosition: ToolbarPosition;
 }
 
-export const PositionSelector: React.FC<PositionSelectorProps> = ({ currentPosition }) => {
+export function PositionSelector({ currentPosition }: PositionSelectorProps) {
   const { handlePositionChange } = useToolbarUIContext();
   const analytics = useAnalytics();
 
@@ -42,4 +41,4 @@ export const PositionSelector: React.FC<PositionSelectorProps> = ({ currentPosit
       options={options}
     />
   );
-};
+}

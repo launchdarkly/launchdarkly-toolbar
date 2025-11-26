@@ -12,7 +12,7 @@ import { IconButton } from '../../../Buttons/IconButton';
 import { useMemo } from 'react';
 import { TabId } from '../../types';
 
-export const ContentActions = () => {
+export function ContentActions() {
   const { activeTab } = useActiveTabContext();
   const { activeSubtab } = useActiveSubtabContext();
   const { eventInterceptionPlugin } = usePlugins();
@@ -76,4 +76,4 @@ export const ContentActions = () => {
       )}
     </div>
   );
-};
+}

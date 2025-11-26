@@ -16,7 +16,7 @@ interface OverrideDotProps {
   onClear: () => void;
 }
 
-const OverrideDot: React.FC<OverrideDotProps> = ({ onClear }) => {
+function OverrideDot({ onClear }: OverrideDotProps) {
   const [isHovered, setIsHovered] = useState(false);
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
@@ -53,7 +53,7 @@ const OverrideDot: React.FC<OverrideDotProps> = ({ onClear }) => {
       />
     </motion.span>
   );
-};
+}
 
 interface FlagItemProps {
   flag: NormalizedFlag;
@@ -64,14 +64,14 @@ interface FlagItemProps {
   index: number;
 }
 
-export const FlagItem: React.FC<FlagItemProps> = ({
+export function FlagItem({
   flag,
   onOverride,
   onClearOverride,
   handleHeightChange,
   disabled = false,
   index,
-}) => {
+}: FlagItemProps) {
   const [isEditingObject, setIsEditingObject] = useState(false);
   const [tempValue, setTempValue] = useState('');
   const [hasErrors, setHasErrors] = useState(false);
@@ -152,4 +152,4 @@ export const FlagItem: React.FC<FlagItemProps> = ({
       <div className={styles.control}>{renderControl()}</div>
     </div>
   );
-};
+}
