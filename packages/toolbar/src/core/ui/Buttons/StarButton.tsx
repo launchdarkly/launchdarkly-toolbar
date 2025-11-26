@@ -1,4 +1,4 @@
-import { StarIcon, StarOutlineIcon } from './icons';
+import { StarIcon, StarOutlineIcon } from '../Toolbar/components/icons';
 import * as styles from './StarButton.css';
 
 interface StarButtonProps {

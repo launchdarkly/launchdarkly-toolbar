@@ -1,8 +1,8 @@
 import { useCallback, useEffect } from 'react';
 import * as styles from './AuthenticationModal.css';
-import { useIFrameContext } from '../context/IFrameProvider';
-import { useAuthContext } from '../context/AuthProvider';
-import { openOAuthPopup } from '../utils/oauthPopup';
+import { useIFrameContext } from '../../context/IFrameProvider';
+import { useAuthContext } from '../../context/AuthProvider';
+import { openOAuthPopup } from '../../utils/oauthPopup';
 
 interface AuthenticationModalProps {
   isOpen: boolean;

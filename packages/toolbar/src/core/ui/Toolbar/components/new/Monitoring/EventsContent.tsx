@@ -10,7 +10,7 @@ import { useSearchContext, useAnalytics, usePlugins } from '../../../context';
 import { useEvents, useCurrentDate } from '../../../hooks';
 import { DoNotTrackWarning } from '../../DoNotTrackWarning';
 import { GenericHelpText } from '../../GenericHelpText';
-import { IconLinkButton } from '../../IconLinkButton';
+import { IconLinkButton } from '../../../../Buttons/IconLinkButton';
 import { AddIcon } from '../../icons/AddIcon';
 
 import * as styles from './EventsContent.module.css';

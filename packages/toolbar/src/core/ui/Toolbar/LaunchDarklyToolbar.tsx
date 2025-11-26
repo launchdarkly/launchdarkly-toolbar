@@ -18,8 +18,6 @@ import { ExpandedToolbarContentLegacy } from './components/legacy';
 import { useToolbarAnimations, useToolbarVisibility, useToolbarDrag } from './hooks';
 import { ToolbarUIProvider, useToolbarUIContext } from './context';
 import { ToolbarMode, ToolbarPosition, getToolbarMode, getDefaultActiveTab, ActiveTabId } from './types/toolbar';
-
-import * as styles from './LaunchDarklyToolbar.css';
 import { DevServerProvider } from './context';
 import { IEventInterceptionPlugin, IFlagOverridePlugin } from '../../../types';
 import { AuthProvider } from './context/AuthProvider';
@@ -27,11 +25,13 @@ import { ApiProvider } from './context/ApiProvider';
 import { IFrameProvider } from './context/IFrameProvider';
 import { ProjectProvider } from './context/ProjectProvider';
 import { FlagsProvider } from './context/FlagsProvider';
-import { AuthenticationModal } from './components/AuthenticationModal';
+import { AuthenticationModal } from './components/AuthenticationModal/AuthenticationModal';
 import { InternalClientProvider } from './context/InternalClientProvider';
 import { useNewToolbarDesign } from '../../../flags/toolbarFlags';
 import { ExpandedToolbarContent } from './components/new/ExpandedToolbarContent';
 import { useEffect } from 'react';
+
+import * as styles from './LaunchDarklyToolbar.css';
 
 export interface LdToolbarProps {
   mode: ToolbarMode;

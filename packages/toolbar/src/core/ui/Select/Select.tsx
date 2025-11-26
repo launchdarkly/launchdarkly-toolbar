@@ -1,10 +1,10 @@
 import { useState, useRef, useEffect, useCallback, ReactNode } from 'react';
 import { createPortal } from 'react-dom';
-import { ChevronDownIcon } from './icons';
 import * as styles from './Select.css';
-import { Z_INDEX } from '../../constants/zIndex';
-import { useReactMount } from '../../../context/ReactMountContext';
-import { TOOLBAR_DOM_ID } from '../../../../types/constants';
+import { useReactMount } from '../../context/ReactMountContext';
+import { TOOLBAR_DOM_ID } from '../../../types/constants';
+import { Z_INDEX } from '../constants/zIndex';
+import { ChevronDownIcon } from '../Toolbar/components/icons';
 
 export interface SelectOption {
   id: string;

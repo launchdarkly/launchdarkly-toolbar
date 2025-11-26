@@ -8,7 +8,7 @@ import { ListItem } from '../../../List/ListItem';
 import { VIRTUALIZATION, EASING } from '../../constants';
 import { LocalFlag, useStarredFlags } from '../../context';
 import { OverrideIndicator } from '../OverrideIndicator';
-import { StarButton } from '../StarButton';
+import { StarButton } from '../../../Buttons/StarButton';
 
 import * as sharedStyles from './TabContent/FlagDevServerTabContent.css';
 import * as styles from './LocalObjectFlagControlListItem.css';

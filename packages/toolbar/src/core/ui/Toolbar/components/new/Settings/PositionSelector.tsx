@@ -1,6 +1,6 @@
 import React from 'react';
 import { ToolbarPosition, TOOLBAR_POSITIONS } from '../../../types/toolbar';
-import { Select, SelectOption } from '../../Select';
+import { Select, SelectOption } from '../../../../Select/Select';
 import { useToolbarUIContext } from '../../../context/ToolbarUIProvider';
 import { useAnalytics } from '../../../context/AnalyticsProvider';
 

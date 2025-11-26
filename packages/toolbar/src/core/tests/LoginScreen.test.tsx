@@ -1,6 +1,6 @@
 import { render, screen, fireEvent } from '@testing-library/react';
 import { expect, test, describe, vi, beforeEach } from 'vitest';
-import { LoginScreen } from '../ui/Toolbar/components/LoginScreen';
+import { LoginScreen } from '../ui/Toolbar/components/LoginScreen/LoginScreen';
 import '@testing-library/jest-dom/vitest';
 import React from 'react';
 
