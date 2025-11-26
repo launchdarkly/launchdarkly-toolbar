@@ -7,6 +7,8 @@ export const container = style({
   padding: '0 20px',
   borderBottom: '1px solid var(--lp-color-gray-800)',
   minHeight: '48px',
+  gap: '8px',
+
 });
 
 export const tabs = style({

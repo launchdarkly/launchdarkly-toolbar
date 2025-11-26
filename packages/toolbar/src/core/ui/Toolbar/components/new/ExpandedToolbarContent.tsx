@@ -17,6 +17,7 @@ import { AuthenticationModal } from '../AuthenticationModal/AuthenticationModal'
 import { LoginScreen } from '../LoginScreen/LoginScreen';
 import * as toolbarStyles from '../../LaunchDarklyToolbar.css';
 import { ANIMATION_CONFIG } from '../../constants';
+import { TabSearchProvider } from './context/TabSearchProvider';
 
 interface ExpandedToolbarContentProps {
   onClose?: () => void;
@@ -89,7 +90,9 @@ const ExpandedToolbarContentInner = forwardRef<HTMLDivElement, ExpandedToolbarCo
 export const ExpandedToolbarContent = forwardRef<HTMLDivElement, ExpandedToolbarContentProps>((props, ref) => {
   return (
     <ActiveSubtabProvider>
-      <ExpandedToolbarContentInner ref={ref} {...props} />
+      <TabSearchProvider>
+        <ExpandedToolbarContentInner ref={ref} {...props} />
+      </TabSearchProvider>
     </ActiveSubtabProvider>
   );
 });

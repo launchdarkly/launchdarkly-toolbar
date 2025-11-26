@@ -1,18 +1,26 @@
 import { useCallback } from 'react';
-import { SearchIcon, FilterTuneIcon, DeleteIcon } from '../icons';
+import { FilterTuneIcon, DeleteIcon, SearchIcon } from '../icons';
 import { useActiveTabContext } from '../../context/ActiveTabProvider';
 import { useActiveSubtabContext } from './context/ActiveSubtabProvider';
 import { usePlugins } from '../../context';
 import { useEvents } from '../../hooks';
-import { useSearchContext } from '../../context/SearchProvider';
 import * as styles from './ContentActions.module.css';
+import { SearchSection } from '../SearchSection';
+import { useTabSearchContext } from './context/TabSearchProvider';
+import { useState } from 'react';
+import { IconButton } from '../../../Buttons/IconButton';
+import { useMemo } from 'react';
+import { TabId } from '../../types';
 
 export const ContentActions = () => {
   const { activeTab } = useActiveTabContext();
   const { activeSubtab } = useActiveSubtabContext();
   const { eventInterceptionPlugin } = usePlugins();
-  const { searchTerm } = useSearchContext();
+  const { searchTerms } = useTabSearchContext()
+  const searchTerm = useMemo(() => searchTerms[activeTab as TabId] || '', [searchTerms, activeTab]);
   const { events } = useEvents(eventInterceptionPlugin, searchTerm);
+  const { setSearchTerm } = useTabSearchContext();
+  const [searchIsExpanded, setSearchIsExpanded] = useState(false);
 
   // Determine which actions to show based on current tab/subtab
   const showFilter = activeTab === 'flags' && activeSubtab === 'flags';
@@ -25,22 +33,29 @@ export const ContentActions = () => {
     }
   }, [eventInterceptionPlugin]);
 
+
   const handleFilter = useCallback(() => {
     // TODO: Implement filter functionality
     console.log('Filter clicked');
   }, []);
 
-  const handleSearch = useCallback(() => {
-    // TODO: Implement search functionality
-    console.log('Search clicked');
-  }, []);
+  const handleSearch = useCallback((input: string) => {
+    if (!activeTab) return;
+    console.log('searchTerm', input);
+    setSearchTerm(activeTab, input);
+  }, [activeTab, searchTerm, setSearchTerm]);
 
   return (
     <div className={styles.container}>
       {showSearch && (
-        <button className={styles.actionButton} onClick={handleSearch} aria-label="Search" title="Search">
-          <SearchIcon className={styles.icon} />
-        </button>
+        <>
+        {searchIsExpanded && (
+          <SearchSection searchTerm={searchTerm} onSearch={handleSearch} setSearchIsExpanded={setSearchIsExpanded} />
+        )}
+        {!searchIsExpanded && (
+          <IconButton icon={<SearchIcon />} label="Search" onClick={() => setSearchIsExpanded(true)} />
+        )}
+        </>
       )}
       {showClearEvents && (
         <button
