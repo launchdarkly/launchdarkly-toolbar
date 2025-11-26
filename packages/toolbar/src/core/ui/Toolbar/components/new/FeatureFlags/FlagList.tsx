@@ -16,7 +16,6 @@ import { ApiVariation } from '../../../types/ldApi.ts';
 export interface NormalizedFlag {
   key: string;
   name: string;
-  enabled: boolean;
   isOverridden: boolean;
   type: 'boolean' | 'multivariate' | 'string' | 'number' | 'object';
   currentValue: any;
@@ -41,8 +40,6 @@ function DevServerFlagList() {
       key: flag.key,
       name: flag.name,
       currentValue: flag.currentValue,
-      value: formatValue(flag.currentValue),
-      enabled: flag.enabled,
       isOverridden: flag.isOverridden,
       type: flag.type,
       availableVariations: flag.availableVariations,
@@ -57,10 +54,7 @@ function DevServerFlagList() {
     return normalizedFlags
       .map((flag, index) => ({ flag, index }))
       .filter(
-        ({ flag }) =>
-          flag.name.toLowerCase().includes(searchLower) ||
-          flag.key.toLowerCase().includes(searchLower) ||
-          flag.currentValue.toLowerCase().includes(searchLower),
+        ({ flag }) => flag.name.toLowerCase().includes(searchLower) || flag.key.toLowerCase().includes(searchLower),
       )
       .map(({ index }) => index);
   }, [normalizedFlags, searchTerm, allFlags]);
@@ -174,7 +168,6 @@ function SdkFlagList() {
       key: flag.key,
       name: flag.name,
       currentValue: flag.currentValue,
-      enabled: true, // SDK flags are always enabled
       isOverridden: flag.isOverridden,
       type: flag.type,
       availableVariations: flag.availableVariations,
@@ -189,10 +182,7 @@ function SdkFlagList() {
     return normalizedFlags
       .map((flag, index) => ({ flag, index }))
       .filter(
-        ({ flag }) =>
-          flag.name.toLowerCase().includes(searchLower) ||
-          flag.key.toLowerCase().includes(searchLower) ||
-          flag.currentValue.toLowerCase().includes(searchLower),
+        ({ flag }) => flag.name.toLowerCase().includes(searchLower) || flag.key.toLowerCase().includes(searchLower),
       )
       .map(({ index }) => index);
   }, [normalizedFlags, searchTerm, allFlags]);
@@ -317,23 +307,3 @@ export const FlagList = () => {
 
   return <GenericHelpText title="Mode not detected" subtitle="The toolbar is not running in dev-server or SDK mode" />;
 };
-
-// Helper function to format flag values for display
-function formatValue(value: any): string {
-  if (typeof value === 'boolean') {
-    return value ? 'true' : 'false';
-  }
-  if (typeof value === 'string') {
-    return value;
-  }
-  if (typeof value === 'number') {
-    return value.toString();
-  }
-  if (value === null) {
-    return 'null';
-  }
-  if (typeof value === 'object') {
-    return JSON.stringify(value);
-  }
-  return String(value);
-}
