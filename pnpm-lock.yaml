@@ -126,6 +126,9 @@ importers:
       '@codemirror/view':
         specifier: ^6.38.8
         version: 6.38.8
+      '@launchdarkly/session-replay':
+        specifier: ^0.4.9
+        version: 0.4.9
       '@launchpad-ui/components':
         specifier: ^0.17.7
         version: 0.17.7(@react-aria/focus@3.21.2(react-dom@19.2.1(react@19.2.1))(react@19.2.1))(@react-aria/interactions@3.25.6(react-dom@19.2.1(react@19.2.1))(react@19.2.1))(@react-aria/utils@3.31.0(react-dom@19.2.1(react@19.2.1))(react@19.2.1))(@react-stately/utils@3.10.8(react@19.2.1))(@react-types/shared@3.32.1(react@19.2.1))(react-aria-components@1.13.0(react-dom@19.2.1(react@19.2.1))(react@19.2.1))(react-aria@3.44.0(react-dom@19.2.1(react@19.2.1))(react@19.2.1))(react-dom@19.2.1(react@19.2.1))(react-hook-form@7.65.0(react@19.2.1))(react-router@7.10.1(react-dom@19.2.1(react@19.2.1))(react@19.2.1))(react-stately@3.42.0(react@19.2.1))(react@19.2.1)
@@ -973,6 +976,18 @@ packages:
     engines: {node: '>=10.0'}
     peerDependencies:
       tslib: '2'
+
+  '@launchdarkly/js-client-sdk-common@1.13.0':
+    resolution: {integrity: sha512-3u3nWLKfu7ADbrBlbYq1rDROXG1WcRGRGhHFyAjtDPCCh783sPIb1frC1n4tj6b64bustVrZvLR9dGrQlp6tJQ==}
+
+  '@launchdarkly/js-client-sdk@0.6.0':
+    resolution: {integrity: sha512-9aBgpGKXxaiPudNuQ9MoS8wFSIR1h0P2EFDP2veNJG7tBuxzDKfH3hzjW01C4/WyWN6bk7P7XKwisxw775klBQ==}
+
+  '@launchdarkly/js-sdk-common@2.17.0':
+    resolution: {integrity: sha512-HYQNc4xbE58hBOO1yZsqE+BHOC36AYrHPZ5hwvlHoZRSsaoYCPM+Q/n+O+N3JhWXTqGsu6SwUzqUzTyxg8prGg==}
+
+  '@launchdarkly/session-replay@0.4.9':
+    resolution: {integrity: sha512-Cur9amHWpblQb9weCyjX/Z0uU+AkxpuRsXUC3J3IzYS3VeJf2WPWw7d07X8pFoun5AGHzNEZtQQJP84B9RLyCA==}
 
   '@launchpad-ui/components@0.17.7':
     resolution: {integrity: sha512-p5GWGeGtZzYdLqBosCijS6yRrwbHziQF9ZGoYLb0sHx9lbUyvf/5e8eDHkx+CiIGfL8ZhBtcmRAk5oJUJ4m63w==}
@@ -3356,6 +3371,9 @@ packages:
   hermes-parser@0.25.1:
     resolution: {integrity: sha512-6pEjquH3rqaI6cYAXYPcz9MS4rY6R4ngRgrgfDshRptUZIc3lw0MCIJIGDj9++mfySOuPTHB4nrSW99BCvOPIA==}
 
+  highlight.run@9.23.0:
+    resolution: {integrity: sha512-Wc6gA27IvYPFTyXIZ3dy2J073fGiXpWKypMUNBbPFbJ8gnT1h4lYZQRRCE6O6rSzXiG2VNsDv6lUYxULjbWNUw==}
+
   hoist-non-react-statics@3.3.2:
     resolution: {integrity: sha512-/gGivxi8JPKWNm/W0jSmzcMPpfpPLc3dY/6GxhX2hQ9iGj3aDfklV4ET7NjKpSinLpJ5vafa9iiGIEZg10SfBw==}
 
@@ -4497,11 +4515,11 @@ packages:
     resolution: {integrity: sha512-azl+t0z7pw/z958Gy9svOTuzqIk6xq+NSheJzn5MMWtWTFywIacg2wUlzKFGtt3cthx0r2SxMK0yzJOR0IES7Q==}
     engines: {node: '>=14.0.0'}
 
-  tldts-core@7.0.19:
-    resolution: {integrity: sha512-lJX2dEWx0SGH4O6p+7FPwYmJ/bu1JbcGJ8RLaG9b7liIgZ85itUVEPbMtWRVrde/0fnDPEPHW10ZsKW3kVsE9A==}
+  tldts-core@7.0.18:
+    resolution: {integrity: sha512-jqJC13oP4FFAahv4JT/0WTDrCF9Okv7lpKtOZUGPLiAnNbACcSg8Y8T+Z9xthOmRBqi/Sob4yi0TE0miRCvF7Q==}
 
-  tldts@7.0.19:
-    resolution: {integrity: sha512-8PWx8tvC4jDB39BQw1m4x8y5MH1BcQ5xHeL2n7UVFulMPH/3Q0uiamahFJ3lXA0zO2SUyRXuVVbWSDmstlt9YA==}
+  tldts@7.0.18:
+    resolution: {integrity: sha512-lCcgTAgMxQ1JKOWrVGo6E69Ukbnx4Gc1wiYLRf6J5NN4HRYJtCby1rPF8rkQ4a6qqoFBK5dvjJ1zJ0F7VfDSvw==}
     hasBin: true
 
   to-regex-range@5.0.1:
@@ -4565,8 +4583,8 @@ packages:
     resolution: {integrity: sha512-XleUoc9uwGXqjWwXaUTZAmzMcFZ5858QA2vvx1Ur5xIcixXIP+8LnFDgRplU30us6teqdlskFfu+ae4K79Ooew==}
     engines: {node: '>= 0.8.0'}
 
-  type-fest@5.3.0:
-    resolution: {integrity: sha512-d9CwU93nN0IA1QL+GSNDdwLAu1Ew5ZjTwupvedwg3WdfoH6pIDvYQ2hV0Uc2nKBLPq7NB5apCx57MLS5qlmO5g==}
+  type-fest@5.3.1:
+    resolution: {integrity: sha512-VCn+LMHbd4t6sF3wfU/+HKT63C9OoyrSIf4b+vtWHpt2U7/4InZG467YDNMFMR70DdHjAdpPWmw2lzRdg0Xqqg==}
     engines: {node: '>=20'}
 
   type-is@2.0.1:
@@ -5517,6 +5535,20 @@ snapshots:
       '@jsonjoy.com/buffers': 1.2.1(tslib@2.8.1)
       '@jsonjoy.com/codegen': 1.0.0(tslib@2.8.1)
       tslib: 2.8.1
+
+  '@launchdarkly/js-client-sdk-common@1.13.0':
+    dependencies:
+      '@launchdarkly/js-sdk-common': 2.17.0
+
+  '@launchdarkly/js-client-sdk@0.6.0':
+    dependencies:
+      '@launchdarkly/js-client-sdk-common': 1.13.0
+
+  '@launchdarkly/js-sdk-common@2.17.0': {}
+
+  '@launchdarkly/session-replay@0.4.9':
+    dependencies:
+      highlight.run: 9.23.0
 
   '@launchpad-ui/components@0.17.7(@react-aria/focus@3.21.2(react-dom@19.2.1(react@19.2.1))(react@19.2.1))(@react-aria/interactions@3.25.6(react-dom@19.2.1(react@19.2.1))(react@19.2.1))(@react-aria/utils@3.31.0(react-dom@19.2.1(react@19.2.1))(react@19.2.1))(@react-stately/utils@3.10.8(react@19.2.1))(@react-types/shared@3.32.1(react@19.2.1))(react-aria-components@1.13.0(react-dom@19.2.1(react@19.2.1))(react@19.2.1))(react-aria@3.44.0(react-dom@19.2.1(react@19.2.1))(react@19.2.1))(react-dom@19.2.1(react@19.2.1))(react-hook-form@7.65.0(react@19.2.1))(react-router@7.10.1(react-dom@19.2.1(react@19.2.1))(react@19.2.1))(react-stately@3.42.0(react@19.2.1))(react@19.2.1)':
     dependencies:
@@ -8613,6 +8645,11 @@ snapshots:
     dependencies:
       hermes-estree: 0.25.1
 
+  highlight.run@9.23.0:
+    dependencies:
+      '@launchdarkly/js-client-sdk': 0.6.0
+      imurmurhash: 0.1.4
+
   hoist-non-react-statics@3.3.2:
     dependencies:
       react-is: 16.13.1
@@ -9067,7 +9104,7 @@ snapshots:
       statuses: 2.0.2
       strict-event-emitter: 0.5.1
       tough-cookie: 6.0.0
-      type-fest: 5.3.0
+      type-fest: 5.3.1
       until-async: 3.0.2
       yargs: 17.7.2
     optionalDependencies:
@@ -9993,11 +10030,11 @@ snapshots:
 
   tinyspy@4.0.4: {}
 
-  tldts-core@7.0.19: {}
+  tldts-core@7.0.18: {}
 
-  tldts@7.0.19:
+  tldts@7.0.18:
     dependencies:
-      tldts-core: 7.0.19
+      tldts-core: 7.0.18
 
   to-regex-range@5.0.1:
     dependencies:
@@ -10009,7 +10046,7 @@ snapshots:
 
   tough-cookie@6.0.0:
     dependencies:
-      tldts: 7.0.19
+      tldts: 7.0.18
 
   tr46@6.0.0:
     dependencies:
@@ -10057,7 +10094,7 @@ snapshots:
     dependencies:
       prelude-ls: 1.2.1
 
-  type-fest@5.3.0:
+  type-fest@5.3.1:
     dependencies:
       tagged-tag: 1.0.0
 

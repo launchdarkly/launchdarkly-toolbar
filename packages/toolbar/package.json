@@ -67,6 +67,7 @@
     "@codemirror/view": "^6.38.8",
     "@launchpad-ui/components": "^0.17.7",
     "@launchpad-ui/tokens": "^0.15.1",
+    "@launchdarkly/session-replay": "^0.4.9",
     "@lezer/highlight": "^1.2.3",
     "@react-aria/focus": "^3.21.2",
     "@react-stately/flags": "^3.1.2",

@@ -9,7 +9,8 @@ import { createToolbarFlagFunction } from './createToolbarFlagFunction';
  * To add a toolbar feature flag, export it here like:
  * export const myFeature = createToolbarFlagFunction('my-feature-key', defaultValue);
  */
-export const useNewToolbarDesign = createToolbarFlagFunction('use-new-toolbar-design', false);
-export const enableInteractiveIcon = createToolbarFlagFunction('enable-interactive-icon', false);
 export const enableAiIcon = createToolbarFlagFunction('enable-ai-icon', false);
+export const enableInteractiveIcon = createToolbarFlagFunction('enable-interactive-icon', false);
 export const enableOptimizeIcon = createToolbarFlagFunction('enable-optimize-icon', false);
+export const enableSessionReplay = createToolbarFlagFunction('toolbar-enable-session-replay', false);
+export const useNewToolbarDesign = createToolbarFlagFunction('use-new-toolbar-design', false);
