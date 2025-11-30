@@ -1,6 +1,7 @@
 import { createContext, useContext, useEffect, useState, type ReactNode } from 'react';
 import type { LDClient, LDContext } from 'launchdarkly-js-client-sdk';
 import { setToolbarFlagClient } from '../../../../../flags';
+import { enableSessionReplay } from '../../../../../flags/toolbarFlags';
 
 export interface AuthState {
   authenticated: boolean;
@@ -97,7 +98,10 @@ export function InternalClientProvider({
         setLoading(true);
         setError(null);
 
-        const { initialize } = await import('launchdarkly-js-client-sdk');
+        const [{ initialize }, SessionReplay] = await Promise.all([
+          import('launchdarkly-js-client-sdk'),
+          import('@launchdarkly/session-replay').then((m) => m.default),
+        ]);
 
         const context = initialContext || {
           kind: 'user',
@@ -112,8 +116,23 @@ export function InternalClientProvider({
               ...(baseUrl && { baseUrl }),
               ...(streamUrl && { streamUrl }),
               ...(eventsUrl && { eventsUrl }),
+              // Add Session Replay plugin with manual start
+              observabilityPlugins: [
+                new SessionReplay({
+                  manualStart: true,
+                  privacySetting: 'default',
+                }),
+              ],
             }
-          : undefined;
+          : {
+              // Add Session Replay plugin with manual start
+              observabilityPlugins: [
+                new SessionReplay({
+                  manualStart: true,
+                  privacySetting: 'default',
+                }),
+              ],
+            };
 
         const ldClient = initialize(clientSideId, context, options);
         clientToCleanup = ldClient;
@@ -148,6 +167,46 @@ export function InternalClientProvider({
       }
     };
   }, [clientSideId, initialContext, baseUrl, streamUrl, eventsUrl]); // Re-initialize if any config changes
+
+  // Monitor Session Replay flag and start/stop recording accordingly
+  useEffect(() => {
+    if (!client) {
+      return;
+    }
+
+    const checkAndUpdateSessionReplay = async () => {
+      try {
+        const shouldEnableReplay = enableSessionReplay();
+
+        if (shouldEnableReplay) {
+          const { LDRecord } = await import('@launchdarkly/session-replay');
+          LDRecord.start({ forceNew: false, silent: false });
+          console.log('[InternalClientProvider] Session Replay started');
+        } else {
+          const { LDRecord } = await import('@launchdarkly/session-replay');
+          LDRecord.stop();
+          console.log('[InternalClientProvider] Session Replay stopped');
+        }
+      } catch (err) {
+        console.error('[InternalClientProvider] Failed to control Session Replay:', err);
+      }
+    };
+
+    // Check initial state
+    checkAndUpdateSessionReplay();
+
+    // Listen for flag changes
+    const flagKey = 'toolbar-enable-session-replay';
+    const handleFlagChange = () => {
+      checkAndUpdateSessionReplay();
+    };
+
+    client.on(`change:${flagKey}`, handleFlagChange);
+
+    return () => {
+      client.off(`change:${flagKey}`, handleFlagChange);
+    };
+  }, [client]);
 
   const value: InternalClientContextValue = {
     client,
