@@ -20,6 +20,7 @@ import { FilterOptions } from '../components/FilterOptions/FilterOptions';
 import { VIRTUALIZATION } from '../constants';
 import { EASING } from '../constants/animations';
 import type { LocalFlag } from '../context';
+import { serializeUrlOverrides } from '../../../utils/urlOverrides';
 
 import * as sharedStyles from './FlagDevServerTabContent.css';
 import { IFlagOverridePlugin } from '../../../../types';
@@ -167,6 +168,22 @@ function FlagSdkOverrideTabContentInner(props: FlagSdkOverrideTabContentInnerPro
     setActiveFilters(new Set([FILTER_MODES.ALL]));
   };
 
+  const handleShareUrl = useCallback(() => {
+    const currentOverrides = flagOverridePlugin.getAllOverrides();
+    const shareUrl = serializeUrlOverrides(currentOverrides);
+
+    // Copy to clipboard
+    navigator.clipboard
+      .writeText(shareUrl)
+      .then(() => {
+        console.log('Share URL copied to clipboard:', shareUrl);
+        analytics.trackFlagOverride('*', { count: Object.keys(currentOverrides).length }, 'share_url');
+      })
+      .catch((error) => {
+        console.error('Failed to copy share URL:', error);
+      });
+  }, [flagOverridePlugin, analytics]);
+
   const handleToggleStarred = useCallback(
     (flagKey: string) => {
       const wasPreviouslyStarred = isStarred(flagKey);
@@ -251,6 +268,7 @@ function FlagSdkOverrideTabContentInner(props: FlagSdkOverrideTabContentInnerPro
             starredCount={starredCount}
             onClearOverrides={handleClearAllOverrides}
             onClearStarred={handleClearAllStarred}
+            onShareUrl={handleShareUrl}
             isLoading={isLoading}
           />
 

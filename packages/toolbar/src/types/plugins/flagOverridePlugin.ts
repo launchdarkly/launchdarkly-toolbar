@@ -7,6 +7,7 @@ import type {
   LDPluginEnvironmentMetadata,
 } from 'launchdarkly-js-client-sdk';
 import type { IFlagOverridePlugin } from './plugins';
+import { parseUrlOverrides } from '../../core/utils/urlOverrides';
 
 /**
  * Configuration options for the FlagOverridePlugin
@@ -22,6 +23,7 @@ export class FlagOverridePlugin implements IFlagOverridePlugin {
   private debugOverride?: LDDebugOverride;
   private config: Required<FlagOverridePluginConfig>;
   private ldClient: LDClient | null = null;
+  private urlOverrides: LDFlagSet = {};
 
   constructor(config: FlagOverridePluginConfig = {}) {
     this.config = {
@@ -54,11 +56,12 @@ export class FlagOverridePlugin implements IFlagOverridePlugin {
 
   /**
    * Called when the debug interface is available
-   * Loads any existing overrides from localStorage
+   * Loads any existing overrides from localStorage and URL parameters
    */
   registerDebug(debugOverride: LDDebugOverride): void {
     this.debugOverride = debugOverride;
     this.loadExistingOverrides();
+    this.loadUrlOverrides();
   }
 
   private loadExistingOverrides(): void {
@@ -87,6 +90,27 @@ export class FlagOverridePlugin implements IFlagOverridePlugin {
       }
     } catch (error) {
       console.error('flagOverridePlugin: Error loading existing overrides:', error);
+    }
+  }
+
+  private loadUrlOverrides(): void {
+    if (!this.debugOverride) return;
+
+    try {
+      this.urlOverrides = parseUrlOverrides();
+
+      // Apply URL overrides to the SDK (these take precedence over localStorage)
+      Object.entries(this.urlOverrides).forEach(([flagKey, value]) => {
+        if (this.debugOverride) {
+          this.debugOverride.setOverride(flagKey, value);
+        }
+      });
+
+      if (Object.keys(this.urlOverrides).length > 0) {
+        console.log('flagOverridePlugin: Loaded URL overrides for flags:', Object.keys(this.urlOverrides));
+      }
+    } catch (error) {
+      console.error('flagOverridePlugin: Error loading URL overrides:', error);
     }
   }
 
@@ -160,7 +184,7 @@ export class FlagOverridePlugin implements IFlagOverridePlugin {
   }
 
   /**
-   * Returns all currently active feature flag overrides
+   * Returns all currently active feature flag overrides (both localStorage and URL)
    * @returns Record of flag keys to their override values
    */
   getAllOverrides(): LDFlagSet {
@@ -175,6 +199,23 @@ export class FlagOverridePlugin implements IFlagOverridePlugin {
       console.error('flagOverridePlugin: Failed to get overrides:', error);
       return {};
     }
+  }
+
+  /**
+   * Returns only the URL-based overrides
+   * @returns Record of flag keys to their URL override values
+   */
+  getUrlOverrides(): LDFlagSet {
+    return { ...this.urlOverrides };
+  }
+
+  /**
+   * Checks if a specific flag override came from the URL
+   * @param flagKey - The key of the flag to check
+   * @returns True if the override came from the URL
+   */
+  isUrlOverride(flagKey: string): boolean {
+    return flagKey in this.urlOverrides;
   }
 
   /**

@@ -20,6 +20,7 @@ import {
 import { FilterOptions } from '../components/FilterOptions/FilterOptions';
 import { VIRTUALIZATION } from '../constants';
 import { LocalObjectFlagControlListItem } from '../components/LocalObjectFlagControlListItem';
+import { serializeUrlOverrides } from '../../../utils/urlOverrides';
 
 import * as styles from './FlagDevServerTabContent.css';
 
@@ -183,6 +184,29 @@ export function FlagDevServerTabContent(props: FlagDevServerTabContentProps) {
     [isStarred, toggleStarred, analytics],
   );
 
+  const handleShareUrl = useCallback(() => {
+    // Get all overridden flags
+    const overrides: Record<string, any> = {};
+    Object.entries(flags).forEach(([flagKey, flag]) => {
+      if (flag.isOverridden) {
+        overrides[flagKey] = flag.currentValue;
+      }
+    });
+
+    const shareUrl = serializeUrlOverrides(overrides);
+
+    // Copy to clipboard
+    navigator.clipboard
+      .writeText(shareUrl)
+      .then(() => {
+        console.log('Share URL copied to clipboard:', shareUrl);
+        analytics.trackFlagOverride('*', { count: Object.keys(overrides).length }, 'share_url');
+      })
+      .catch((error) => {
+        console.error('Failed to copy share URL:', error);
+      });
+  }, [flags, analytics]);
+
   const handleHeightChange = useCallback(
     (index: number, height: number) => {
       if (height > VIRTUALIZATION.ITEM_HEIGHT) {
@@ -223,6 +247,7 @@ export function FlagDevServerTabContent(props: FlagDevServerTabContentProps) {
             starredCount={starredCount}
             onClearOverrides={onRemoveAllOverrides}
             onClearStarred={onClearAllStarred}
+            onShareUrl={handleShareUrl}
             isLoading={state.isLoading}
           />
 

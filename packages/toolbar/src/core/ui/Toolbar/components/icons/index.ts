@@ -15,3 +15,4 @@ export { StarOutlineIcon } from './StarOutlineIcon';
 export { PersonPassword } from './PersonPassword';
 export { ThumbUpIcon } from './ThumbUpIcon';
 export { ThumbDownIcon } from './ThumbDownIcon';
+export { ShareIcon } from './ShareIcon';
