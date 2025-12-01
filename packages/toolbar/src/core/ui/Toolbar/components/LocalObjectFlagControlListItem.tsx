@@ -84,7 +84,7 @@ export function LocalObjectFlagControlListItem(props: LocalObjectFlagControlList
         transform: `translateY(${start}px)`,
         borderBottom: '1px solid var(--lp-color-gray-700)',
       }}
-      >
+    >
       <ListItem className={sharedStyles.flagListItemBlock}>
         <div className={styles.flagContentWrapper}>
           <div className={sharedStyles.flagHeader}>
