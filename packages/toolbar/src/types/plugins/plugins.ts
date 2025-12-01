@@ -27,6 +27,19 @@ export interface IFlagOverridePlugin extends LDPlugin, LDDebugOverride {
   getAllOverrides(): LDFlagSet;
 
   /**
+   * Returns only the URL-based overrides
+   * @returns Record of flag keys to their URL override values
+   */
+  getUrlOverrides(): LDFlagSet;
+
+  /**
+   * Checks if a specific flag override came from the URL
+   * @param flagKey - The key of the flag to check
+   * @returns True if the override came from the URL
+   */
+  isUrlOverride(flagKey: string): boolean;
+
+  /**
    * Returns the LaunchDarkly client instance
    * @returns The LaunchDarkly client with allFlags method
    */

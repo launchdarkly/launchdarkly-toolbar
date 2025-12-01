@@ -46,3 +46,9 @@ export const statusText = style({
   color: 'var(--lp-color-gray-400)',
   fontWeight: 400,
 });
+
+export const buttonGroup = style({
+  display: 'flex',
+  gap: '8px',
+  alignItems: 'center',
+});
