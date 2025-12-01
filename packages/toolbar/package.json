@@ -96,14 +96,14 @@
     "jsdom": "^27.2.0",
     "launchdarkly-js-client-sdk": "^3.9.0",
     "motion": "^12.19.2",
-    "oxlint": "^1.29.0",
+    "oxlint": "^1.30.0",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
     "storybook": "^10.0.8",
     "storybook-addon-rslib": "^2.1.6",
     "storybook-react-rsbuild": "^2.1.6",
     "typescript": "^5.9.3",
-    "vitest": "^4.0.13"
+    "vitest": "^4.0.14"
   },
   "peerDependencies": {
     "launchdarkly-js-client-sdk": ">=3.9.0 <4.0.0",
@@ -111,6 +111,7 @@
     "react-dom": "^18.0.0 || ^19.0.0"
   },
   "publishConfig": {
-    "access": "public"
+    "access": "public",
+    "provenance": true
   }
 }
