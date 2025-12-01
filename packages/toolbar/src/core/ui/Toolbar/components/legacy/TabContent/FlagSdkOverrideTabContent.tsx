@@ -23,6 +23,7 @@ import { LocalObjectFlagControlListItem } from '../LocalObjectFlagControlListIte
 import { CopyableText } from '../../CopyableText';
 
 import * as sharedStyles from './FlagDevServerTabContent.css';
+import { serializeUrlOverrides } from '../../../../../utils/urlOverrides';
 
 interface FlagSdkOverrideTabContentInnerProps {
   flagOverridePlugin: IFlagOverridePlugin;
@@ -197,6 +198,22 @@ function FlagSdkOverrideTabContentInner(props: FlagSdkOverrideTabContentInnerPro
     setActiveFilters(new Set([FILTER_MODES.ALL]));
   };
 
+  const handleShareUrl = useCallback(() => {
+    const currentOverrides = flagOverridePlugin.getAllOverrides();
+    const shareUrl = serializeUrlOverrides(currentOverrides);
+
+    // Copy to clipboard
+    navigator.clipboard
+      .writeText(shareUrl)
+      .then(() => {
+        console.log('Share URL copied to clipboard:', shareUrl);
+        analytics.trackFlagOverride('*', { count: Object.keys(currentOverrides).length }, 'share_url');
+      })
+      .catch((error) => {
+        console.error('Failed to copy share URL:', error);
+      });
+  }, [flagOverridePlugin, analytics]);
+
   const renderFlagControl = (flag: LocalFlag) => {
     const handleOverride = (value: any) => handleSetOverride(flag.key, value);
 
@@ -259,6 +276,7 @@ function FlagSdkOverrideTabContentInner(props: FlagSdkOverrideTabContentInnerPro
             starredCount={starredCount}
             onClearOverrides={handleClearAllOverrides}
             onClearStarred={handleClearAllStarred}
+            onShareUrl={handleShareUrl}
             isLoading={isLoading}
           />
 

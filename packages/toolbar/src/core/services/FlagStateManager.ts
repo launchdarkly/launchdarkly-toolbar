@@ -1,14 +1,28 @@
 import { DevServerClient } from './DevServerClient';
 import { EnhancedFlag } from '../types/devServer';
 import { ApiFlag, ApiVariation } from '../ui/Toolbar/types/ldApi';
+import { parseUrlOverrides } from '../utils/urlOverrides';
 
 export class FlagStateManager {
   private devServerClient: DevServerClient;
   private listeners: Set<(flags: Record<string, EnhancedFlag>) => void> = new Set();
   private apiFlags: ApiFlag[] = [];
+  private urlOverrides: Record<string, any> = {};
 
   constructor(devServerClient: DevServerClient) {
     this.devServerClient = devServerClient;
+    this.loadUrlOverrides();
+  }
+
+  private loadUrlOverrides(): void {
+    try {
+      this.urlOverrides = parseUrlOverrides();
+      if (Object.keys(this.urlOverrides).length > 0) {
+        console.log('FlagStateManager: Loaded URL overrides for flags:', Object.keys(this.urlOverrides));
+      }
+    } catch (error) {
+      console.error('FlagStateManager: Error loading URL overrides:', error);
+    }
   }
 
   async getEnhancedFlags(): Promise<Record<string, EnhancedFlag>> {
@@ -25,18 +39,28 @@ export class FlagStateManager {
     // Process all flags from the dev server
     Object.entries(devServerData.flagsState).forEach(([flagKey, flagState]) => {
       const apiFlag = apiFlagsMap.get(flagKey);
-      const override = devServerData.overrides[flagKey];
+      const devServerOverride = devServerData.overrides[flagKey];
+      const urlOverride = this.urlOverrides[flagKey];
       const variations = devServerData.availableVariations[flagKey] || [];
 
-      // Current value is override if exists, otherwise original value
-      const currentValue = override ? override.value : flagState.value;
+      // Priority: URL override > dev server override > original value
+      let currentValue = flagState.value;
+      let isOverridden = false;
+
+      if (urlOverride !== undefined) {
+        currentValue = urlOverride;
+        isOverridden = true;
+      } else if (devServerOverride) {
+        currentValue = devServerOverride.value;
+        isOverridden = true;
+      }
 
       enhancedFlags[flagKey] = {
         key: flagKey,
         // Use API flag name if available, otherwise format the key
         name: apiFlag?.name || this.formatFlagName(flagKey),
         currentValue,
-        isOverridden: !!override,
+        isOverridden,
         originalValue: flagState.value,
         availableVariations: variations,
         type: this.determineFlagType(variations, currentValue),
@@ -89,6 +113,23 @@ export class FlagStateManager {
 
   setApiFlags(apiFlags: ApiFlag[]): void {
     this.apiFlags = apiFlags;
+  }
+
+  /**
+   * Returns only the URL-based overrides
+   * @returns Record of flag keys to their URL override values
+   */
+  getUrlOverrides(): Record<string, any> {
+    return { ...this.urlOverrides };
+  }
+
+  /**
+   * Checks if a specific flag override came from the URL
+   * @param flagKey - The key of the flag to check
+   * @returns True if the override came from the URL
+   */
+  isUrlOverride(flagKey: string): boolean {
+    return flagKey in this.urlOverrides;
   }
 
   subscribe(listener: (flags: Record<string, EnhancedFlag>) => void): () => void {

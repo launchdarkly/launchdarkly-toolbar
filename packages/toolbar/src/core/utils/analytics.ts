@@ -160,7 +160,7 @@ export class ToolbarAnalytics {
   /**
    * Track flag override events
    */
-  trackFlagOverride(flagKey: string, value: unknown, action: 'set' | 'remove' | 'clear_all'): void {
+  trackFlagOverride(flagKey: string, value: unknown, action: 'set' | 'remove' | 'clear_all' | 'share_url'): void {
     this.track(EVENTS.TOGGLE_FLAG, {
       flagKey,
       value: action === 'remove' ? null : value,
