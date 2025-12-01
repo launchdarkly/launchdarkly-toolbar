@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.1.0-beta.1](https://github.com/launchdarkly/launchdarkly-toolbar/compare/2.0.0-beta.1...2.1.0-beta.1) (2025-11-26)
+
+
+### Features
+
+* [REL-10578] Copy flag key to clipboard ([#316](https://github.com/launchdarkly/launchdarkly-toolbar/issues/316)) ([7b1d4a4](https://github.com/launchdarkly/launchdarkly-toolbar/commit/7b1d4a4e0283fb8c22c0d65642913ed856ad7625))
+
 ## [2.0.0-beta.1](https://github.com/launchdarkly/launchdarkly-toolbar/compare/1.6.0...2.0.0-beta.1) (2025-11-24)
 
 
