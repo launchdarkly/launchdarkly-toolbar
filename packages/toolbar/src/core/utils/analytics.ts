@@ -14,6 +14,7 @@ const EVENTS = {
   TOGGLE: 'toggle',
   TOGGLE_FLAG: 'toggle.flag',
   OPEN_FLAG_DEEPLINK: 'open.flag.deeplink',
+  CLEAR_EVENTS: 'clear.events',
   EVENT_CLICK: 'event.click',
   RELOAD_ON_FLAG_CHANGE_TOGGLE: 'reload.on.flag.change.toggle',
   STAR_FLAG: 'star.flag',
@@ -175,6 +176,13 @@ export class ToolbarAnalytics {
       flagKey,
       baseUrl,
     });
+  }
+
+  /**
+   * Track clearing events
+   */
+  trackClearEvents(): void {
+    this.track(EVENTS.CLEAR_EVENTS, {});
   }
 
   /**

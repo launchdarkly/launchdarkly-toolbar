@@ -1,6 +1,6 @@
 import { describe, test, expect, vi, beforeEach } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
-import { Select, SelectOption } from '../ui/Toolbar/components/Select';
+import { Select, SelectOption } from '../ui/Select/Select';
 import '@testing-library/jest-dom/vitest';
 import React from 'react';
 import ReactMountContext from '../context/ReactMountContext';

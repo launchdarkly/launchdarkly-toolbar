@@ -1,5 +1,14 @@
 // Main toolbar types
-export type TabId = 'flag-sdk' | 'flag-dev-server' | 'events' | 'settings';
+export type TabId =
+  | 'flag-sdk'
+  | 'flag-dev-server'
+  | 'events'
+  | 'settings'
+  | 'flags'
+  | 'monitoring'
+  | 'interactive'
+  | 'ai'
+  | 'optimize';
 export type ActiveTabId = TabId | undefined;
 
 export const TAB_ORDER: readonly TabId[] = ['flag-sdk', 'flag-dev-server', 'events', 'settings'] as const;
@@ -8,6 +17,7 @@ export type ToolbarMode = 'dev-server' | 'sdk';
 
 export const DEV_SERVER_TABS: readonly TabId[] = ['flag-dev-server', 'events', 'settings'] as const;
 export const SDK_MODE_TABS: readonly TabId[] = ['flag-sdk', 'events', 'settings'] as const;
+export const NEW_TOOLBAR_TABS: readonly TabId[] = ['flags', 'monitoring', 'interactive', 'settings'] as const;
 
 export function getToolbarMode(devServerUrl?: string): ToolbarMode {
   return devServerUrl ? 'dev-server' : 'sdk';
@@ -50,7 +60,12 @@ export function getDefaultActiveTab(
   mode: ToolbarMode,
   hasFlagOverridePlugin?: boolean,
   hasEventInterceptionPlugin?: boolean,
+  useNewToolbarDesign?: boolean,
 ): TabId {
+  if (useNewToolbarDesign) {
+    return 'flags';
+  }
+
   if (mode === 'dev-server') {
     return 'flag-dev-server';
   }
