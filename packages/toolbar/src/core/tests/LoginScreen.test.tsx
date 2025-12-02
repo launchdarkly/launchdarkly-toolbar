@@ -5,24 +5,24 @@ import '@testing-library/jest-dom/vitest';
 import React from 'react';
 
 // Mock the AuthProvider
-vi.mock('../ui/Toolbar/context/AuthProvider', () => ({
+vi.mock('../ui/Toolbar/context/api/AuthProvider', () => ({
   useAuthContext: vi.fn(),
 }));
 
 // Mock the ToolbarUIProvider
-vi.mock('../ui/Toolbar/context/ToolbarUIProvider', () => ({
+vi.mock('../ui/Toolbar/context/state/ToolbarUIProvider', () => ({
   useToolbarUIContext: vi.fn(),
 }));
 
 // Mock the AnalyticsProvider
-vi.mock('../ui/Toolbar/context/AnalyticsProvider', () => ({
+vi.mock('../ui/Toolbar/context/telemetry/AnalyticsProvider', () => ({
   useAnalytics: vi.fn().mockReturnValue({
     trackLoginCancelled: vi.fn(),
   }),
 }));
 
-import { useAuthContext } from '../ui/Toolbar/context/AuthProvider';
-import { useToolbarUIContext } from '../ui/Toolbar/context/ToolbarUIProvider';
+import { useAuthContext } from '../ui/Toolbar/context/api/AuthProvider';
+import { useToolbarUIContext } from '../ui/Toolbar/context/state/ToolbarUIProvider';
 
 describe('LoginScreen', () => {
   const mockOnClose = vi.fn();

@@ -1,5 +1,5 @@
 import React, { createContext, Dispatch, type SetStateAction, useContext, useEffect, useState } from 'react';
-import { useAnalytics } from './AnalyticsProvider';
+import { useAnalytics } from '../telemetry/AnalyticsProvider';
 
 type SearchContextType = {
   searchTerm: string;

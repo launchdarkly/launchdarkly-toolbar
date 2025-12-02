@@ -1,9 +1,9 @@
 import { createContext, useCallback, useContext, useEffect, useState } from 'react';
-import { useProjectContext } from './ProjectProvider';
 import { useApi } from './ApiProvider';
 import { useAuthContext } from './AuthProvider';
-import { ApiFlag, FlagsResponse } from '../types/ldApi';
-import { useActiveTabContext } from './ActiveTabProvider';
+import { ApiFlag, FlagsResponse } from '../../types/ldApi';
+import { useActiveTabContext } from '../state';
+import { useProjectContext } from './ProjectProvider';
 
 type FlagsContextType = {
   flags: ApiFlag[];

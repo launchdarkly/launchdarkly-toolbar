@@ -7,8 +7,8 @@ import {
   StringNumberFlagControl,
 } from '../../ui/Toolbar/components/new/FeatureFlags/FlagControls';
 import { NormalizedFlag } from '../../ui/Toolbar/components/new/FeatureFlags/FlagList';
-import { AnalyticsProvider } from '../../ui/Toolbar/context/AnalyticsProvider';
-import { InternalClientProvider } from '../../ui/Toolbar/context/InternalClientProvider';
+import { AnalyticsProvider } from '../../ui/Toolbar/context/telemetry/AnalyticsProvider';
+import { InternalClientProvider } from '../../ui/Toolbar/context/telemetry/InternalClientProvider';
 import ReactMountContext from '../../context/ReactMountContext';
 import '@testing-library/jest-dom/vitest';
 import React from 'react';

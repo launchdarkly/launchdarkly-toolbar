@@ -1,6 +1,6 @@
 import { createContext, Dispatch, SetStateAction, useCallback, useContext, useEffect, useState } from 'react';
 import { getErrorTopic, getResponseTopic, IFRAME_COMMANDS, IFRAME_EVENTS, useIFrameContext } from './IFrameProvider';
-import { useAnalytics } from './AnalyticsProvider';
+import { useAnalytics } from '../telemetry';
 
 type AuthProviderType = {
   authenticated: boolean;

@@ -54,9 +54,32 @@ vi.mock('../services/FlagStateManager', () => {
 // Create mock for getProjects that can be overridden in tests
 const mockGetProjects = vi.fn().mockResolvedValue([{ key: 'test-project', name: 'Test Project' }]);
 const mockProjectKey = { current: 'test-project' };
+const mockGetProjectFlags = vi.fn().mockResolvedValue({ items: [] });
 
-// Mock the ProjectProvider
-vi.mock('../ui/Toolbar/context/ProjectProvider', () => ({
+// Mock the api module which exports all API-related context
+vi.mock('../ui/Toolbar/context/api', () => ({
+  useProjectContext: () => ({
+    projectKey: mockProjectKey.current,
+    projects: [{ key: 'test-project', name: 'Test Project' }],
+    getProjects: mockGetProjects,
+    loading: false,
+    error: null,
+  }),
+  useFlagsContext: () => ({
+    flags: [],
+    loading: false,
+    getProjectFlags: mockGetProjectFlags,
+  }),
+  useApi: () => ({
+    apiReady: true,
+    getFlag: vi.fn(),
+    getProjects: vi.fn(),
+    getFlags: vi.fn(),
+  }),
+}));
+
+// Also mock the individual files for direct imports
+vi.mock('../ui/Toolbar/context/api/ProjectProvider', () => ({
   ProjectProvider: ({ children }: { children: React.ReactNode }) => <>{children}</>,
   useProjectContext: () => ({
     projectKey: mockProjectKey.current,
@@ -67,11 +90,7 @@ vi.mock('../ui/Toolbar/context/ProjectProvider', () => ({
   }),
 }));
 
-// Create mock for getProjectFlags that we can track
-const mockGetProjectFlags = vi.fn().mockResolvedValue({ items: [] });
-
-// Mock the FlagsProvider
-vi.mock('../ui/Toolbar/context/FlagsProvider', () => ({
+vi.mock('../ui/Toolbar/context/api/FlagsProvider', () => ({
   FlagsProvider: ({ children }: { children: React.ReactNode }) => <>{children}</>,
   useFlagsContext: () => ({
     flags: [],
@@ -80,8 +99,7 @@ vi.mock('../ui/Toolbar/context/FlagsProvider', () => ({
   }),
 }));
 
-// Mock the ApiProvider
-vi.mock('../ui/Toolbar/context/ApiProvider', () => ({
+vi.mock('../ui/Toolbar/context/api/ApiProvider', () => ({
   ApiProvider: ({ children }: { children: React.ReactNode }) => <>{children}</>,
   useApi: () => ({
     apiReady: true,

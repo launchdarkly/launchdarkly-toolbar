@@ -1,22 +1,19 @@
-import React, { forwardRef } from 'react';
+import React, { forwardRef, useEffect, useState } from 'react';
 import { motion } from 'motion/react';
+
+import { useActiveTabContext, useAuthContext, useToolbarState } from '../../context';
 import { ToolbarHeader } from './Header/ToolbarHeader';
 import { IconBar } from './IconBar/IconBar';
 import { TabBar } from './TabBar';
 import { ContentRenderer } from './ContentRenderer';
 import { ActiveSubtabProvider } from './context/ActiveSubtabProvider';
-import { useActiveTabContext } from '../../context/ActiveTabProvider';
-import * as styles from './ExpandedToolbarContent.module.css';
-import { NEW_TOOLBAR_TABS, TabId } from '../../types/toolbar';
-import { useEffect } from 'react';
-import { useAuthContext } from '../../context/AuthProvider';
-import { useToolbarState } from '../../context/ToolbarStateProvider';
-import { useState } from 'react';
+import { TabSearchProvider } from './context/TabSearchProvider';
 import { AuthenticationModal } from '../AuthenticationModal/AuthenticationModal';
 import { LoginScreen } from '../LoginScreen/LoginScreen';
-import * as toolbarStyles from '../../LaunchDarklyToolbar.css';
+import { NEW_TOOLBAR_TABS, TabId } from '../../types/toolbar';
 import { ANIMATION_CONFIG } from '../../constants';
-import { TabSearchProvider } from './context/TabSearchProvider';
+import * as styles from './ExpandedToolbarContent.module.css';
+import * as toolbarStyles from '../../LaunchDarklyToolbar.css';
 
 interface ExpandedToolbarContentProps {
   onClose?: () => void;

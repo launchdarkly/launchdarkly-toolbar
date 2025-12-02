@@ -1,8 +1,8 @@
 import { render, screen } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { GeneralSettings } from '../../ui/Toolbar/components/new/Settings/GeneralSettings';
-import { AnalyticsProvider } from '../../ui/Toolbar/context/AnalyticsProvider';
-import { InternalClientProvider } from '../../ui/Toolbar/context/InternalClientProvider';
+import { AnalyticsProvider } from '../../ui/Toolbar/context/telemetry/AnalyticsProvider';
+import { InternalClientProvider } from '../../ui/Toolbar/context/telemetry/InternalClientProvider';
 import '@testing-library/jest-dom/vitest';
 import React from 'react';
 
@@ -19,7 +19,7 @@ vi.mock('../../ui/Toolbar/components/new/context/TabSearchProvider', () => ({
 }));
 
 // Mock the ToolbarStateProvider
-vi.mock('../../ui/Toolbar/context/ToolbarStateProvider', () => ({
+vi.mock('../../ui/Toolbar/context/state/ToolbarStateProvider', () => ({
   useToolbarState: () => ({
     isAutoCollapseEnabled: false,
     reloadOnFlagChangeIsEnabled: true,
@@ -44,7 +44,7 @@ vi.mock('../../ui/Toolbar/context/DevServerProvider', () => ({
 }));
 
 // Mock the ToolbarUIProvider
-vi.mock('../../ui/Toolbar/context/ToolbarUIProvider', () => ({
+vi.mock('../../ui/Toolbar/context/state/ToolbarUIProvider', () => ({
   useToolbarUIContext: () => ({
     position: 'bottom-right',
     handlePositionChange: vi.fn(),

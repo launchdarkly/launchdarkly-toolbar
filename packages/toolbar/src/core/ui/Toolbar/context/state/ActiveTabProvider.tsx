@@ -1,5 +1,5 @@
 import { createContext, useContext, useState, useCallback } from 'react';
-import type { ActiveTabId } from '../types/toolbar';
+import type { ActiveTabId } from '../../types';
 
 type ActiveTabContextType = {
   activeTab: ActiveTabId;

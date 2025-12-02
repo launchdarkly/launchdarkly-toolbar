@@ -1,8 +1,8 @@
+import { useActiveTabContext } from '../../context';
+import { useActiveSubtabContext } from './context/ActiveSubtabProvider';
 import { SettingsContent } from './Settings/SettingsContent';
 import { FlagListContent } from './FeatureFlags/FlagListContent';
 import { EventsContent } from './Monitoring/EventsContent';
-import { useActiveTabContext } from '../../context/ActiveTabProvider';
-import { useActiveSubtabContext } from './context/ActiveSubtabProvider';
 
 // Placeholder content components - to be implemented later
 function ContextContent() {

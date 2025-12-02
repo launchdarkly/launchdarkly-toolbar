@@ -1,5 +1,5 @@
 import { createContext, useContext, ReactNode } from 'react';
-import { IEventInterceptionPlugin, IFlagOverridePlugin } from '../../../../types';
+import { IEventInterceptionPlugin, IFlagOverridePlugin } from '../../../../../types';
 
 interface PluginsContextValue {
   baseUrl: string;

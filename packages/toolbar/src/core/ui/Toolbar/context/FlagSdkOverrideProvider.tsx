@@ -1,6 +1,6 @@
 import { IFlagOverridePlugin } from '../../../../types';
 import { createContext, useContext, useState, useEffect, useCallback } from 'react';
-import { useFlagsContext } from './FlagsProvider';
+import { useFlagsContext } from './api/FlagsProvider';
 import { ApiFlag, ApiVariation } from '../types/ldApi';
 
 interface LocalFlag {

@@ -1,6 +1,6 @@
 import { useEffect, useMemo } from 'react';
-import { useProjectContext } from '../../../context/ProjectProvider';
-import { useAnalytics } from '../../../context/AnalyticsProvider';
+import { useProjectContext } from '../../../context/api';
+import { useAnalytics } from '../../../context/telemetry/AnalyticsProvider';
 import { Select } from '../../../../Select/Select';
 
 export function ProjectSelector() {

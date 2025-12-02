@@ -1,7 +1,7 @@
 import { createContext, useCallback, useContext, useEffect, useState } from 'react';
 import { useApi } from './ApiProvider';
-import { TOOLBAR_STORAGE_KEYS } from '../utils/localStorage';
-import { ApiProject, ProjectsResponse } from '../types/ldApi';
+import { TOOLBAR_STORAGE_KEYS } from '../../utils/localStorage';
+import { ApiProject, ProjectsResponse } from '../../types/ldApi';
 
 const STORAGE_KEY = TOOLBAR_STORAGE_KEYS.PROJECT;
 

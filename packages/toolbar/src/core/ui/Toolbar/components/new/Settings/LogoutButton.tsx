@@ -1,5 +1,5 @@
-import { useAuthContext } from '../../../context/AuthProvider';
-import { useAnalytics } from '../../../context/AnalyticsProvider';
+import { useAuthContext } from '../../../context/api';
+import { useAnalytics } from '../../../context/telemetry/AnalyticsProvider';
 import * as styles from './LogoutButton.module.css';
 
 export function LogoutButton() {

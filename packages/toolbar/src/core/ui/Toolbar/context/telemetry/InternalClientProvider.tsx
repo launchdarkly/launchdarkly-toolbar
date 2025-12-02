@@ -1,6 +1,6 @@
 import { createContext, useContext, useEffect, useState, type ReactNode } from 'react';
 import type { LDClient, LDContext } from 'launchdarkly-js-client-sdk';
-import { setToolbarFlagClient } from '../../../../flags/createToolbarFlagFunction';
+import { setToolbarFlagClient } from '../../../../../flags';
 
 export interface AuthState {
   authenticated: boolean;

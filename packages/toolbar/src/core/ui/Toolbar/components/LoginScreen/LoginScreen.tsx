@@ -1,13 +1,13 @@
 import { motion } from 'motion/react';
 
-import { useAuthContext } from '../../context/AuthProvider';
+import { useAuthContext } from '../../context/api';
 import * as styles from './LoginScreen.css';
 import { IconButton } from '../../../Buttons/IconButton';
 import { ChevronUpIcon } from '../icons/ChevronUpIcon';
 import { ChevronDownIcon } from '../icons/ChevronDownIcon';
-import { useToolbarUIContext } from '../../context/ToolbarUIProvider';
+import { useToolbarUIContext } from '../../context/state';
 import { LaunchDarklyLogo } from '../icons/LaunchDarklyLogo';
-import { useAnalytics } from '../../context/AnalyticsProvider';
+import { useAnalytics } from '../../context/telemetry/AnalyticsProvider';
 
 interface LoginScreenProps {
   onClose: () => void;

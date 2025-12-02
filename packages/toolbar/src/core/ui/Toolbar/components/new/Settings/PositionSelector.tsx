@@ -1,7 +1,7 @@
 import { ToolbarPosition, TOOLBAR_POSITIONS } from '../../../types/toolbar';
 import { Select, SelectOption } from '../../../../Select/Select';
-import { useToolbarUIContext } from '../../../context/ToolbarUIProvider';
-import { useAnalytics } from '../../../context/AnalyticsProvider';
+import { useToolbarUIContext } from '../../../context/state';
+import { useAnalytics } from '../../../context/telemetry/AnalyticsProvider';
 
 interface PositionSelectorProps {
   currentPosition: ToolbarPosition;

@@ -1,19 +1,17 @@
 import React, { useMemo } from 'react';
+import { Switch } from '@launchpad-ui/components';
+
+import { useAnalytics, useDevServerContext, useToolbarState, useToolbarUIContext } from '../../../context';
+import { useTabSearchContext } from '../context/TabSearchProvider';
 import { SettingsSection } from './SettingsSection';
 import { SettingsItem } from './SettingsItem';
 import { ProjectSelector } from './ProjectSelector';
 import { PositionSelector } from './PositionSelector';
 import { ConnectionStatus } from './ConnectionStatus';
 import { LogoutButton } from './LogoutButton';
-import { useDevServerContext } from '../../../context/DevServerProvider';
-import { useToolbarUIContext } from '../../../context/ToolbarUIProvider';
-import { useAnalytics } from '../../../context/AnalyticsProvider';
-import * as styles from './SettingsContent.module.css';
-import { useToolbarState } from '../../../context/ToolbarStateProvider';
-import { Switch } from '@launchpad-ui/components';
-import * as settingsItemStyles from './SettingsItem.module.css';
-import { useTabSearchContext } from '../context/TabSearchProvider';
 import { GenericHelpText } from '../../GenericHelpText';
+import * as styles from './SettingsContent.module.css';
+import * as settingsItemStyles from './SettingsItem.module.css';
 
 interface SettingItemData {
   id: string;

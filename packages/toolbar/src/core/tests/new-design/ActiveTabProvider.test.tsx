@@ -1,6 +1,6 @@
 import { renderHook, act } from '@testing-library/react';
 import { describe, it, expect } from 'vitest';
-import { ActiveTabProvider, useActiveTabContext } from '../../ui/Toolbar/context/ActiveTabProvider';
+import { ActiveTabProvider, useActiveTabContext } from '../../ui/Toolbar/context/state/ActiveTabProvider';
 import React from 'react';
 
 describe('ActiveTabProvider', () => {

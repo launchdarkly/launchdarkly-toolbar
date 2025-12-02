@@ -3,9 +3,8 @@ import type { FC, ReactNode } from 'react';
 import { DevServerClient } from '../../../services/DevServerClient';
 import { FlagStateManager } from '../../../services/FlagStateManager';
 import { LdToolbarConfig, ToolbarState } from '../../../types/devServer';
-import { useFlagsContext } from './FlagsProvider';
-import { useProjectContext } from './ProjectProvider';
-import { useApi } from './ApiProvider';
+import { useFlagsContext } from './api/FlagsProvider';
+import { useApi, useProjectContext } from './api';
 
 interface DevServerContextValue {
   state: ToolbarState;

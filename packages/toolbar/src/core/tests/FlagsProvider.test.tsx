@@ -1,30 +1,30 @@
 import { render, screen, waitFor } from '@testing-library/react';
 import { expect, test, describe, vi, beforeEach } from 'vitest';
-import { FlagsProvider, useFlagsContext } from '../ui/Toolbar/context/FlagsProvider';
+import { FlagsProvider, useFlagsContext } from '../ui/Toolbar/context/api/FlagsProvider';
 import '@testing-library/jest-dom/vitest';
 import React from 'react';
 
 // Mock the dependencies
-vi.mock('../ui/Toolbar/context/ProjectProvider', () => ({
+vi.mock('../ui/Toolbar/context/api/ProjectProvider', () => ({
   useProjectContext: vi.fn(),
 }));
 
-vi.mock('../ui/Toolbar/context/ApiProvider', () => ({
+vi.mock('../ui/Toolbar/context/api/ApiProvider', () => ({
   useApi: vi.fn(),
 }));
 
-vi.mock('../ui/Toolbar/context/AuthProvider', () => ({
+vi.mock('../ui/Toolbar/context/api/AuthProvider', () => ({
   useAuthContext: vi.fn(),
 }));
 
-vi.mock('../ui/Toolbar/context/SearchProvider', () => ({
+vi.mock('../ui/Toolbar/context/state/SearchProvider', () => ({
   useSearchContext: vi.fn(() => ({
     searchTerm: '',
     setSearchTerm: vi.fn(),
   })),
 }));
 
-vi.mock('../ui/Toolbar/context/ActiveTabProvider', () => ({
+vi.mock('../ui/Toolbar/context/state/ActiveTabProvider', () => ({
   ActiveTabProvider: ({ children }: { children: React.ReactNode }) => <>{children}</>,
   useActiveTabContext: vi.fn(() => ({
     activeTab: 'flag-sdk', // Default to flag tab active for tests
@@ -32,11 +32,11 @@ vi.mock('../ui/Toolbar/context/ActiveTabProvider', () => ({
   })),
 }));
 
-import { useProjectContext } from '../ui/Toolbar/context/ProjectProvider';
-import { useApi } from '../ui/Toolbar/context/ApiProvider';
-import { useAuthContext } from '../ui/Toolbar/context/AuthProvider';
-import { useActiveTabContext } from '../ui/Toolbar/context/ActiveTabProvider';
-import { ActiveTabProvider } from '../ui/Toolbar/context/ActiveTabProvider';
+import { useProjectContext } from '../ui/Toolbar/context/api/ProjectProvider';
+import { useApi } from '../ui/Toolbar/context/api/ApiProvider';
+import { useAuthContext } from '../ui/Toolbar/context/api/AuthProvider';
+import { useActiveTabContext } from '../ui/Toolbar/context/state/ActiveTabProvider';
+import { ActiveTabProvider } from '../ui/Toolbar/context/state/ActiveTabProvider';
 import { ApiFlag } from '../ui/Toolbar/types/ldApi';
 
 // Test component

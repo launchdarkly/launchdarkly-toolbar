@@ -1,7 +1,7 @@
 import React from 'react';
 import * as styles from './ToolbarHeader.module.css';
 import { LaunchDarklyIcon } from '../../icons/LaunchDarklyIcon';
-import { useToolbarUIContext } from '../../../context/ToolbarUIProvider';
+import { useToolbarUIContext } from '../../../context/state';
 import { ChevronUpIcon, ChevronDownIcon } from '../../icons';
 
 interface ToolbarHeaderProps {

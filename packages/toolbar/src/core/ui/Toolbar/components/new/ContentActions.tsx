@@ -1,14 +1,14 @@
 import { useCallback, useState, useMemo } from 'react';
-import { FilterTuneIcon, DeleteIcon, SearchIcon } from '../icons';
-import { useActiveTabContext } from '../../context/ActiveTabProvider';
+
+import { useActiveTabContext, usePlugins } from '../../context';
 import { useActiveSubtabContext } from './context/ActiveSubtabProvider';
-import { usePlugins } from '../../context';
-import { useEvents } from '../../hooks';
-import * as styles from './ContentActions.module.css';
-import { SearchSection } from './SearchSection';
 import { useTabSearchContext } from './context/TabSearchProvider';
+import { useEvents } from '../../hooks';
+import { FilterTuneIcon, DeleteIcon, SearchIcon } from '../icons';
+import { SearchSection } from './SearchSection';
 import { IconButton } from '../../../Buttons/IconButton';
 import { TabId } from '../../types';
+import * as styles from './ContentActions.module.css';
 
 export function ContentActions() {
   const { activeTab } = useActiveTabContext();

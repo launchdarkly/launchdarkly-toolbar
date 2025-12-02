@@ -12,15 +12,15 @@ import React, {
 } from 'react';
 
 import { useSearchContext } from './SearchProvider';
-import { useAnalytics } from './AnalyticsProvider';
+import { useAnalytics } from '../telemetry/AnalyticsProvider';
 import { useActiveTabContext } from './ActiveTabProvider';
-import { TabId, ActiveTabId, TAB_ORDER, ToolbarMode, getToolbarMode } from '../types';
+import { TabId, ActiveTabId, TAB_ORDER, ToolbarMode, getToolbarMode } from '../../types';
 import {
   saveToolbarAutoCollapse,
   loadToolbarAutoCollapse,
   loadReloadOnFlagChange,
   saveReloadOnFlagChange,
-} from '../utils/localStorage';
+} from '../../utils/localStorage';
 
 export interface ToolbarStateContextValue {
   // State values

@@ -7,7 +7,7 @@ import { FlaskIcon } from '../../icons/FlaskIcon';
 import { Tooltip } from '../Tooltip';
 import * as styles from './IconBar.module.css';
 import { enableInteractiveIcon, enableAiIcon, enableOptimizeIcon } from '../../../../../../flags/toolbarFlags';
-import { useActiveTabContext } from '../../../context/ActiveTabProvider';
+import { useActiveTabContext } from '../../../context/state';
 import { TabId } from '../../../types/toolbar';
 import { useEffect } from 'react';
 

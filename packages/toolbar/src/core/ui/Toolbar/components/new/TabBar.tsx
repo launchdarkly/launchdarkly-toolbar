@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
-import { useActiveTabContext } from '../../context/ActiveTabProvider';
+
+import { useActiveTabContext } from '../../context';
 import { useActiveSubtabContext } from './context/ActiveSubtabProvider';
 import { ContentActions } from './ContentActions';
 import { SubtabDropdown } from './SubtabDropdown';

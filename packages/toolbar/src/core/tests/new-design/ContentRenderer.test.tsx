@@ -8,8 +8,16 @@ import React from 'react';
 let mockActiveTab: any = 'flags';
 let mockActiveSubtab: any = 'flags';
 
-// Mock the context providers
-vi.mock('../../ui/Toolbar/context/ActiveTabProvider', () => ({
+// Mock the context providers - mock the state index which exports ActiveTabProvider
+vi.mock('../../ui/Toolbar/context/state', () => ({
+  useActiveTabContext: () => ({
+    activeTab: mockActiveTab,
+    setActiveTab: vi.fn(),
+  }),
+}));
+
+// Also mock the main context index since ContentRenderer imports from there
+vi.mock('../../ui/Toolbar/context', () => ({
   useActiveTabContext: () => ({
     activeTab: mockActiveTab,
     setActiveTab: vi.fn(),

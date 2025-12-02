@@ -2,13 +2,13 @@ import { render, screen, waitFor } from '@testing-library/react';
 import { expect, test, describe, vi, beforeEach } from 'vitest';
 import { ExpandedToolbarContentLegacy } from '../ui/Toolbar/components/legacy';
 import { DevServerProvider } from '../ui/Toolbar/context/DevServerProvider';
-import { ToolbarUIProvider } from '../ui/Toolbar/context/ToolbarUIProvider';
-import { SearchProvider } from '../ui/Toolbar/context/SearchProvider';
-import { AnalyticsProvider } from '../ui/Toolbar/context/AnalyticsProvider';
-import { InternalClientProvider } from '../ui/Toolbar/context/InternalClientProvider';
-import { ToolbarStateProvider } from '../ui/Toolbar/context/ToolbarStateProvider';
+import { ToolbarUIProvider } from '../ui/Toolbar/context/state/ToolbarUIProvider';
+import { SearchProvider } from '../ui/Toolbar/context/state/SearchProvider';
+import { AnalyticsProvider } from '../ui/Toolbar/context/telemetry/AnalyticsProvider';
+import { InternalClientProvider } from '../ui/Toolbar/context/telemetry/InternalClientProvider';
+import { ToolbarStateProvider } from '../ui/Toolbar/context/state/ToolbarStateProvider';
 import { StarredFlagsProvider } from '../ui/Toolbar/context/StarredFlagsProvider';
-import { PluginsProvider } from '../ui/Toolbar/context/PluginsProvider';
+import { PluginsProvider } from '../ui/Toolbar/context/state/PluginsProvider';
 import { IEventInterceptionPlugin, IFlagOverridePlugin } from '../../types';
 import '@testing-library/jest-dom/vitest';
 import React from 'react';
@@ -60,7 +60,7 @@ vi.mock('../services/FlagStateManager', () => {
 });
 
 // Mock the AuthProvider to return authenticated state
-vi.mock('../ui/Toolbar/context/AuthProvider', () => ({
+vi.mock('../ui/Toolbar/context/api/AuthProvider', () => ({
   AuthProvider: ({ children }: { children: React.ReactNode }) => <>{children}</>,
   useAuthContext: () => ({
     authenticated: true,
@@ -71,7 +71,7 @@ vi.mock('../ui/Toolbar/context/AuthProvider', () => ({
 }));
 
 // Mock the IFrameProvider
-vi.mock('../ui/Toolbar/context/IFrameProvider', () => ({
+vi.mock('../ui/Toolbar/context/api/IFrameProvider', () => ({
   IFrameProvider: ({ children }: { children: React.ReactNode }) => <>{children}</>,
   useIFrameContext: () => ({
     ref: { current: null },
@@ -80,7 +80,7 @@ vi.mock('../ui/Toolbar/context/IFrameProvider', () => ({
 }));
 
 // Mock the ProjectProvider
-vi.mock('../ui/Toolbar/context/ProjectProvider', () => ({
+vi.mock('../ui/Toolbar/context/api/ProjectProvider', () => ({
   ProjectProvider: ({ children }: { children: React.ReactNode }) => <>{children}</>,
   useProjectContext: () => ({
     projectKey: 'test-project',
@@ -92,7 +92,7 @@ vi.mock('../ui/Toolbar/context/ProjectProvider', () => ({
 }));
 
 // Mock the FlagsProvider
-vi.mock('../ui/Toolbar/context/FlagsProvider', () => ({
+vi.mock('../ui/Toolbar/context/api/FlagsProvider', () => ({
   FlagsProvider: ({ children }: { children: React.ReactNode }) => <>{children}</>,
   useFlagsContext: () => ({
     flags: {},
@@ -103,7 +103,7 @@ vi.mock('../ui/Toolbar/context/FlagsProvider', () => ({
 }));
 
 // Mock the ActiveTabProvider
-vi.mock('../ui/Toolbar/context/ActiveTabProvider', () => ({
+vi.mock('../ui/Toolbar/context/state/ActiveTabProvider', () => ({
   ActiveTabProvider: ({ children }: { children: React.ReactNode }) => <>{children}</>,
   useActiveTabContext: () => ({
     activeTab: 'settings',

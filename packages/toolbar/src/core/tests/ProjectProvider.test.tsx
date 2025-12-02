@@ -1,15 +1,15 @@
 import { render, screen, waitFor, act } from '@testing-library/react';
 import { expect, test, describe, vi, beforeEach, afterEach } from 'vitest';
-import { ProjectProvider, useProjectContext } from '../ui/Toolbar/context/ProjectProvider';
+import { ProjectProvider, useProjectContext } from '../ui/Toolbar/context/api/ProjectProvider';
 import '@testing-library/jest-dom/vitest';
 import React from 'react';
 
 // Mock the ApiProvider
-vi.mock('../ui/Toolbar/context/ApiProvider', () => ({
+vi.mock('../ui/Toolbar/context/api/ApiProvider', () => ({
   useApi: vi.fn(),
 }));
 
-import { useApi } from '../ui/Toolbar/context/ApiProvider';
+import { useApi } from '../ui/Toolbar/context/api/ApiProvider';
 
 // Test component that uses the Project context
 function TestConsumer() {
