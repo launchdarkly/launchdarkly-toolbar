@@ -11,16 +11,7 @@ import { EnhancedFlag } from '../../../../../types/devServer';
 import { LocalFlag } from '../../../context/FlagSdkOverrideProvider';
 import { GenericHelpText } from '../../GenericHelpText';
 import { usePlugins } from '../../../context/PluginsProvider.tsx';
-import { ApiVariation } from '../../../types/ldApi.ts';
-
-export interface NormalizedFlag {
-  key: string;
-  name: string;
-  isOverridden: boolean;
-  type: 'boolean' | 'multivariate' | 'string' | 'number' | 'object';
-  currentValue: any;
-  availableVariations: ApiVariation[];
-}
+import { NormalizedFlag } from './types.ts';
 
 // Dev Server Mode Component
 function DevServerFlagList() {
@@ -210,7 +201,6 @@ function SdkFlagList() {
 
   const handleHeightChange = useCallback(
     (index: number, height: number) => {
-      console.log('handleHeightChange', index, height);
       if (height > VIRTUALIZATION.ITEM_HEIGHT) {
         virtualizer.resizeItem(index, height);
       } else {

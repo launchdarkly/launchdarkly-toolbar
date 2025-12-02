@@ -202,7 +202,6 @@ export function ObjectFlagEditor(props: ObjectFlagEditorProps) {
   const { flag, isEditing, tempValue, onValueChange, onLintErrors, handleHeightChange } = props;
 
   const handleEditorHeightChange = (height: number) => {
-    console.log('handleEditorHeightChange', height);
     handleHeightChange(VIRTUALIZATION.ITEM_HEIGHT + height + 36); // 36px for padding
   };
 
