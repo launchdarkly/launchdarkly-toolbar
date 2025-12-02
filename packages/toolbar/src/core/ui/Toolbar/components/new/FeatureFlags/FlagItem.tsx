@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { motion } from 'motion/react';
 import * as styles from './FlagItem.module.css';
 import { FlagKeyWithCopy } from '../../FlagKeyWithCopy';
-import { NormalizedFlag } from './FlagList';
+import { NormalizedFlag } from './types';
 import {
   BooleanFlagControl,
   MultivariateFlagControl,
