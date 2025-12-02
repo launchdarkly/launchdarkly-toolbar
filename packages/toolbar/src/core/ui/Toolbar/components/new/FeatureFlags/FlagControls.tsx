@@ -6,7 +6,7 @@ import { deepEqual } from '../../../../../utils';
 import { Select, SelectOption } from '../../../../Select/Select';
 
 import * as styles from './FlagControls.module.css';
-import { NormalizedFlag } from './FlagList';
+import { NormalizedFlag } from './types';
 import { AnimatePresence, motion } from 'motion/react';
 import { JsonEditor } from '../../../../JsonEditor/JsonEditor';
 import { EASING, VIRTUALIZATION } from '../../../constants';

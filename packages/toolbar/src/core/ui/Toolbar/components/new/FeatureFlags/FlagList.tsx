@@ -11,7 +11,7 @@ import { EnhancedFlag } from '../../../../../types/devServer';
 import { LocalFlag } from '../../../context/FlagSdkOverrideProvider';
 import { GenericHelpText } from '../../GenericHelpText';
 import { usePlugins } from '../../../context/PluginsProvider.tsx';
-import { NormalizedFlag } from './types.ts';
+import { NormalizedFlag } from './types';
 
 // Dev Server Mode Component
 function DevServerFlagList() {
