@@ -3,6 +3,7 @@ import { LocalFlag } from '../context';
 import { LocalObjectFlagControl } from './LocalFlagControls';
 import { OverrideIndicator } from './OverrideIndicator';
 import { StarButton } from './StarButton';
+import { FlagKeyWithCopy } from './FlagKeyWithCopy';
 import { useStarredFlags } from '../context/StarredFlagsProvider';
 import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
@@ -89,9 +90,7 @@ export function LocalObjectFlagControlListItem(props: LocalObjectFlagControlList
                 </span>
                 {flag.isOverridden && <OverrideIndicator onClear={() => handleClearOverride(flag.key)} />}
               </span>
-              <span className={sharedStyles.flagKey} data-testid={`flag-key-${flag.key}`}>
-                {flag.key}
-              </span>
+              <FlagKeyWithCopy flagKey={flag.key} className={sharedStyles.flagKey} />
             </div>
             <div className={sharedStyles.flagOptions}>
               <LocalObjectFlagControl
