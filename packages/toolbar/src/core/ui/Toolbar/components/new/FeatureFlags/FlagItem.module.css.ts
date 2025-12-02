@@ -2,7 +2,7 @@ import { style } from '@vanilla-extract/css';
 
 export const container = style({
   backgroundColor: 'var(--lp-color-gray-850)',
-  border: '1px solid var(--lp-color-gray-800)',
+  border: '1px solid var(--lp-color-gray-700)',
   marginBottom: '8px',
   borderRadius: '8px',
   padding: '16px',
@@ -14,7 +14,7 @@ export const container = style({
 
   ':hover': {
     backgroundColor: 'var(--lp-color-gray-800)',
-    borderColor: 'var(--lp-color-gray-700)',
+    borderColor: 'var(--lp-color-gray-600)',
   },
 });
 
@@ -30,7 +30,7 @@ export const containerOverridden = style({
 
 export const containerBlock = style({
   backgroundColor: 'var(--lp-color-gray-850)',
-  border: '1px solid var(--lp-color-gray-800)',
+  border: '1px solid var(--lp-color-gray-700)',
   marginBottom: '8px',
   borderRadius: '8px',
   padding: '16px',
@@ -41,7 +41,7 @@ export const containerBlock = style({
 
   ':hover': {
     backgroundColor: 'var(--lp-color-gray-800)',
-    borderColor: 'var(--lp-color-gray-700)',
+    borderColor: 'var(--lp-color-gray-600)',
   },
 });
 

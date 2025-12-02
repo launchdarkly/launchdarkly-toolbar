@@ -5,7 +5,7 @@ export const container = style({
   alignItems: 'center',
   justifyContent: 'space-between',
   padding: '0 20px',
-  borderBottom: '1px solid var(--lp-color-gray-800)',
+  borderBottom: '1px solid var(--lp-color-gray-700)',
   minHeight: '48px',
   gap: '8px',
 });
