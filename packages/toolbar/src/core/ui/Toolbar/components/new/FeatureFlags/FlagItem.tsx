@@ -16,7 +16,7 @@ export const FlagItem: React.FC<FlagItemProps> = ({ name, value, enabled, onTogg
         <div className={styles.name}>{name}</div>
         <div className={styles.value}>{value}</div>
       </div>
-      <Switch isSelected={enabled} onChange={onToggle} />
+      <Switch aria-label={`Toggle ${name}`} isSelected={enabled} onChange={onToggle} />
     </div>
   );
 };

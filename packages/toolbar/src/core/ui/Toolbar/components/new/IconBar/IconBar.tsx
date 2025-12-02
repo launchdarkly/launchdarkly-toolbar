@@ -39,7 +39,7 @@ export const IconBar = ({ defaultActiveTab }: { defaultActiveTab: TabId }) => {
       tooltip: interactiveIconEnabled ? 'Interactive Mode' : 'Interactive Mode (Coming Soon)',
       disabled: !interactiveIconEnabled,
     },
-    { id: 'flags', Icon: ToggleOffIcon, label: '  Flags', tooltip: 'Feature Flags' },
+    { id: 'flags', Icon: ToggleOffIcon, label: 'Flags', tooltip: 'Feature Flags' },
     {
       id: 'optimize',
       Icon: FlaskIcon,

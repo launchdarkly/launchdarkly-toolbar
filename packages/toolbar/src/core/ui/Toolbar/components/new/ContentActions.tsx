@@ -6,6 +6,7 @@ import { usePlugins } from '../../context';
 import { useEvents } from '../../hooks';
 import { useSearchContext } from '../../context/SearchProvider';
 import * as styles from './ContentActions.module.css';
+import { useAnalytics } from '../../context/AnalyticsProvider';
 
 export const ContentActions = () => {
   const { activeTab } = useActiveTabContext();
@@ -13,6 +14,7 @@ export const ContentActions = () => {
   const { eventInterceptionPlugin } = usePlugins();
   const { searchTerm } = useSearchContext();
   const { events } = useEvents(eventInterceptionPlugin, searchTerm);
+  const analytics = useAnalytics();
 
   // Determine which actions to show based on current tab/subtab
   const showFilter = activeTab === 'flags' && activeSubtab === 'flags';
@@ -21,9 +23,10 @@ export const ContentActions = () => {
 
   const handleClearEvents = useCallback(() => {
     if (eventInterceptionPlugin) {
+      analytics.trackClearEvents();
       eventInterceptionPlugin.clearEvents();
     }
-  }, [eventInterceptionPlugin]);
+  }, [eventInterceptionPlugin, analytics]);
 
   const handleFilter = useCallback(() => {
     // TODO: Implement filter functionality
