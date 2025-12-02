@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.1.1-beta.1](https://github.com/launchdarkly/launchdarkly-toolbar/compare/2.1.0-beta.1...2.1.1-beta.1) (2025-12-01)
+
+
+### Bug Fixes
+
+* update publish commands ([#368](https://github.com/launchdarkly/launchdarkly-toolbar/issues/368)) ([f020d03](https://github.com/launchdarkly/launchdarkly-toolbar/commit/f020d03d19e102152454a6efc7ce9d86562e47f2))
+
 ## [2.1.0-beta.1](https://github.com/launchdarkly/launchdarkly-toolbar/compare/2.0.0-beta.1...2.1.0-beta.1) (2025-11-26)
 
 
