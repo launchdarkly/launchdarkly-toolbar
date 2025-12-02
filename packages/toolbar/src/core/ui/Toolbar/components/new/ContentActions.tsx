@@ -1,15 +1,13 @@
-import { useCallback } from 'react';
+import { useCallback, useState, useMemo } from 'react';
 import { FilterTuneIcon, DeleteIcon, SearchIcon } from '../icons';
 import { useActiveTabContext } from '../../context/ActiveTabProvider';
 import { useActiveSubtabContext } from './context/ActiveSubtabProvider';
 import { usePlugins } from '../../context';
 import { useEvents } from '../../hooks';
 import * as styles from './ContentActions.module.css';
-import { SearchSection } from '../SearchSection';
+import { SearchSection } from './SearchSection';
 import { useTabSearchContext } from './context/TabSearchProvider';
-import { useState } from 'react';
 import { IconButton } from '../../../Buttons/IconButton';
-import { useMemo } from 'react';
 import { TabId } from '../../types';
 
 export function ContentActions() {

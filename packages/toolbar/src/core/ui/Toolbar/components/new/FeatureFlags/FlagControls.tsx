@@ -120,7 +120,9 @@ export function StringNumberFlagControl(props: StringNumberFlagControlProps) {
     <div className={styles.customVariantContainer}>
       {!isEditing ? (
         <div className={styles.currentValueGroup}>
-          <div className={styles.currentValueText}>{currentValue}</div>
+          <div className={styles.currentValueText} data-testid={`flag-value-${flag.key}`}>
+            {currentValue}
+          </div>
           <IconButton icon={<EditIcon />} label="Edit" onClick={handleEdit} disabled={disabled} />
         </div>
       ) : (
@@ -209,10 +211,11 @@ export function ObjectFlagEditor(props: ObjectFlagEditorProps) {
   };
 
   return (
-    <AnimatePresence data-testid={`json-editor-${flag.key}`} mode="wait">
+    <AnimatePresence mode="wait">
       {isEditing && (
         <motion.div
           key={`json-editor-${flag.key}`}
+          data-testid={`json-editor-${flag.key}`}
           initial={{
             opacity: 0,
             height: 0,

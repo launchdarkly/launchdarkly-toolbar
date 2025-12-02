@@ -81,13 +81,14 @@ export function FlagSdkOverrideProvider({ children, flagOverridePlugin }: FlagSd
       // This ensures flags are displayed even if the API hasn't loaded yet
       Object.keys(allFlags).forEach((flagKey) => {
         if (!result[flagKey]) {
+          const currentValue = allFlags[flagKey];
           result[flagKey] = {
             key: flagKey,
             name: formatFlagName(flagKey),
-            currentValue: allFlags[flagKey],
+            currentValue,
             isOverridden: flagKey in overrides,
-            type: determineFlagType(allFlags[flagKey].variations, allFlags[flagKey].currentValue),
-            availableVariations: allFlags[flagKey].variations,
+            type: determineFlagType([], currentValue),
+            availableVariations: [],
           };
         }
       });
