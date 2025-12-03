@@ -133,7 +133,7 @@ export const container = style({
 
 export const filterCount = style({
   position: 'absolute',
-  top: '-6px',
+  top: '-1px',
   right: '-4px',
   minWidth: '16px',
   height: '16px',
