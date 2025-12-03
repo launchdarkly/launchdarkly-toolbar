@@ -12,12 +12,13 @@ import { LogoutButton } from './LogoutButton';
 import { GenericHelpText } from '../../GenericHelpText';
 import * as styles from './SettingsContent.module.css';
 import * as settingsItemStyles from './SettingsItem.module.css';
+import { EnvironmentSelector } from './EnvironmentSelector';
 
 interface SettingItemData {
   id: string;
   label: string;
   description?: string;
-  type: 'project' | 'position' | 'switch' | 'status' | 'button' | 'text';
+  type: 'project' | 'position' | 'switch' | 'status' | 'button' | 'text' | 'environment';
   switchValue?: boolean;
   onSwitchChange?: () => void;
 }
@@ -124,6 +125,11 @@ export function GeneralSettings() {
               type: 'project',
             },
             {
+              id: 'environment',
+              label: 'Environment',
+              type: 'environment',
+            },
+            {
               id: 'position',
               label: 'Position',
               type: 'position',
@@ -220,6 +226,9 @@ export function GeneralSettings() {
                   break;
                 case 'text':
                   control = <span className={styles.value}>{state.sourceEnvironmentKey || 'Unknown'}</span>;
+                  break;
+                case 'environment':
+                  control = <EnvironmentSelector />;
                   break;
                 default:
                   control = null;

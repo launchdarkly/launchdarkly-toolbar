@@ -1,6 +1,7 @@
 import { ToolbarPosition, TOOLBAR_POSITIONS } from '../types/toolbar';
 
 export const TOOLBAR_STORAGE_KEYS = {
+  ENVIRONMENT: 'ld-toolbar-environment',
   SETTINGS: 'ld-toolbar-settings',
   DISABLED: 'ld-toolbar-disabled',
   PROJECT: 'ld-toolbar-project',
