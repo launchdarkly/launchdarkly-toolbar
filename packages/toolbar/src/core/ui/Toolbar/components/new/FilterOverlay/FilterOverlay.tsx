@@ -5,17 +5,8 @@ import { useFilters, FilterOption } from '../context/FiltersProvider';
 import { useActiveSubtabContext } from '../context/ActiveSubtabProvider';
 import { SubTab } from '../types';
 import { IconButton } from '../../../../Buttons/IconButton';
-import { FilterTuneIcon } from '../../icons';
+import { CheckIcon, FilterTuneIcon } from '../../icons';
 import * as styles from './FilterOverlay.module.css';
-
-// Checkmark icon for selected filters
-function CheckmarkIcon() {
-  return (
-    <svg className={styles.checkmark} viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <path d="M10 3L4.5 8.5L2 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-    </svg>
-  );
-}
 
 interface FilterOptionItemProps {
   option: FilterOption;
@@ -33,7 +24,7 @@ function FilterOptionItem({ option, isActive, onToggle }: FilterOptionItemProps)
       aria-label={option.description || option.label}
     >
       <div className={`${styles.checkbox} ${isActive ? styles.checkboxChecked : ''}`}>
-        {isActive && <CheckmarkIcon />}
+        {isActive && <CheckIcon className={styles.checkmark} />}
       </div>
       <div className={styles.filterLabel}>
         <span className={styles.filterName}>{option.label}</span>

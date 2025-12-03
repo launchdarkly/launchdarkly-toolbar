@@ -3,12 +3,12 @@ import { style } from '@vanilla-extract/css';
 export const container = style({
   backgroundColor: 'var(--lp-color-gray-850)',
   border: '1px solid var(--lp-color-gray-700)',
-  marginBottom: '8px',
   borderRadius: '8px',
   padding: '16px',
+  paddingLeft: '8px',
   display: 'flex',
   alignItems: 'center',
-  gap: '16px',
+  gap: '4px',
   transition: 'all 0.2s ease',
   justifyContent: 'space-between',
 
@@ -34,6 +34,7 @@ export const containerBlock = style({
   marginBottom: '8px',
   borderRadius: '8px',
   padding: '16px',
+  paddingLeft: '8px',
   display: 'flex',
   flexDirection: 'column',
   gap: '16px',
@@ -60,6 +61,14 @@ export const header = style({
   alignItems: 'center',
   gap: '16px',
   justifyContent: 'space-between',
+});
+
+export const flagInfo = style({
+  display: 'flex',
+  alignItems: 'center',
+  gap: '4px',
+  flex: 1,
+  minWidth: 0, // Allow flex item to shrink
 });
 
 export const info = style({

@@ -22,10 +22,17 @@ vi.mock('motion/react', () => ({
   AnimatePresence: ({ children }: any) => <>{children}</>,
 }));
 
-// Mock Analytics
+// Mock context hooks
 vi.mock('../../ui/Toolbar/context', () => ({
   useAnalytics: () => ({
     trackFlagKeyCopy: vi.fn(),
+    trackStarredFlag: vi.fn(),
+  }),
+  useStarredFlags: () => ({
+    isStarred: vi.fn().mockReturnValue(false),
+    toggleStarred: vi.fn(),
+    clearAllStarred: vi.fn(),
+    starredCount: 0,
   }),
 }));
 

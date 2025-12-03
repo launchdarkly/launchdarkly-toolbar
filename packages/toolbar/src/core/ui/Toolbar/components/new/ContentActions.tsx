@@ -52,6 +52,7 @@ export function ContentActions() {
           )}
         </>
       )}
+      {showFilter && <FilterButton />}
       {showClearEvents && (
         <button
           className={styles.actionButton}
@@ -63,7 +64,6 @@ export function ContentActions() {
           <DeleteIcon className={styles.icon} />
         </button>
       )}
-      {showFilter && <FilterButton />}
     </div>
   );
 }

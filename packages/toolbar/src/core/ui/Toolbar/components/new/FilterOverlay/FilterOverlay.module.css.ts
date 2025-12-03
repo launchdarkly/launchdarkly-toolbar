@@ -127,9 +127,8 @@ export const checkboxChecked = style({
 });
 
 export const checkmark = style({
-  width: '10px',
-  height: '10px',
-  fill: 'var(--lp-color-gray-900)',
+  width: '16px',
+  height: '16px',
 });
 
 export const filterLabel = style({
