@@ -16,6 +16,7 @@ export const content = style({
   flex: 1,
   overflowY: 'auto',
   padding: '16px',
+  paddingTop: '0px',
   scrollbarColor: 'var(--lp-color-gray-700) transparent',
   scrollbarWidth: 'thin',
 

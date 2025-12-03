@@ -121,6 +121,7 @@ export const eventBadgeDefault = style([
 export const virtualContainer = style({
   height: '350px',
   overflow: 'auto',
+  padding: '8px 12px',
   scrollbarColor: 'var(--lp-color-gray-800) transparent',
   scrollbarWidth: 'thin',
 
@@ -157,11 +158,8 @@ export const virtualItem = style({
   top: 0,
   left: 0,
   width: '100%',
-
-  ':hover': {
-    backgroundColor: 'var(--lp-color-gray-800)',
-    transition: 'background-color 0.2s ease',
-  },
+  paddingBottom: '12px', // Gap between cards (matches VIRTUALIZATION.GAP)
+  boxSizing: 'border-box',
 });
 
 export const liveTailContainer = style({
@@ -216,5 +214,5 @@ export const liveTailSubtext = style({
 });
 
 export const eventListItem = style({
-  height: '100%',
+  cursor: 'pointer',
 });

@@ -106,7 +106,7 @@ export function EventsContent() {
   const virtualizer = useVirtualizer({
     count: events.length,
     getScrollElement: () => parentRef.current,
-    estimateSize: () => VIRTUALIZATION.ITEM_HEIGHT,
+    estimateSize: () => VIRTUALIZATION.ITEM_HEIGHT + VIRTUALIZATION.GAP,
     overscan: VIRTUALIZATION.OVERSCAN,
   });
 
@@ -174,8 +174,6 @@ export function EventsContent() {
                   style={{
                     height: `${virtualItem.size}px`,
                     transform: `translateY(${virtualItem.start}px)`,
-                    borderBottom: '1px solid var(--lp-color-gray-800)',
-                    cursor: 'pointer',
                   }}
                 >
                   <ListItem className={styles.eventListItem} onClick={() => handleEventClick(event)}>
