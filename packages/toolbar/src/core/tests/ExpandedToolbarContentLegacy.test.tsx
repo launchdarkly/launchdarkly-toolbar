@@ -175,8 +175,8 @@ function TestWrapper({
       >
         <InternalClientProvider>
           <AnalyticsProvider>
-            <ToolbarStateProvider domId="test-toolbar">
-              <SearchProvider>
+            <SearchProvider>
+              <ToolbarStateProvider domId="test-toolbar">
                 <StarredFlagsProvider>
                   <PluginsProvider
                     baseUrl={baseUrl}
@@ -186,8 +186,8 @@ function TestWrapper({
                     {children}
                   </PluginsProvider>
                 </StarredFlagsProvider>
-              </SearchProvider>
-            </ToolbarStateProvider>
+              </ToolbarStateProvider>
+            </SearchProvider>
           </AnalyticsProvider>
         </InternalClientProvider>
       </DevServerProvider>
