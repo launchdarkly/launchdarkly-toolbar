@@ -409,7 +409,7 @@ describe('FlagsProvider', () => {
   });
 
   describe('Context Hook - useFlagsContext', () => {
-    test('provides default values when used without FlagsProvider', () => {
+    test('throws error when used without FlagsProvider', () => {
       // GIVEN: Component uses context without provider
       const TestDefault = () => {
         const { flags, loading } = useFlagsContext();
@@ -421,16 +421,15 @@ describe('FlagsProvider', () => {
         );
       };
 
-      // WHEN: Rendered without FlagsProvider uses default context value
-      render(
-        <TestWrapper>
-          <TestDefault />
-        </TestWrapper>,
-      );
-
-      // THEN: Uses default values from context creation
-      expect(screen.getByTestId('default-flags')).toHaveTextContent('0');
-      expect(screen.getByTestId('default-loading')).toHaveTextContent('true');
+      // WHEN: Rendered without FlagsProvider
+      // THEN: Should throw an error
+      expect(() => {
+        render(
+          <TestWrapper>
+            <TestDefault />
+          </TestWrapper>,
+        );
+      }).toThrow('useFlagsContext must be used within a FlagsProvider');
     });
   });
 
