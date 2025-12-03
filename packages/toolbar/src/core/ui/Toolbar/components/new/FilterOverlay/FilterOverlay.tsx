@@ -1,4 +1,4 @@
-import { useRef, useEffect } from 'react';
+import { useRef, useEffect, memo, useCallback } from 'react';
 import { AnimatePresence, motion } from 'motion/react';
 
 import { useFilters, FilterOption } from '../context/FiltersProvider';
@@ -14,7 +14,8 @@ interface FilterOptionItemProps {
   onToggle: () => void;
 }
 
-function FilterOptionItem({ option, isActive, onToggle }: FilterOptionItemProps) {
+// Memoized filter option to prevent re-renders when other options change
+const FilterOptionItem = memo(function FilterOptionItem({ option, isActive, onToggle }: FilterOptionItemProps) {
   return (
     <button
       className={`${styles.filterOption} ${isActive ? styles.filterOptionActive : ''}`}
@@ -32,20 +33,34 @@ function FilterOptionItem({ option, isActive, onToggle }: FilterOptionItemProps)
       </div>
     </button>
   );
-}
+});
 
 interface FilterOverlayContentProps {
   subtab: SubTab;
   onClose: () => void;
 }
 
-function FilterOverlayContent({ subtab, onClose }: FilterOverlayContentProps) {
+// Memoized overlay content to prevent re-renders from parent
+// Wrapped in a single motion.div so AnimatePresence can properly track it for exit animations
+const FilterOverlayContent = memo(function FilterOverlayContent({ subtab, onClose }: FilterOverlayContentProps) {
   const overlayRef = useRef<HTMLDivElement>(null);
   const { getActiveFilters, getFilterConfig, toggleFilter, resetFilters, hasActiveNonDefaultFilters } = useFilters();
 
   const config = getFilterConfig(subtab);
   const activeFilters = getActiveFilters(subtab);
   const hasNonDefaultFilters = hasActiveNonDefaultFilters(subtab);
+
+  // Memoize toggle handlers to prevent recreation
+  const handleToggle = useCallback(
+    (optionId: string) => {
+      toggleFilter(subtab, optionId);
+    },
+    [subtab, toggleFilter],
+  );
+
+  const handleReset = useCallback(() => {
+    resetFilters(subtab);
+  }, [subtab, resetFilters]);
 
   // Close on escape key
   useEffect(() => {
@@ -59,8 +74,8 @@ function FilterOverlayContent({ subtab, onClose }: FilterOverlayContentProps) {
     return () => document.removeEventListener('keydown', handleKeyDown);
   }, [onClose]);
 
-  // Focus trap and auto-focus first option
-  useEffect(() => {
+  // Focus first option after animation completes to avoid stutter
+  const handleAnimationComplete = useCallback(() => {
     if (overlayRef.current) {
       const firstButton = overlayRef.current.querySelector('button');
       firstButton?.focus();
@@ -69,26 +84,36 @@ function FilterOverlayContent({ subtab, onClose }: FilterOverlayContentProps) {
 
   if (!config) return null;
 
+  // Single motion wrapper for AnimatePresence to track properly
   return (
-    <>
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.04, ease: 'easeOut' }}
+      onAnimationComplete={(definition) => {
+        // Only focus when animation completes to 'animate' state (opening), not 'exit'
+        if (definition === 'animate') {
+          handleAnimationComplete();
+        }
+      }}
+      style={{ position: 'absolute', top: 0, right: 0, left: 0, bottom: 0, pointerEvents: 'none' }}
+    >
       {/* Backdrop to close when clicking outside */}
-      <div className={styles.backdrop} onClick={onClose} aria-hidden="true" />
+      <div className={styles.backdrop} onClick={onClose} aria-hidden="true" style={{ pointerEvents: 'auto' }} />
 
-      <motion.div
+      <div
         ref={overlayRef}
         className={styles.overlay}
-        initial={{ opacity: 0, y: -8 }}
-        animate={{ opacity: 1, y: 0 }}
-        exit={{ opacity: 0, y: -8 }}
-        transition={{ duration: 0.15 }}
         role="dialog"
         aria-label="Filter options"
+        style={{ pointerEvents: 'auto' }}
       >
         <div className={styles.header}>
           <h3 className={styles.title}>Filters</h3>
           <button
             className={styles.resetButton}
-            onClick={() => resetFilters(subtab)}
+            onClick={handleReset}
             disabled={!hasNonDefaultFilters}
             aria-label="Reset filters to default"
           >
@@ -102,14 +127,14 @@ function FilterOverlayContent({ subtab, onClose }: FilterOverlayContentProps) {
               key={option.id}
               option={option}
               isActive={activeFilters.has(option.id)}
-              onToggle={() => toggleFilter(subtab, option.id)}
+              onToggle={() => handleToggle(option.id)}
             />
           ))}
         </div>
-      </motion.div>
-    </>
+      </div>
+    </motion.div>
   );
-}
+});
 
 export interface FilterButtonProps {
   className?: string;
@@ -155,7 +180,9 @@ export function FilterButton({ className }: FilterButtonProps) {
       )}
 
       <AnimatePresence>
-        {isFilterOverlayOpen && <FilterOverlayContent subtab={subtab} onClose={closeFilterOverlay} />}
+        {isFilterOverlayOpen && (
+          <FilterOverlayContent key="filter-overlay" subtab={subtab} onClose={closeFilterOverlay} />
+        )}
       </AnimatePresence>
     </div>
   );

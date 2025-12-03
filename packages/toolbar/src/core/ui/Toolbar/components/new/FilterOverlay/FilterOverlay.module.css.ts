@@ -1,26 +1,4 @@
-import { style, keyframes } from '@vanilla-extract/css';
-
-const slideIn = keyframes({
-  '0%': {
-    opacity: 0,
-    transform: 'translateY(-8px)',
-  },
-  '100%': {
-    opacity: 1,
-    transform: 'translateY(0)',
-  },
-});
-
-const slideOut = keyframes({
-  '0%': {
-    opacity: 1,
-    transform: 'translateY(0)',
-  },
-  '100%': {
-    opacity: 0,
-    transform: 'translateY(-8px)',
-  },
-});
+import { style } from '@vanilla-extract/css';
 
 export const overlay = style({
   position: 'absolute',
@@ -33,12 +11,7 @@ export const overlay = style({
   borderRadius: '8px',
   boxShadow: '0 4px 16px rgba(0, 0, 0, 0.3)',
   zIndex: 100,
-  animation: `${slideIn} 0.15s ease-out forwards`,
   overflow: 'hidden',
-});
-
-export const overlayExiting = style({
-  animation: `${slideOut} 0.1s ease-in forwards`,
 });
 
 export const header = style({
