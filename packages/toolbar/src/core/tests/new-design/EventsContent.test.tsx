@@ -83,6 +83,7 @@ vi.mock('motion/react', () => ({
 const createMockEvent = (overrides: Partial<ProcessedEvent> = {}): ProcessedEvent => ({
   kind: 'feature',
   displayName: 'test-flag',
+  id: 'test-flag',
   category: 'flag',
   key: 'test-flag',
   timestamp: Date.now(),
