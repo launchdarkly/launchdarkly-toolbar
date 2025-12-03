@@ -3,7 +3,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { EventsContent } from '../../ui/Toolbar/components/new/Monitoring/EventsContent';
 import { AnalyticsProvider } from '../../ui/Toolbar/context/telemetry/AnalyticsProvider';
 import { InternalClientProvider } from '../../ui/Toolbar/context/telemetry/InternalClientProvider';
-import { ProcessedEvent, IEventInterceptionPlugin } from '../../../../types';
+import { ProcessedEvent, IEventInterceptionPlugin } from '../../../types';
 import '@testing-library/jest-dom/vitest';
 import React from 'react';
 

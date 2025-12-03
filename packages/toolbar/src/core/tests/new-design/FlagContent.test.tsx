@@ -6,7 +6,7 @@ import {
   MultivariateFlagControl,
   StringNumberFlagControl,
 } from '../../ui/Toolbar/components/new/FeatureFlags/FlagControls';
-import { NormalizedFlag } from '../../ui/Toolbar/components/new/FeatureFlags/FlagList';
+import { NormalizedFlag } from '../../ui/Toolbar/components/new//FeatureFlags/types';
 import { AnalyticsProvider } from '../../ui/Toolbar/context/telemetry/AnalyticsProvider';
 import { InternalClientProvider } from '../../ui/Toolbar/context/telemetry/InternalClientProvider';
 import ReactMountContext from '../../context/ReactMountContext';
