@@ -7,7 +7,7 @@ interface SettingsItemProps {
   children: React.ReactNode;
 }
 
-export const SettingsItem: React.FC<SettingsItemProps> = ({ label, description, children }) => {
+export function SettingsItem({ label, description, children }: SettingsItemProps) {
   return (
     <div className={styles.item}>
       <div className={styles.info}>
@@ -17,4 +17,4 @@ export const SettingsItem: React.FC<SettingsItemProps> = ({ label, description, 
       <div className={styles.control}>{children}</div>
     </div>
   );
-};
+}

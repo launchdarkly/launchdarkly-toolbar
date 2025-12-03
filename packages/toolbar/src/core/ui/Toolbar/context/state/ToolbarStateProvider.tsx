@@ -12,15 +12,15 @@ import React, {
 } from 'react';
 
 import { useSearchContext } from './SearchProvider';
-import { useAnalytics } from './AnalyticsProvider';
+import { useAnalytics } from '../telemetry/AnalyticsProvider';
 import { useActiveTabContext } from './ActiveTabProvider';
-import { TabId, ActiveTabId, TAB_ORDER, ToolbarMode, getToolbarMode } from '../types';
+import { TabId, ActiveTabId, TAB_ORDER, ToolbarMode, getToolbarMode } from '../../types';
 import {
   saveToolbarAutoCollapse,
   loadToolbarAutoCollapse,
   loadReloadOnFlagChange,
   saveReloadOnFlagChange,
-} from '../utils/localStorage';
+} from '../../utils/localStorage';
 
 export interface ToolbarStateContextValue {
   // State values
@@ -89,6 +89,7 @@ export function ToolbarStateProvider({ children, domId, devServerUrl }: ToolbarS
       if (isAnimating) return;
 
       const newTabId = tabId as TabId;
+      console.log('newTabId', newTabId);
 
       // If clicking the currently active tab, toggle the toolbar
       if (newTabId === activeTab && isExpanded) {

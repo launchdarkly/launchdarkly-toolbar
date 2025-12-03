@@ -1,36 +1,26 @@
+import { useCallback, useEffect, useMemo, useRef } from 'react';
 import { AnimatePresence, motion } from 'motion/react';
-import { useCallback, useMemo, useRef } from 'react';
 
 import {
-  SearchProvider,
-  useSearchContext,
-  AnalyticsProvider,
-  useAnalytics,
+  ApiBundleProvider,
+  DevServerProvider,
   StarredFlagsProvider,
-  ActiveTabProvider,
+  TelemetryBundleProvider,
+  ToolbarStateBundleProvider,
   useActiveTabContext,
-  ToolbarStateProvider,
+  useAnalytics,
+  useSearchContext,
   useToolbarState,
-  PluginsProvider,
+  useToolbarUIContext,
 } from './context';
 import { CircleLogo } from './components';
 import { ExpandedToolbarContentLegacy } from './components/legacy';
-import { useToolbarAnimations, useToolbarVisibility, useToolbarDrag } from './hooks';
-import { ToolbarUIProvider, useToolbarUIContext } from './context';
-import { ToolbarMode, ToolbarPosition, getToolbarMode, getDefaultActiveTab, ActiveTabId } from './types/toolbar';
-import { DevServerProvider } from './context';
-import { IEventInterceptionPlugin, IFlagOverridePlugin } from '../../../types';
-import { AuthProvider } from './context/AuthProvider';
-import { ApiProvider } from './context/ApiProvider';
-import { IFrameProvider } from './context/IFrameProvider';
-import { ProjectProvider } from './context/ProjectProvider';
-import { FlagsProvider } from './context/FlagsProvider';
-import { AuthenticationModal } from './components/AuthenticationModal/AuthenticationModal';
-import { InternalClientProvider } from './context/InternalClientProvider';
-import { useNewToolbarDesign } from '../../../flags/toolbarFlags';
 import { ExpandedToolbarContent } from './components/new/ExpandedToolbarContent';
-import { useEffect } from 'react';
-
+import { AuthenticationModal } from './components/AuthenticationModal/AuthenticationModal';
+import { useToolbarAnimations, useToolbarVisibility, useToolbarDrag } from './hooks';
+import { ToolbarMode, ToolbarPosition, getToolbarMode, getDefaultActiveTab, ActiveTabId } from './types/toolbar';
+import { IEventInterceptionPlugin, IFlagOverridePlugin } from '../../../types';
+import { useNewToolbarDesign } from '../../../flags/toolbarFlags';
 import * as styles from './LaunchDarklyToolbar.css';
 
 export interface LdToolbarProps {
@@ -261,54 +251,40 @@ export function LaunchDarklyToolbar(props: LaunchDarklyToolbarProps) {
   const mode = getToolbarMode(devServerUrl);
 
   return (
-    <ToolbarUIProvider initialPosition={position}>
-      <InternalClientProvider
-        clientSideId={internalClientConfig.clientSideId}
-        baseUrl={internalClientConfig.baseUrl}
-        streamUrl={internalClientConfig.streamUrl}
-        eventsUrl={internalClientConfig.eventsUrl}
+    <TelemetryBundleProvider
+      mode={mode}
+      baseUrl={internalClientConfig.baseUrl}
+      clientSideId={internalClientConfig.clientSideId}
+      streamUrl={internalClientConfig.streamUrl}
+      eventsUrl={internalClientConfig.eventsUrl}
+    >
+      <ToolbarStateBundleProvider
+        initialPosition={position}
+        domId={domId}
+        devServerUrl={devServerUrl}
+        baseUrl={baseUrl}
+        flagOverridePlugin={flagOverridePlugin}
+        eventInterceptionPlugin={eventInterceptionPlugin}
       >
-        <AnalyticsProvider mode={mode}>
-          <SearchProvider>
-            <ActiveTabProvider>
-              <ToolbarStateProvider domId={domId} devServerUrl={devServerUrl}>
-                <IFrameProvider authUrl={authUrl}>
-                  <AuthProvider>
-                    <ApiProvider>
-                      <ProjectProvider clientSideId={clientSideId} providedProjectKey={projectKey}>
-                        <FlagsProvider>
-                          <DevServerProvider
-                            config={{
-                              projectKey,
-                              devServerUrl,
-                              pollIntervalInMs,
-                            }}
-                          >
-                            <StarredFlagsProvider>
-                              <PluginsProvider
-                                baseUrl={baseUrl}
-                                flagOverridePlugin={flagOverridePlugin}
-                                eventInterceptionPlugin={eventInterceptionPlugin}
-                              >
-                                <LdToolbar
-                                  mode={mode}
-                                  baseUrl={baseUrl}
-                                  flagOverridePlugin={flagOverridePlugin}
-                                  eventInterceptionPlugin={eventInterceptionPlugin}
-                                />
-                              </PluginsProvider>
-                            </StarredFlagsProvider>
-                          </DevServerProvider>
-                        </FlagsProvider>
-                      </ProjectProvider>
-                    </ApiProvider>
-                  </AuthProvider>
-                </IFrameProvider>
-              </ToolbarStateProvider>
-            </ActiveTabProvider>
-          </SearchProvider>
-        </AnalyticsProvider>
-      </InternalClientProvider>
-    </ToolbarUIProvider>
+        <ApiBundleProvider authUrl={authUrl} clientSideId={clientSideId} providedProjectKey={projectKey}>
+          <DevServerProvider
+            config={{
+              projectKey,
+              devServerUrl,
+              pollIntervalInMs,
+            }}
+          >
+            <StarredFlagsProvider>
+              <LdToolbar
+                mode={mode}
+                baseUrl={baseUrl}
+                flagOverridePlugin={flagOverridePlugin}
+                eventInterceptionPlugin={eventInterceptionPlugin}
+              />
+            </StarredFlagsProvider>
+          </DevServerProvider>
+        </ApiBundleProvider>
+      </ToolbarStateBundleProvider>
+    </TelemetryBundleProvider>
   );
 }

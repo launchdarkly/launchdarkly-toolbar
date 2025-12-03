@@ -1,20 +1,22 @@
-import React from 'react';
-import { ActiveTabId } from '../../types/toolbar';
-import { SubTab } from './types';
+import { useActiveTabContext } from '../../context';
+import { useActiveSubtabContext } from './context/ActiveSubtabProvider';
 import { SettingsContent } from './Settings/SettingsContent';
 import { FlagListContent } from './FeatureFlags/FlagListContent';
 import { EventsContent } from './Monitoring/EventsContent';
 
 // Placeholder content components - to be implemented later
-const ContextContent = () => <div>Context Content</div>;
-const ClickTrackingContent = () => <div>Click Tracking Content</div>;
-
-interface ContentRendererProps {
-  activeTab: ActiveTabId;
-  activeSubtab: SubTab | undefined;
+function ContextContent() {
+  return <div>Context Content</div>;
 }
 
-export const ContentRenderer: React.FC<ContentRendererProps> = ({ activeTab, activeSubtab }) => {
+function ClickTrackingContent() {
+  return <div>Click Tracking Content</div>;
+}
+
+export function ContentRenderer() {
+  const { activeTab } = useActiveTabContext();
+  const { activeSubtab } = useActiveSubtabContext();
+
   // Render content based on active tab and subtab combination
   if (activeTab === 'flags') {
     switch (activeSubtab) {
@@ -46,4 +48,4 @@ export const ContentRenderer: React.FC<ContentRendererProps> = ({ activeTab, act
 
   // Fallback
   return <div>No content available</div>;
-};
+}

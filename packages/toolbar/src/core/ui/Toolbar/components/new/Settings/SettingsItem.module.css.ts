@@ -6,7 +6,7 @@ export const item = style({
   justifyContent: 'space-between',
   padding: '12px 16px',
   backgroundColor: 'var(--lp-color-gray-850)',
-  border: '1px solid var(--lp-color-gray-800)',
+  border: '1px solid var(--lp-color-gray-700)',
   borderRadius: '8px',
   transition: 'all 0.2s ease',
   gap: '16px',

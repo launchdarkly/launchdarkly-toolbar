@@ -1,12 +1,13 @@
 import { useEffect } from 'react';
-import { useActiveTabContext } from '../../context/ActiveTabProvider';
+
+import { useActiveTabContext } from '../../context';
 import { useActiveSubtabContext } from './context/ActiveSubtabProvider';
 import { ContentActions } from './ContentActions';
 import { SubtabDropdown } from './SubtabDropdown';
 import { TAB_SUBTABS_MAP, getDefaultSubtab, TabConfig } from './types';
 import * as styles from './TabBar.module.css';
 
-export const TabBar = () => {
+export function TabBar() {
   const { activeTab } = useActiveTabContext();
   const { activeSubtab, setActiveSubtab } = useActiveSubtabContext();
 
@@ -33,4 +34,4 @@ export const TabBar = () => {
       <ContentActions />
     </div>
   );
-};
+}

@@ -1,23 +1,18 @@
 import { createContext, useCallback, useContext, useEffect, useState } from 'react';
-import { useProjectContext } from './ProjectProvider';
 import { useApi } from './ApiProvider';
 import { useAuthContext } from './AuthProvider';
-import { ApiFlag, FlagsResponse } from '../types/ldApi';
-import { useActiveTabContext } from './ActiveTabProvider';
+import { ApiFlag, FlagsResponse } from '../../types/ldApi';
+import { useActiveTabContext } from '../state';
+import { useProjectContext } from './ProjectProvider';
 
-type FlagsContextType = {
+interface FlagsContextType {
   flags: ApiFlag[];
   loading: boolean;
   getProjectFlags: (projectKey: string) => Promise<FlagsResponse>;
   resetFlags: () => void;
-};
+}
 
-const FlagsContext = createContext<FlagsContextType>({
-  flags: [],
-  loading: true,
-  getProjectFlags: async () => ({ items: [], totalCount: 0 }),
-  resetFlags: () => {},
-});
+const FlagsContext = createContext<FlagsContextType | undefined>(undefined);
 
 export const FlagsProvider = ({ children }: { children: React.ReactNode }) => {
   const { projectKey } = useProjectContext();
@@ -48,7 +43,8 @@ export const FlagsProvider = ({ children }: { children: React.ReactNode }) => {
     // Only fetch flags when a flag tab is active'
     let isMounted = true;
 
-    const isFlagTabActive = activeTab === 'flag-sdk' || activeTab === 'flag-dev-server';
+    // Support both legacy tab IDs and new design tab ID
+    const isFlagTabActive = activeTab === 'flag-sdk' || activeTab === 'flag-dev-server' || activeTab === 'flags';
 
     if (!isFlagTabActive) {
       return;
@@ -88,10 +84,10 @@ export const FlagsProvider = ({ children }: { children: React.ReactNode }) => {
   );
 };
 
-export const useFlagsContext = () => {
+export function useFlagsContext(): FlagsContextType {
   const context = useContext(FlagsContext);
   if (!context) {
     throw new Error('useFlagsContext must be used within a FlagsProvider');
   }
   return context;
-};
+}

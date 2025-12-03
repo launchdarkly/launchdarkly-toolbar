@@ -1,7 +1,7 @@
 import React from 'react';
 import * as styles from './ToolbarHeader.module.css';
 import { LaunchDarklyIcon } from '../../icons/LaunchDarklyIcon';
-import { useToolbarUIContext } from '../../../context/ToolbarUIProvider';
+import { useToolbarUIContext } from '../../../context/state';
 import { ChevronUpIcon, ChevronDownIcon } from '../../icons';
 
 interface ToolbarHeaderProps {
@@ -9,7 +9,7 @@ interface ToolbarHeaderProps {
   onHeaderMouseDown?: (event: React.MouseEvent) => void;
 }
 
-export const ToolbarHeader: React.FC<ToolbarHeaderProps> = ({ onClose, onHeaderMouseDown }) => {
+export function ToolbarHeader({ onClose, onHeaderMouseDown }: ToolbarHeaderProps) {
   const { position } = useToolbarUIContext();
 
   return (
@@ -26,4 +26,4 @@ export const ToolbarHeader: React.FC<ToolbarHeaderProps> = ({ onClose, onHeaderM
       </div>
     </div>
   );
-};
+}

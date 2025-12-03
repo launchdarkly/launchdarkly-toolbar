@@ -1,11 +1,11 @@
 import { render, screen } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { ExpandedToolbarContent } from '../../ui/Toolbar/components/new/ExpandedToolbarContent';
-import { ActiveTabProvider } from '../../ui/Toolbar/context/ActiveTabProvider';
-import { SearchProvider } from '../../ui/Toolbar/context/SearchProvider';
-import { AnalyticsProvider } from '../../ui/Toolbar/context/AnalyticsProvider';
-import { ToolbarStateProvider } from '../../ui/Toolbar/context/ToolbarStateProvider';
-import { InternalClientProvider } from '../../ui/Toolbar/context/InternalClientProvider';
+import { ActiveTabProvider } from '../../ui/Toolbar/context/state/ActiveTabProvider';
+import { SearchProvider } from '../../ui/Toolbar/context/state/SearchProvider';
+import { AnalyticsProvider } from '../../ui/Toolbar/context/telemetry/AnalyticsProvider';
+import { ToolbarStateProvider } from '../../ui/Toolbar/context/state/ToolbarStateProvider';
+import { InternalClientProvider } from '../../ui/Toolbar/context/telemetry/InternalClientProvider';
 import '@testing-library/jest-dom/vitest';
 import React from 'react';
 
@@ -42,7 +42,7 @@ vi.mock('../../../flags/toolbarFlags', () => ({
 }));
 
 // Mock the AuthProvider to return authenticated state
-vi.mock('../../ui/Toolbar/context/AuthProvider', () => ({
+vi.mock('../../ui/Toolbar/context/api/AuthProvider', () => ({
   AuthProvider: ({ children }: { children: React.ReactNode }) => <>{children}</>,
   useAuthContext: () => ({
     authenticated: true,
@@ -54,7 +54,7 @@ vi.mock('../../ui/Toolbar/context/AuthProvider', () => ({
 }));
 
 // Mock the IFrameProvider
-vi.mock('../../ui/Toolbar/context/IFrameProvider', () => ({
+vi.mock('../../ui/Toolbar/context/api/IFrameProvider', () => ({
   IFrameProvider: ({ children }: { children: React.ReactNode }) => <>{children}</>,
   useIFrameContext: () => ({
     ref: { current: null },

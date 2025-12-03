@@ -1,22 +1,16 @@
 import { createContext, Dispatch, SetStateAction, useCallback, useContext, useEffect, useState } from 'react';
 import { getErrorTopic, getResponseTopic, IFRAME_COMMANDS, IFRAME_EVENTS, useIFrameContext } from './IFrameProvider';
-import { useAnalytics } from './AnalyticsProvider';
+import { useAnalytics } from '../telemetry';
 
-type AuthProviderType = {
+interface AuthContextType {
   authenticated: boolean;
   authenticating: boolean;
   loading: boolean;
   setAuthenticating: Dispatch<SetStateAction<boolean>>;
   logout: () => void;
-};
+}
 
-const AuthContext = createContext<AuthProviderType>({
-  authenticated: false,
-  authenticating: false,
-  setAuthenticating: () => {},
-  loading: true,
-  logout: () => {},
-});
+const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [authenticated, setAuthenticated] = useState(false);
@@ -73,7 +67,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   );
 }
 
-export function useAuthContext() {
+export function useAuthContext(): AuthContextType {
   const context = useContext(AuthContext);
   if (!context) {
     throw new Error('useAuthContext must be used within an AuthProvider');

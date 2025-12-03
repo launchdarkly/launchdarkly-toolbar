@@ -1,20 +1,24 @@
-import { useCallback } from 'react';
-import { SearchIcon, FilterTuneIcon, DeleteIcon } from '../icons';
-import { useActiveTabContext } from '../../context/ActiveTabProvider';
-import { useActiveSubtabContext } from './context/ActiveSubtabProvider';
-import { usePlugins } from '../../context';
-import { useEvents } from '../../hooks';
-import { useSearchContext } from '../../context/SearchProvider';
-import * as styles from './ContentActions.module.css';
-import { useAnalytics } from '../../context/AnalyticsProvider';
+import { useCallback, useState, useMemo } from 'react';
 
-export const ContentActions = () => {
+import { useActiveTabContext, usePlugins } from '../../context';
+import { useActiveSubtabContext } from './context/ActiveSubtabProvider';
+import { useTabSearchContext } from './context/TabSearchProvider';
+import { useEvents } from '../../hooks';
+import { FilterTuneIcon, DeleteIcon, SearchIcon } from '../icons';
+import { SearchSection } from './SearchSection';
+import { IconButton } from '../../../Buttons/IconButton';
+import { TabId } from '../../types';
+import * as styles from './ContentActions.module.css';
+
+export function ContentActions() {
   const { activeTab } = useActiveTabContext();
   const { activeSubtab } = useActiveSubtabContext();
   const { eventInterceptionPlugin } = usePlugins();
-  const { searchTerm } = useSearchContext();
+  const { searchTerms } = useTabSearchContext();
+  const searchTerm = useMemo(() => searchTerms[activeTab as TabId] || '', [searchTerms, activeTab]);
   const { events } = useEvents(eventInterceptionPlugin, searchTerm);
-  const analytics = useAnalytics();
+  const { setSearchTerm } = useTabSearchContext();
+  const [searchIsExpanded, setSearchIsExpanded] = useState(false);
 
   // Determine which actions to show based on current tab/subtab
   const showFilter = activeTab === 'flags' && activeSubtab === 'flags';
@@ -23,27 +27,34 @@ export const ContentActions = () => {
 
   const handleClearEvents = useCallback(() => {
     if (eventInterceptionPlugin) {
-      analytics.trackClearEvents();
       eventInterceptionPlugin.clearEvents();
     }
-  }, [eventInterceptionPlugin, analytics]);
+  }, [eventInterceptionPlugin]);
 
   const handleFilter = useCallback(() => {
     // TODO: Implement filter functionality
     console.log('Filter clicked');
   }, []);
 
-  const handleSearch = useCallback(() => {
-    // TODO: Implement search functionality
-    console.log('Search clicked');
-  }, []);
+  const handleSearch = useCallback(
+    (input: string) => {
+      if (!activeTab) return;
+      setSearchTerm(activeTab, input);
+    },
+    [activeTab, searchTerm, setSearchTerm],
+  );
 
   return (
     <div className={styles.container}>
       {showSearch && (
-        <button className={styles.actionButton} onClick={handleSearch} aria-label="Search" title="Search">
-          <SearchIcon className={styles.icon} />
-        </button>
+        <>
+          {searchIsExpanded && (
+            <SearchSection searchTerm={searchTerm} onSearch={handleSearch} setSearchIsExpanded={setSearchIsExpanded} />
+          )}
+          {!searchIsExpanded && (
+            <IconButton icon={<SearchIcon />} label="Search" onClick={() => setSearchIsExpanded(true)} />
+          )}
+        </>
       )}
       {showClearEvents && (
         <button
@@ -63,4 +74,4 @@ export const ContentActions = () => {
       )}
     </div>
   );
-};
+}

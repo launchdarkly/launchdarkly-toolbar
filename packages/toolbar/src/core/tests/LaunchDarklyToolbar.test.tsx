@@ -41,7 +41,7 @@ vi.mock('../services/FlagStateManager', () => {
 });
 
 // Mock the AuthProvider to return authenticated state
-vi.mock('../ui/Toolbar/context/AuthProvider', () => ({
+vi.mock('../ui/Toolbar/context/api/AuthProvider', () => ({
   AuthProvider: ({ children }: { children: React.ReactNode }) => <>{children}</>,
   useAuthContext: () => ({
     authenticated: true,
@@ -52,7 +52,7 @@ vi.mock('../ui/Toolbar/context/AuthProvider', () => ({
 }));
 
 // Mock the IFrameProvider
-vi.mock('../ui/Toolbar/context/IFrameProvider', () => ({
+vi.mock('../ui/Toolbar/context/api/IFrameProvider', () => ({
   IFrameProvider: ({ children }: { children: React.ReactNode }) => <>{children}</>,
   useIFrameContext: () => ({
     ref: { current: null },

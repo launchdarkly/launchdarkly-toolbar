@@ -7,7 +7,7 @@ import { FlaskIcon } from '../../icons/FlaskIcon';
 import { Tooltip } from '../Tooltip';
 import * as styles from './IconBar.module.css';
 import { enableInteractiveIcon, enableAiIcon, enableOptimizeIcon } from '../../../../../../flags/toolbarFlags';
-import { useActiveTabContext } from '../../../context/ActiveTabProvider';
+import { useActiveTabContext } from '../../../context/state';
 import { TabId } from '../../../types/toolbar';
 import { useEffect } from 'react';
 
@@ -19,7 +19,11 @@ type Icon = {
   disabled?: boolean;
 };
 
-export const IconBar = ({ defaultActiveTab }: { defaultActiveTab: TabId }) => {
+interface IconBarProps {
+  defaultActiveTab: TabId;
+}
+
+export function IconBar({ defaultActiveTab }: IconBarProps) {
   const interactiveIconEnabled = enableInteractiveIcon();
   const aiIconEnabled = enableAiIcon();
   const optimizeIconEnabled = enableOptimizeIcon();
@@ -39,7 +43,7 @@ export const IconBar = ({ defaultActiveTab }: { defaultActiveTab: TabId }) => {
       tooltip: interactiveIconEnabled ? 'Interactive Mode' : 'Interactive Mode (Coming Soon)',
       disabled: !interactiveIconEnabled,
     },
-    { id: 'flags', Icon: ToggleOffIcon, label: 'Flags', tooltip: 'Feature Flags' },
+    { id: 'flags', Icon: ToggleOffIcon, label: '  Flags', tooltip: 'Feature Flags' },
     {
       id: 'optimize',
       Icon: FlaskIcon,
@@ -80,4 +84,4 @@ export const IconBar = ({ defaultActiveTab }: { defaultActiveTab: TabId }) => {
       ))}
     </div>
   );
-};
+}

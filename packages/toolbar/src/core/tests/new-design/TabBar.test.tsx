@@ -1,7 +1,7 @@
 import { render, screen, fireEvent } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { TabBar } from '../../ui/Toolbar/components/new/TabBar';
-import { ActiveTabProvider, useActiveTabContext } from '../../ui/Toolbar/context/ActiveTabProvider';
+import { ActiveTabProvider, useActiveTabContext } from '../../ui/Toolbar/context/state/ActiveTabProvider';
 import { ActiveSubtabProvider } from '../../ui/Toolbar/components/new/context/ActiveSubtabProvider';
 import '@testing-library/jest-dom/vitest';
 import React from 'react';

@@ -1,10 +1,9 @@
 import { Dispatch, SetStateAction, useCallback, useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { IconButton } from '../../../../../Buttons/IconButton';
-import { useToolbarUIContext, useAnalytics } from '../../../../context';
-import { useAuthContext } from '../../../../context/AuthProvider';
-import { SearchIcon, PersonPassword, SyncIcon, ChevronUpIcon, ChevronDownIcon } from '../../../icons';
 
+import { useAnalytics, useAuthContext, useToolbarUIContext } from '../../../../context';
+import { IconButton } from '../../../../../Buttons/IconButton';
+import { SearchIcon, PersonPassword, SyncIcon, ChevronUpIcon, ChevronDownIcon } from '../../../icons';
 import * as styles from '../Header.css';
 
 interface ActionButtonsProps {

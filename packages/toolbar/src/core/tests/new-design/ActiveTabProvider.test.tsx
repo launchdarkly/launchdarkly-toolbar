@@ -1,6 +1,6 @@
 import { renderHook, act } from '@testing-library/react';
 import { describe, it, expect } from 'vitest';
-import { ActiveTabProvider, useActiveTabContext } from '../../ui/Toolbar/context/ActiveTabProvider';
+import { ActiveTabProvider, useActiveTabContext } from '../../ui/Toolbar/context/state/ActiveTabProvider';
 import React from 'react';
 
 describe('ActiveTabProvider', () => {
@@ -61,12 +61,11 @@ describe('ActiveTabProvider', () => {
     expect(result.current.activeTab).toBeUndefined();
   });
 
-  it('should not throw error when used outside provider (has default value)', () => {
-    // ActiveTabProvider provides a default context value, so it doesn't throw
-    const { result } = renderHook(() => useActiveTabContext());
-
-    expect(result.current).toBeDefined();
-    expect(result.current.setActiveTab).toBeDefined();
+  it('should throw error when used outside provider', () => {
+    // ActiveTabProvider requires a provider, should throw when used without one
+    expect(() => {
+      renderHook(() => useActiveTabContext());
+    }).toThrow('useActiveTabContext must be used within an ActiveTabProvider');
   });
 
   it('should maintain state across re-renders', () => {

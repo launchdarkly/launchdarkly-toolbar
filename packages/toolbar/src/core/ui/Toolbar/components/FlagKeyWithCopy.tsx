@@ -1,6 +1,7 @@
 import { useCallback, useState, useEffect, useRef } from 'react';
 import { AnimatePresence, motion } from 'motion/react';
-import { useAnalytics } from '../context/AnalyticsProvider';
+
+import { useAnalytics } from '../context';
 import * as styles from './FlagKeyWithCopy.css';
 
 interface FlagKeyWithCopyProps {

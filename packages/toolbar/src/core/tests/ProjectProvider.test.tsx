@@ -1,15 +1,15 @@
 import { render, screen, waitFor, act } from '@testing-library/react';
 import { expect, test, describe, vi, beforeEach, afterEach } from 'vitest';
-import { ProjectProvider, useProjectContext } from '../ui/Toolbar/context/ProjectProvider';
+import { ProjectProvider, useProjectContext } from '../ui/Toolbar/context/api/ProjectProvider';
 import '@testing-library/jest-dom/vitest';
 import React from 'react';
 
 // Mock the ApiProvider
-vi.mock('../ui/Toolbar/context/ApiProvider', () => ({
+vi.mock('../ui/Toolbar/context/api/ApiProvider', () => ({
   useApi: vi.fn(),
 }));
 
-import { useApi } from '../ui/Toolbar/context/ApiProvider';
+import { useApi } from '../ui/Toolbar/context/api/ApiProvider';
 
 // Test component that uses the Project context
 function TestConsumer() {
@@ -300,8 +300,8 @@ describe('ProjectProvider', () => {
   });
 
   describe('Context Hook - useProjectContext', () => {
-    test('provides default empty state when used without explicit provider', () => {
-      // GIVEN: Component uses context (has default value, so doesn't throw)
+    test('throws error when used without ProjectProvider', () => {
+      // GIVEN: Component uses context without provider
       const TestDefault = () => {
         const { projectKey, projects, loading } = useProjectContext();
         return (
@@ -314,12 +314,10 @@ describe('ProjectProvider', () => {
       };
 
       // WHEN: Rendered without provider
-      render(<TestDefault />);
-
-      // THEN: Uses default values from context creation
-      expect(screen.getByTestId('default-key')).toHaveTextContent('empty');
-      expect(screen.getByTestId('default-projects')).toHaveTextContent('0');
-      expect(screen.getByTestId('default-loading')).toHaveTextContent('false');
+      // THEN: Should throw an error
+      expect(() => {
+        render(<TestDefault />);
+      }).toThrow('useProjectContext must be used within a ProjectProvider');
     });
   });
 

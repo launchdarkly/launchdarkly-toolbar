@@ -1,11 +1,11 @@
 import { Dispatch, SetStateAction } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import * as styles from './Header.css';
-import { LogoSection, EnvironmentLabel, SearchSection, ActionButtons } from './components';
-import { useDevServerContext } from '../../../context';
-import { useProjectContext } from '../../../context/ProjectProvider';
+
+import { useDevServerContext, useProjectContext } from '../../../context';
+import { LogoSection, EnvironmentLabel, ActionButtons, SearchSection } from './components';
 import { ToolbarMode } from '../../../types';
 import { ConnectionStatus } from '../../ConnectionStatus';
+import * as styles from './Header.css';
 
 export interface HeaderProps {
   searchTerm: string;

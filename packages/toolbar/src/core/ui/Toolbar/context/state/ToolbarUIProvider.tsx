@@ -1,9 +1,7 @@
 import { createContext, useContext, useMemo, useState, useCallback } from 'react';
 import type { FC, ReactNode } from 'react';
-
-import { DEFAULT_SETTINGS, loadToolbarPosition, saveToolbarPosition } from '../utils/localStorage';
-import type { ToolbarPosition } from '../types/toolbar';
-import { TOOLBAR_POSITIONS } from '../types/toolbar';
+import { TOOLBAR_POSITIONS, ToolbarPosition } from '../../types';
+import { loadToolbarPosition, saveToolbarPosition } from '../../utils/localStorage';
 
 interface ToolbarUIContextValue {
   position: ToolbarPosition;
@@ -30,7 +28,7 @@ export const ToolbarUIProvider: FC<ToolbarUIProviderProps> = ({ children, initia
     initialPosition && TOOLBAR_POSITIONS.includes(initialPosition) ? initialPosition : undefined;
 
   const [position, setPosition] = useState<ToolbarPosition>(
-    () => loadToolbarPosition() || initialValidPosition || DEFAULT_SETTINGS.position,
+    () => loadToolbarPosition() || initialValidPosition || 'bottom-right',
   );
 
   const handlePositionChange = useCallback((newPosition: ToolbarPosition) => {

@@ -5,7 +5,7 @@ export const header = style({
   alignItems: 'center',
   justifyContent: 'space-between',
   padding: '12px 20px',
-  borderBottom: '1px solid var(--lp-color-gray-800)',
+  borderBottom: '1px solid var(--lp-color-gray-700)',
 });
 
 export const leftSection = style({
