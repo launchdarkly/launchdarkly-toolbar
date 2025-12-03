@@ -12,7 +12,8 @@ import {
 } from './FlagControls';
 import { VIRTUALIZATION } from '../../../constants';
 import { StarButton } from '../../../../Buttons/StarButton';
-import { useStarredFlags, useAnalytics } from '../../../context';
+import { useStarredFlags, useAnalytics, usePlugins, useProjectContext } from '../../../context';
+import { ExternalLinkIcon } from '../../icons';
 
 interface OverrideDotProps {
   onClear: () => void;
@@ -79,6 +80,8 @@ export function FlagItem({
   const [hasErrors, setHasErrors] = useState(false);
   const { isStarred, toggleStarred } = useStarredFlags();
   const analytics = useAnalytics();
+  const { baseUrl } = usePlugins();
+  const { projectKey } = useProjectContext();
 
   const handleToggleStarred = useCallback(
     (flagKey: string) => {
@@ -88,6 +91,12 @@ export function FlagItem({
     },
     [isStarred, toggleStarred, analytics],
   );
+
+  const flagDeeplinkUrl = `${baseUrl}/projects/${projectKey}/flags/${flag.key}`;
+
+  const handleFlagLinkClick = useCallback(() => {
+    analytics.trackOpenFlagDeeplink(flag.key, baseUrl);
+  }, [analytics, flag.key, baseUrl]);
 
   // Object/JSON flags have a different layout structure
   if (flag.type === 'object') {
@@ -99,7 +108,17 @@ export function FlagItem({
             <div className={styles.info}>
               <div className={styles.nameRow}>
                 {flag.isOverridden && onClearOverride && <OverrideDot onClear={onClearOverride} />}
-                <div className={styles.name}>{flag.name}</div>
+                <a
+                  className={styles.nameLink}
+                  href={flagDeeplinkUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={handleFlagLinkClick}
+                  title={`Open ${flag.name} in LaunchDarkly`}
+                >
+                  <span className={styles.nameLinkText}>{flag.name}</span>
+                  <ExternalLinkIcon size="small" className={styles.externalLinkIcon} />
+                </a>
               </div>
               <FlagKeyWithCopy flagKey={flag.key} />
             </div>
@@ -163,7 +182,17 @@ export function FlagItem({
         <div className={styles.info}>
           <div className={styles.nameRow}>
             {flag.isOverridden && onClearOverride && <OverrideDot onClear={onClearOverride} />}
-            <div className={styles.name}>{flag.name}</div>
+            <a
+              className={styles.nameLink}
+              href={flagDeeplinkUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={handleFlagLinkClick}
+              title={`Open ${flag.name} in LaunchDarkly`}
+            >
+              <span className={styles.nameLinkText}>{flag.name}</span>
+              <ExternalLinkIcon size="small" className={styles.externalLinkIcon} />
+            </a>
           </div>
           <FlagKeyWithCopy flagKey={flag.key} />
         </div>

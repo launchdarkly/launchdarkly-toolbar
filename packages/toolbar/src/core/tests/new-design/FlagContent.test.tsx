@@ -27,12 +27,26 @@ vi.mock('../../ui/Toolbar/context', () => ({
   useAnalytics: () => ({
     trackFlagKeyCopy: vi.fn(),
     trackStarredFlag: vi.fn(),
+    trackOpenFlagDeeplink: vi.fn(),
   }),
   useStarredFlags: () => ({
     isStarred: vi.fn().mockReturnValue(false),
     toggleStarred: vi.fn(),
     clearAllStarred: vi.fn(),
     starredCount: 0,
+  }),
+  usePlugins: () => ({
+    baseUrl: 'https://app.launchdarkly.com',
+    flagOverridePlugin: undefined,
+    eventInterceptionPlugin: undefined,
+  }),
+  useProjectContext: () => ({
+    projectKey: 'test-project',
+    projects: [],
+    environments: [],
+    loading: false,
+    setProjectKey: vi.fn(),
+    getProjects: vi.fn(),
   }),
 }));
 

@@ -98,6 +98,60 @@ export const name = style({
   flex: 1,
 });
 
+export const nameLink = style({
+  display: 'inline-flex',
+  alignItems: 'center',
+  gap: '4px',
+  color: 'var(--lp-color-gray-200)',
+  fontSize: '14px',
+  fontWeight: 500,
+  textDecoration: 'none',
+  overflow: 'hidden',
+  minWidth: 0,
+  maxWidth: '100%',
+
+  ':hover': {
+    color: 'var(--lp-color-gray-100)',
+  },
+
+  ':focus': {
+    outline: 'none',
+  },
+
+  ':focus-visible': {
+    outline: '2px solid var(--lp-color-shadow-interactive-focus)',
+    outlineOffset: '2px',
+    borderRadius: '2px',
+  },
+});
+
+export const nameLinkText = style({
+  textDecoration: 'underline',
+  textDecorationColor: 'var(--lp-color-gray-500)',
+  textUnderlineOffset: '2px',
+  overflow: 'hidden',
+  textOverflow: 'ellipsis',
+  whiteSpace: 'nowrap',
+
+  selectors: {
+    [`${nameLink}:hover &`]: {
+      textDecorationColor: 'var(--lp-color-gray-200)',
+    },
+  },
+});
+
+export const externalLinkIcon = style({
+  flexShrink: 0,
+  opacity: 0.6,
+  transition: 'opacity 0.15s ease',
+
+  selectors: {
+    [`${nameLink}:hover &`]: {
+      opacity: 1,
+    },
+  },
+});
+
 export const overrideDot = style({
   display: 'inline-flex',
   alignItems: 'center',
