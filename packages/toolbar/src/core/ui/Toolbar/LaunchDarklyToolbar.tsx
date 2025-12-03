@@ -253,7 +253,7 @@ export function LaunchDarklyToolbar(props: LaunchDarklyToolbarProps) {
   return (
     <TelemetryBundleProvider
       mode={mode}
-      baseUrl={baseUrl}
+      baseUrl={internalClientConfig.baseUrl}
       clientSideId={internalClientConfig.clientSideId}
       streamUrl={internalClientConfig.streamUrl}
       eventsUrl={internalClientConfig.eventsUrl}

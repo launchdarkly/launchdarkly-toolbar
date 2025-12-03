@@ -17,8 +17,6 @@ export function ToolbarStateBundleProvider(props: ToolbarStateBundleProviderProp
   const { initialPosition, domId, devServerUrl, baseUrl, flagOverridePlugin, eventInterceptionPlugin, children } =
     props;
 
-  // Important: ActiveTabProvider and SearchProvider must be outside ToolbarStateProvider
-  // because ToolbarStateProvider uses useActiveTabContext() and useSearchContext()
   return (
     <ToolbarUIProvider initialPosition={initialPosition}>
       <SearchProvider>
