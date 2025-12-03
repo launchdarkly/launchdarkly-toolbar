@@ -95,7 +95,7 @@
     "css-loader": "^7.1.2",
     "jsdom": "^27.2.0",
     "launchdarkly-js-client-sdk": "^3.9.0",
-    "motion": "^12.19.2",
+    "motion": "^12.23.25",
     "oxlint": "^1.30.0",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
