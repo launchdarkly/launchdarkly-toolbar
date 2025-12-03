@@ -309,9 +309,7 @@ describe('FiltersProvider', () => {
   });
 
   describe('useSubtabFilters convenience hook', () => {
-    const wrapper = ({ children }: { children: React.ReactNode }) => (
-      <FiltersProvider>{children}</FiltersProvider>
-    );
+    const wrapper = ({ children }: { children: React.ReactNode }) => <FiltersProvider>{children}</FiltersProvider>;
 
     it('should provide filter state for specific subtab', () => {
       const { result } = renderHook(() => useSubtabFilters('flags'), {
@@ -363,10 +361,7 @@ describe('FiltersProvider', () => {
     it('should have events configuration', () => {
       expect(SUBTAB_FILTER_CONFIGS.events).toBeDefined();
       expect(SUBTAB_FILTER_CONFIGS.events.subtab).toBe('events');
-      expect(SUBTAB_FILTER_CONFIGS.events.options).toContainEqual(
-        expect.objectContaining({ id: 'feature' }),
-      );
+      expect(SUBTAB_FILTER_CONFIGS.events.options).toContainEqual(expect.objectContaining({ id: 'feature' }));
     });
   });
 });
-

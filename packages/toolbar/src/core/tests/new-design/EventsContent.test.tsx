@@ -12,13 +12,22 @@ let mockSearchTerm = '';
 let mockEvents: ProcessedEvent[] = [];
 let mockEventPlugin: IEventInterceptionPlugin | undefined = undefined;
 
-// Mock the TabSearchProvider hook
-vi.mock('../../ui/Toolbar/components/new/context/TabSearchProvider', () => ({
+// Mock the new context hooks
+vi.mock('../../ui/Toolbar/components/new/context', () => ({
   useTabSearchContext: () => ({
     searchTerms: { monitoring: mockSearchTerm },
     setSearchTerm: vi.fn(),
   }),
   TabSearchProvider: ({ children }: { children: React.ReactNode }) => <>{children}</>,
+  useSubtabFilters: () => ({
+    activeFilters: new Set(['all']),
+    config: null,
+    toggle: vi.fn(),
+    reset: vi.fn(),
+    hasFilters: false,
+    hasActiveNonDefaultFilters: false,
+  }),
+  FiltersProvider: ({ children }: { children: React.ReactNode }) => <>{children}</>,
 }));
 
 // Mock the useEvents hook

@@ -8,8 +8,9 @@ import {
   useFlagSdkOverrideContext,
   usePlugins,
   useToolbarState,
+  useStarredFlags,
 } from '../../../context';
-import { useTabSearchContext } from '../context/TabSearchProvider';
+import { useTabSearchContext, useSubtabFilters } from '../context';
 import { FlagItem } from './FlagItem';
 import { NormalizedFlag } from './types';
 import { EnhancedFlag } from '../../../../../types/devServer';
@@ -22,6 +23,8 @@ function DevServerFlagList() {
   const { state, setOverride, clearOverride } = useDevServerContext();
   const { searchTerms } = useTabSearchContext();
   const searchTerm = useMemo(() => searchTerms['flags'] || '', [searchTerms]);
+  const { activeFilters } = useSubtabFilters('flags');
+  const { isStarred } = useStarredFlags();
 
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const getScrollElement = useCallback(() => scrollContainerRef.current, []);
@@ -41,18 +44,34 @@ function DevServerFlagList() {
     }));
   }, [allFlags]);
 
-  // Filter flags based on search term
+  // Filter flags based on search term and active filters
   const filteredFlagIndices = useMemo(() => {
-    if (!searchTerm) return allFlags.map((_, index) => index);
-
     const searchLower = searchTerm.toLowerCase();
+    const showAll = activeFilters.has('all');
+    const showOverrides = activeFilters.has('overrides');
+    const showStarred = activeFilters.has('starred');
+
     return normalizedFlags
       .map((flag, index) => ({ flag, index }))
-      .filter(
-        ({ flag }) => flag.name.toLowerCase().includes(searchLower) || flag.key.toLowerCase().includes(searchLower),
-      )
+      .filter(({ flag }) => {
+        // Apply search filter
+        if (searchTerm) {
+          const matchesSearch =
+            flag.name.toLowerCase().includes(searchLower) || flag.key.toLowerCase().includes(searchLower);
+          if (!matchesSearch) return false;
+        }
+
+        // Apply category filters
+        if (showAll) return true;
+
+        // Check if flag matches any active filter
+        const matchesOverrides = showOverrides && flag.isOverridden;
+        const matchesStarred = showStarred && isStarred(flag.key);
+
+        return matchesOverrides || matchesStarred;
+      })
       .map(({ index }) => index);
-  }, [normalizedFlags, searchTerm, allFlags]);
+  }, [normalizedFlags, searchTerm, activeFilters, isStarred]);
 
   const virtualizer = useVirtualizer({
     count: filteredFlagIndices.length,
@@ -150,6 +169,8 @@ function SdkFlagList() {
   const { flags, setOverride, removeOverride } = useFlagSdkOverrideContext();
   const { searchTerms } = useTabSearchContext();
   const searchTerm = useMemo(() => searchTerms['flags'] || '', [searchTerms]);
+  const { activeFilters } = useSubtabFilters('flags');
+  const { isStarred } = useStarredFlags();
 
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const getScrollElement = useCallback(() => scrollContainerRef.current, []);
@@ -169,18 +190,34 @@ function SdkFlagList() {
     }));
   }, [allFlags]);
 
-  // Filter flags based on search term
+  // Filter flags based on search term and active filters
   const filteredFlagIndices = useMemo(() => {
-    if (!searchTerm) return allFlags.map((_, index) => index);
-
     const searchLower = searchTerm.toLowerCase();
+    const showAll = activeFilters.has('all');
+    const showOverrides = activeFilters.has('overrides');
+    const showStarred = activeFilters.has('starred');
+
     return normalizedFlags
       .map((flag, index) => ({ flag, index }))
-      .filter(
-        ({ flag }) => flag.name.toLowerCase().includes(searchLower) || flag.key.toLowerCase().includes(searchLower),
-      )
+      .filter(({ flag }) => {
+        // Apply search filter
+        if (searchTerm) {
+          const matchesSearch =
+            flag.name.toLowerCase().includes(searchLower) || flag.key.toLowerCase().includes(searchLower);
+          if (!matchesSearch) return false;
+        }
+
+        // Apply category filters
+        if (showAll) return true;
+
+        // Check if flag matches any active filter
+        const matchesOverrides = showOverrides && flag.isOverridden;
+        const matchesStarred = showStarred && isStarred(flag.key);
+
+        return matchesOverrides || matchesStarred;
+      })
       .map(({ index }) => index);
-  }, [normalizedFlags, searchTerm, allFlags]);
+  }, [normalizedFlags, searchTerm, activeFilters, isStarred]);
 
   const virtualizer = useVirtualizer({
     count: filteredFlagIndices.length,

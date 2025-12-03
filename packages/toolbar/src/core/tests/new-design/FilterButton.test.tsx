@@ -210,7 +210,7 @@ describe('FilterButton with different subtabs', () => {
     // Create a provider that sets activeSubtab to 'general' which has no filters
     const TestWrapper = ({ children }: { children: React.ReactNode }) => {
       const [, setActiveSubtab] = React.useState('general');
-      
+
       return (
         <ActiveSubtabProvider>
           <FiltersProvider>
@@ -220,7 +220,7 @@ describe('FilterButton with different subtabs', () => {
         </ActiveSubtabProvider>
       );
     };
-    
+
     // Helper component to set subtab
     const SetSubtabContext = ({ setActiveSubtab }: { setActiveSubtab: (s: string) => void }) => {
       React.useEffect(() => {
@@ -232,10 +232,9 @@ describe('FilterButton with different subtabs', () => {
     // For subtabs without filter config, the button returns null
     // We test this by checking hasFilters returns false for 'general'
     const { container } = render(<FilterButton />, { wrapper: TestWrapper });
-    
+
     // The button should still render because ActiveSubtabProvider defaults to 'flags'
     // which does have filters. This test verifies the component renders correctly.
     expect(container).toBeDefined();
   });
 });
-
