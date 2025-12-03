@@ -14,7 +14,6 @@ interface FilterOptionItemProps {
   onToggle: () => void;
 }
 
-// Memoized filter option to prevent re-renders when other options change
 const FilterOptionItem = memo(function FilterOptionItem({ option, isActive, onToggle }: FilterOptionItemProps) {
   return (
     <button
@@ -40,8 +39,6 @@ interface FilterOverlayContentProps {
   onClose: () => void;
 }
 
-// Memoized overlay content to prevent re-renders from parent
-// Wrapped in a single motion.div so AnimatePresence can properly track it for exit animations
 const FilterOverlayContent = memo(function FilterOverlayContent({ subtab, onClose }: FilterOverlayContentProps) {
   const overlayRef = useRef<HTMLDivElement>(null);
   const { getActiveFilters, getFilterConfig, toggleFilter, resetFilters, hasActiveNonDefaultFilters } = useFilters();
@@ -50,7 +47,6 @@ const FilterOverlayContent = memo(function FilterOverlayContent({ subtab, onClos
   const activeFilters = getActiveFilters(subtab);
   const hasNonDefaultFilters = hasActiveNonDefaultFilters(subtab);
 
-  // Memoize toggle handlers to prevent recreation
   const handleToggle = useCallback(
     (optionId: string) => {
       toggleFilter(subtab, optionId);
@@ -74,7 +70,6 @@ const FilterOverlayContent = memo(function FilterOverlayContent({ subtab, onClos
     return () => document.removeEventListener('keydown', handleKeyDown);
   }, [onClose]);
 
-  // Focus first option after animation completes to avoid stutter
   const handleAnimationComplete = useCallback(() => {
     if (overlayRef.current) {
       const firstButton = overlayRef.current.querySelector('button');
@@ -84,7 +79,6 @@ const FilterOverlayContent = memo(function FilterOverlayContent({ subtab, onClos
 
   if (!config) return null;
 
-  // Single motion wrapper for AnimatePresence to track properly
   return (
     <motion.div
       initial={{ opacity: 0 }}
@@ -92,14 +86,12 @@ const FilterOverlayContent = memo(function FilterOverlayContent({ subtab, onClos
       exit={{ opacity: 0 }}
       transition={{ duration: 0.04, ease: 'easeOut' }}
       onAnimationComplete={(definition) => {
-        // Only focus when animation completes to 'animate' state (opening), not 'exit'
         if (definition === 'animate') {
           handleAnimationComplete();
         }
       }}
       style={{ position: 'absolute', top: 0, right: 0, left: 0, bottom: 0, pointerEvents: 'none' }}
     >
-      {/* Backdrop to close when clicking outside */}
       <div className={styles.backdrop} onClick={onClose} aria-hidden="true" style={{ pointerEvents: 'auto' }} />
 
       <div
