@@ -4,10 +4,7 @@ export const item = style({
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'space-between',
-  padding: '12px 16px',
   backgroundColor: 'var(--lp-color-gray-850)',
-  border: '1px solid var(--lp-color-gray-800)',
-  borderRadius: '8px',
   transition: 'all 0.2s ease',
   gap: '16px',
 });
@@ -40,5 +37,5 @@ export const control = style({
 
 export const switch_ = style({
   fontSize: '12px',
-  backgroundColor: 'var(--lp-color-gray-900)',
+  backgroundColor: 'var(--lp-color-gray-950)',
 });

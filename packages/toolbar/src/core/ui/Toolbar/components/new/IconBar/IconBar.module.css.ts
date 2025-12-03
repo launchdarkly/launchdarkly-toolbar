@@ -3,10 +3,9 @@ import { style } from '@vanilla-extract/css';
 export const container = style({
   display: 'flex',
   alignItems: 'center',
-  justifyContent: 'space-around',
-  padding: '6px 20px',
-  borderBottom: '1px solid var(--lp-color-gray-800)',
-  gap: '8px',
+  justifyContent: 'space-between',
+  padding: '0 12px 6px 12px',
+  borderBottom: '1px solid var(--lp-color-gray-600);',
 });
 
 export const iconButton = style({
@@ -14,7 +13,7 @@ export const iconButton = style({
   border: 'none',
   color: 'var(--lp-color-gray-400)',
   cursor: 'pointer',
-  padding: '12px',
+  padding: '8px',
   borderRadius: '8px',
   display: 'flex',
   alignItems: 'center',
@@ -25,7 +24,7 @@ export const iconButton = style({
   position: 'relative',
 
   ':hover': {
-    backgroundColor: 'var(--lp-color-gray-800)',
+    backgroundColor: 'var(--lp-color-gray-900)',
     color: 'var(--lp-color-gray-200)',
   },
 
@@ -40,7 +39,7 @@ export const iconButton = style({
 });
 
 export const active = style({
-  backgroundColor: 'var(--lp-color-gray-800)',
+  backgroundColor: 'var(--lp-color-gray-900)',
   color: 'var(--lp-color-gray-200)',
 });
 

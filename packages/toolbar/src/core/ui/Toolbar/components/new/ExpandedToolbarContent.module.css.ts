@@ -1,10 +1,10 @@
 import { style } from '@vanilla-extract/css';
 
 export const container = style({
-  backgroundColor: 'var(--lp-color-gray-900)',
+  backgroundColor: 'var(--lp-color-gray-950)',
   color: 'var(--lp-color-gray-200)',
   height: '600px',
-  borderRadius: '12px',
+  borderRadius: '8px',
   border: '1px solid var(--lp-color-gray-700)',
   display: 'flex',
   flexDirection: 'column',
@@ -15,7 +15,7 @@ export const container = style({
 export const content = style({
   flex: 1,
   overflowY: 'auto',
-  padding: '16px',
+  padding: 'var(radius)',
   scrollbarColor: 'var(--lp-color-gray-700) transparent',
   scrollbarWidth: 'thin',
 

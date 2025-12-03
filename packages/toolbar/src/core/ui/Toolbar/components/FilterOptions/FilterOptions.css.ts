@@ -5,7 +5,7 @@ export const container = style({
   flexDirection: 'column',
   gap: '12px',
   padding: '12px 20px',
-  borderBottom: '1px solid var(--lp-color-gray-800)',
+  borderBottom: '1px solid var(--lp-color-gray-600);',
 });
 
 export const filterButton = style({

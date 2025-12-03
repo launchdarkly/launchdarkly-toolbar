@@ -4,8 +4,7 @@ export const header = style({
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'space-between',
-  padding: '12px 20px',
-  borderBottom: '1px solid var(--lp-color-gray-800)',
+  padding: '8px 12px 0 12px',
 });
 
 export const leftSection = style({

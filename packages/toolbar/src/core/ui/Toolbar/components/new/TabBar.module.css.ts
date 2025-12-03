@@ -4,8 +4,8 @@ export const container = style({
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'space-between',
-  padding: '0 20px',
-  borderBottom: '1px solid var(--lp-color-gray-800)',
+  padding: '8px 12px',
+  borderBottom: '1px solid var(--lp-color-gray-600);',
   minHeight: '48px',
 });
 
