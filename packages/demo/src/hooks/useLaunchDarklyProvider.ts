@@ -64,7 +64,7 @@ export function useLaunchDarklyProvider(props: UseLaunchDarklyProviderProps): Us
         stopMockWorker();
       }
     };
-  }, [baseUrl, clientSideID, eventsUrl, plugins, streamUrl]);
+  }, []);
 
   return {
     LDProvider,
