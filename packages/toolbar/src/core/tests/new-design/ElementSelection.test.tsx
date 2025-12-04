@@ -79,9 +79,7 @@ describe('Element Selection Integration', () => {
                       <FiltersProvider>
                         <DevServerProvider config={{ devServerUrl: '', pollIntervalInMs: 5000 }}>
                           <ToolbarStateProvider domId="test-toolbar">
-                            <PluginsProvider baseUrl="https://app.launchdarkly.com">
-                              {children}
-                            </PluginsProvider>
+                            <PluginsProvider baseUrl="https://app.launchdarkly.com">{children}</PluginsProvider>
                           </ToolbarStateProvider>
                         </DevServerProvider>
                       </FiltersProvider>
