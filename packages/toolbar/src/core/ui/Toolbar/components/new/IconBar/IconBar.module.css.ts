@@ -4,7 +4,7 @@ export const container = style({
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'space-around',
-  padding: '6px 20px',
+  padding: '6px',
   borderBottom: '1px solid var(--lp-color-gray-700)',
   gap: '8px',
 });
