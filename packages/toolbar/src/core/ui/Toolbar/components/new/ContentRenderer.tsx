@@ -10,10 +10,6 @@ function ContextContent() {
   return <div>Context Content</div>;
 }
 
-function ClickTrackingContent() {
-  return <div>Click Tracking Content</div>;
-}
-
 export function ContentRenderer() {
   const { activeTab } = useActiveTabContext();
   const { activeSubtab } = useActiveSubtabContext();
