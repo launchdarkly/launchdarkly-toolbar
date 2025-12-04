@@ -1,9 +1,9 @@
 import { useCallback, useState, useMemo } from 'react';
 
-import { useActiveTabContext, usePlugins } from '../../context';
+import { useActiveTabContext, useDevServerContext, usePlugins, useToolbarState } from '../../context';
 import { useActiveSubtabContext, useTabSearchContext } from './context';
 import { useEvents } from '../../hooks';
-import { DeleteIcon, SearchIcon } from '../icons';
+import { DeleteIcon, SearchIcon, SyncIcon } from '../icons';
 import { SearchSection } from './SearchSection';
 import { FilterButton } from './FilterOverlay';
 import { IconButton } from '../../../Buttons/IconButton';
@@ -19,18 +19,25 @@ export function ContentActions() {
   const { events } = useEvents(eventInterceptionPlugin, searchTerm);
   const { setSearchTerm } = useTabSearchContext();
   const [searchIsExpanded, setSearchIsExpanded] = useState(false);
+  const { mode } = useToolbarState();
+  const { refresh, state } = useDevServerContext();
 
   // Determine which actions to show based on current tab/subtab
   const showFilter =
     (activeTab === 'flags' && activeSubtab === 'flags') || (activeTab === 'monitoring' && activeSubtab === 'events');
   const showSearch = true; // All tabs have search
   const showClearEvents = activeTab === 'monitoring' && activeSubtab === 'events';
+  const showSync = mode === 'dev-server' && activeTab === 'flags' && activeSubtab === 'flags';
 
   const handleClearEvents = useCallback(() => {
     if (eventInterceptionPlugin) {
       eventInterceptionPlugin.clearEvents();
     }
   }, [eventInterceptionPlugin]);
+
+  const handleSync = useCallback(() => {
+    refresh();
+  }, [refresh]);
 
   const handleSearch = useCallback(
     (input: string) => {
@@ -53,6 +60,14 @@ export function ContentActions() {
         </>
       )}
       {showFilter && <FilterButton />}
+      {showSync && (
+        <IconButton
+          icon={<SyncIcon />}
+          label="Sync flags"
+          onClick={handleSync}
+          disabled={state.isLoading}
+        />
+      )}
       {showClearEvents && (
         <button
           className={styles.actionButton}
