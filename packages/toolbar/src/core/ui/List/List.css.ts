@@ -15,9 +15,6 @@ export const listItem = style({
   transition: 'background-color 0.2s ease',
 
   selectors: {
-    '&:last-child': {
-      borderBottom: 'none',
-    },
     '&:focus-visible': {
       backgroundColor: 'var(--lp-color-gray-850)',
       outline: '2px solid var(--lp-color-shadow-interactive-focus)',

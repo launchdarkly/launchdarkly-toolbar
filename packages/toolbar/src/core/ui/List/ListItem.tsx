@@ -1,4 +1,3 @@
-import { motion } from 'motion/react';
 import * as styles from './List.css';
 
 export interface ListItemProps {
@@ -17,16 +16,14 @@ export function ListItem(props: ListItemProps) {
   };
 
   return (
-    <motion.div
+    <div
       className={`${styles.listItem} ${className || ''}`}
       onClick={onClick}
       onKeyDown={handleKeyDown}
       tabIndex={onClick ? 0 : undefined}
       role={onClick ? 'button' : undefined}
-      whileHover={{ backgroundColor: onClick ? 'var(--lp-color-gray-850)' : undefined }}
-      transition={{ duration: 0.2 }}
     >
       {children}
-    </motion.div>
+    </div>
   );
 }
