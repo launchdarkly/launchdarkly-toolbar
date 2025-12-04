@@ -44,7 +44,6 @@ export function minifyPromptForUrl(prompt: string): string {
   );
 }
 
-
 /**
  * Open Cursor IDE with the prompt in composer
  * Cursor uses cursor://anysphere.cursor-deeplink/prompt?text=<encoded_prompt>
@@ -139,11 +138,7 @@ export function openInIde(prompt: string, ide: PreferredIde): boolean {
  * @param urlPrompt - Optional condensed prompt for URL-based IDEs (GitHub Copilot). If not provided, uses full prompt.
  * @returns true if both copy and IDE open were successful, false otherwise
  */
-export async function copyAndOpenInIde(
-  prompt: string,
-  ide: PreferredIde,
-  urlPrompt?: string,
-): Promise<boolean> {
+export async function copyAndOpenInIde(prompt: string, ide: PreferredIde, urlPrompt?: string): Promise<boolean> {
   const copied = await copyToClipboard(prompt);
   if (!copied) {
     return false;
@@ -153,4 +148,3 @@ export async function copyAndOpenInIde(
   const opened = openInIde(promptForIde, ide);
   return opened;
 }
-

@@ -93,9 +93,7 @@ export function getElementSelector(element: Element): string {
     // Add nth-child if needed to disambiguate
     const parent = current.parentElement;
     if (parent) {
-      const siblings = Array.from(parent.children).filter(
-        (child) => child.tagName === current!.tagName
-      );
+      const siblings = Array.from(parent.children).filter((child) => child.tagName === current!.tagName);
       if (siblings.length > 1) {
         const index = siblings.indexOf(current) + 1;
         selector += `:nth-of-type(${index})`;
@@ -269,4 +267,3 @@ export function getElementRect(element: Element): DOMRect {
   }
   return element.getBoundingClientRect();
 }
-

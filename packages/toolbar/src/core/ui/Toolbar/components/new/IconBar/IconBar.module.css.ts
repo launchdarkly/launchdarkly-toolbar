@@ -63,7 +63,7 @@ export const icon = style({
 export const selectMode = style({
   backgroundColor: 'var(--lp-color-blue-900)',
   color: 'var(--lp-color-blue-400)',
-  
+
   ':hover': {
     backgroundColor: 'var(--lp-color-blue-800)',
     color: 'var(--lp-color-blue-300)',

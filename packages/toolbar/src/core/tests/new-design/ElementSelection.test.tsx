@@ -58,9 +58,7 @@ describe('Element Selection Integration', () => {
   const renderWithProviders = (children: React.ReactNode) => {
     return render(
       <ElementSelectionProvider>
-        <ActiveTabProvider>
-          {children}
-        </ActiveTabProvider>
+        <ActiveTabProvider>{children}</ActiveTabProvider>
       </ElementSelectionProvider>,
     );
   };
@@ -92,10 +90,10 @@ describe('Element Selection Integration', () => {
       renderWithProviders(<IconBar {...defaultProps} />);
 
       const interactiveButton = screen.getByLabelText('Interactive Mode');
-      
+
       // First click switches to interactive tab
       fireEvent.click(interactiveButton);
-      
+
       // Second click starts selection
       fireEvent.click(interactiveButton);
 
@@ -117,7 +115,7 @@ describe('Element Selection Integration', () => {
           <IconBar {...defaultProps} />
           <SelectionOverlay />
           <InteractiveContent />
-        </>
+        </>,
       );
 
       const interactiveButton = screen.getByLabelText('Interactive Mode');
@@ -131,7 +129,7 @@ describe('Element Selection Integration', () => {
       // For testing, we'll directly trigger selection via the context
       // This simulates what happens when a user clicks an element
       const { useElementSelection } = await import('../../ui/Toolbar/context/ElementSelectionProvider');
-      
+
       const TestSelectionComponent = () => {
         const { selectElement } = useElementSelection();
         React.useEffect(() => {
@@ -144,7 +142,7 @@ describe('Element Selection Integration', () => {
         <>
           <TestSelectionComponent />
           <InteractiveContent />
-        </>
+        </>,
       );
 
       await waitFor(() => {
@@ -171,7 +169,7 @@ describe('Element Selection Integration', () => {
           <IconBar {...defaultProps} />
           <ContentActions />
           <InteractiveContent />
-        </>
+        </>,
       );
 
       // Start in interactive tab
@@ -196,7 +194,7 @@ describe('Element Selection Integration', () => {
           <TestSelectionComponent />
           <ContentActions />
           <InteractiveContent />
-        </>
+        </>,
       );
 
       await waitFor(() => {
@@ -232,15 +230,19 @@ describe('Element Selection Integration', () => {
       renderWithProviders(
         <>
           <SelectionOverlay />
-        </>
+        </>,
       );
 
       const TestComponent = () => {
         const { startSelection, selectElement, isSelecting } = useElementSelection();
         return (
           <div>
-            <button onClick={startSelection} data-testid="start-btn">Start</button>
-            <button onClick={() => selectElement(testElement)} data-testid="select-btn">Select</button>
+            <button onClick={startSelection} data-testid="start-btn">
+              Start
+            </button>
+            <button onClick={() => selectElement(testElement)} data-testid="select-btn">
+              Select
+            </button>
             <div data-testid="selecting-state">{isSelecting ? 'selecting' : 'not-selecting'}</div>
           </div>
         );
@@ -250,7 +252,7 @@ describe('Element Selection Integration', () => {
         <>
           <TestComponent />
           <SelectionOverlay />
-        </>
+        </>,
       );
 
       // Start selection
@@ -294,11 +296,10 @@ describe('Element Selection Integration', () => {
 
     it('should throw error for invalid element', () => {
       const { getElementInfo } = require('../../ui/Toolbar/components/new/Interactive/utils/elementUtils');
-      
+
       expect(() => getElementInfo(null as any)).toThrow('Invalid element');
       expect(() => getElementInfo(undefined as any)).toThrow('Invalid element');
       expect(() => getElementInfo({} as any)).toThrow('Invalid element');
     });
   });
 });
-

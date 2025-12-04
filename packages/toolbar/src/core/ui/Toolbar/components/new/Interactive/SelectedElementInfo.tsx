@@ -116,4 +116,4 @@ export function SelectedElementInfo() {
       </div>
     </div>
   );
-};
+}

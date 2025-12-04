@@ -78,4 +78,3 @@ export const WORKFLOW_CONFIGS: Record<WorkflowType, WorkflowConfig> = {
 export function getWorkflowConfig(type: WorkflowType): WorkflowConfig {
   return WORKFLOW_CONFIGS[type];
 }
-

@@ -111,7 +111,6 @@ export function SelectionModeBar() {
         <span>Exit</span>
       </button>
     </div>,
-    document.body
+    document.body,
   );
 }
-

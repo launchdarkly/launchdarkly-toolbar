@@ -33,4 +33,3 @@ export const cards = style({
   flexDirection: 'column',
   gap: '8px',
 });
-

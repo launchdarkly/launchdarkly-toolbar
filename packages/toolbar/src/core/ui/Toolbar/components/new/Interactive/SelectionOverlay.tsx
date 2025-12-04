@@ -14,8 +14,7 @@ interface HighlightBox {
 }
 
 export function SelectionOverlay() {
-  const { isSelecting, selectedElement, hoveredElement, setHoveredElement, selectElement } =
-    useElementSelection();
+  const { isSelecting, selectedElement, hoveredElement, setHoveredElement, selectElement } = useElementSelection();
 
   const [highlightBox, setHighlightBox] = useState<HighlightBox | null>(null);
   const [selectedBox, setSelectedBox] = useState<HighlightBox | null>(null);
@@ -86,15 +85,12 @@ export function SelectionOverlay() {
 
       setHoveredElement(target);
     },
-    [isSelecting, setHoveredElement]
+    [isSelecting, setHoveredElement],
   );
 
   // Throttle mouse move handler to ~60fps for performance
   // delay is in milliseconds
-  const throttledMouseMove = useMemo(
-    () => throttle(handleMouseMove, 16),
-    [handleMouseMove]
-  );
+  const throttledMouseMove = useMemo(() => throttle(handleMouseMove, 16), [handleMouseMove]);
 
   const handleClick = useCallback(
     (event: MouseEvent) => {
@@ -113,7 +109,7 @@ export function SelectionOverlay() {
 
       selectElement(target);
     },
-    [isSelecting, selectElement]
+    [isSelecting, selectElement],
   );
 
   // Set up event listeners when in selection mode
@@ -135,7 +131,7 @@ export function SelectionOverlay() {
 
   // Screen reader announcement for selection mode
   const [announcement, setAnnouncement] = useState<string>('');
-  
+
   useEffect(() => {
     if (isSelecting) {
       setAnnouncement('Selection mode active. Click an element to select it.');
@@ -227,12 +223,7 @@ export function SelectionOverlay() {
   return createPortal(
     <>
       {/* ARIA live region for screen reader announcements */}
-      <div
-        role="status"
-        aria-live="polite"
-        aria-atomic="true"
-        style={srOnlyStyles as any}
-      >
+      <div role="status" aria-live="polite" aria-atomic="true" style={srOnlyStyles as any}>
         {announcement}
       </div>
 
@@ -252,7 +243,6 @@ export function SelectionOverlay() {
         </div>
       )}
     </>,
-    document.body
+    document.body,
   );
 }
-

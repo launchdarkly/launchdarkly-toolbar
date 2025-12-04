@@ -16,4 +16,3 @@ export function WorkflowSection({ title, children }: WorkflowSectionProps) {
     </div>
   );
 }
-

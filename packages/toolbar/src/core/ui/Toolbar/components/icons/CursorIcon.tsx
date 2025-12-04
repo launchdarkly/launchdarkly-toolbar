@@ -18,4 +18,3 @@ export function CursorIcon({ className, width = 16, height = 16 }: CursorIconPro
     </svg>
   );
 }
-

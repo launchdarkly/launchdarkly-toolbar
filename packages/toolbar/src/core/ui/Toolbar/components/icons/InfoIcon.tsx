@@ -20,4 +20,3 @@ export function InfoIcon({ className }: IconProps) {
     </svg>
   );
 }
-

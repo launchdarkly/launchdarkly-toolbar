@@ -7,4 +7,3 @@ export { WorkflowCard } from './WorkflowCard';
 export { WorkflowSection } from './WorkflowSection';
 export { MCPSetupAlert } from './MCPSetupAlert';
 export { type WorkflowType } from './workflowConfigs';
-

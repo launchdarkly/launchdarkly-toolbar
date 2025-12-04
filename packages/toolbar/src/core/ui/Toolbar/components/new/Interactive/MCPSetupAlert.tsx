@@ -56,40 +56,40 @@ export function MCPSetupAlert({ onDismiss }: MCPSetupAlertProps) {
         <div className={styles.alertContentWithIcon}>
           <InfoIcon className={styles.infoIcon} />
           <div className={styles.alertContent}>
-          <div className={styles.textContent}>
-            <p className={styles.title}>Supercharge your workflow with MCP</p>
-            <p className={styles.description}>
-              Our MCP server is the perfect companion to this toolbar - let AI agents create and manage your feature
-              flags directly in your IDE.
-            </p>
-          </div>
-          <div className={styles.actions}>
-            <a
-              href={CURSOR_DEEPLINK}
-              className={`${styles.actionButton}`}
-              title="Add LaunchDarkly MCP server to Cursor"
-            >
-              <CursorIcon className={styles.cursorIcon} width={14} height={14} />
-              <span>Add to Cursor</span>
-            </a>
-            <a
-              href={DOCS_URL}
-              target="_blank"
-              rel="noopener noreferrer"
-              className={styles.actionButton}
-              title="View MCP server documentation"
-            >
-              View docs
-            </a>
-            <button
-              type="button"
-              className={`${styles.actionButton} ${styles.doneButton}`}
-              onClick={handleDone}
-              title="Dismiss this alert"
-            >
-              Done
-            </button>
-          </div>
+            <div className={styles.textContent}>
+              <p className={styles.title}>Supercharge your workflow with MCP</p>
+              <p className={styles.description}>
+                Our MCP server is the perfect companion to this toolbar - let AI agents create and manage your feature
+                flags directly in your IDE.
+              </p>
+            </div>
+            <div className={styles.actions}>
+              <a
+                href={CURSOR_DEEPLINK}
+                className={`${styles.actionButton}`}
+                title="Add LaunchDarkly MCP server to Cursor"
+              >
+                <CursorIcon className={styles.cursorIcon} width={14} height={14} />
+                <span>Add to Cursor</span>
+              </a>
+              <a
+                href={DOCS_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                className={styles.actionButton}
+                title="View MCP server documentation"
+              >
+                View docs
+              </a>
+              <button
+                type="button"
+                className={`${styles.actionButton} ${styles.doneButton}`}
+                onClick={handleDone}
+                title="Dismiss this alert"
+              >
+                Done
+              </button>
+            </div>
           </div>
         </div>
       </Alert>

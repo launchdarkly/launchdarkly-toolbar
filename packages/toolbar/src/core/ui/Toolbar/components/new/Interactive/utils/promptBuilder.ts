@@ -47,13 +47,7 @@ export function buildElementContext(elementInfo: ElementInfo): string {
  * Includes all essential steps but with less verbose examples.
  */
 export function buildCondensedFeatureFlagPrompt(options: FeatureFlagPromptOptions): string {
-  const {
-    elementContext,
-    projectKey,
-    environmentKey = 'development',
-    suggestedFlagKey,
-    intent = 'show',
-  } = options;
+  const { elementContext, projectKey, environmentKey = 'development', suggestedFlagKey, intent = 'show' } = options;
 
   return `## Objective
 Wrap the specified UI element in a LaunchDarkly feature flag. You have access to LaunchDarkly MCP tools.
@@ -130,13 +124,7 @@ Current state: Flag is OFF (safe default)
  * This prompt is designed for agents with access to LaunchDarkly MCP tools.
  */
 export function buildFeatureFlagAgentPrompt(options: FeatureFlagPromptOptions): string {
-  const {
-    elementContext,
-    projectKey,
-    environmentKey = 'development',
-    suggestedFlagKey,
-    intent = 'show',
-  } = options;
+  const { elementContext, projectKey, environmentKey = 'development', suggestedFlagKey, intent = 'show' } = options;
 
   return `
 ## Objective

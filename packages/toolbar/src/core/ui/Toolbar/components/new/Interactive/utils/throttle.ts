@@ -7,10 +7,7 @@
  * @param delay - The delay in milliseconds between function calls
  * @returns A throttled version of the function
  */
-export function throttle<T extends (...args: any[]) => any>(
-  func: T,
-  delay: number
-): (...args: Parameters<T>) => void {
+export function throttle<T extends (...args: any[]) => any>(func: T, delay: number): (...args: Parameters<T>) => void {
   let lastCallTime = 0;
   let timeoutId: ReturnType<typeof setTimeout> | null = null;
 
@@ -35,4 +32,3 @@ export function throttle<T extends (...args: any[]) => any>(
     }
   };
 }
-

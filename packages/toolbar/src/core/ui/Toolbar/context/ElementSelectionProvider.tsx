@@ -79,7 +79,7 @@ export function ElementSelectionProvider({
       setHoveredElement(null);
       onSelectionEnd?.();
     },
-    [onSelectionEnd]
+    [onSelectionEnd],
   );
 
   const clearSelection = useCallback(() => {
@@ -110,12 +110,10 @@ export function ElementSelectionProvider({
       exitSelection,
       selectElement,
       clearSelection,
-    ]
+    ],
   );
 
-  return (
-    <ElementSelectionContext.Provider value={value}>{children}</ElementSelectionContext.Provider>
-  );
+  return <ElementSelectionContext.Provider value={value}>{children}</ElementSelectionContext.Provider>;
 }
 
 /**
@@ -132,4 +130,3 @@ export function useElementSelection(): ElementSelectionContextValue {
   }
   return context;
 }
-

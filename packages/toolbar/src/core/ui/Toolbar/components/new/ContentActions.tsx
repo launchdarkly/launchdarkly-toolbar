@@ -1,5 +1,11 @@
 import { useCallback, useState, useMemo } from 'react';
-import { useActiveTabContext, useDevServerContext, useElementSelection, usePlugins, useToolbarState } from '../../context';
+import {
+  useActiveTabContext,
+  useDevServerContext,
+  useElementSelection,
+  usePlugins,
+  useToolbarState,
+} from '../../context';
 import { useActiveSubtabContext, useTabSearchContext } from './context';
 import { useEvents } from '../../hooks';
 import { CancelCircleIcon, DeleteIcon, SearchIcon, SyncIcon } from '../icons';
@@ -29,9 +35,9 @@ export function ContentActions() {
 
   const showFilter =
     (activeTab === 'flags' && activeSubtab === 'flags') || (activeTab === 'monitoring' && activeSubtab === 'events');
-  
+
   const showSearch = activeTab !== 'interactive'; // Hide search for interactive tab
-  
+
   const showClearEvents = activeTab === 'monitoring' && activeSubtab === 'events';
   const showSync = mode === 'dev-server' && activeTab === 'flags' && activeSubtab === 'flags';
 
