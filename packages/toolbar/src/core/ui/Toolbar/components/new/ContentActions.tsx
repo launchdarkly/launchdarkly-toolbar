@@ -61,12 +61,7 @@ export function ContentActions() {
       )}
       {showFilter && <FilterButton />}
       {showSync && (
-        <IconButton
-          icon={<SyncIcon />}
-          label="Sync flags"
-          onClick={handleSync}
-          disabled={state.isLoading}
-        />
+        <IconButton icon={<SyncIcon />} label="Sync flags" onClick={handleSync} disabled={state.isLoading} />
       )}
       {showClearEvents && (
         <button
