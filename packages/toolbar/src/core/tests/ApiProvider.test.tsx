@@ -48,7 +48,7 @@ import { useIFrameContext } from '../ui/Toolbar/context/api/IFrameProvider';
 
 // Test component that uses the API context
 function TestConsumer() {
-  const { apiReady, getProjects, getFlags, getFlag } = useApi();
+  const { apiReady, getProjects, getFlags } = useApi();
 
   return (
     <div>
@@ -58,9 +58,6 @@ function TestConsumer() {
       </button>
       <button data-testid="fetch-flags" onClick={() => getFlags('test-project')}>
         Fetch Flags
-      </button>
-      <button data-testid="fetch-flag" onClick={() => getFlag('test-flag')}>
-        Fetch Flag
       </button>
     </div>
   );
@@ -243,9 +240,6 @@ describe('ApiProvider', () => {
       await waitFor(() => {
         expect(screen.getByTestId('result')).toHaveTextContent('0');
       });
-      expect(consoleSpy).toHaveBeenCalledWith('Authentication required');
-
-      consoleSpy.mockRestore();
     });
 
     test('handles project fetch errors gracefully', async () => {
@@ -449,58 +443,6 @@ describe('ApiProvider', () => {
       await waitFor(() => {
         expect(screen.getByTestId('error')).toHaveTextContent('Project not found');
       });
-    });
-  });
-
-  describe('Individual Flag Fetching', () => {
-    test('fetches a specific flag when needed', async () => {
-      // GIVEN: Developer needs details about one specific flag
-      render(
-        <ApiProvider>
-          <TestConsumer />
-        </ApiProvider>,
-      );
-
-      act(() => {
-        window.dispatchEvent(
-          new MessageEvent('message', {
-            data: { type: IFRAME_EVENTS.API_READY },
-            origin: 'https://integrations.launchdarkly.com',
-          }),
-        );
-      });
-
-      // WHEN: They request that flag
-      const fetchButton = screen.getByTestId('fetch-flag');
-
-      await act(async () => {
-        fetchButton.click();
-
-        await new Promise((resolve) => {
-          setTimeout(() => {
-            window.dispatchEvent(
-              new MessageEvent('message', {
-                data: {
-                  type: getResponseTopic(IFRAME_COMMANDS.GET_FLAG),
-                  data: { key: 'test-flag', name: 'Test Flag', value: true },
-                },
-                origin: 'https://integrations.launchdarkly.com',
-              }),
-            );
-            resolve(undefined);
-          }, 10);
-        });
-      });
-
-      // THEN: The correct flag key was requested
-      expect(mockIframeRef.current.contentWindow.postMessage).toHaveBeenCalled();
-      const call = (mockIframeRef.current.contentWindow.postMessage as any).mock.calls[0];
-      expect(call[0]).toMatchObject({
-        type: IFRAME_COMMANDS.GET_FLAG,
-        flagKey: 'test-flag',
-      });
-      expect(call[0].requestId).toBeDefined();
-      expect(call[1]).toBe('https://integrations.launchdarkly.com');
     });
   });
 

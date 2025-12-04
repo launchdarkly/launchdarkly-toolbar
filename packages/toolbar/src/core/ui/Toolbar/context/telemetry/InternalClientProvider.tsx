@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useState, type ReactNode } from 'react';
+import { createContext, useCallback, useContext, useEffect, useState, type ReactNode } from 'react';
 import type { LDClient, LDContext } from 'launchdarkly-js-client-sdk';
 import { setToolbarFlagClient } from '../../../../../flags';
 
@@ -23,6 +23,11 @@ export interface InternalClientContextValue {
    * Error during initialization, if any.
    */
   error: Error | null;
+
+  /**
+   * Update the client context with new member/account information.
+   */
+  updateContext: (accountId: string, memberId: string) => Promise<void>;
 }
 
 const InternalClientContext = createContext<InternalClientContextValue | null>(null);
@@ -149,10 +154,30 @@ export function InternalClientProvider({
     };
   }, [clientSideId, initialContext, baseUrl, streamUrl, eventsUrl]); // Re-initialize if any config changes
 
+  const updateContext = useCallback(
+    async (accountId: string, memberId: string) => {
+      if (!client) {
+        return;
+      }
+
+      await client.identify({
+        kind: 'multi',
+        account: {
+          key: accountId,
+        },
+        user: {
+          key: memberId,
+        },
+      });
+    },
+    [client],
+  );
+
   const value: InternalClientContextValue = {
     client,
     loading,
     error,
+    updateContext,
   };
 
   return <InternalClientContext.Provider value={value}>{children}</InternalClientContext.Provider>;

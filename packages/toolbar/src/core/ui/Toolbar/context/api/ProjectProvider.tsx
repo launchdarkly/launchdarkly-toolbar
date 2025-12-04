@@ -2,6 +2,7 @@ import { createContext, useCallback, useContext, useEffect, useState } from 'rea
 import { useApi } from './ApiProvider';
 import { TOOLBAR_STORAGE_KEYS } from '../../utils/localStorage';
 import { ApiProject, ProjectsResponse } from '../../types/ldApi';
+import { useAuthContext } from './AuthProvider';
 
 const STORAGE_KEY = TOOLBAR_STORAGE_KEYS.PROJECT;
 
@@ -22,6 +23,7 @@ interface ProjectProviderProps {
 }
 
 export const ProjectProvider = ({ children, clientSideId, providedProjectKey }: ProjectProviderProps) => {
+  const { authenticated } = useAuthContext();
   const { getProjects: getApiProjects, apiReady } = useApi();
   const [projects, setProjects] = useState<ApiProject[]>([]);
   const [projectKey, setProjectKeyState] = useState<string>('');
@@ -34,12 +36,12 @@ export const ProjectProvider = ({ children, clientSideId, providedProjectKey }: 
   }, []);
 
   const getProjects = useCallback(async () => {
-    if (!apiReady) {
+    if (!apiReady || !authenticated) {
       return { items: [] };
     }
 
     return await getApiProjects();
-  }, [apiReady, getApiProjects]);
+  }, [apiReady, authenticated, getApiProjects]);
 
   useEffect(() => {
     let isMounted = true;
