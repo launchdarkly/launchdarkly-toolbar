@@ -214,5 +214,16 @@ export const liveTailSubtext = style({
 });
 
 export const eventListItem = style({
+  // Card styling for new design
+  backgroundColor: 'var(--lp-color-gray-850)',
+  border: '1px solid var(--lp-color-gray-700)',
+  borderRadius: '8px',
+  padding: '16px',
+  paddingLeft: '12px',
   cursor: 'pointer',
+
+  ':hover': {
+    backgroundColor: 'var(--lp-color-gray-800)',
+    borderColor: 'var(--lp-color-gray-600)',
+  },
 });
