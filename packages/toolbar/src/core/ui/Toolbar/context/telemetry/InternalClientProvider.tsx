@@ -1,7 +1,7 @@
 import { createContext, useCallback, useContext, useEffect, useState, type ReactNode } from 'react';
 import type { LDClient, LDContext } from 'launchdarkly-js-client-sdk';
 import { setToolbarFlagClient } from '../../../../../flags';
-import { enableSessionReplay } from '../../../../../flags/toolbarFlags';
+import { enableSessionReplay, ENABLE_SESSION_REPLAY_FLAG_KEY } from '../../../../../flags/toolbarFlags';
 
 export interface AuthState {
   authenticated: boolean;
@@ -114,30 +114,17 @@ export function InternalClientProvider({
           anonymous: true,
         };
 
-        // Configure SDK options for custom URLs if provided
-        const hasCustomUrls = baseUrl || streamUrl || eventsUrl;
-        const options = hasCustomUrls
-          ? {
-              ...(baseUrl && { baseUrl }),
-              ...(streamUrl && { streamUrl }),
-              ...(eventsUrl && { eventsUrl }),
-              // Add Session Replay plugin with manual start
-              observabilityPlugins: [
-                new SessionReplay({
-                  manualStart: true,
-                  privacySetting: 'default',
-                }),
-              ],
-            }
-          : {
-              // Add Session Replay plugin with manual start
-              observabilityPlugins: [
-                new SessionReplay({
-                  manualStart: true,
-                  privacySetting: 'default',
-                }),
-              ],
-            };
+        const sessionReplayPlugin = new SessionReplay({
+          manualStart: true,
+          privacySetting: 'default',
+        });
+
+        const options = {
+          ...(baseUrl && { baseUrl }),
+          ...(streamUrl && { streamUrl }),
+          ...(eventsUrl && { eventsUrl }),
+          plugins: [sessionReplayPlugin],
+        };
 
         const ldClient = initialize(clientSideId, context, options);
         clientToCleanup = ldClient;
@@ -223,15 +210,14 @@ export function InternalClientProvider({
     checkAndUpdateSessionReplay();
 
     // Listen for flag changes
-    const flagKey = 'toolbar-enable-session-replay';
     const handleFlagChange = () => {
       checkAndUpdateSessionReplay();
     };
 
-    client.on(`change:${flagKey}`, handleFlagChange);
+    client.on(`change:${ENABLE_SESSION_REPLAY_FLAG_KEY}`, handleFlagChange);
 
     return () => {
-      client.off(`change:${flagKey}`, handleFlagChange);
+      client.off(`change:${ENABLE_SESSION_REPLAY_FLAG_KEY}`, handleFlagChange);
     };
   }, [client]);
 
