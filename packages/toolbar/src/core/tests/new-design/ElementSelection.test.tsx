@@ -4,8 +4,19 @@ import { IconBar } from '../../ui/Toolbar/components/new/IconBar/IconBar';
 import { InteractiveContent } from '../../ui/Toolbar/components/new/Interactive/InteractiveContent';
 import { SelectionOverlay } from '../../ui/Toolbar/components/new/Interactive/SelectionOverlay';
 import { ContentActions } from '../../ui/Toolbar/components/new/ContentActions';
-import { ActiveTabProvider } from '../../ui/Toolbar/context/ActiveTabProvider';
+import { ActiveTabProvider } from '../../ui/Toolbar/context/state/ActiveTabProvider';
+import { ActiveSubtabProvider } from '../../ui/Toolbar/components/new/context/ActiveSubtabProvider';
+import { TabSearchProvider } from '../../ui/Toolbar/components/new/context/TabSearchProvider';
+import { FiltersProvider } from '../../ui/Toolbar/components/new/context/FiltersProvider';
+import { SearchProvider } from '../../ui/Toolbar/context/state/SearchProvider';
+import { DevServerProvider } from '../../ui/Toolbar/context/DevServerProvider';
+import { ApiBundleProvider } from '../../ui/Toolbar/context/api/ApiBundleProvider';
+import { AnalyticsProvider } from '../../ui/Toolbar/context/telemetry/AnalyticsProvider';
+import { InternalClientProvider } from '../../ui/Toolbar/context/telemetry/InternalClientProvider';
+import { PluginsProvider } from '../../ui/Toolbar/context/state/PluginsProvider';
+import { ToolbarStateProvider } from '../../ui/Toolbar/context/state/ToolbarStateProvider';
 import { ElementSelectionProvider, useElementSelection } from '../../ui/Toolbar/context/ElementSelectionProvider';
+import { getElementInfo } from '../../ui/Toolbar/components/new/Interactive/utils/elementUtils';
 import '@testing-library/jest-dom/vitest';
 import React from 'react';
 
@@ -57,9 +68,31 @@ describe('Element Selection Integration', () => {
 
   const renderWithProviders = (children: React.ReactNode) => {
     return render(
-      <ElementSelectionProvider>
-        <ActiveTabProvider>{children}</ActiveTabProvider>
-      </ElementSelectionProvider>,
+      <InternalClientProvider>
+        <AnalyticsProvider>
+          <SearchProvider>
+            <ActiveTabProvider>
+              <ApiBundleProvider authUrl="https://app.launchdarkly.com" clientSideId="test-client-id">
+                <ElementSelectionProvider>
+                  <ActiveSubtabProvider>
+                    <TabSearchProvider>
+                      <FiltersProvider>
+                        <DevServerProvider config={{ devServerUrl: '', pollIntervalInMs: 5000 }}>
+                          <ToolbarStateProvider domId="test-toolbar">
+                            <PluginsProvider baseUrl="https://app.launchdarkly.com">
+                              {children}
+                            </PluginsProvider>
+                          </ToolbarStateProvider>
+                        </DevServerProvider>
+                      </FiltersProvider>
+                    </TabSearchProvider>
+                  </ActiveSubtabProvider>
+                </ElementSelectionProvider>
+              </ApiBundleProvider>
+            </ActiveTabProvider>
+          </SearchProvider>
+        </AnalyticsProvider>
+      </InternalClientProvider>,
     );
   };
 
@@ -76,7 +109,12 @@ describe('Element Selection Integration', () => {
 
   describe('Starting Selection Mode', () => {
     it('should start selection mode when clicking interactive icon from another tab', () => {
-      renderWithProviders(<IconBar {...defaultProps} />);
+      renderWithProviders(
+        <>
+          <IconBar {...defaultProps} />
+          <SelectionOverlay />
+        </>,
+      );
 
       const interactiveButton = screen.getByLabelText('Interactive Mode');
       fireEvent.click(interactiveButton);
@@ -87,7 +125,12 @@ describe('Element Selection Integration', () => {
     });
 
     it('should start selection mode when clicking interactive icon while already in interactive tab', () => {
-      renderWithProviders(<IconBar {...defaultProps} />);
+      renderWithProviders(
+        <>
+          <IconBar {...defaultProps} />
+          <SelectionOverlay />
+        </>,
+      );
 
       const interactiveButton = screen.getByLabelText('Interactive Mode');
 
@@ -279,7 +322,6 @@ describe('Element Selection Integration', () => {
       testElement.textContent = 'Submit Form';
       document.body.appendChild(testElement);
 
-      const { getElementInfo } = require('../../ui/Toolbar/components/new/Interactive/utils/elementUtils');
       const elementInfo = getElementInfo(testElement);
 
       expect(elementInfo.id).toBe('submit-btn');
@@ -295,11 +337,9 @@ describe('Element Selection Integration', () => {
     });
 
     it('should throw error for invalid element', () => {
-      const { getElementInfo } = require('../../ui/Toolbar/components/new/Interactive/utils/elementUtils');
-
-      expect(() => getElementInfo(null as any)).toThrow('Invalid element');
-      expect(() => getElementInfo(undefined as any)).toThrow('Invalid element');
-      expect(() => getElementInfo({} as any)).toThrow('Invalid element');
+      expect(() => getElementInfo(null as any)).toThrow('Invalid element provided to getElementInfo');
+      expect(() => getElementInfo(undefined as any)).toThrow('Invalid element provided to getElementInfo');
+      expect(() => getElementInfo({} as any)).toThrow('Invalid element provided to getElementInfo');
     });
   });
 });
