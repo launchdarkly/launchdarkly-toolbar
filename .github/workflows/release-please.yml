@@ -20,17 +20,6 @@ jobs:
         with:
           token: ${{secrets.GITHUB_TOKEN}}
 
-      - name: Setup Node.js
-        if: ${{ fromJson(steps.release.outputs.releases_created) }}
-        uses: actions/setup-node@395ad3262231945c25e8478fd5baf05154b1d79f # v6.1.0
-        with:
-          node-version: '24'
-          registry-url: 'https://registry.npmjs.org'
-
-      - name: Install npm
-        if: ${{ fromJson(steps.release.outputs.releases_created) }}
-        run: npm install -g npm@latest
-
       - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
         if: ${{ fromJson(steps.release.outputs.releases_created) }}
         with:
@@ -43,6 +32,17 @@ jobs:
           TOOLBAR_INTERNAL_BASE_URL: ${{ vars.TOOLBAR_INTERNAL_BASE_URL }}
           TOOLBAR_INTERNAL_STREAM_URL: ${{ vars.TOOLBAR_INTERNAL_STREAM_URL }}
           TOOLBAR_INTERNAL_EVENTS_URL: ${{ vars.TOOLBAR_INTERNAL_EVENTS_URL }}
+
+      - name: Setup Node.js
+        if: ${{ fromJson(steps.release.outputs.releases_created) }}
+        uses: actions/setup-node@395ad3262231945c25e8478fd5baf05154b1d79f # v6.1.0
+        with:
+          node-version: '24'
+          registry-url: 'https://registry.npmjs.org'
+
+      - name: Install npm
+        if: ${{ fromJson(steps.release.outputs.releases_created) }}
+        run: npm install -g npm@latest
 
       - name: Publish Package (prerelease)
         if: ${{ fromJson(steps.release.outputs.releases_created) && contains(steps.release.outputs.tag_name, '-') }}
