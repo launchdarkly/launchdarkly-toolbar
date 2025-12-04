@@ -31,7 +31,7 @@
     "@types/node": "^24.10.1",
     "http-server": "^14.1.1",
     "prettier": "^3.7.4",
-    "storybook": "^10.0.8",
+    "storybook": "^10.1.4",
     "storybook-addon-rslib": "^2.1.6",
     "storybook-react-rsbuild": "^2.1.6",
     "tsx": "^4.20.6"
