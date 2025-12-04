@@ -20,7 +20,7 @@ export function ApiBundleProvider(props: ApiBundleProviderProps) {
       <AuthProvider>
         <ApiProvider>
           <ProjectProvider clientSideId={clientSideId} providedProjectKey={providedProjectKey}>
-            <EnvironmentProvider>
+            <EnvironmentProvider clientSideId={clientSideId}>
               <FlagsProvider>{children}</FlagsProvider>
             </EnvironmentProvider>
           </ProjectProvider>
