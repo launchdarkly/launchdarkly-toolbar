@@ -1,7 +1,7 @@
 import { createContext, useContext, useEffect, useMemo, useRef } from 'react';
-import { ToolbarAnalytics } from '../../../utils/analytics';
+import { ToolbarAnalytics } from '../../../../utils/analytics';
 import { useInternalClient } from './InternalClientProvider';
-import { ToolbarMode } from '../types';
+import { ToolbarMode } from '../../types';
 
 interface AnalyticsContextValue {
   analytics: ToolbarAnalytics;

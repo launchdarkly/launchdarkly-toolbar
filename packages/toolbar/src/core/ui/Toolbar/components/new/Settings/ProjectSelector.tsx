@@ -1,9 +1,9 @@
-import React, { useEffect, useMemo } from 'react';
-import { useProjectContext } from '../../../context/ProjectProvider';
-import { useAnalytics } from '../../../context/AnalyticsProvider';
+import { useEffect, useMemo } from 'react';
+import { useProjectContext } from '../../../context/api';
+import { useAnalytics } from '../../../context/telemetry/AnalyticsProvider';
 import { Select } from '../../../../Select/Select';
 
-export const ProjectSelector: React.FC = () => {
+export function ProjectSelector() {
   const { projectKey, setProjectKey, projects, loading, getProjects } = useProjectContext();
   const analytics = useAnalytics();
 
@@ -38,4 +38,4 @@ export const ProjectSelector: React.FC = () => {
       options={projectOptions}
     />
   );
-};
+}

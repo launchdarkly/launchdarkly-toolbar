@@ -3,9 +3,10 @@ import { style } from '@vanilla-extract/css';
 export const container = style({
   display: 'flex',
   alignItems: 'center',
-  justifyContent: 'space-between',
-  padding: '0 12px 8px 12px',
-  borderBottom: '1px solid var(--lp-color-gray-600);',
+  justifyContent: 'space-around',
+  padding: '6px 20px',
+  borderBottom: '1px solid var(--lp-color-gray-700)',
+  gap: '8px',
 });
 
 export const iconButton = style({

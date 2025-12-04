@@ -1,6 +1,5 @@
 import React, { useEffect, useRef } from 'react';
-import { ElementSelectionProvider, useElementSelection } from '../../../context/ElementSelectionProvider';
-import { useToolbarState } from '../../../context/ToolbarStateProvider';
+import { ElementSelectionProvider, useElementSelection, useToolbarState } from '../../../context';
 import { SelectionOverlay } from './SelectionOverlay';
 import { SelectionModeBar } from './SelectionModeBar';
 

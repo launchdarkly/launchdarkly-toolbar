@@ -41,7 +41,7 @@ const API_FLAGS = [
 ];
 
 // Mock the FlagsProvider
-vi.mock('../ui/Toolbar/context/FlagsProvider', () => ({
+vi.mock('../ui/Toolbar/context/api/FlagsProvider', () => ({
   FlagsProvider: ({ children }: { children: React.ReactNode }) => <>{children}</>,
   useFlagsContext: () => ({
     flags: API_FLAGS,
@@ -247,7 +247,7 @@ describe('FlagSdkOverrideProvider', () => {
 
   test('displays flags from LD client even when API flags are empty', async () => {
     // Mock FlagsProvider to return empty flags (simulating API not loaded yet)
-    const emptyFlagsModule = await import('../ui/Toolbar/context/FlagsProvider');
+    const emptyFlagsModule = await import('../ui/Toolbar/context/api/FlagsProvider');
     vi.spyOn(emptyFlagsModule, 'useFlagsContext').mockReturnValue({
       flags: [], // Empty API flags
       loading: false,

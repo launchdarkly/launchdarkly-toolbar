@@ -1,11 +1,17 @@
-import { Button, Switch } from '@launchpad-ui/components';
 import { useEffect, useMemo } from 'react';
+import { Button, Switch } from '@launchpad-ui/components';
+
+import {
+  useAnalytics,
+  useAuthContext,
+  useDevServerContext,
+  useProjectContext,
+  useSearchContext,
+  useToolbarUIContext,
+} from '../../../context';
 import { FeedbackSentiment } from '../../../../../../types';
 import { List } from '../../../../List/List';
 import { ListItem } from '../../../../List/ListItem';
-import { useAnalytics, useDevServerContext, useToolbarUIContext, useSearchContext } from '../../../context';
-import { useAuthContext } from '../../../context/AuthProvider';
-import { useProjectContext } from '../../../context/ProjectProvider';
 import { ToolbarPosition, TOOLBAR_POSITIONS, ToolbarMode } from '../../../types';
 import { GenericHelpText } from '../../GenericHelpText';
 import { Feedback } from '../../Feedback/Feedback';

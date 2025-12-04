@@ -7,7 +7,7 @@ interface TooltipProps {
   children: React.ReactNode;
 }
 
-export const Tooltip: React.FC<TooltipProps> = ({ content, children }) => {
+export function Tooltip({ content, children }: TooltipProps) {
   const [isVisible, setIsVisible] = React.useState(false);
   const [isPositioned, setIsPositioned] = React.useState(false);
   const [position, setPosition] = React.useState({ top: 0, left: 0 });
@@ -74,4 +74,4 @@ export const Tooltip: React.FC<TooltipProps> = ({ content, children }) => {
       </AnimatePresence>
     </div>
   );
-};
+}

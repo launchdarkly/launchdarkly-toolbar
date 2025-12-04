@@ -1,17 +1,22 @@
 import { render, screen, waitFor, act } from '@testing-library/react';
 import { expect, test, describe, vi, beforeEach, afterEach } from 'vitest';
-import { ApiProvider, useApi } from '../ui/Toolbar/context/ApiProvider';
-import { getErrorTopic, getResponseTopic, IFRAME_COMMANDS, IFRAME_EVENTS } from '../ui/Toolbar/context/IFrameProvider';
+import { ApiProvider, useApi } from '../ui/Toolbar/context/api/ApiProvider';
+import {
+  getErrorTopic,
+  getResponseTopic,
+  IFRAME_COMMANDS,
+  IFRAME_EVENTS,
+} from '../ui/Toolbar/context/api/IFrameProvider';
 import '@testing-library/jest-dom/vitest';
 import React from 'react';
 
 // Mock the AuthProvider
-vi.mock('../ui/Toolbar/context/AuthProvider', () => ({
+vi.mock('../ui/Toolbar/context/api/AuthProvider', () => ({
   useAuthContext: vi.fn(),
 }));
 
 // Mock the IFrameProvider
-vi.mock('../ui/Toolbar/context/IFrameProvider', () => ({
+vi.mock('../ui/Toolbar/context/api/IFrameProvider', () => ({
   IFRAME_COMMANDS: {
     GET_PROJECTS: 'GET_PROJECTS',
     GET_FLAGS: 'GET_FLAGS',
@@ -29,7 +34,7 @@ vi.mock('../ui/Toolbar/context/IFrameProvider', () => ({
 }));
 
 // Mock the AnalyticsProvider
-vi.mock('../ui/Toolbar/context/AnalyticsProvider', () => ({
+vi.mock('../ui/Toolbar/context/telemetry/AnalyticsProvider', () => ({
   useAnalytics: vi.fn().mockReturnValue({
     trackLoginSuccess: vi.fn(),
     trackLoginCancelled: vi.fn(),
@@ -38,8 +43,8 @@ vi.mock('../ui/Toolbar/context/AnalyticsProvider', () => ({
   }),
 }));
 
-import { useAuthContext } from '../ui/Toolbar/context/AuthProvider';
-import { useIFrameContext } from '../ui/Toolbar/context/IFrameProvider';
+import { useAuthContext } from '../ui/Toolbar/context/api/AuthProvider';
+import { useIFrameContext } from '../ui/Toolbar/context/api/IFrameProvider';
 
 // Test component that uses the API context
 function TestConsumer() {

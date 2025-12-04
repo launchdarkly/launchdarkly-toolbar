@@ -1,23 +1,20 @@
 import { useState, useMemo, useCallback, useRef } from 'react';
 import { useVirtualizer } from '@tanstack/react-virtual';
+
+import { useAnalytics, useDevServerContext, useSearchContext, useStarredFlags } from '../../../context';
 import { List } from '../../../../List/List';
 import { ListItem } from '../../../../List/ListItem';
-import { useSearchContext } from '../../../context/SearchProvider';
-import { useDevServerContext } from '../../../context/DevServerProvider';
-import { useAnalytics } from '../../../context';
 import { EnhancedFlag } from '../../../../../types/devServer';
 import { GenericHelpText } from '../../GenericHelpText';
 import { BooleanFlagControl, MultivariateFlagControl, StringNumberFlagControl } from '../FlagControls';
 import { OverrideIndicator } from '../../OverrideIndicator';
 import { StarButton } from '../../../../Buttons/StarButton';
-import { useStarredFlags } from '../../../context/StarredFlagsProvider';
 import { type FlagFilterMode, FlagFilterOptionsContext, FILTER_MODES } from '../../FilterOptions/useFlagFilterOptions';
 import { FilterOptions } from '../../FilterOptions/FilterOptions';
 import { VIRTUALIZATION } from '../../../constants';
 import { LocalObjectFlagControlListItem } from '../LocalObjectFlagControlListItem';
-
-import * as styles from './FlagDevServerTabContent.css';
 import { FlagKeyWithCopy } from '../../FlagKeyWithCopy';
+import * as styles from './FlagDevServerTabContent.css';
 
 interface FlagDevServerTabContentProps {
   reloadOnFlagChangeIsEnabled: boolean;

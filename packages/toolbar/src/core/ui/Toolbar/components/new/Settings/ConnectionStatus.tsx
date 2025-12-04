@@ -1,11 +1,10 @@
-import React from 'react';
 import * as styles from './ConnectionStatus.module.css';
 
 interface ConnectionStatusProps {
   status: 'connected' | 'disconnected' | 'error';
 }
 
-export const ConnectionStatus: React.FC<ConnectionStatusProps> = ({ status }) => {
+export function ConnectionStatus({ status }: ConnectionStatusProps) {
   const getStatusText = () => {
     switch (status) {
       case 'connected':
@@ -23,4 +22,4 @@ export const ConnectionStatus: React.FC<ConnectionStatusProps> = ({ status }) =>
       <div className={`${styles.dot} ${styles[status]}`} />
     </div>
   );
-};
+}

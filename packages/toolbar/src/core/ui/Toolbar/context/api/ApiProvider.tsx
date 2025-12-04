@@ -1,8 +1,8 @@
 import { createContext, useCallback, useContext, useEffect, useState } from 'react';
 import { useAuthContext } from './AuthProvider';
 import { getResponseTopic, getErrorTopic, IFRAME_COMMANDS, useIFrameContext, IFRAME_EVENTS } from './IFrameProvider';
-import { FlagsPaginationParams, FlagsResponse, ApiFlag, ProjectsResponse } from '../types/ldApi';
-import { useAnalytics } from '../context';
+import { FlagsPaginationParams, FlagsResponse, ApiFlag, ProjectsResponse } from '../../types/ldApi';
+import { useAnalytics } from '../telemetry';
 
 interface ApiProviderContextValue {
   apiReady: boolean;

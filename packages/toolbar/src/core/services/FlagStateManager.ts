@@ -1,6 +1,6 @@
-import { DevServerClient, Variation } from './DevServerClient';
+import { DevServerClient } from './DevServerClient';
 import { EnhancedFlag } from '../types/devServer';
-import { ApiFlag } from '../ui/Toolbar/types/ldApi';
+import { ApiFlag, ApiVariation } from '../ui/Toolbar/types/ldApi';
 
 export class FlagStateManager {
   private devServerClient: DevServerClient;
@@ -39,7 +39,7 @@ export class FlagStateManager {
         isOverridden: !!override,
         originalValue: flagState.value,
         availableVariations: variations,
-        type: apiFlag?.kind || this.determineFlagType(variations, currentValue),
+        type: this.determineFlagType(variations, currentValue),
         sourceEnvironment: devServerData.sourceEnvironmentKey,
         enabled: flagState.value !== null && flagState.value !== undefined,
       };
@@ -57,7 +57,7 @@ export class FlagStateManager {
   }
 
   private determineFlagType(
-    variations: Variation[],
+    variations: ApiVariation[],
     currentValue: any,
   ): 'boolean' | 'multivariate' | 'string' | 'number' | 'object' {
     // If we have exactly 2 variations and they're both boolean, it's a boolean flag
@@ -65,25 +65,13 @@ export class FlagStateManager {
       return 'boolean';
     }
 
-    // If we have more than 2 variations, it's multivariate
-    if (variations.length > 2) {
+    if (variations.length >= 2 && !variations.some((v) => typeof v.value === 'object')) {
       return 'multivariate';
     }
 
-    // Determine type based on current value
-    if (typeof currentValue === 'string') {
-      return 'string';
-    }
-
-    if (typeof currentValue === 'number') {
-      return 'number';
-    }
-
-    if (typeof currentValue === 'object') {
-      return 'object';
-    }
-
-    // Default to boolean for simple flags
+    if (typeof currentValue === 'string') return 'string';
+    if (typeof currentValue === 'number') return 'number';
+    if (typeof currentValue === 'object') return 'object';
     return 'boolean';
   }
 

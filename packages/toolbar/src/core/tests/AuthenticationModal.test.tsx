@@ -2,7 +2,7 @@ import React from 'react';
 import { render, screen } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { AuthenticationModal } from '../ui/Toolbar/components/AuthenticationModal/AuthenticationModal';
-import { IFrameProvider } from '../ui/Toolbar/context/IFrameProvider';
+import { IFrameProvider } from '../ui/Toolbar/context/api/IFrameProvider';
 
 // Mock the oauthPopup utility
 vi.mock('../ui/Toolbar/utils/oauthPopup', () => ({
@@ -17,7 +17,7 @@ const mockAuthContext = {
   setAuthenticating: vi.fn(),
 };
 
-vi.mock('../ui/Toolbar/context/AuthProvider', () => ({
+vi.mock('../ui/Toolbar/context/api/AuthProvider', () => ({
   useAuthContext: () => mockAuthContext,
   AuthProvider: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
 }));

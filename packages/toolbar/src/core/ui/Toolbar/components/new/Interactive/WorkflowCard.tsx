@@ -1,7 +1,6 @@
 import { useState, useCallback, useEffect, useRef, useMemo } from 'react';
 import { Button, ButtonGroup } from '@launchpad-ui/components';
-import { useElementSelection } from '../../../context/ElementSelectionProvider';
-import { useProjectContext } from '../../../context/ProjectProvider';
+import { useElementSelection, useProjectContext } from '../../../context';
 import { PreferredIde, loadPreferredIde, savePreferredIde } from '../../../utils/localStorage';
 import { copyToClipboard, copyAndOpenInIde, IDE_CONFIGS } from './utils/ideLinks';
 import { ChevronDownIcon } from './icons';

@@ -1,25 +1,19 @@
 import { createContext, useCallback, useContext, useEffect, useState } from 'react';
 import { useApi } from './ApiProvider';
-import { TOOLBAR_STORAGE_KEYS } from '../utils/localStorage';
-import { ApiProject, ProjectsResponse } from '../types/ldApi';
+import { TOOLBAR_STORAGE_KEYS } from '../../utils/localStorage';
+import { ApiProject, ProjectsResponse } from '../../types/ldApi';
 
 const STORAGE_KEY = TOOLBAR_STORAGE_KEYS.PROJECT;
 
-type ProjectContextType = {
+interface ProjectContextType {
   projectKey: string;
   setProjectKey: (projectKey: string) => void;
   getProjects: () => Promise<ProjectsResponse>;
   projects: ApiProject[];
   loading: boolean;
-};
+}
 
-const ProjectContext = createContext<ProjectContextType>({
-  projectKey: '',
-  setProjectKey: () => {},
-  getProjects: async () => ({ items: [] }),
-  projects: [],
-  loading: false,
-});
+const ProjectContext = createContext<ProjectContextType | undefined>(undefined);
 
 interface ProjectProviderProps {
   children: React.ReactNode;
@@ -119,7 +113,7 @@ export const ProjectProvider = ({ children, clientSideId, providedProjectKey }: 
   );
 };
 
-export function useProjectContext() {
+export function useProjectContext(): ProjectContextType {
   const context = useContext(ProjectContext);
   if (!context) {
     throw new Error('useProjectContext must be used within a ProjectProvider');

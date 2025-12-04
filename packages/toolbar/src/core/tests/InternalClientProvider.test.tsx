@@ -23,7 +23,7 @@ import {
   InternalClientProvider,
   useInternalClient,
   useInternalClientInstance,
-} from '../ui/Toolbar/context/InternalClientProvider';
+} from '../ui/Toolbar/context/telemetry/InternalClientProvider';
 import { setToolbarFlagClient } from '../../flags/createToolbarFlagFunction';
 import * as toolbarFlagClient from '../../flags/createToolbarFlagFunction';
 

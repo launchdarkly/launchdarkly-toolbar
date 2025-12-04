@@ -1,15 +1,12 @@
 import React, { createContext, Dispatch, type SetStateAction, useContext, useEffect, useState } from 'react';
-import { useAnalytics } from './AnalyticsProvider';
+import { useAnalytics } from '../telemetry/AnalyticsProvider';
 
-type SearchContextType = {
+interface SearchContextType {
   searchTerm: string;
   setSearchTerm: Dispatch<SetStateAction<string>>;
-};
+}
 
-const SearchContext = createContext<SearchContextType>({
-  searchTerm: '',
-  setSearchTerm: () => {},
-});
+const SearchContext = createContext<SearchContextType | undefined>(undefined);
 
 export function SearchProvider({ children }: { children: React.ReactNode }) {
   const [searchTerm, setSearchTerm] = useState<string>('');
@@ -22,7 +19,7 @@ export function SearchProvider({ children }: { children: React.ReactNode }) {
   return <SearchContext.Provider value={{ searchTerm, setSearchTerm }}>{children}</SearchContext.Provider>;
 }
 
-export function useSearchContext() {
+export function useSearchContext(): SearchContextType {
   const context = useContext(SearchContext);
 
   if (!context) {
