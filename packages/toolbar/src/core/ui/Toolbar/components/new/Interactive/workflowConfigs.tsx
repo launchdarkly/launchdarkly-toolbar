@@ -47,7 +47,7 @@ export const WORKFLOW_CONFIGS: Record<WorkflowType, WorkflowConfig> = {
   featureFlag: {
     icon: <ToggleOffIcon />,
     title: 'Wrap in Feature Flag',
-    description: 'Conditionally render based on a LaunchDarkly flag',
+    description: 'Let an AI agent automatically wrap this element in a new or existing LaunchDarkly feature flag',
     inputLabel: 'Flag Key',
     inputPlaceholder: 'e.g., new-checkout-flow',
     buildPrompt: (elementInfo, projectKey, inputValue) =>

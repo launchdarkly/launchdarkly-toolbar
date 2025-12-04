@@ -5,5 +5,6 @@ export { SelectedElementInfo } from './SelectedElementInfo';
 export { InteractiveWrapper } from './InteractiveWrapper';
 export { WorkflowCard } from './WorkflowCard';
 export { WorkflowSection } from './WorkflowSection';
+export { MCPSetupAlert } from './MCPSetupAlert';
 export { type WorkflowType } from './workflowConfigs';
 

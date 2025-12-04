@@ -3,7 +3,7 @@ import { SelectedElementInfo } from './SelectedElementInfo';
 import { ClickIcon } from '../../icons/ClickIcon';
 import * as styles from './InteractiveContent.module.css.ts';
 
-export const InteractiveContent: React.FC = () => {
+export function InteractiveContent() {
   const { selectedElement } = useElementSelection();
 
   return (

@@ -1,11 +1,12 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useElementSelection } from '../../../context/ElementSelectionProvider';
 import { WorkflowSection } from './WorkflowSection';
 import { WorkflowCard } from './WorkflowCard';
-import { ChevronDownIcon } from './icons';
+import { MCPSetupAlert } from './MCPSetupAlert';
+import { ChevronDownIcon } from '../../icons';
 import * as styles from './SelectedElementInfo.module.css.ts';
 
-export const SelectedElementInfo: React.FC = () => {
+export function SelectedElementInfo() {
   const { selectedElementInfo } = useElementSelection();
   const [isExpanded, setIsExpanded] = useState(false);
 
@@ -25,6 +26,7 @@ export const SelectedElementInfo: React.FC = () => {
       {/* Element Details */}
       <div className={styles.elementDetails}>
         <button className={styles.detailsHeader} onClick={() => setIsExpanded(!isExpanded)}>
+          <h3 className={styles.title}>Selected</h3>
           <code className={styles.primaryIdentifier}>{primaryIdentifier}</code>
           <span className={`${styles.chevron} ${isExpanded ? styles.chevronExpanded : ''}`}>
             <ChevronDownIcon />
@@ -103,6 +105,7 @@ export const SelectedElementInfo: React.FC = () => {
       </div>
 
       <div className={styles.workflowsContainer}>
+        <MCPSetupAlert />
         <WorkflowSection title="Feature Flags">
           <WorkflowCard workflow="featureFlag" />
         </WorkflowSection>

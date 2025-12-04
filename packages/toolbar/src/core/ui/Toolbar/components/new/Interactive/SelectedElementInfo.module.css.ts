@@ -4,7 +4,7 @@ export const container = style({
   display: 'flex',
   flexDirection: 'column',
   gap: '20px',
-  padding: '16px',
+  padding: '12px',
 });
 
 export const elementDetails = style({
@@ -157,4 +157,13 @@ export const workflowsContainer = style({
   display: 'flex',
   flexDirection: 'column',
   gap: '20px',
+});
+
+export const title = style({
+  fontSize: '11px',
+  fontWeight: 600,
+  color: 'var(--lp-color-gray-500)',
+  textTransform: 'uppercase',
+  letterSpacing: '0.5px',
+  margin: 0,
 });

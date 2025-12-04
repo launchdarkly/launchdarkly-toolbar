@@ -6,6 +6,7 @@ export const TOOLBAR_STORAGE_KEYS = {
   DISABLED: 'ld-toolbar-disabled',
   PROJECT: 'ld-toolbar-project',
   STARRED_FLAGS: 'ld-toolbar-starred-flags',
+  MCP_ALERT_DISMISSED: 'ld-toolbar-mcp-alert-dismissed',
 } as const;
 
 export type PreferredIde = 'cursor' | 'windsurf' | 'vscode' | 'github-copilot';
@@ -148,5 +149,26 @@ export function loadPreferredIde(): PreferredIde {
   } catch (error) {
     console.warn('Failed to load preferred IDE from localStorage:', error);
     return DEFAULT_SETTINGS.preferredIde;
+  }
+}
+
+export function saveMCPAlertDismissed(dismissed: boolean): void {
+  try {
+    localStorage.setItem(TOOLBAR_STORAGE_KEYS.MCP_ALERT_DISMISSED, JSON.stringify(dismissed));
+  } catch (error) {
+    console.warn('Failed to save MCP alert dismissed state to localStorage:', error);
+  }
+}
+
+export function loadMCPAlertDismissed(): boolean {
+  try {
+    const stored = localStorage.getItem(TOOLBAR_STORAGE_KEYS.MCP_ALERT_DISMISSED);
+    if (!stored) {
+      return false;
+    }
+    return JSON.parse(stored) === true;
+  } catch (error) {
+    console.warn('Failed to load MCP alert dismissed state from localStorage:', error);
+    return false;
   }
 }
