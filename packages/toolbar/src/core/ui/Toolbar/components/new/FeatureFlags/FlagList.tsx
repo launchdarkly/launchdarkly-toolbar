@@ -8,8 +8,9 @@ import {
   useFlagSdkOverrideContext,
   usePlugins,
   useToolbarState,
+  useStarredFlags,
 } from '../../../context';
-import { useTabSearchContext } from '../context/TabSearchProvider';
+import { useTabSearchContext, useSubtabFilters } from '../context';
 import { FlagItem } from './FlagItem';
 import { NormalizedFlag } from './types';
 import { EnhancedFlag } from '../../../../../types/devServer';
@@ -22,6 +23,8 @@ function DevServerFlagList() {
   const { state, setOverride, clearOverride } = useDevServerContext();
   const { searchTerms } = useTabSearchContext();
   const searchTerm = useMemo(() => searchTerms['flags'] || '', [searchTerms]);
+  const { activeFilters } = useSubtabFilters('flags');
+  const { isStarred } = useStarredFlags();
 
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const getScrollElement = useCallback(() => scrollContainerRef.current, []);
@@ -41,18 +44,34 @@ function DevServerFlagList() {
     }));
   }, [allFlags]);
 
-  // Filter flags based on search term
+  // Filter flags based on search term and active filters
   const filteredFlagIndices = useMemo(() => {
-    if (!searchTerm) return allFlags.map((_, index) => index);
-
     const searchLower = searchTerm.toLowerCase();
+    const showAll = activeFilters.has('all');
+    const showOverrides = activeFilters.has('overrides');
+    const showStarred = activeFilters.has('starred');
+
     return normalizedFlags
       .map((flag, index) => ({ flag, index }))
-      .filter(
-        ({ flag }) => flag.name.toLowerCase().includes(searchLower) || flag.key.toLowerCase().includes(searchLower),
-      )
+      .filter(({ flag }) => {
+        // Apply search filter
+        if (searchTerm) {
+          const matchesSearch =
+            flag.name.toLowerCase().includes(searchLower) || flag.key.toLowerCase().includes(searchLower);
+          if (!matchesSearch) return false;
+        }
+
+        // Apply category filters
+        if (showAll) return true;
+
+        // Check if flag matches any active filter
+        const matchesOverrides = showOverrides && flag.isOverridden;
+        const matchesStarred = showStarred && isStarred(flag.key);
+
+        return matchesOverrides || matchesStarred;
+      })
       .map(({ index }) => index);
-  }, [normalizedFlags, searchTerm, allFlags]);
+  }, [normalizedFlags, searchTerm, activeFilters, isStarred]);
 
   const virtualizer = useVirtualizer({
     count: filteredFlagIndices.length,
@@ -88,7 +107,12 @@ function DevServerFlagList() {
     [clearOverride],
   );
 
-  if (filteredFlagIndices.length === 0 && !searchTerm) {
+  // Calculate stats
+  const totalFlags = normalizedFlags.length;
+  const filteredCount = filteredFlagIndices.length;
+  const isFiltered = searchTerm || !activeFilters.has('all');
+
+  if (filteredFlagIndices.length === 0 && !searchTerm && activeFilters.has('all')) {
     return (
       <GenericHelpText
         title="No feature flags found"
@@ -97,49 +121,63 @@ function DevServerFlagList() {
     );
   }
 
-  if (filteredFlagIndices.length === 0 && searchTerm) {
-    return <GenericHelpText title="No matching flags" subtitle="Try adjusting your search" />;
+  if (filteredFlagIndices.length === 0 && (searchTerm || !activeFilters.has('all'))) {
+    return (
+      <div className={styles.container}>
+        <div className={styles.statsHeader}>
+          <span className={styles.statsText}>0 of {totalFlags} flags</span>
+        </div>
+        <GenericHelpText title="No matching flags" subtitle="Try adjusting your search or filters" />
+      </div>
+    );
   }
 
   return (
-    <div ref={scrollContainerRef} className={styles.scrollContainer}>
-      <div
-        className={styles.virtualInner}
-        style={{
-          height: `${virtualizer.getTotalSize()}px`,
-          position: 'relative',
-        }}
-      >
-        {virtualizer.getVirtualItems().map((virtualItem) => {
-          const flagIndex = filteredFlagIndices[virtualItem.index];
-          if (flagIndex === undefined) return null;
+    <div className={styles.container}>
+      <div className={styles.statsHeader}>
+        <span className={styles.statsText}>
+          {isFiltered ? `${filteredCount} of ${totalFlags} flags` : `${totalFlags} flags`}
+        </span>
+      </div>
+      <div ref={scrollContainerRef} className={styles.scrollContainer}>
+        <div
+          className={styles.virtualInner}
+          style={{
+            height: `${virtualizer.getTotalSize()}px`,
+            position: 'relative',
+          }}
+        >
+          {virtualizer.getVirtualItems().map((virtualItem) => {
+            const flagIndex = filteredFlagIndices[virtualItem.index];
+            if (flagIndex === undefined) return null;
 
-          const normalizedFlag = normalizedFlags[flagIndex];
+            const normalizedFlag = normalizedFlags[flagIndex];
 
-          if (!normalizedFlag) return null;
+            if (!normalizedFlag) return null;
 
-          return (
-            <div
-              key={virtualItem.key}
-              style={{
-                position: 'absolute',
-                top: 0,
-                left: 0,
-                width: '100%',
-                height: `${virtualItem.size}px`,
-                transform: `translateY(${virtualItem.start}px)`,
-              }}
-            >
-              <FlagItem
-                flag={normalizedFlag}
-                onOverride={(value: any) => handleOverride(normalizedFlag.key, value)}
-                onClearOverride={() => handleClearOverride(normalizedFlag.key)}
-                handleHeightChange={handleHeightChange}
-                index={virtualItem.index}
-              />
-            </div>
-          );
-        })}
+            return (
+              <div
+                key={virtualItem.key}
+                style={{
+                  position: 'absolute',
+                  top: 0,
+                  left: 0,
+                  width: '100%',
+                  height: `${virtualItem.size}px`,
+                  transform: `translateY(${virtualItem.start}px)`,
+                }}
+              >
+                <FlagItem
+                  flag={normalizedFlag}
+                  onOverride={(value: any) => handleOverride(normalizedFlag.key, value)}
+                  onClearOverride={() => handleClearOverride(normalizedFlag.key)}
+                  handleHeightChange={handleHeightChange}
+                  index={virtualItem.index}
+                />
+              </div>
+            );
+          })}
+        </div>
       </div>
     </div>
   );
@@ -150,6 +188,8 @@ function SdkFlagList() {
   const { flags, setOverride, removeOverride } = useFlagSdkOverrideContext();
   const { searchTerms } = useTabSearchContext();
   const searchTerm = useMemo(() => searchTerms['flags'] || '', [searchTerms]);
+  const { activeFilters } = useSubtabFilters('flags');
+  const { isStarred } = useStarredFlags();
 
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const getScrollElement = useCallback(() => scrollContainerRef.current, []);
@@ -169,18 +209,34 @@ function SdkFlagList() {
     }));
   }, [allFlags]);
 
-  // Filter flags based on search term
+  // Filter flags based on search term and active filters
   const filteredFlagIndices = useMemo(() => {
-    if (!searchTerm) return allFlags.map((_, index) => index);
-
     const searchLower = searchTerm.toLowerCase();
+    const showAll = activeFilters.has('all');
+    const showOverrides = activeFilters.has('overrides');
+    const showStarred = activeFilters.has('starred');
+
     return normalizedFlags
       .map((flag, index) => ({ flag, index }))
-      .filter(
-        ({ flag }) => flag.name.toLowerCase().includes(searchLower) || flag.key.toLowerCase().includes(searchLower),
-      )
+      .filter(({ flag }) => {
+        // Apply search filter
+        if (searchTerm) {
+          const matchesSearch =
+            flag.name.toLowerCase().includes(searchLower) || flag.key.toLowerCase().includes(searchLower);
+          if (!matchesSearch) return false;
+        }
+
+        // Apply category filters
+        if (showAll) return true;
+
+        // Check if flag matches any active filter
+        const matchesOverrides = showOverrides && flag.isOverridden;
+        const matchesStarred = showStarred && isStarred(flag.key);
+
+        return matchesOverrides || matchesStarred;
+      })
       .map(({ index }) => index);
-  }, [normalizedFlags, searchTerm, allFlags]);
+  }, [normalizedFlags, searchTerm, activeFilters, isStarred]);
 
   const virtualizer = useVirtualizer({
     count: filteredFlagIndices.length,
@@ -216,7 +272,12 @@ function SdkFlagList() {
     [virtualizer],
   );
 
-  if (filteredFlagIndices.length === 0 && !searchTerm) {
+  // Calculate stats
+  const totalFlags = normalizedFlags.length;
+  const filteredCount = filteredFlagIndices.length;
+  const isFiltered = searchTerm || !activeFilters.has('all');
+
+  if (filteredFlagIndices.length === 0 && !searchTerm && activeFilters.has('all')) {
     return (
       <GenericHelpText
         title="No feature flags found"
@@ -225,49 +286,63 @@ function SdkFlagList() {
     );
   }
 
-  if (filteredFlagIndices.length === 0 && searchTerm) {
-    return <GenericHelpText title="No matching flags" subtitle="Try adjusting your search" />;
+  if (filteredFlagIndices.length === 0 && (searchTerm || !activeFilters.has('all'))) {
+    return (
+      <div className={styles.container}>
+        <div className={styles.statsHeader}>
+          <span className={styles.statsText}>0 of {totalFlags} flags</span>
+        </div>
+        <GenericHelpText title="No matching flags" subtitle="Try adjusting your search or filters" />
+      </div>
+    );
   }
 
   return (
-    <div ref={scrollContainerRef} className={styles.scrollContainer}>
-      <div
-        className={styles.virtualInner}
-        style={{
-          height: `${virtualizer.getTotalSize()}px`,
-          position: 'relative',
-        }}
-      >
-        {virtualizer.getVirtualItems().map((virtualItem) => {
-          const flagIndex = filteredFlagIndices[virtualItem.index];
-          if (flagIndex === undefined) return null;
+    <div className={styles.container}>
+      <div className={styles.statsHeader}>
+        <span className={styles.statsText}>
+          {isFiltered ? `${filteredCount} of ${totalFlags} flags` : `${totalFlags} flags`}
+        </span>
+      </div>
+      <div ref={scrollContainerRef} className={styles.scrollContainer}>
+        <div
+          className={styles.virtualInner}
+          style={{
+            height: `${virtualizer.getTotalSize()}px`,
+            position: 'relative',
+          }}
+        >
+          {virtualizer.getVirtualItems().map((virtualItem) => {
+            const flagIndex = filteredFlagIndices[virtualItem.index];
+            if (flagIndex === undefined) return null;
 
-          const normalizedFlag = normalizedFlags[flagIndex];
+            const normalizedFlag = normalizedFlags[flagIndex];
 
-          if (!normalizedFlag) return null;
+            if (!normalizedFlag) return null;
 
-          return (
-            <div
-              key={virtualItem.key}
-              style={{
-                position: 'absolute',
-                top: 0,
-                left: 0,
-                width: '100%',
-                height: `${virtualItem.size}px`,
-                transform: `translateY(${virtualItem.start}px)`,
-              }}
-            >
-              <FlagItem
-                flag={normalizedFlag}
-                onOverride={(value: any) => handleOverride(normalizedFlag.key, value)}
-                onClearOverride={() => handleClearOverride(normalizedFlag.key)}
-                handleHeightChange={handleHeightChange}
-                index={virtualItem.index}
-              />
-            </div>
-          );
-        })}
+            return (
+              <div
+                key={virtualItem.key}
+                style={{
+                  position: 'absolute',
+                  top: 0,
+                  left: 0,
+                  width: '100%',
+                  height: `${virtualItem.size}px`,
+                  transform: `translateY(${virtualItem.start}px)`,
+                }}
+              >
+                <FlagItem
+                  flag={normalizedFlag}
+                  onOverride={(value: any) => handleOverride(normalizedFlag.key, value)}
+                  onClearOverride={() => handleClearOverride(normalizedFlag.key)}
+                  handleHeightChange={handleHeightChange}
+                  index={virtualItem.index}
+                />
+              </div>
+            );
+          })}
+        </div>
       </div>
     </div>
   );

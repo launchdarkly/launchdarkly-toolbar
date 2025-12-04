@@ -1,10 +1,10 @@
 import { useCallback, useState, useMemo } from 'react';
-import { useActiveTabContext, usePlugins, useElementSelection } from '../../context';
-import { useActiveSubtabContext } from './context/ActiveSubtabProvider';
-import { useTabSearchContext } from './context/TabSearchProvider';
+import { useActiveTabContext, useDevServerContext, useElementSelection, usePlugins, useToolbarState } from '../../context';
+import { useActiveSubtabContext, useTabSearchContext } from './context';
 import { useEvents } from '../../hooks';
-import { FilterTuneIcon, DeleteIcon, SearchIcon, CancelCircleIcon } from '../icons';
+import { CancelCircleIcon, DeleteIcon, SearchIcon, SyncIcon } from '../icons';
 import { SearchSection } from './SearchSection';
+import { FilterButton } from './FilterOverlay';
 import { IconButton } from '../../../Buttons/IconButton';
 import { TabId } from '../../types';
 import * as styles from './ContentActions.module.css';
@@ -18,14 +18,22 @@ export function ContentActions() {
   const { events } = useEvents(eventInterceptionPlugin, searchTerm);
   const { setSearchTerm } = useTabSearchContext();
   const [searchIsExpanded, setSearchIsExpanded] = useState(false);
+
   const { selectedElement, clearSelection } = useElementSelection();
 
   // Determine which actions to show based on current tab/subtab
-  const showFilter = activeTab === 'flags' && activeSubtab === 'flags';
-  const showSearch = activeTab !== 'interactive'; // Hide search for interactive tab
-  const showClearEvents = activeTab === 'monitoring' && activeSubtab === 'events';
   // Only show clear button for interactive when element is selected
   const showClearSelection = activeTab === 'interactive' && selectedElement;
+  const { mode } = useToolbarState();
+  const { refresh, state } = useDevServerContext();
+
+  const showFilter =
+    (activeTab === 'flags' && activeSubtab === 'flags') || (activeTab === 'monitoring' && activeSubtab === 'events');
+  
+  const showSearch = activeTab !== 'interactive'; // Hide search for interactive tab
+  
+  const showClearEvents = activeTab === 'monitoring' && activeSubtab === 'events';
+  const showSync = mode === 'dev-server' && activeTab === 'flags' && activeSubtab === 'flags';
 
   const handleClearEvents = useCallback(() => {
     if (eventInterceptionPlugin) {
@@ -33,10 +41,9 @@ export function ContentActions() {
     }
   }, [eventInterceptionPlugin]);
 
-  const handleFilter = useCallback(() => {
-    // TODO: Implement filter functionality
-    console.log('Filter clicked');
-  }, []);
+  const handleSync = useCallback(() => {
+    refresh();
+  }, [refresh]);
 
   const handleSearch = useCallback(
     (input: string) => {
@@ -68,6 +75,10 @@ export function ContentActions() {
           )}
         </>
       )}
+      {showFilter && <FilterButton />}
+      {showSync && (
+        <IconButton icon={<SyncIcon />} label="Sync flags" onClick={handleSync} disabled={state.isLoading} />
+      )}
       {showClearEvents && (
         <button
           className={styles.actionButton}
@@ -77,11 +88,6 @@ export function ContentActions() {
           title={`Clear all events (${events.length})`}
         >
           <DeleteIcon className={styles.icon} />
-        </button>
-      )}
-      {showFilter && (
-        <button className={styles.actionButton} onClick={handleFilter} aria-label="Filter" title="Filter flags">
-          <FilterTuneIcon className={styles.icon} />
         </button>
       )}
     </div>

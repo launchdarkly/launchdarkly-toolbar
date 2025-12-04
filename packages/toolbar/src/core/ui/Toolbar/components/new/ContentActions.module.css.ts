@@ -2,7 +2,7 @@ import { style } from '@vanilla-extract/css';
 
 export const container = style({
   display: 'flex',
-  gap: '8px',
+  gap: '4px',
   alignItems: 'center',
 });
 
@@ -12,7 +12,7 @@ export const actionButton = style({
   justifyContent: 'center',
   width: '32px',
   height: '32px',
-  padding: '6px',
+  padding: '4px',
   backgroundColor: 'transparent',
   border: 'none',
   borderRadius: '6px',
