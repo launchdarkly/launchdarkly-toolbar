@@ -29,6 +29,7 @@ import { AuthenticationModal } from './components/AuthenticationModal/Authentica
 import { InternalClientProvider } from './context/InternalClientProvider';
 import { useNewToolbarDesign } from '../../../flags/toolbarFlags';
 import { ExpandedToolbarContent } from './components/new/ExpandedToolbarContent';
+import { InteractiveWrapper } from './components/new/Interactive';
 import { useEffect } from 'react';
 
 import * as styles from './LaunchDarklyToolbar.css';
@@ -290,12 +291,14 @@ export function LaunchDarklyToolbar(props: LaunchDarklyToolbarProps) {
                                 flagOverridePlugin={flagOverridePlugin}
                                 eventInterceptionPlugin={eventInterceptionPlugin}
                               >
-                                <LdToolbar
-                                  mode={mode}
-                                  baseUrl={baseUrl}
-                                  flagOverridePlugin={flagOverridePlugin}
-                                  eventInterceptionPlugin={eventInterceptionPlugin}
-                                />
+                                <InteractiveWrapper>
+                                  <LdToolbar
+                                    mode={mode}
+                                    baseUrl={baseUrl}
+                                    flagOverridePlugin={flagOverridePlugin}
+                                    eventInterceptionPlugin={eventInterceptionPlugin}
+                                  />
+                                </InteractiveWrapper>
                               </PluginsProvider>
                             </StarredFlagsProvider>
                           </DevServerProvider>

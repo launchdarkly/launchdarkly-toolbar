@@ -1,10 +1,11 @@
 import { useCallback } from 'react';
-import { SearchIcon, FilterTuneIcon, DeleteIcon } from '../icons';
+import { SearchIcon, FilterTuneIcon, DeleteIcon, CancelCircleIcon } from '../icons';
 import { useActiveTabContext } from '../../context/ActiveTabProvider';
 import { useActiveSubtabContext } from './context/ActiveSubtabProvider';
 import { usePlugins } from '../../context';
 import { useEvents } from '../../hooks';
 import { useSearchContext } from '../../context/SearchProvider';
+import { useElementSelection } from '../../context/ElementSelectionProvider';
 import * as styles from './ContentActions.module.css';
 import { useAnalytics } from '../../context/AnalyticsProvider';
 
@@ -15,11 +16,14 @@ export const ContentActions = () => {
   const { searchTerm } = useSearchContext();
   const { events } = useEvents(eventInterceptionPlugin, searchTerm);
   const analytics = useAnalytics();
+  const { selectedElement, clearSelection } = useElementSelection();
 
   // Determine which actions to show based on current tab/subtab
   const showFilter = activeTab === 'flags' && activeSubtab === 'flags';
-  const showSearch = true; // All tabs have search
+  const showSearch = activeTab !== 'interactive'; // Hide search for interactive tab
   const showClearEvents = activeTab === 'monitoring' && activeSubtab === 'events';
+  // Only show clear button for interactive when element is selected
+  const showClearSelection = activeTab === 'interactive' && selectedElement;
 
   const handleClearEvents = useCallback(() => {
     if (eventInterceptionPlugin) {
@@ -40,6 +44,16 @@ export const ContentActions = () => {
 
   return (
     <div className={styles.container}>
+      {showClearSelection && (
+        <button
+          className={styles.clearButton}
+          onClick={clearSelection}
+          aria-label="Clear selection"
+          title="Clear selection"
+        >
+          <CancelCircleIcon className={styles.icon} />
+        </button>
+      )}
       {showSearch && (
         <button className={styles.actionButton} onClick={handleSearch} aria-label="Search" title="Search">
           <SearchIcon className={styles.icon} />

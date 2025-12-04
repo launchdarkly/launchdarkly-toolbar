@@ -14,8 +14,8 @@ export const container = style({
 
 export const content = style({
   flex: 1,
+  minHeight: 0, // Required for flex child to allow overflow scroll
   overflowY: 'auto',
-  padding: 'var(radius)',
   scrollbarColor: 'var(--lp-color-gray-700) transparent',
   scrollbarWidth: 'thin',
 

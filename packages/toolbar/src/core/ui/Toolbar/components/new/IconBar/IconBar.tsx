@@ -1,3 +1,4 @@
+import { useEffect, useState, useMemo } from 'react';
 import { ToggleOffIcon } from '../../icons/ToggleOffIcon';
 import { ClickIcon } from '../../icons/ClickIcon';
 import { GearIcon } from '../../icons/GearIcon';
@@ -8,8 +9,8 @@ import { Tooltip } from '../Tooltip';
 import * as styles from './IconBar.module.css';
 import { enableInteractiveIcon, enableAiIcon, enableOptimizeIcon } from '../../../../../../flags/toolbarFlags';
 import { useActiveTabContext } from '../../../context/ActiveTabProvider';
+import { useElementSelection } from '../../../context/ElementSelectionProvider';
 import { TabId } from '../../../types/toolbar';
-import { useEffect } from 'react';
 
 type Icon = {
   id: TabId;
@@ -24,6 +25,8 @@ export const IconBar = ({ defaultActiveTab }: { defaultActiveTab: TabId }) => {
   const aiIconEnabled = enableAiIcon();
   const optimizeIconEnabled = enableOptimizeIcon();
   const { activeTab, setActiveTab } = useActiveTabContext();
+  const { startSelection } = useElementSelection();
+  const [hoveredIcon, setHoveredIcon] = useState<TabId | null>(null);
 
   useEffect(() => {
     if (!activeTab) {
@@ -35,7 +38,7 @@ export const IconBar = ({ defaultActiveTab }: { defaultActiveTab: TabId }) => {
     {
       id: 'interactive',
       Icon: ClickIcon,
-      label: 'Click tracking',
+      label: 'Interactive Mode',
       tooltip: interactiveIconEnabled ? 'Interactive Mode' : 'Interactive Mode (Coming Soon)',
       disabled: !interactiveIconEnabled,
     },
@@ -59,25 +62,57 @@ export const IconBar = ({ defaultActiveTab }: { defaultActiveTab: TabId }) => {
   ];
 
   const handleIconClick = (id: TabId, disabled?: boolean) => {
-    if (!disabled) {
+    if (disabled) return;
+
+    // If clicking the interactive icon
+    if (id === 'interactive') {
+      if (activeTab === 'interactive') {
+        // Already in interactive mode - start selection
+        startSelection();
+      } else {
+        // Switch to interactive mode AND start selection
+        setActiveTab(id);
+        startSelection();
+      }
+    } else {
       setActiveTab(id);
     }
   };
 
+  // Get dynamic tooltip for interactive icon
+  const getTooltip = (icon: Icon): string => {
+    if (icon.id === 'interactive' && activeTab === 'interactive' && !icon.disabled) {
+      return 'Select Element';
+    }
+    return icon.tooltip;
+  };
+
+  // Check if the interactive icon should show the "select" hover state
+  const isInteractiveSelectMode = (id: TabId): boolean => {
+    return id === 'interactive' && activeTab === 'interactive' && hoveredIcon === 'interactive';
+  };
+
   return (
     <div className={styles.container}>
-      {icons.map(({ id, Icon, label, tooltip, disabled }) => (
-        <Tooltip key={id} content={tooltip}>
-          <button
-            onClick={() => handleIconClick(id as TabId, disabled)}
-            className={`${styles.iconButton} ${id === activeTab ? styles.active : ''} ${disabled ? styles.disabled : ''}`}
-            aria-label={label}
-            disabled={disabled}
-          >
-            <Icon className={styles.icon} />
-          </button>
-        </Tooltip>
-      ))}
+      {icons.map(({ id, Icon, label, tooltip, disabled }) => {
+        const icon = useMemo(() => ({ id, Icon, label, tooltip, disabled }), [id, Icon, label, tooltip, disabled]);
+        const showSelectState = isInteractiveSelectMode(id);
+
+        return (
+          <Tooltip key={id} content={getTooltip(icon)}>
+            <button
+              onClick={() => handleIconClick(id as TabId, disabled)}
+              onMouseEnter={() => setHoveredIcon(id)}
+              onMouseLeave={() => setHoveredIcon(null)}
+              className={`${styles.iconButton} ${id === activeTab ? styles.active : ''} ${disabled ? styles.disabled : ''} ${showSelectState ? styles.selectMode : ''}`}
+              aria-label={label}
+              disabled={disabled}
+            >
+              <Icon className={styles.icon} />
+            </button>
+          </Tooltip>
+        );
+      })}
     </div>
   );
 };

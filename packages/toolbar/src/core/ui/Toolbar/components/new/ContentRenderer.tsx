@@ -4,10 +4,10 @@ import { SubTab } from './types';
 import { SettingsContent } from './Settings/SettingsContent';
 import { FlagListContent } from './FeatureFlags/FlagListContent';
 import { EventsContent } from './Monitoring/EventsContent';
+import { InteractiveContent } from './Interactive';
 
 // Placeholder content components - to be implemented later
 const ContextContent = () => <div>Context Content</div>;
-const ClickTrackingContent = () => <div>Click Tracking Content</div>;
 
 interface ContentRendererProps {
   activeTab: ActiveTabId;
@@ -41,7 +41,7 @@ export const ContentRenderer: React.FC<ContentRendererProps> = ({ activeTab, act
   }
 
   if (activeTab === 'interactive') {
-    return <ClickTrackingContent />;
+    return <InteractiveContent />;
   }
 
   // Fallback

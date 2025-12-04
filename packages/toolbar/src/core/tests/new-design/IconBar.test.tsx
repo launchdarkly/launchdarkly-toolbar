@@ -1,7 +1,8 @@
-import { render, screen, fireEvent, within } from '@testing-library/react';
+import { render, screen, fireEvent } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { IconBar } from '../../ui/Toolbar/components/new/IconBar/IconBar';
 import { ActiveTabProvider } from '../../ui/Toolbar/context/ActiveTabProvider';
+import { ElementSelectionProvider } from '../../ui/Toolbar/context/ElementSelectionProvider';
 import '@testing-library/jest-dom/vitest';
 import React from 'react';
 
@@ -31,16 +32,18 @@ describe('IconBar', () => {
 
   const renderIconBar = (props = defaultProps) => {
     return render(
-      <ActiveTabProvider>
-        <IconBar {...props} />
-      </ActiveTabProvider>,
+      <ElementSelectionProvider>
+        <ActiveTabProvider>
+          <IconBar {...props} />
+        </ActiveTabProvider>
+      </ElementSelectionProvider>,
     );
   };
 
   beforeEach(() => {
     vi.clearAllMocks();
-    // Set default mock return values
-    mockEnableInteractiveIcon.mockReturnValue(false);
+    // Set default mock return values - interactive enabled by default
+    mockEnableInteractiveIcon.mockReturnValue(true);
     mockEnableAiIcon.mockReturnValue(false);
     mockEnableOptimizeIcon.mockReturnValue(false);
   });
@@ -57,7 +60,7 @@ describe('IconBar', () => {
 
       // Verify all icons are present in order: interactive, flags, optimize, ai, monitoring, settings
       expect(buttons).toHaveLength(6);
-      expect(buttons[0]).toHaveAttribute('aria-label', 'Click tracking');
+      expect(buttons[0]).toHaveAttribute('aria-label', 'Interactive Mode');
       expect(buttons[1].getAttribute('aria-label')).toContain('Flags');
       expect(buttons[2]).toHaveAttribute('aria-label', 'Optimize');
       expect(buttons[3]).toHaveAttribute('aria-label', 'AI');
@@ -66,7 +69,6 @@ describe('IconBar', () => {
     });
 
     it('should render all icons even when features are disabled', () => {
-      mockEnableInteractiveIcon.mockReturnValue(false);
       mockEnableAiIcon.mockReturnValue(false);
       mockEnableOptimizeIcon.mockReturnValue(false);
 
@@ -75,7 +77,7 @@ describe('IconBar', () => {
       const buttons = screen.getAllByRole('button');
 
       // All icons should still be present
-      expect(screen.getByLabelText('Click tracking')).toBeInTheDocument();
+      expect(screen.getByLabelText('Interactive Mode')).toBeInTheDocument();
       expect(buttons.find((btn) => btn.getAttribute('aria-label')?.includes('Flags'))).toBeInTheDocument();
       expect(screen.getByLabelText('Optimize')).toBeInTheDocument();
       expect(screen.getByLabelText('AI')).toBeInTheDocument();
@@ -89,7 +91,7 @@ describe('IconBar', () => {
       mockEnableInteractiveIcon.mockReturnValue(false);
       renderIconBar();
 
-      const interactiveButton = screen.getByLabelText('Click tracking');
+      const interactiveButton = screen.getByLabelText('Interactive Mode');
       expect(interactiveButton).toBeDisabled();
       expect(interactiveButton.className).toContain('disabled');
     });
@@ -98,7 +100,7 @@ describe('IconBar', () => {
       mockEnableInteractiveIcon.mockReturnValue(true);
       renderIconBar();
 
-      const interactiveButton = screen.getByLabelText('Click tracking');
+      const interactiveButton = screen.getByLabelText('Interactive Mode');
       expect(interactiveButton).not.toBeDisabled();
       expect(interactiveButton.className).not.toContain('disabled');
     });
@@ -171,7 +173,7 @@ describe('IconBar', () => {
       mockEnableInteractiveIcon.mockReturnValue(false);
       renderIconBar();
 
-      const interactiveButton = screen.getByLabelText('Click tracking');
+      const interactiveButton = screen.getByLabelText('Interactive Mode');
       expect(interactiveButton.parentElement).toHaveAttribute('title', 'Interactive Mode (Coming Soon)');
     });
 
@@ -179,7 +181,7 @@ describe('IconBar', () => {
       mockEnableInteractiveIcon.mockReturnValue(true);
       renderIconBar();
 
-      const interactiveButton = screen.getByLabelText('Click tracking');
+      const interactiveButton = screen.getByLabelText('Interactive Mode');
       expect(interactiveButton.parentElement).toHaveAttribute('title', 'Interactive Mode');
     });
 
@@ -227,9 +229,11 @@ describe('IconBar', () => {
 
     it('should accept different default active tabs', () => {
       render(
-        <ActiveTabProvider>
-          <IconBar defaultActiveTab="settings" />
-        </ActiveTabProvider>,
+        <ElementSelectionProvider>
+          <ActiveTabProvider>
+            <IconBar defaultActiveTab="settings" />
+          </ActiveTabProvider>
+        </ElementSelectionProvider>,
       );
 
       const settingsButton = screen.getByLabelText('Settings');
@@ -251,7 +255,7 @@ describe('IconBar', () => {
 
       const buttons = screen.getAllByRole('button');
       const flagsButton = buttons.find((btn) => btn.getAttribute('aria-label')?.includes('Flags'));
-      const interactiveButton = screen.getByLabelText('Click tracking');
+      const interactiveButton = screen.getByLabelText('Interactive Mode');
 
       // Flags should be active initially
       expect(flagsButton?.className).toContain('active');
@@ -287,13 +291,12 @@ describe('IconBar', () => {
     });
 
     it('should allow switching to enabled feature icons', () => {
-      mockEnableInteractiveIcon.mockReturnValue(true);
       mockEnableAiIcon.mockReturnValue(true);
       mockEnableOptimizeIcon.mockReturnValue(true);
 
       renderIconBar();
 
-      const interactiveButton = screen.getByLabelText('Click tracking');
+      const interactiveButton = screen.getByLabelText('Interactive Mode');
       const aiButton = screen.getByLabelText('AI');
       const optimizeButton = screen.getByLabelText('Optimize');
 
@@ -318,7 +321,7 @@ describe('IconBar', () => {
 
       renderIconBar();
 
-      expect(screen.getByLabelText('Click tracking')).not.toBeDisabled();
+      expect(screen.getByLabelText('Interactive Mode')).not.toBeDisabled();
       expect(screen.getByLabelText('AI')).not.toBeDisabled();
       expect(screen.getByLabelText('Optimize')).not.toBeDisabled();
     });
@@ -330,7 +333,7 @@ describe('IconBar', () => {
 
       renderIconBar();
 
-      expect(screen.getByLabelText('Click tracking')).toBeDisabled();
+      expect(screen.getByLabelText('Interactive Mode')).toBeDisabled();
       expect(screen.getByLabelText('AI')).toBeDisabled();
       expect(screen.getByLabelText('Optimize')).toBeDisabled();
     });
@@ -342,7 +345,7 @@ describe('IconBar', () => {
 
       renderIconBar();
 
-      expect(screen.getByLabelText('Click tracking')).not.toBeDisabled();
+      expect(screen.getByLabelText('Interactive Mode')).not.toBeDisabled();
       expect(screen.getByLabelText('AI')).toBeDisabled();
       expect(screen.getByLabelText('Optimize')).not.toBeDisabled();
     });

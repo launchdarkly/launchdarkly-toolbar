@@ -7,16 +7,22 @@ export const TOOLBAR_STORAGE_KEYS = {
   STARRED_FLAGS: 'ld-toolbar-starred-flags',
 } as const;
 
+export type PreferredIde = 'cursor' | 'windsurf' | 'vscode' | 'github-copilot';
+
+export const PREFERRED_IDES: PreferredIde[] = ['cursor', 'windsurf', 'vscode', 'github-copilot'];
+
 export interface ToolbarSettings {
   position: ToolbarPosition;
   reloadOnFlagChange: boolean;
   autoCollapse: boolean;
+  preferredIde: PreferredIde;
 }
 
 export const DEFAULT_SETTINGS: ToolbarSettings = {
   position: 'bottom-right',
   reloadOnFlagChange: false,
   autoCollapse: false,
+  preferredIde: 'cursor',
 };
 
 /**
@@ -120,5 +126,26 @@ export function saveStarredFlags(starredFlags: Set<string>): void {
     localStorage.setItem(TOOLBAR_STORAGE_KEYS.STARRED_FLAGS, value);
   } catch (error) {
     console.error('Error saving starred flags to localStorage:', error);
+  }
+}
+
+export function savePreferredIde(ide: PreferredIde): void {
+  updateSetting('preferredIde', ide);
+}
+
+export function loadPreferredIde(): PreferredIde {
+  try {
+    const stored = localStorage.getItem(TOOLBAR_STORAGE_KEYS.SETTINGS);
+    if (!stored) {
+      return DEFAULT_SETTINGS.preferredIde;
+    }
+
+    const parsed = JSON.parse(stored) as Partial<ToolbarSettings>;
+    return parsed.preferredIde && PREFERRED_IDES.includes(parsed.preferredIde)
+      ? parsed.preferredIde
+      : DEFAULT_SETTINGS.preferredIde;
+  } catch (error) {
+    console.warn('Failed to load preferred IDE from localStorage:', error);
+    return DEFAULT_SETTINGS.preferredIde;
   }
 }

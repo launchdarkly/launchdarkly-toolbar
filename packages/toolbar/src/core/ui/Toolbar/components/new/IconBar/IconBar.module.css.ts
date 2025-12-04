@@ -4,7 +4,7 @@ export const container = style({
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'space-between',
-  padding: '0 12px 6px 12px',
+  padding: '0 12px 8px 12px',
   borderBottom: '1px solid var(--lp-color-gray-600);',
 });
 
@@ -56,4 +56,15 @@ export const disabled = style({
 export const icon = style({
   width: '24px',
   height: '24px',
+});
+
+// Special hover state for interactive icon when in interactive mode
+export const selectMode = style({
+  backgroundColor: 'var(--lp-color-blue-900)',
+  color: 'var(--lp-color-blue-400)',
+  
+  ':hover': {
+    backgroundColor: 'var(--lp-color-blue-800)',
+    color: 'var(--lp-color-blue-300)',
+  },
 });
