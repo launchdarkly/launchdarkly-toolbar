@@ -99,11 +99,11 @@
     "oxlint": "^1.30.0",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
-    "storybook": "^10.0.8",
+    "storybook": "^10.1.4",
     "storybook-addon-rslib": "^2.1.6",
     "storybook-react-rsbuild": "^2.1.6",
     "typescript": "^5.9.3",
-    "vitest": "^4.0.13"
+    "vitest": "^4.0.15"
   },
   "peerDependencies": {
     "launchdarkly-js-client-sdk": ">=3.9.0 <4.0.0",
