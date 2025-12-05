@@ -150,7 +150,7 @@ export function EventsContent() {
   }
 
   return (
-    <div data-testid="events-tab-content">
+    <div data-testid="events-tab-content" className={styles.container}>
       <div className={styles.statsHeader}>
         <span className={styles.statsText}>{eventStats.totalEvents} events captured</span>
       </div>
