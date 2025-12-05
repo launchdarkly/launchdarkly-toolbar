@@ -1,9 +1,16 @@
 import { style, keyframes } from '@vanilla-extract/css';
 
+export const container = style({
+  display: 'flex',
+  flexDirection: 'column',
+  height: '100%',
+});
+
 export const statsHeader = style({
   padding: '8px 20px',
   borderBottom: '1px solid var(--lp-color-gray-700)',
-  backgroundColor: 'var(--lp-color-gray-950)',
+  backgroundColor: 'var(--lp-color-gray-900)',
+  flexShrink: 0,
 });
 
 export const statsText = style({
@@ -119,9 +126,10 @@ export const eventBadgeDefault = style([
 ]);
 
 export const virtualContainer = style({
-  height: '350px',
+  flex: 1,
   overflow: 'auto',
   padding: '8px 12px',
+  paddingBottom: '20px',
   scrollbarColor: 'var(--lp-color-gray-800) transparent',
   scrollbarWidth: 'thin',
 
@@ -167,7 +175,7 @@ export const liveTailContainer = style({
   flexDirection: 'column',
   alignItems: 'center',
   justifyContent: 'center',
-  height: '350px',
+  flex: 1,
   gap: '12px',
   color: 'var(--lp-color-gray-400)',
 });

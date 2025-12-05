@@ -21,6 +21,7 @@ export const statsText = style({
 
 export const scrollContainer = style({
   paddingTop: '8px',
+  paddingBottom: '20px',
   flex: 1,
   width: '100%',
   overflow: 'auto',
