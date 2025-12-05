@@ -2,6 +2,7 @@ import { style } from '@vanilla-extract/css';
 
 export const container = style({
   padding: '4px 0',
+  margin: '12px',
 });
 
 export const value = style({

@@ -173,7 +173,7 @@ export function EventsTabContent(props: EventsTabContentProps) {
                   style={{
                     height: `${virtualItem.size}px`,
                     transform: `translateY(${virtualItem.start}px)`,
-                    borderBottom: '1px solid var(--lp-color-gray-800)',
+                    borderBottom: '1px solid var(--lp-color-gray-600);',
                     cursor: 'pointer',
                   }}
                 >

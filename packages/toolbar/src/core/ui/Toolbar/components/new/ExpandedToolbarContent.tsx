@@ -6,8 +6,7 @@ import { ToolbarHeader } from './Header/ToolbarHeader';
 import { IconBar } from './IconBar/IconBar';
 import { TabBar } from './TabBar';
 import { ContentRenderer } from './ContentRenderer';
-import { ActiveSubtabProvider } from './context/ActiveSubtabProvider';
-import { TabSearchProvider } from './context/TabSearchProvider';
+import { ActiveSubtabProvider, TabSearchProvider, FiltersProvider } from './context';
 import { AuthenticationModal } from '../AuthenticationModal/AuthenticationModal';
 import { LoginScreen } from '../LoginScreen/LoginScreen';
 import { NEW_TOOLBAR_TABS, TabId } from '../../types/toolbar';
@@ -86,7 +85,9 @@ export const ExpandedToolbarContent = forwardRef<HTMLDivElement, ExpandedToolbar
   return (
     <ActiveSubtabProvider>
       <TabSearchProvider>
-        <ExpandedToolbarContentInner ref={ref} {...props} />
+        <FiltersProvider>
+          <ExpandedToolbarContentInner ref={ref} {...props} />
+        </FiltersProvider>
       </TabSearchProvider>
     </ActiveSubtabProvider>
   );

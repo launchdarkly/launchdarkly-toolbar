@@ -10,14 +10,11 @@ export const listItem = style({
   alignItems: 'center',
   justifyContent: 'space-between',
   padding: '16px 20px',
-  borderBottom: '1px solid var(--lp-color-gray-800)',
+  borderBottom: '1px solid var(--lp-color-gray-600);',
   color: 'var(--lp-color-gray-200)',
   transition: 'background-color 0.2s ease',
 
   selectors: {
-    '&:last-child': {
-      borderBottom: 'none',
-    },
     '&:focus-visible': {
       backgroundColor: 'var(--lp-color-gray-850)',
       outline: '2px solid var(--lp-color-shadow-interactive-focus)',

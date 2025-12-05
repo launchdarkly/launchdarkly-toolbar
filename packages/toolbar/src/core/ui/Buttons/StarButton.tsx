@@ -15,7 +15,7 @@ export function StarButton({ flagKey, isStarred, onToggle }: StarButtonProps) {
 
   return (
     <button
-      className={styles.starButton}
+      className={`${styles.starButton} ${isStarred ? styles.starButtonStarred : ''}`}
       onClick={handleClick}
       aria-label={isStarred ? 'Unstar flag' : 'Star flag'}
       title={isStarred ? 'Unstar flag' : 'Star flag'}

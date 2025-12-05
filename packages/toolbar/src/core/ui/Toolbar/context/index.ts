@@ -4,3 +4,4 @@ export * from './telemetry';
 export * from './DevServerProvider';
 export * from './FlagSdkOverrideProvider';
 export * from './StarredFlagsProvider';
+export * from './ElementSelectionProvider';
