@@ -1,6 +1,6 @@
 import { createContext, Dispatch, SetStateAction, useCallback, useContext, useEffect, useState } from 'react';
 import { getErrorTopic, getResponseTopic, IFRAME_COMMANDS, IFRAME_EVENTS, useIFrameContext } from './IFrameProvider';
-import { useAnalytics } from '../telemetry';
+import { useAnalytics, useInternalClient } from '../telemetry';
 
 interface AuthContextType {
   authenticated: boolean;
@@ -18,33 +18,38 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [authenticating, setAuthenticating] = useState(false);
   const { iframeSrc, ref } = useIFrameContext();
   const analytics = useAnalytics();
+  const { updateContext } = useInternalClient();
 
-  const handleMessage = useCallback((event: MessageEvent) => {
-    if (event.origin !== iframeSrc) {
-      return;
-    }
+  const handleMessage = useCallback(
+    async (event: MessageEvent) => {
+      if (event.origin !== iframeSrc) {
+        return;
+      }
 
-    if (event.data.type === IFRAME_EVENTS.AUTHENTICATED) {
-      analytics.trackLoginSuccess();
-      setAuthenticated(true);
-      setLoading(false);
-    } else if (event.data.type === IFRAME_EVENTS.AUTH_REQUIRED) {
-      setAuthenticated(false);
-      setLoading(false);
-    } else if (event.data.type === IFRAME_EVENTS.AUTH_ERROR) {
-      setAuthenticated(false);
-      setLoading(false);
-      analytics.trackAuthError(new Error(event.data.error));
-      throw new Error(event.data.error);
-    } else if (event.data.type === getResponseTopic(IFRAME_COMMANDS.LOGOUT)) {
-      setAuthenticated(false);
-      setLoading(false);
-    } else if (event.data.type === getErrorTopic(IFRAME_COMMANDS.LOGOUT)) {
-      setAuthenticated(false);
-      setLoading(false);
-      throw new Error(event.data.error);
-    }
-  }, []);
+      if (event.data.type === IFRAME_EVENTS.AUTHENTICATED) {
+        analytics.trackLoginSuccess();
+        await updateContext(event.data.accountId, event.data.memberId);
+        setLoading(false);
+        setAuthenticated(true);
+      } else if (event.data.type === IFRAME_EVENTS.AUTH_REQUIRED) {
+        setAuthenticated(false);
+        setLoading(false);
+      } else if (event.data.type === IFRAME_EVENTS.AUTH_ERROR) {
+        setAuthenticated(false);
+        setLoading(false);
+        analytics.trackAuthError(new Error(event.data.error));
+        throw new Error(event.data.error);
+      } else if (event.data.type === getResponseTopic(IFRAME_COMMANDS.LOGOUT)) {
+        setAuthenticated(false);
+        setLoading(false);
+      } else if (event.data.type === getErrorTopic(IFRAME_COMMANDS.LOGOUT)) {
+        setAuthenticated(false);
+        setLoading(false);
+        throw new Error(event.data.error);
+      }
+    },
+    [updateContext],
+  );
 
   const logout = useCallback(() => {
     const iframe = ref.current;

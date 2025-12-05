@@ -1,12 +1,11 @@
 import { createContext, useCallback, useContext, useEffect, useState } from 'react';
 import { useAuthContext } from './AuthProvider';
 import { getResponseTopic, getErrorTopic, IFRAME_COMMANDS, useIFrameContext, IFRAME_EVENTS } from './IFrameProvider';
-import { FlagsPaginationParams, FlagsResponse, ApiFlag, ProjectsResponse } from '../../types/ldApi';
+import { FlagsPaginationParams, FlagsResponse, ProjectsResponse } from '../../types/ldApi';
 import { useAnalytics } from '../telemetry';
 
 interface ApiProviderContextValue {
   apiReady: boolean;
-  getFlag: (flagKey: string) => Promise<ApiFlag>;
   getProjects: () => Promise<ProjectsResponse>;
   getFlags: (projectKey: string, params?: FlagsPaginationParams) => Promise<FlagsResponse>;
 }
@@ -16,6 +15,15 @@ const ApiContext = createContext<ApiProviderContextValue | null>(null);
 export interface ApiProviderProps {
   children: React.ReactNode;
 }
+
+interface PendingRequest {
+  command: string;
+  resolve: (data: any) => void;
+  reject: (error: Error) => void;
+  timeoutId: ReturnType<typeof setTimeout>;
+}
+
+const pendingRequests = new Map<string, PendingRequest>();
 
 export function ApiProvider({ children }: { children: React.ReactNode }) {
   const { authenticated } = useAuthContext();
@@ -31,52 +39,55 @@ export function ApiProvider({ children }: { children: React.ReactNode }) {
 
       if (event.data.type === IFRAME_EVENTS.API_READY) {
         setApiReady(true);
+        return;
+      }
+
+      const { requestId } = event.data;
+      const pending = pendingRequests.get(requestId);
+
+      if (!pending) {
+        // Not a response we're waiting for (could be for a different request or already handled)
+        return;
+      }
+
+      const { command, resolve, reject, timeoutId } = pending;
+
+      if (event.data.type === getResponseTopic(command)) {
+        clearTimeout(timeoutId);
+        pendingRequests.delete(requestId);
+        resolve(event.data.data);
+      } else if (event.data.type === getErrorTopic(command)) {
+        clearTimeout(timeoutId);
+        pendingRequests.delete(requestId);
+        analytics.trackApiError(new Error(event.data.error));
+        reject(new Error(event.data.error));
       }
     },
-    [iframeSrc],
+    [iframeSrc, analytics],
   );
 
   const sendMessage = useCallback(
     (command: string, data: any) => {
-      if (!ref.current?.contentWindow) {
-        throw new Error('IFrame not found');
-      }
-
-      // Generate unique request ID to match request with response
-      const requestId = `${command}-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`;
-
-      ref.current.contentWindow.postMessage({ type: command, requestId, ...data }, iframeSrc);
-
       return new Promise((resolve, reject) => {
-        const handleMessage = (event: MessageEvent) => {
-          if (event.origin !== iframeSrc) {
-            return;
-          }
+        if (!ref.current?.contentWindow) {
+          reject(new Error('IFrame not found'));
+          return;
+        }
 
-          // Only handle messages that match this specific request ID
-          if (event.data.requestId !== requestId) {
-            return;
-          }
-
-          if (event.data.type === getResponseTopic(command)) {
-            window.removeEventListener('message', handleMessage);
-            clearTimeout(timeoutId);
-            resolve(event.data.data);
-          } else if (event.data.type === getErrorTopic(command)) {
-            window.removeEventListener('message', handleMessage);
-            clearTimeout(timeoutId);
-            analytics.trackApiError(new Error(event.data.error));
-            reject(new Error(event.data.error));
-          }
-        };
-
-        // Add timeout to prevent hanging promises
+        const requestId = `${command}-${crypto.randomUUID()}`;
         const timeoutId = setTimeout(() => {
-          window.removeEventListener('message', handleMessage);
+          pendingRequests.delete(requestId);
           reject(new Error(`Request timeout: ${command}`));
-        }, 30000); // 30 second timeout
+        }, 30000);
 
-        window.addEventListener('message', handleMessage);
+        pendingRequests.set(requestId, {
+          command,
+          resolve,
+          reject,
+          timeoutId,
+        });
+
+        ref.current.contentWindow.postMessage({ type: command, requestId, ...data }, iframeSrc);
       });
     },
     [ref, iframeSrc],
@@ -89,21 +100,13 @@ export function ApiProvider({ children }: { children: React.ReactNode }) {
     };
   }, [handleMessage]);
 
-  const getFlag = useCallback(
-    async (flagKey: string) => {
-      return sendMessage(IFRAME_COMMANDS.GET_FLAG, { flagKey }) as Promise<ApiFlag>;
-    },
-    [authenticated, ref],
-  );
-
   const getProjects = useCallback(async () => {
     if (!authenticated) {
-      console.log('Authentication required');
       return { items: [] };
     }
 
     return sendMessage(IFRAME_COMMANDS.GET_PROJECTS, {}) as Promise<ProjectsResponse>;
-  }, [authenticated, ref]);
+  }, [authenticated, sendMessage]);
 
   const getFlags = useCallback(
     async (projectKey: string, params?: FlagsPaginationParams) => {
@@ -118,10 +121,10 @@ export function ApiProvider({ children }: { children: React.ReactNode }) {
         query: params?.query,
       }) as Promise<FlagsResponse>;
     },
-    [authenticated, ref, iframeSrc],
+    [authenticated, sendMessage],
   );
 
-  return <ApiContext.Provider value={{ apiReady, getFlag, getProjects, getFlags }}>{children}</ApiContext.Provider>;
+  return <ApiContext.Provider value={{ apiReady, getProjects, getFlags }}>{children}</ApiContext.Provider>;
 }
 
 export function useApi() {

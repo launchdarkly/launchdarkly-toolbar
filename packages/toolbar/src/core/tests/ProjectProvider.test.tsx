@@ -9,6 +9,11 @@ vi.mock('../ui/Toolbar/context/api/ApiProvider', () => ({
   useApi: vi.fn(),
 }));
 
+// Mock the AuthProvider
+vi.mock('../ui/Toolbar/context/api/AuthProvider', () => ({
+  useAuthContext: vi.fn(() => ({ authenticated: true })),
+}));
+
 import { useApi } from '../ui/Toolbar/context/api/ApiProvider';
 
 // Test component that uses the Project context
