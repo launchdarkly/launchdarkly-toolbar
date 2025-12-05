@@ -258,7 +258,7 @@ export function FlagDevServerTabContent(props: FlagDevServerTabContentProps) {
                         style={{
                           height: `${virtualItem.size}px`,
                           transform: `translateY(${virtualItem.start}px)`,
-                          borderBottom: '1px solid var(--lp-color-gray-800)',
+                          borderBottom: '1px solid var(--lp-color-gray-600);',
                         }}
                       >
                         <ListItem className={styles.flagListItem}>

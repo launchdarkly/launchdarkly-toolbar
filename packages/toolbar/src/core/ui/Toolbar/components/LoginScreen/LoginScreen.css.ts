@@ -8,7 +8,7 @@ const spin = keyframes({
 export const loginContainer = style({
   display: 'flex',
   flexDirection: 'column',
-  backgroundColor: 'var(--lp-color-gray-900)',
+  backgroundColor: 'var(--lp-color-gray-950)',
   border: '1px solid var(--lp-color-gray-700)',
   borderRadius: '0px',
   width: '100%',
@@ -21,7 +21,7 @@ export const loginHeader = style({
   alignItems: 'center',
   justifyContent: 'space-between',
   padding: '0 8px 0 16px',
-  backgroundColor: 'var(--lp-color-gray-900)',
+  backgroundColor: 'var(--lp-color-gray-950)',
   borderBottom: '1px solid var(--lp-color-gray-700)',
   minHeight: '56px',
 });

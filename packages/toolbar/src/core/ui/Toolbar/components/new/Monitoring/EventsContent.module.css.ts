@@ -3,7 +3,7 @@ import { style, keyframes } from '@vanilla-extract/css';
 export const statsHeader = style({
   padding: '8px 20px',
   borderBottom: '1px solid var(--lp-color-gray-700)',
-  backgroundColor: 'var(--lp-color-gray-900)',
+  backgroundColor: 'var(--lp-color-gray-950)',
 });
 
 export const statsText = style({

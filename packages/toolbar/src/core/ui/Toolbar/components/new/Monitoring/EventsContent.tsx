@@ -174,6 +174,8 @@ export function EventsContent() {
                   style={{
                     height: `${virtualItem.size}px`,
                     transform: `translateY(${virtualItem.start}px)`,
+                    borderBottom: '1px solid var(--lp-color-gray-600);',
+                    cursor: 'pointer',
                   }}
                 >
                   <ListItem className={styles.eventListItem} onClick={() => handleEventClick(event)}>

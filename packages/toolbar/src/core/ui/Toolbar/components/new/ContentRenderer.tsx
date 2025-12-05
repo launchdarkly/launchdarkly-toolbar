@@ -3,14 +3,11 @@ import { useActiveSubtabContext } from './context/ActiveSubtabProvider';
 import { SettingsContent } from './Settings/SettingsContent';
 import { FlagListContent } from './FeatureFlags/FlagListContent';
 import { EventsContent } from './Monitoring/EventsContent';
+import { InteractiveContent } from './Interactive';
 
 // Placeholder content components - to be implemented later
 function ContextContent() {
   return <div>Context Content</div>;
-}
-
-function ClickTrackingContent() {
-  return <div>Click Tracking Content</div>;
 }
 
 export function ContentRenderer() {
@@ -43,7 +40,7 @@ export function ContentRenderer() {
   }
 
   if (activeTab === 'interactive') {
-    return <ClickTrackingContent />;
+    return <InteractiveContent />;
   }
 
   // Fallback

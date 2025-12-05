@@ -4,7 +4,7 @@ import { Z_INDEX } from '../constants/zIndex';
 export const toolbarContainer = style({
   position: 'fixed',
   zIndex: Z_INDEX.TOOLBAR,
-  backgroundColor: 'var(--lp-color-gray-900)',
+  backgroundColor: 'var(--lp-color-gray-950)',
   border: '1px solid var(--lp-color-gray-700)',
   overflow: 'hidden',
   cursor: 'pointer',
@@ -57,7 +57,7 @@ export const circleContent = style({
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'center',
-  backgroundColor: 'var(--lp-color-gray-900)',
+  backgroundColor: 'var(--lp-color-gray-950)',
   border: '1px solid var(--lp-color-gray-700)',
   borderRadius: '50%',
   cursor: 'pointer',
@@ -100,7 +100,7 @@ export const toolbarContent = style({
 });
 
 export const contentArea = style({
-  backgroundColor: 'var(--lp-color-gray-900)',
+  backgroundColor: 'var(--lp-color-gray-950)',
   overflow: 'hidden',
   borderRadius: '0px',
 });
@@ -113,7 +113,7 @@ export const tabsContainer = style({
   display: 'flex',
   alignItems: 'center',
   padding: '8px 8px',
-  backgroundColor: 'var(--lp-color-gray-900)',
+  backgroundColor: 'var(--lp-color-gray-950)',
   borderRadius: '0px',
 });
 
