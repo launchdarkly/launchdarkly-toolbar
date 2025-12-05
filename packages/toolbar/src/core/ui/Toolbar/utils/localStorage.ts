@@ -1,22 +1,30 @@
 import { ToolbarPosition, TOOLBAR_POSITIONS } from '../types/toolbar';
 
 export const TOOLBAR_STORAGE_KEYS = {
+  ENVIRONMENT: 'ld-toolbar-environment',
   SETTINGS: 'ld-toolbar-settings',
   DISABLED: 'ld-toolbar-disabled',
   PROJECT: 'ld-toolbar-project',
   STARRED_FLAGS: 'ld-toolbar-starred-flags',
+  MCP_ALERT_DISMISSED: 'ld-toolbar-mcp-alert-dismissed',
 } as const;
+
+export type PreferredIde = 'cursor' | 'windsurf' | 'vscode' | 'github-copilot';
+
+export const PREFERRED_IDES: PreferredIde[] = ['cursor', 'windsurf', 'vscode', 'github-copilot'];
 
 export interface ToolbarSettings {
   position: ToolbarPosition;
   reloadOnFlagChange: boolean;
   autoCollapse: boolean;
+  preferredIde: PreferredIde;
 }
 
 export const DEFAULT_SETTINGS: ToolbarSettings = {
   position: 'bottom-right',
   reloadOnFlagChange: false,
   autoCollapse: false,
+  preferredIde: 'cursor',
 };
 
 /**
@@ -120,5 +128,47 @@ export function saveStarredFlags(starredFlags: Set<string>): void {
     localStorage.setItem(TOOLBAR_STORAGE_KEYS.STARRED_FLAGS, value);
   } catch (error) {
     console.error('Error saving starred flags to localStorage:', error);
+  }
+}
+
+export function savePreferredIde(ide: PreferredIde): void {
+  updateSetting('preferredIde', ide);
+}
+
+export function loadPreferredIde(): PreferredIde {
+  try {
+    const stored = localStorage.getItem(TOOLBAR_STORAGE_KEYS.SETTINGS);
+    if (!stored) {
+      return DEFAULT_SETTINGS.preferredIde;
+    }
+
+    const parsed = JSON.parse(stored) as Partial<ToolbarSettings>;
+    return parsed.preferredIde && PREFERRED_IDES.includes(parsed.preferredIde)
+      ? parsed.preferredIde
+      : DEFAULT_SETTINGS.preferredIde;
+  } catch (error) {
+    console.warn('Failed to load preferred IDE from localStorage:', error);
+    return DEFAULT_SETTINGS.preferredIde;
+  }
+}
+
+export function saveMCPAlertDismissed(dismissed: boolean): void {
+  try {
+    localStorage.setItem(TOOLBAR_STORAGE_KEYS.MCP_ALERT_DISMISSED, JSON.stringify(dismissed));
+  } catch (error) {
+    console.warn('Failed to save MCP alert dismissed state to localStorage:', error);
+  }
+}
+
+export function loadMCPAlertDismissed(): boolean {
+  try {
+    const stored = localStorage.getItem(TOOLBAR_STORAGE_KEYS.MCP_ALERT_DISMISSED);
+    if (!stored) {
+      return false;
+    }
+    return JSON.parse(stored) === true;
+  } catch (error) {
+    console.warn('Failed to load MCP alert dismissed state from localStorage:', error);
+    return false;
   }
 }

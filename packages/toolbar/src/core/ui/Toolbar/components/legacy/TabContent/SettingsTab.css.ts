@@ -1,7 +1,7 @@
 import { style } from '@vanilla-extract/css';
 
 export const settingsGroup = style({
-  borderBottom: '1px solid var(--lp-color-gray-800)',
+  borderBottom: '1px solid var(--lp-color-gray-600);',
 
   selectors: {
     '&:last-child': {
@@ -22,7 +22,7 @@ export const settingsGroupTitle = style({
 
 export const switch_ = style({
   fontSize: '12px',
-  backgroundColor: 'var(--lp-color-gray-900)',
+  backgroundColor: 'var(--lp-color-gray-950)',
 });
 
 export const settingInfo = style({

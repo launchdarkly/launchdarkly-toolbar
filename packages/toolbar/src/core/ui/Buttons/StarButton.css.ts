@@ -33,6 +33,18 @@ export const starButton = style({
   },
 });
 
+export const starButtonStarred = style({
+  color: '#eab308', // Yellow-500 for starred state
+
+  selectors: {
+    '&:hover': {
+      color: '#facc15', // Yellow-400 on hover
+      backgroundColor: 'var(--lp-color-gray-800)',
+      transform: 'scale(1.1)',
+    },
+  },
+});
+
 export const starIcon = style({
   width: '16px',
   height: '16px',

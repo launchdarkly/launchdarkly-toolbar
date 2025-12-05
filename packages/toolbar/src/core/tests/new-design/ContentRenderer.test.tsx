@@ -44,6 +44,10 @@ vi.mock('../../ui/Toolbar/components/new/Monitoring/EventsContent', () => ({
   EventsContent: () => <div data-testid="events-content">Events Content</div>,
 }));
 
+vi.mock('../../ui/Toolbar/components/new/Interactive', () => ({
+  InteractiveContent: () => <div data-testid="interactive-content">Interactive Content</div>,
+}));
+
 describe('ContentRenderer', () => {
   beforeEach(() => {
     mockActiveTab = 'flags';
@@ -99,12 +103,12 @@ describe('ContentRenderer', () => {
     expect(screen.getByTestId('settings-content')).toBeInTheDocument();
   });
 
-  it('should render click tracking content for interactive tab', () => {
+  it('should render interactive content for interactive tab', () => {
     mockActiveTab = 'interactive';
     mockActiveSubtab = undefined;
     render(<ContentRenderer />);
 
-    expect(screen.getByText('Click Tracking Content')).toBeInTheDocument();
+    expect(screen.getByTestId('interactive-content')).toBeInTheDocument();
   });
 
   it('should render fallback content for undefined active tab', () => {

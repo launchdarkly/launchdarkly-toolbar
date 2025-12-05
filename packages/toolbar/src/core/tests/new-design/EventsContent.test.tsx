@@ -3,7 +3,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { EventsContent } from '../../ui/Toolbar/components/new/Monitoring/EventsContent';
 import { AnalyticsProvider } from '../../ui/Toolbar/context/telemetry/AnalyticsProvider';
 import { InternalClientProvider } from '../../ui/Toolbar/context/telemetry/InternalClientProvider';
-import { ProcessedEvent, IEventInterceptionPlugin } from '../../../../types';
+import { ProcessedEvent, IEventInterceptionPlugin, SyntheticEventContext } from '../../../types';
 import '@testing-library/jest-dom/vitest';
 import React from 'react';
 
@@ -12,13 +12,22 @@ let mockSearchTerm = '';
 let mockEvents: ProcessedEvent[] = [];
 let mockEventPlugin: IEventInterceptionPlugin | undefined = undefined;
 
-// Mock the TabSearchProvider hook
-vi.mock('../../ui/Toolbar/components/new/context/TabSearchProvider', () => ({
+// Mock the new context hooks
+vi.mock('../../ui/Toolbar/components/new/context', () => ({
   useTabSearchContext: () => ({
     searchTerms: { monitoring: mockSearchTerm },
     setSearchTerm: vi.fn(),
   }),
   TabSearchProvider: ({ children }: { children: React.ReactNode }) => <>{children}</>,
+  useSubtabFilters: () => ({
+    activeFilters: new Set(['all']),
+    config: null,
+    toggle: vi.fn(),
+    reset: vi.fn(),
+    hasFilters: false,
+    hasActiveNonDefaultFilters: false,
+  }),
+  FiltersProvider: ({ children }: { children: React.ReactNode }) => <>{children}</>,
 }));
 
 // Mock the useEvents hook
@@ -74,13 +83,14 @@ vi.mock('motion/react', () => ({
 const createMockEvent = (overrides: Partial<ProcessedEvent> = {}): ProcessedEvent => ({
   kind: 'feature',
   displayName: 'test-flag',
+  id: 'test-flag',
   category: 'flag',
   key: 'test-flag',
   timestamp: Date.now(),
   context: {
     key: 'test-flag',
     reason: { kind: 'OFF' },
-  },
+  } as SyntheticEventContext,
   ...overrides,
 });
 

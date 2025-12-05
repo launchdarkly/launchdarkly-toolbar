@@ -15,7 +15,7 @@ export const trigger = style({
   width: '100%',
   height: '32px',
   padding: '0 8px',
-  background: 'var(--lp-color-gray-900)',
+  background: 'var(--lp-color-gray-950)',
   border: '1px solid var(--lp-color-gray-700)',
   borderRadius: '6px',
   fontSize: '14px',
@@ -72,7 +72,7 @@ export const iconOpen = style({
 
 export const dropdown = style({
   zIndex: Z_INDEX.POPOVER,
-  background: 'var(--lp-color-gray-900)',
+  background: 'var(--lp-color-gray-950)',
   border: '1px solid var(--lp-color-gray-700)',
   borderRadius: '6px',
   boxShadow: '0 4px 12px rgba(0, 0, 0, 0.3)',
@@ -143,7 +143,7 @@ globalStyle(`[data-theme="dark"] ${selectContainer}`, {
 globalStyle(`[data-theme="light"] ${trigger}`, {
   background: 'var(--lp-color-white)',
   border: '1px solid var(--lp-color-gray-300)',
-  color: 'var(--lp-color-gray-900)',
+  color: 'var(--lp-color-gray-950)',
 });
 
 globalStyle(`[data-theme="light"] ${dropdown}`, {
@@ -153,7 +153,7 @@ globalStyle(`[data-theme="light"] ${dropdown}`, {
 });
 
 globalStyle(`[data-theme="light"] ${option}`, {
-  color: 'var(--lp-color-gray-900)',
+  color: 'var(--lp-color-gray-950)',
 });
 
 globalStyle(`[data-theme="light"] ${option}:hover`, {

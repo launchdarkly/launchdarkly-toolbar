@@ -65,10 +65,10 @@ body {
 .config-panel {
   background: white;
   padding: 30px;
-  border-radius: 12px;
+  border-radius: var(--radius);
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
   height: fit-content;
-  border: 1px solid #e2e8f0;
+  border: 1px solid rgb(var(--border));
 }
 
 .config-panel h2 {
@@ -112,7 +112,7 @@ body {
   padding: 30px;
   border-radius: 12px;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-  border: 1px solid #e2e8f0;
+  border: 1px solid rgb(var(--border));
 }
 
 .demo-content h2 {
@@ -320,7 +320,7 @@ body {
 
 .flag-item {
   background: white;
-  border: 1px solid #e2e8f0;
+  border: 1px solid rgb(var(--border));
   border-radius: 6px;
   padding: 12px;
   transition: all 0.2s ease;
@@ -346,7 +346,7 @@ body {
   background: #f7fafc;
   padding: 2px 6px;
   border-radius: 3px;
-  border: 1px solid #e2e8f0;
+  border: 1px solid rgb(var(--border));
 }
 
 .flag-type {
@@ -439,7 +439,7 @@ body {
   padding: 30px;
   border-radius: 12px;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-  border: 1px solid #e2e8f0;
+  border: 1px solid rgb(var(--border));
   text-align: center;
   transition:
     transform 0.2s ease,

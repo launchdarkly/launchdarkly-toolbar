@@ -16,6 +16,7 @@ import {
 import { CircleLogo } from './components';
 import { ExpandedToolbarContentLegacy } from './components/legacy';
 import { ExpandedToolbarContent } from './components/new/ExpandedToolbarContent';
+import { InteractiveWrapper } from './components/new/Interactive';
 import { AuthenticationModal } from './components/AuthenticationModal/AuthenticationModal';
 import { useToolbarAnimations, useToolbarVisibility, useToolbarDrag } from './hooks';
 import { ToolbarMode, ToolbarPosition, getToolbarMode, getDefaultActiveTab, ActiveTabId } from './types/toolbar';
@@ -275,12 +276,14 @@ export function LaunchDarklyToolbar(props: LaunchDarklyToolbarProps) {
             }}
           >
             <StarredFlagsProvider>
-              <LdToolbar
-                mode={mode}
-                baseUrl={baseUrl}
-                flagOverridePlugin={flagOverridePlugin}
-                eventInterceptionPlugin={eventInterceptionPlugin}
-              />
+              <InteractiveWrapper>
+                <LdToolbar
+                  mode={mode}
+                  baseUrl={baseUrl}
+                  flagOverridePlugin={flagOverridePlugin}
+                  eventInterceptionPlugin={eventInterceptionPlugin}
+                />
+              </InteractiveWrapper>
             </StarredFlagsProvider>
           </DevServerProvider>
         </ApiBundleProvider>

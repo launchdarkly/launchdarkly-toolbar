@@ -36,7 +36,7 @@ export const jsonEditorContainer = style({
 export const currentValueGroup = style({
   display: 'flex',
   alignItems: 'center',
-  background: 'var(--lp-color-gray-900)',
+  background: 'var(--lp-color-gray-950)',
   border: '1px solid var(--lp-color-gray-700)',
   borderRadius: '6px',
   height: '32px',
@@ -57,7 +57,7 @@ export const customVariantFieldGroup = style({
 
 export const currentValue = style({
   padding: '6px 8px',
-  background: 'var(--lp-color-gray-900)',
+  background: 'var(--lp-color-gray-950)',
   border: '1px solid var(--lp-color-gray-700)',
   borderRadius: '6px',
   fontSize: '14px',
