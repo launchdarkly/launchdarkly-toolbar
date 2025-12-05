@@ -4,7 +4,7 @@ export const container = style({
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'space-around',
-  padding: '6px 20px',
+  padding: '6px',
   borderBottom: '1px solid var(--lp-color-gray-700)',
   gap: '8px',
 });
@@ -14,7 +14,7 @@ export const iconButton = style({
   border: 'none',
   color: 'var(--lp-color-gray-400)',
   cursor: 'pointer',
-  padding: '12px',
+  padding: '8px',
   borderRadius: '8px',
   display: 'flex',
   alignItems: 'center',
@@ -25,7 +25,7 @@ export const iconButton = style({
   position: 'relative',
 
   ':hover': {
-    backgroundColor: 'var(--lp-color-gray-800)',
+    backgroundColor: 'var(--lp-color-gray-900)',
     color: 'var(--lp-color-gray-200)',
   },
 
@@ -40,7 +40,7 @@ export const iconButton = style({
 });
 
 export const active = style({
-  backgroundColor: 'var(--lp-color-gray-800)',
+  backgroundColor: 'var(--lp-color-gray-900)',
   color: 'var(--lp-color-gray-200)',
 });
 
@@ -57,4 +57,15 @@ export const disabled = style({
 export const icon = style({
   width: '24px',
   height: '24px',
+});
+
+// Special hover state for interactive icon when in interactive mode
+export const selectMode = style({
+  backgroundColor: 'var(--lp-color-blue-900)',
+  color: 'var(--lp-color-blue-400)',
+
+  ':hover': {
+    backgroundColor: 'var(--lp-color-blue-800)',
+    color: 'var(--lp-color-blue-300)',
+  },
 });

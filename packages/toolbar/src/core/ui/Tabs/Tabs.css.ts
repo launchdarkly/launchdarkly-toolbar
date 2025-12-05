@@ -21,13 +21,13 @@ export const activeIndicator = style({
   top: 0,
   height: '100%',
   backgroundColor: 'var(--lp-color-gray-700)',
-  borderRadius: '12px',
+  borderRadius: 'var(--radius)',
   zIndex: 0,
   transition: 'left 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94), width 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94)',
 });
 
 export const tab = style({
-  borderRadius: '12px',
+  borderRadius: 'var(--radius)',
   transition: 'all var(--lp-duration-150) ease',
   color: 'var(--lp-color-gray-400)',
   background: 'transparent',

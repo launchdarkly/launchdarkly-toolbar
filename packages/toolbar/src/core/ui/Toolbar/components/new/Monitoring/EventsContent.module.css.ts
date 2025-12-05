@@ -1,9 +1,16 @@
 import { style, keyframes } from '@vanilla-extract/css';
 
+export const container = style({
+  display: 'flex',
+  flexDirection: 'column',
+  height: '100%',
+});
+
 export const statsHeader = style({
   padding: '8px 20px',
   borderBottom: '1px solid var(--lp-color-gray-700)',
   backgroundColor: 'var(--lp-color-gray-900)',
+  flexShrink: 0,
 });
 
 export const statsText = style({
@@ -119,8 +126,10 @@ export const eventBadgeDefault = style([
 ]);
 
 export const virtualContainer = style({
-  height: '350px',
+  flex: 1,
   overflow: 'auto',
+  padding: '8px 12px',
+  paddingBottom: '20px',
   scrollbarColor: 'var(--lp-color-gray-800) transparent',
   scrollbarWidth: 'thin',
 
@@ -157,11 +166,8 @@ export const virtualItem = style({
   top: 0,
   left: 0,
   width: '100%',
-
-  ':hover': {
-    backgroundColor: 'var(--lp-color-gray-800)',
-    transition: 'background-color 0.2s ease',
-  },
+  paddingBottom: '12px', // Gap between cards (matches VIRTUALIZATION.GAP)
+  boxSizing: 'border-box',
 });
 
 export const liveTailContainer = style({
@@ -169,7 +175,7 @@ export const liveTailContainer = style({
   flexDirection: 'column',
   alignItems: 'center',
   justifyContent: 'center',
-  height: '350px',
+  flex: 1,
   gap: '12px',
   color: 'var(--lp-color-gray-400)',
 });
@@ -216,5 +222,16 @@ export const liveTailSubtext = style({
 });
 
 export const eventListItem = style({
-  height: '100%',
+  // Card styling for new design
+  backgroundColor: 'var(--lp-color-gray-850)',
+  border: '1px solid var(--lp-color-gray-700)',
+  borderRadius: '8px',
+  padding: '16px',
+  paddingLeft: '12px',
+  cursor: 'pointer',
+
+  ':hover': {
+    backgroundColor: 'var(--lp-color-gray-800)',
+    borderColor: 'var(--lp-color-gray-600)',
+  },
 });

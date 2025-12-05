@@ -4,6 +4,7 @@ export * from './TabBar';
 export * from './ContentActions';
 export * from './Tooltip';
 export * from './ContentRenderer';
-export * from './context/ActiveSubtabProvider';
+export * from './context';
 export * from './types';
 export * from './Settings';
+export * from './FilterOverlay';
