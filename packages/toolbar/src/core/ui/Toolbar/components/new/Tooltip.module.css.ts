@@ -4,6 +4,7 @@ import { Z_INDEX } from '../../../constants/zIndex';
 export const container = style({
   position: 'relative',
   display: 'inline-flex',
+  flexShrink: 0,
 });
 
 export const tooltip = style({

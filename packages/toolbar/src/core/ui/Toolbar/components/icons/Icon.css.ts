@@ -5,3 +5,9 @@ export const icon = style({
   height: '24px',
   fill: 'currentColor',
 });
+
+export const iconSmall = style({
+  width: '14px',
+  height: '14px',
+  fill: 'currentColor',
+});

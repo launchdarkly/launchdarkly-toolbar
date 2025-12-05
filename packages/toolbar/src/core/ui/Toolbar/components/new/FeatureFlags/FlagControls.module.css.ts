@@ -17,7 +17,7 @@ globalStyle(`${switchContainer} label`, {
 export const select = style({
   background: 'transparent',
   minWidth: '120px',
-  maxWidth: '160px',
+  maxWidth: '140px',
 });
 
 export const customVariantContainer = style({
@@ -26,7 +26,7 @@ export const customVariantContainer = style({
   flexDirection: 'row',
   gap: '4px',
   minWidth: '120px',
-  maxWidth: '160px',
+  maxWidth: '140px',
 });
 
 export const currentValueGroup = style({

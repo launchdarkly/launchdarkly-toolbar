@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.2.0-beta.1](https://github.com/launchdarkly/launchdarkly-toolbar/compare/2.1.1-beta.1...2.2.0-beta.1) (2025-12-05)
+
+
+### Features
+
+* [REL-10571] Interactive mode mvp ([#385](https://github.com/launchdarkly/launchdarkly-toolbar/issues/385)) ([2ed5569](https://github.com/launchdarkly/launchdarkly-toolbar/commit/2ed5569cf0429be54f697b05850c8a0c74f2ab6d))
+
 ## [2.1.1-beta.1](https://github.com/launchdarkly/launchdarkly-toolbar/compare/2.1.0-beta.1...2.1.1-beta.1) (2025-12-01)
 
 

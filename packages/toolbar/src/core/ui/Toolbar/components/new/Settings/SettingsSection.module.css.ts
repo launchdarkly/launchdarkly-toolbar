@@ -11,7 +11,7 @@ export const title = style({
   textTransform: 'uppercase',
   letterSpacing: '0.5px',
   marginBottom: '12px',
-  padding: '0 4px',
+  padding: '0px',
 });
 
 export const content = style({
