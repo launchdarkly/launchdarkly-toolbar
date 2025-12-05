@@ -20,3 +20,6 @@ export { ClickIcon } from './ClickIcon';
 export { ChartHistogram } from './ChartHistogram';
 export { ChipAiIcon } from './ChipAiIcon';
 export { FlaskIcon } from './FlaskIcon';
+export { ExternalLinkIcon } from './ExternalLinkIcon';
+export { CursorIcon } from './CursorIcon';
+export { InfoIcon } from './InfoIcon';

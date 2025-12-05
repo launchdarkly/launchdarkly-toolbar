@@ -6,7 +6,7 @@ import {
   MultivariateFlagControl,
   StringNumberFlagControl,
 } from '../../ui/Toolbar/components/new/FeatureFlags/FlagControls';
-import { NormalizedFlag } from '../../ui/Toolbar/components/new/FeatureFlags/FlagList';
+import { NormalizedFlag } from '../../ui/Toolbar/components/new//FeatureFlags/types';
 import { AnalyticsProvider } from '../../ui/Toolbar/context/telemetry/AnalyticsProvider';
 import { InternalClientProvider } from '../../ui/Toolbar/context/telemetry/InternalClientProvider';
 import ReactMountContext from '../../context/ReactMountContext';
@@ -22,10 +22,31 @@ vi.mock('motion/react', () => ({
   AnimatePresence: ({ children }: any) => <>{children}</>,
 }));
 
-// Mock Analytics
+// Mock context hooks
 vi.mock('../../ui/Toolbar/context', () => ({
   useAnalytics: () => ({
     trackFlagKeyCopy: vi.fn(),
+    trackStarredFlag: vi.fn(),
+    trackOpenFlagDeeplink: vi.fn(),
+  }),
+  useStarredFlags: () => ({
+    isStarred: vi.fn().mockReturnValue(false),
+    toggleStarred: vi.fn(),
+    clearAllStarred: vi.fn(),
+    starredCount: 0,
+  }),
+  usePlugins: () => ({
+    baseUrl: 'https://app.launchdarkly.com',
+    flagOverridePlugin: undefined,
+    eventInterceptionPlugin: undefined,
+  }),
+  useProjectContext: () => ({
+    projectKey: 'test-project',
+    projects: [],
+    environments: [],
+    loading: false,
+    setProjectKey: vi.fn(),
+    getProjects: vi.fn(),
   }),
 }));
 

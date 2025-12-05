@@ -12,7 +12,7 @@ import { DoNotTrackWarning } from '../../DoNotTrackWarning';
 import { GenericHelpText } from '../../GenericHelpText';
 import { IconLinkButton } from '../../../../Buttons/IconLinkButton';
 import { AddIcon } from '../../icons/AddIcon';
-import { useTabSearchContext } from '../context/TabSearchProvider';
+import { useTabSearchContext, useSubtabFilters } from '../context';
 
 import * as styles from './EventsContent.module.css';
 
@@ -34,12 +34,30 @@ export function EventsContent() {
   const { eventInterceptionPlugin, baseUrl } = usePlugins();
   const { searchTerms } = useTabSearchContext();
   const searchTerm = useMemo(() => searchTerms['monitoring'] || '', [searchTerms]);
+  const { activeFilters } = useSubtabFilters('events');
   const analytics = useAnalytics();
-  const { events, eventStats } = useEvents(eventInterceptionPlugin, searchTerm);
+  const { events: allEvents, eventStats } = useEvents(eventInterceptionPlugin, searchTerm);
   const currentDate = useCurrentDate(); // Updates every second by default
   const parentRef = useRef<HTMLDivElement>(null);
 
   const doNotTrackEnabled = useMemo(() => isDoNotTrackEnabled(), []);
+
+  // Filter events based on active filters
+  const events = useMemo(() => {
+    const showAll = activeFilters.has('all');
+    if (showAll) return allEvents;
+
+    const showFeature = activeFilters.has('feature');
+    const showCustom = activeFilters.has('custom');
+    const showIdentify = activeFilters.has('identify');
+
+    return allEvents.filter((event) => {
+      if (showFeature && event.kind === 'feature') return true;
+      if (showCustom && event.kind === 'custom') return true;
+      if (showIdentify && event.kind === 'identify') return true;
+      return false;
+    });
+  }, [allEvents, activeFilters]);
 
   const handleEventClick = (event: ProcessedEvent) => {
     analytics.trackEventClick(event?.key ?? event.displayName);
@@ -88,7 +106,7 @@ export function EventsContent() {
   const virtualizer = useVirtualizer({
     count: events.length,
     getScrollElement: () => parentRef.current,
-    estimateSize: () => VIRTUALIZATION.ITEM_HEIGHT,
+    estimateSize: () => VIRTUALIZATION.ITEM_HEIGHT + VIRTUALIZATION.GAP,
     overscan: VIRTUALIZATION.OVERSCAN,
   });
 
@@ -132,7 +150,7 @@ export function EventsContent() {
   }
 
   return (
-    <div data-testid="events-tab-content">
+    <div data-testid="events-tab-content" className={styles.container}>
       <div className={styles.statsHeader}>
         <span className={styles.statsText}>{eventStats.totalEvents} events captured</span>
       </div>
@@ -156,7 +174,7 @@ export function EventsContent() {
                   style={{
                     height: `${virtualItem.size}px`,
                     transform: `translateY(${virtualItem.start}px)`,
-                    borderBottom: '1px solid var(--lp-color-gray-800)',
+                    borderBottom: '1px solid var(--lp-color-gray-600);',
                     cursor: 'pointer',
                   }}
                 >

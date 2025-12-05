@@ -10,7 +10,7 @@ export const trigger = style({
   display: 'flex',
   alignItems: 'center',
   gap: '8px',
-  backgroundColor: 'var(--lp-color-gray-900)',
+  backgroundColor: 'var(--lp-color-gray-950)',
   border: '1px solid var(--lp-color-gray-700)',
   borderRadius: '6px',
   color: 'var(--lp-color-gray-200)',
