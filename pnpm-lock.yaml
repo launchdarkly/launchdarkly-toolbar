@@ -126,6 +126,9 @@ importers:
       '@codemirror/view':
         specifier: ^6.38.8
         version: 6.38.8
+      '@launchdarkly/observability':
+        specifier: ^0.4.9
+        version: 0.4.9
       '@launchdarkly/session-replay':
         specifier: ^0.4.9
         version: 0.4.9
@@ -985,6 +988,9 @@ packages:
 
   '@launchdarkly/js-sdk-common@2.17.0':
     resolution: {integrity: sha512-HYQNc4xbE58hBOO1yZsqE+BHOC36AYrHPZ5hwvlHoZRSsaoYCPM+Q/n+O+N3JhWXTqGsu6SwUzqUzTyxg8prGg==}
+
+  '@launchdarkly/observability@0.4.9':
+    resolution: {integrity: sha512-v9RlKyKXjJo1RP+P7OQ9lYCNL7rMdteTllKzCONFkKFglNzxwlFAJaKADGuo/EJto245tUEoBUEwLmvuHf+nbA==}
 
   '@launchdarkly/session-replay@0.4.9':
     resolution: {integrity: sha512-Cur9amHWpblQb9weCyjX/Z0uU+AkxpuRsXUC3J3IzYS3VeJf2WPWw7d07X8pFoun5AGHzNEZtQQJP84B9RLyCA==}
@@ -5545,6 +5551,10 @@ snapshots:
       '@launchdarkly/js-client-sdk-common': 1.13.0
 
   '@launchdarkly/js-sdk-common@2.17.0': {}
+
+  '@launchdarkly/observability@0.4.9':
+    dependencies:
+      highlight.run: 9.23.0
 
   '@launchdarkly/session-replay@0.4.9':
     dependencies:

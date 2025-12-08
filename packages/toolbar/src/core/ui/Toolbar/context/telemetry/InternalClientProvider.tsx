@@ -103,8 +103,9 @@ export function InternalClientProvider({
         setLoading(true);
         setError(null);
 
-        const [{ initialize }, SessionReplay] = await Promise.all([
+        const [{ initialize }, Observability, SessionReplay] = await Promise.all([
           import('launchdarkly-js-client-sdk'),
+          import('@launchdarkly/observability').then((m) => m.default),
           import('@launchdarkly/session-replay').then((m) => m.default),
         ]);
 
@@ -114,16 +115,25 @@ export function InternalClientProvider({
           anonymous: true,
         };
 
+        const observabilityPlugin = new Observability({
+          manualStart: true,
+          // backendUrl: 'https://pub.observability.app.catamorphic.com',
+          networkRecording: {
+            enabled: true,
+            recordHeadersAndBody: true,
+          },
+        });
         const sessionReplayPlugin = new SessionReplay({
           manualStart: true,
           privacySetting: 'default',
+          // backendUrl: 'https://pub.observability.app.catamorphic.com',
         });
 
         const options = {
           ...(baseUrl && { baseUrl }),
           ...(streamUrl && { streamUrl }),
           ...(eventsUrl && { eventsUrl }),
-          plugins: [sessionReplayPlugin],
+          plugins: [observabilityPlugin, sessionReplayPlugin],
         };
 
         const ldClient = initialize(clientSideId, context, options);
@@ -183,6 +193,7 @@ export function InternalClientProvider({
     [client],
   );
   // Monitor Session Replay flag and start/stop recording accordingly
+  // Monitor Session Replay flag and start/stop recording and observability accordingly
   useEffect(() => {
     if (!client) {
       return;
@@ -192,14 +203,19 @@ export function InternalClientProvider({
       try {
         const shouldEnableReplay = enableSessionReplay();
 
+        const [{ LDRecord }, { LDObserve }] = await Promise.all([
+          import('@launchdarkly/session-replay'),
+          import('@launchdarkly/observability'),
+        ]);
+
         if (shouldEnableReplay) {
-          const { LDRecord } = await import('@launchdarkly/session-replay');
+          LDObserve.start();
           LDRecord.start({ forceNew: false, silent: false });
-          console.log('[InternalClientProvider] Session Replay started');
+          console.log('[InternalClientProvider] Observability and Session Replay started');
         } else {
-          const { LDRecord } = await import('@launchdarkly/session-replay');
+          LDObserve.stop();
           LDRecord.stop();
-          console.log('[InternalClientProvider] Session Replay stopped');
+          console.log('[InternalClientProvider] Observability and Session Replay stopped');
         }
       } catch (err) {
         console.error('[InternalClientProvider] Failed to control Session Replay:', err);
