@@ -1,5 +1,5 @@
 import { render, screen, waitFor } from '@testing-library/react';
-import { expect, test, describe, vi, beforeEach } from 'vitest';
+import { expect, test, describe, vi, beforeEach, afterEach } from 'vitest';
 
 // Create mocks in hoisted scope
 const mockLDClient = {
@@ -20,14 +20,37 @@ const mockLDRecord = {
   stop: vi.fn(),
 };
 
+// Create a proper mock class for Observability
+class MockObservability {
+  options: { manualStart: boolean; networkRecording?: { enabled: boolean; recordHeadersAndBody: boolean } };
+
+  constructor(options?: {
+    manualStart?: boolean;
+    backendUrl?: string;
+    networkRecording?: { enabled: boolean; recordHeadersAndBody: boolean };
+  }) {
+    this.options = {
+      manualStart: options?.manualStart ?? true,
+      networkRecording: options?.networkRecording,
+    };
+  }
+}
+
+// Mock Observability controller
+const mockLDObserve = {
+  start: vi.fn(),
+  stop: vi.fn(),
+};
+
 // Create a proper mock class for SessionReplay
 class MockSessionReplay {
-  options: { manualStart: boolean; privacySetting: string };
+  options: { manualStart: boolean; privacySetting: string; backendUrl?: string };
 
-  constructor(options?: { manualStart?: boolean; privacySetting?: string }) {
+  constructor(options?: { manualStart?: boolean; privacySetting?: string; backendUrl?: string }) {
     this.options = {
       manualStart: options?.manualStart ?? true,
       privacySetting: options?.privacySetting ?? 'default',
+      backendUrl: options?.backendUrl,
     };
   }
 }
@@ -35,6 +58,12 @@ class MockSessionReplay {
 // Mock the SDK module
 vi.mock('launchdarkly-js-client-sdk', () => ({
   initialize: mockInitialize,
+}));
+
+// Mock the Observability module
+vi.mock('@launchdarkly/observability', () => ({
+  default: MockObservability,
+  LDObserve: mockLDObserve,
 }));
 
 // Mock the Session Replay module
@@ -94,7 +123,9 @@ describe('InternalClientProvider', () => {
 
     mockInitialize.mockReturnValue(mockLDClient);
 
-    // Clear Session Replay mocks
+    // Clear Observability and Session Replay mocks
+    mockLDObserve.start.mockClear();
+    mockLDObserve.stop.mockClear();
     mockLDRecord.start.mockClear();
     mockLDRecord.stop.mockClear();
 
@@ -160,7 +191,7 @@ describe('InternalClientProvider', () => {
             anonymous: true,
           },
           expect.objectContaining({
-            observabilityPlugins: expect.any(Array),
+            plugins: expect.any(Array),
           }),
         );
       });
@@ -184,7 +215,7 @@ describe('InternalClientProvider', () => {
           'test-client-id-123',
           customContext,
           expect.objectContaining({
-            observabilityPlugins: expect.any(Array),
+            plugins: expect.any(Array),
           }),
         );
       });
@@ -242,10 +273,14 @@ describe('InternalClientProvider', () => {
       await waitFor(() => {
         expect(mockInitialize).toHaveBeenCalledWith(
           'test-client-id-123',
-          expect.any(Object),
+          expect.objectContaining({
+            kind: 'user',
+            key: 'toolbar-anonymous',
+            anonymous: true,
+          }),
           expect.objectContaining({
             baseUrl: 'https://app.ld.catamorphic.com',
-            observabilityPlugins: expect.any(Array),
+            plugins: expect.any(Array),
           }),
         );
       });
@@ -263,7 +298,7 @@ describe('InternalClientProvider', () => {
           'test-client-id-123',
           expect.any(Object),
           expect.objectContaining({
-            observabilityPlugins: expect.any(Array),
+            plugins: expect.any(Array),
           }),
         );
       });
