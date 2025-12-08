@@ -12,65 +12,58 @@ const mockLDClient = {
   track: vi.fn(),
 };
 
-const mockInitialize = vi.fn();
+vi.mock('launchdarkly-js-client-sdk', () => {
+  return {
+    initialize: vi.fn(),
+  };
+});
 
-// Mock Session Replay
-const mockLDRecord = {
-  start: vi.fn(),
-  stop: vi.fn(),
-};
+vi.mock('@launchdarkly/observability', () => {
+  class MockObservability {
+    options: { manualStart: boolean; networkRecording?: { enabled: boolean; recordHeadersAndBody: boolean } };
 
-// Create a proper mock class for Observability
-class MockObservability {
-  options: { manualStart: boolean; networkRecording?: { enabled: boolean; recordHeadersAndBody: boolean } };
-
-  constructor(options?: {
-    manualStart?: boolean;
-    backendUrl?: string;
-    networkRecording?: { enabled: boolean; recordHeadersAndBody: boolean };
-  }) {
-    this.options = {
-      manualStart: options?.manualStart ?? true,
-      networkRecording: options?.networkRecording,
-    };
+    constructor(options?: {
+      manualStart?: boolean;
+      backendUrl?: string;
+      networkRecording?: { enabled: boolean; recordHeadersAndBody: boolean };
+    }) {
+      this.options = {
+        manualStart: options?.manualStart ?? true,
+        networkRecording: options?.networkRecording,
+      };
+    }
   }
-}
 
-// Mock Observability controller
-const mockLDObserve = {
-  start: vi.fn(),
-  stop: vi.fn(),
-};
+  return {
+    default: MockObservability,
+    LDObserve: {
+      start: vi.fn(),
+      stop: vi.fn(),
+    },
+  };
+});
 
-// Create a proper mock class for SessionReplay
-class MockSessionReplay {
-  options: { manualStart: boolean; privacySetting: string; backendUrl?: string };
+vi.mock('@launchdarkly/session-replay', () => {
+  class MockSessionReplay {
+    options: { manualStart: boolean; privacySetting: string; backendUrl?: string };
 
-  constructor(options?: { manualStart?: boolean; privacySetting?: string; backendUrl?: string }) {
-    this.options = {
-      manualStart: options?.manualStart ?? true,
-      privacySetting: options?.privacySetting ?? 'default',
-      backendUrl: options?.backendUrl,
-    };
+    constructor(options?: { manualStart?: boolean; privacySetting?: string; backendUrl?: string }) {
+      this.options = {
+        manualStart: options?.manualStart ?? true,
+        privacySetting: options?.privacySetting ?? 'default',
+        backendUrl: options?.backendUrl,
+      };
+    }
   }
-}
 
-// Mock the SDK module
-vi.mock('launchdarkly-js-client-sdk', () => ({
-  initialize: mockInitialize,
-}));
-
-// Mock the Observability module
-vi.mock('@launchdarkly/observability', () => ({
-  default: MockObservability,
-  LDObserve: mockLDObserve,
-}));
-
-// Mock the Session Replay module
-vi.mock('@launchdarkly/session-replay', () => ({
-  default: MockSessionReplay,
-  LDRecord: mockLDRecord,
-}));
+  return {
+    default: MockSessionReplay,
+    LDRecord: {
+      start: vi.fn(),
+      stop: vi.fn(),
+    },
+  };
+});
 
 import {
   InternalClientProvider,
@@ -79,11 +72,16 @@ import {
 } from '../ui/Toolbar/context/telemetry/InternalClientProvider';
 import { setToolbarFlagClient } from '../../flags/createToolbarFlagFunction';
 import * as toolbarFlagClient from '../../flags/createToolbarFlagFunction';
+import { initialize } from 'launchdarkly-js-client-sdk';
+import { LDObserve } from '@launchdarkly/observability';
+import { LDRecord } from '@launchdarkly/session-replay';
 
-// Spy on setToolbarFlagClient
+const mockInitialize = vi.mocked(initialize);
+const mockLDObserveMethods = vi.mocked(LDObserve);
+const mockLDRecordMethods = vi.mocked(LDRecord);
+
 const setToolbarFlagClientSpy = vi.spyOn(toolbarFlagClient, 'setToolbarFlagClient');
 
-// Test component that consumes the context
 function TestConsumer() {
   const { client, loading, error } = useInternalClient();
 
@@ -96,7 +94,6 @@ function TestConsumer() {
   );
 }
 
-// Test component for useInternalClientInstance hook
 function TestClientInstanceConsumer() {
   const client = useInternalClientInstance();
 
@@ -111,7 +108,6 @@ describe('InternalClientProvider', () => {
   beforeEach(() => {
     vi.clearAllMocks();
 
-    // Reset all mock functions to default behavior
     mockLDClient.waitForInitialization.mockResolvedValue(undefined);
     mockLDClient.identify.mockResolvedValue(undefined);
     // Return false for session replay flag by default to prevent it from starting
@@ -123,21 +119,17 @@ describe('InternalClientProvider', () => {
 
     mockInitialize.mockReturnValue(mockLDClient);
 
-    // Clear Observability and Session Replay mocks
-    mockLDObserve.start.mockClear();
-    mockLDObserve.stop.mockClear();
-    mockLDRecord.start.mockClear();
-    mockLDRecord.stop.mockClear();
+    mockLDObserveMethods.start.mockClear();
+    mockLDObserveMethods.stop.mockClear();
+    mockLDRecordMethods.start.mockClear();
+    mockLDRecordMethods.stop.mockClear();
 
-    // Clear the internal client singleton
     setToolbarFlagClient(null);
 
-    // Clear the spy AFTER the cleanup call so it doesn't count
     setToolbarFlagClientSpy.mockClear();
   });
 
   afterEach(() => {
-    // Additional cleanup to ensure no hanging promises or state
     vi.clearAllTimers();
     vi.unstubAllGlobals();
   });
@@ -150,11 +142,9 @@ describe('InternalClientProvider', () => {
         </InternalClientProvider>,
       );
 
-      // Initially loading
       expect(screen.getByTestId('loading-status')).toHaveTextContent('true');
       expect(screen.getByTestId('client-status')).toHaveTextContent('null');
 
-      // Wait for initialization
       await waitFor(() => {
         expect(screen.getByTestId('loading-status')).toHaveTextContent('false');
       });
