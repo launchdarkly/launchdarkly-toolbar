@@ -20,9 +20,9 @@ import { OverrideIndicator } from '../../OverrideIndicator';
 import { StarButton } from '../../../../Buttons/StarButton';
 import { LocalBooleanFlagControl, LocalStringNumberFlagControl } from '../LocalFlagControls';
 import { LocalObjectFlagControlListItem } from '../LocalObjectFlagControlListItem';
+import { CopyableText } from '../../CopyableText';
 
 import * as sharedStyles from './FlagDevServerTabContent.css';
-import { FlagKeyWithCopy } from '../../FlagKeyWithCopy';
 
 interface FlagSdkOverrideTabContentInnerProps {
   flagOverridePlugin: IFlagOverridePlugin;
@@ -239,6 +239,13 @@ function FlagSdkOverrideTabContentInner(props: FlagSdkOverrideTabContentInnerPro
 
   const { title: genericHelpTitle, subtitle: genericHelpSubtitle } = getGenericHelpText();
 
+  const handleCopy = useCallback(
+    (text: string) => {
+      analytics.trackFlagKeyCopy(text);
+    },
+    [analytics],
+  );
+
   return (
     <FlagFilterOptionsContext.Provider value={{ activeFilters, onFilterToggle: handleFilterToggle }}>
       <div data-testid="flag-sdk-tab-content">
@@ -319,7 +326,7 @@ function FlagSdkOverrideTabContentInner(props: FlagSdkOverrideTabContentInnerPro
                               </span>
                               {flag.isOverridden && <OverrideIndicator onClear={() => handleClearOverride(flagKey)} />}
                             </span>
-                            <FlagKeyWithCopy flagKey={flagKey} className={sharedStyles.flagKey} />
+                            <CopyableText text={flagKey} className={sharedStyles.flagKey} onCopy={handleCopy} />
                           </div>
 
                           <div className={sharedStyles.flagOptions}>
