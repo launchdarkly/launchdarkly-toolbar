@@ -1,7 +1,9 @@
 import { createContext, useCallback, useContext, useEffect, useState, type ReactNode } from 'react';
+import { initialize } from 'launchdarkly-js-client-sdk';
 import type { LDClient, LDContext } from 'launchdarkly-js-client-sdk';
-import { setToolbarFlagClient } from '../../../../../flags';
-import { enableSessionReplay, ENABLE_SESSION_REPLAY_FLAG_KEY } from '../../../../../flags/toolbarFlags';
+import Observability from '@launchdarkly/observability';
+import SessionReplay from '@launchdarkly/session-replay';
+import { ENABLE_SESSION_REPLAY_FLAG_KEY, enableSessionReplay, setToolbarFlagClient } from '../../../../../flags';
 
 export interface AuthState {
   authenticated: boolean;
@@ -64,6 +66,11 @@ export interface InternalClientProviderProps {
    * Set this if using a custom LaunchDarkly instance.
    */
   eventsUrl?: string;
+  /**
+   * Backend URL for Observability and Session Replay.
+   * Defaults to standard LaunchDarkly observability backend.
+   */
+  backendUrl?: string;
 }
 
 /**
@@ -83,6 +90,7 @@ export function InternalClientProvider({
   baseUrl,
   streamUrl,
   eventsUrl,
+  backendUrl,
 }: InternalClientProviderProps) {
   const [client, setClient] = useState<LDClient | null>(null);
   const [loading, setLoading] = useState(false);
@@ -103,12 +111,6 @@ export function InternalClientProvider({
         setLoading(true);
         setError(null);
 
-        const [{ initialize }, Observability, SessionReplay] = await Promise.all([
-          import('launchdarkly-js-client-sdk'),
-          import('@launchdarkly/observability').then((m) => m.default),
-          import('@launchdarkly/session-replay').then((m) => m.default),
-        ]);
-
         const context = initialContext || {
           kind: 'user',
           key: 'toolbar-anonymous',
@@ -117,7 +119,7 @@ export function InternalClientProvider({
 
         const observabilityPlugin = new Observability({
           manualStart: true,
-          // backendUrl: 'https://pub.observability.app.catamorphic.com',
+          ...(backendUrl && { backendUrl }),
           networkRecording: {
             enabled: true,
             recordHeadersAndBody: true,
@@ -126,7 +128,9 @@ export function InternalClientProvider({
         const sessionReplayPlugin = new SessionReplay({
           manualStart: true,
           privacySetting: 'default',
-          // backendUrl: 'https://pub.observability.app.catamorphic.com',
+          ...(backendUrl && { backendUrl }),
+          // Block everything except the toolbar's shadow DOM
+          blockSelector: 'body > *:not(#ld-toolbar)',
         });
 
         const options = {
@@ -235,7 +239,7 @@ export function InternalClientProvider({
     return () => {
       client.off(`change:${ENABLE_SESSION_REPLAY_FLAG_KEY}`, handleFlagChange);
     };
-  }, [client]);
+  }, [clientSideId, initialContext, baseUrl, streamUrl, eventsUrl, backendUrl]);
 
   const value: InternalClientContextValue = {
     client,

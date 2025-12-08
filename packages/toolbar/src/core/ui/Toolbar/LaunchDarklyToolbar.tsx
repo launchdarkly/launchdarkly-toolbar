@@ -1,5 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef } from 'react';
 import { AnimatePresence, motion } from 'motion/react';
+import { LDObserve } from '@launchdarkly/observability';
+import { LDRecord } from '@launchdarkly/session-replay';
 
 import {
   ApiBundleProvider,
@@ -9,6 +11,7 @@ import {
   ToolbarStateBundleProvider,
   useActiveTabContext,
   useAnalytics,
+  useInternalClient,
   useSearchContext,
   useToolbarState,
   useToolbarUIContext,
@@ -21,7 +24,7 @@ import { AuthenticationModal } from './components/AuthenticationModal/Authentica
 import { useToolbarAnimations, useToolbarVisibility, useToolbarDrag } from './hooks';
 import { ToolbarMode, ToolbarPosition, getToolbarMode, getDefaultActiveTab, ActiveTabId } from './types/toolbar';
 import { IEventInterceptionPlugin, IFlagOverridePlugin } from '../../../types';
-import { useNewToolbarDesign } from '../../../flags/toolbarFlags';
+import { useNewToolbarDesign, enableSessionReplay } from '../../../flags/toolbarFlags';
 import * as styles from './LaunchDarklyToolbar.css';
 
 export interface LdToolbarProps {
@@ -121,6 +124,26 @@ export function LdToolbar(props: LdToolbarProps) {
       setActiveTab(defaultActiveTab);
     }
   }, [activeTab, setActiveTab, defaultActiveTab]);
+
+  const { client } = useInternalClient();
+
+  useEffect(() => {
+    if (!client) {
+      return;
+    }
+
+    const sessionReplayEnabled = enableSessionReplay();
+
+    // Start session replay when toolbar is expanded and flag is enabled
+    if (sessionReplayEnabled && isExpanded) {
+      LDObserve.start();
+      LDRecord.start({ forceNew: false, silent: false });
+    } else if (!isExpanded) {
+      // Stop session replay when toolbar is collapsed
+      LDObserve.stop();
+      LDRecord.stop();
+    }
+  }, [client, isExpanded]);
 
   // Prevent clicks from expanding toolbar if user was dragging
   const handleCircleClickWithDragCheck = useCallback(() => {
@@ -238,6 +261,7 @@ export function LaunchDarklyToolbar(props: LaunchDarklyToolbarProps) {
       baseUrl: import.meta.env.TOOLBAR_INTERNAL_BASE_URL,
       streamUrl: import.meta.env.TOOLBAR_INTERNAL_STREAM_URL,
       eventsUrl: import.meta.env.TOOLBAR_INTERNAL_EVENTS_URL,
+      backendUrl: import.meta.env.TOOLBAR_INTERNAL_BACKEND_URL,
     }),
     [],
   );
@@ -258,6 +282,7 @@ export function LaunchDarklyToolbar(props: LaunchDarklyToolbarProps) {
       clientSideId={internalClientConfig.clientSideId}
       streamUrl={internalClientConfig.streamUrl}
       eventsUrl={internalClientConfig.eventsUrl}
+      backendUrl={internalClientConfig.backendUrl}
     >
       <ToolbarStateBundleProvider
         initialPosition={position}
