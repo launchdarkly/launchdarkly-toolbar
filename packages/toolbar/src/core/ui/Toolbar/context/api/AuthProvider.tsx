@@ -48,7 +48,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         throw new Error(event.data.error);
       }
     },
-    [updateContext],
+    [updateContext, iframeSrc],
   );
 
   const logout = useCallback(() => {

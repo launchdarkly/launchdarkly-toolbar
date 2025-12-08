@@ -160,15 +160,19 @@ export function InternalClientProvider({
         return;
       }
 
-      await client.identify({
-        kind: 'multi',
-        account: {
-          key: accountId,
-        },
-        user: {
-          key: memberId,
-        },
-      });
+      try {
+        await client.identify({
+          kind: 'multi',
+          account: {
+            key: accountId,
+          },
+          user: {
+            key: memberId,
+          },
+        });
+      } catch (err) {
+        console.error('[InternalClientProvider] Failed to update context:', err);
+      }
     },
     [client],
   );
