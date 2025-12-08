@@ -44,3 +44,20 @@ export interface FlagsPaginationParams {
   offset?: number;
   query?: string;
 }
+
+export interface SearchContextsResponse {
+  items: SearchContextResult[];
+}
+
+export interface SearchContextResult {
+  context: ApiContext;
+  lastSeen?: Date;
+  applicationId?: string;
+}
+
+export interface ApiContext {
+  kind: string;
+  key: string;
+  name?: string;
+  anonymous?: boolean;
+}

@@ -1,13 +1,14 @@
 import { createContext, useCallback, useContext, useEffect, useState } from 'react';
 import { useAuthContext } from './AuthProvider';
 import { getResponseTopic, getErrorTopic, IFRAME_COMMANDS, useIFrameContext, IFRAME_EVENTS } from './IFrameProvider';
-import { FlagsPaginationParams, FlagsResponse, ProjectsResponse } from '../../types/ldApi';
+import { FlagsPaginationParams, FlagsResponse, ProjectsResponse, SearchContextsResponse } from '../../types/ldApi';
 import { useAnalytics } from '../telemetry';
 
 interface ApiProviderContextValue {
   apiReady: boolean;
   getProjects: () => Promise<ProjectsResponse>;
   getFlags: (projectKey: string, params?: FlagsPaginationParams) => Promise<FlagsResponse>;
+  getContexts: (projectKey: string, environmentKey: string) => Promise<SearchContextsResponse>;
 }
 
 const ApiContext = createContext<ApiProviderContextValue | null>(null);
@@ -124,7 +125,21 @@ export function ApiProvider({ children }: { children: React.ReactNode }) {
     [authenticated, sendMessage],
   );
 
-  return <ApiContext.Provider value={{ apiReady, getProjects, getFlags }}>{children}</ApiContext.Provider>;
+  const getContexts = useCallback(
+    async (projectKey: string, environmentKey: string) => {
+      if (!authenticated) {
+        return { items: [] };
+      }
+
+      return sendMessage(IFRAME_COMMANDS.GET_CONTEXTS, {
+        projectKey,
+        environmentKey,
+      }) as Promise<SearchContextsResponse>;
+    },
+    [authenticated, sendMessage],
+  );
+
+  return <ApiContext.Provider value={{ apiReady, getProjects, getFlags, getContexts }}>{children}</ApiContext.Provider>;
 }
 
 export function useApi() {
