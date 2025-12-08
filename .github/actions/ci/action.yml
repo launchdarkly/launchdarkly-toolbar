@@ -105,7 +105,7 @@ runs:
           e2e/test-results/
           e2e/playwright-report/
         retention-days: 7
-  
+
     - name: Build library (for production)
       shell: bash
       id: build-production
