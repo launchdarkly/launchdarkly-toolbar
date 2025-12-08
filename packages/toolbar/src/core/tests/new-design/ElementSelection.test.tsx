@@ -36,6 +36,12 @@ vi.mock('../../ui/Toolbar/components/new/Tooltip', () => ({
   ),
 }));
 
+// Mock the useCurrentSdkContext hook to avoid requiring PluginsProvider before ApiBundleProvider
+vi.mock('../../ui/Toolbar/context/state/useCurrentSdkContext', () => ({
+  useCurrentSdkContext: vi.fn(() => null),
+  isCurrentContext: vi.fn(() => false),
+}));
+
 vi.mock('../../ui/Toolbar/components/new/Interactive/SelectionOverlay', () => ({
   SelectionOverlay: () => {
     const { isSelecting, selectedElement } = useElementSelection();

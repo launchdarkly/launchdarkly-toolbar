@@ -17,6 +17,16 @@ export const container = style({
   },
 });
 
+export const containerActive = style({
+  backgroundColor: 'rgba(from var(--lp-color-brand-cyan-base) r g b / 0.08)',
+  border: '1px solid rgba(from var(--lp-color-brand-cyan-base) r g b / 0.3)',
+
+  ':hover': {
+    backgroundColor: 'rgba(from var(--lp-color-brand-cyan-base) r g b / 0.12)',
+    borderColor: 'rgba(from var(--lp-color-brand-cyan-base) r g b / 0.4)',
+  },
+});
+
 export const iconContainer = style({
   display: 'flex',
   alignItems: 'center',
@@ -93,4 +103,26 @@ export const anonymousBadge = style({
   backgroundColor: 'rgba(from var(--lp-color-yellow-500) r g b / 0.15)',
   color: 'var(--lp-color-yellow-400)',
   flexShrink: 0,
+});
+
+export const activeBadge = style({
+  display: 'inline-flex',
+  alignItems: 'center',
+  gap: '4px',
+  padding: '2px 8px',
+  fontSize: '10px',
+  fontWeight: 600,
+  textTransform: 'uppercase',
+  letterSpacing: '0.5px',
+  borderRadius: '4px',
+  backgroundColor: 'rgba(from var(--lp-color-brand-cyan-base) r g b / 0.2)',
+  color: 'var(--lp-color-brand-cyan-base)',
+  flexShrink: 0,
+});
+
+export const activeDot = style({
+  width: '6px',
+  height: '6px',
+  borderRadius: '50%',
+  backgroundColor: 'var(--lp-color-brand-cyan-base)',
 });

@@ -22,6 +22,12 @@ vi.mock('../ui/Toolbar/context/api/EnvironmentProvider', () => ({
   useEnvironmentContext: vi.fn(),
 }));
 
+// Mock the useCurrentSdkContext hook to avoid requiring PluginsProvider
+vi.mock('../ui/Toolbar/context/state/useCurrentSdkContext', () => ({
+  useCurrentSdkContext: vi.fn(() => null),
+  isCurrentContext: vi.fn(() => false),
+}));
+
 import { useProjectContext } from '../ui/Toolbar/context/api/ProjectProvider';
 import { useApi } from '../ui/Toolbar/context/api/ApiProvider';
 import { useAuthContext } from '../ui/Toolbar/context/api/AuthProvider';

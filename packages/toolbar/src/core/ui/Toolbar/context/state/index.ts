@@ -4,3 +4,4 @@ export * from './SearchProvider';
 export * from './ToolbarStateBundleProvider';
 export * from './ToolbarStateProvider';
 export * from './ToolbarUIProvider';
+export * from './useCurrentSdkContext';

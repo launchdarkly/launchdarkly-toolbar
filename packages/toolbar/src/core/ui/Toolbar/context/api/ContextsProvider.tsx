@@ -1,14 +1,17 @@
-import { createContext, useCallback, useContext, useEffect, useState } from 'react';
+import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { ApiContext } from '../../types/ldApi';
 import { useProjectContext } from './ProjectProvider';
 import { useAuthContext } from './AuthProvider';
 import { useApi } from './ApiProvider';
 import { useEnvironmentContext } from './EnvironmentProvider';
+import { useCurrentSdkContext, CurrentContextInfo, isCurrentContext } from '../state/useCurrentSdkContext';
 
 interface ContextsContextType {
   contexts: ApiContext[];
   loading: boolean;
   getContexts: () => Promise<ApiContext[]>;
+  currentSdkContext: CurrentContextInfo | null;
+  isActiveContext: (contextKind: string, contextKey: string) => boolean;
 }
 
 const ContextsContext = createContext<ContextsContextType | undefined>(undefined);
@@ -18,9 +21,18 @@ export const ContextsProvider = ({ children }: { children: React.ReactNode }) =>
   const { environment } = useEnvironmentContext();
   const { authenticated } = useAuthContext();
   const { getContexts: getApiContexts, apiReady } = useApi();
+  const currentSdkContext = useCurrentSdkContext();
 
-  const [contexts, setContexts] = useState<ApiContext[]>([]);
+  const [apiContexts, setApiContexts] = useState<ApiContext[]>([]);
   const [loading, setLoading] = useState(false);
+
+  // Helper function to check if a context is the active SDK context
+  const isActiveContext = useCallback(
+    (contextKind: string, contextKey: string) => {
+      return isCurrentContext(currentSdkContext, contextKind, contextKey);
+    },
+    [currentSdkContext],
+  );
 
   const getContexts = useCallback(async () => {
     if (!apiReady || !authenticated) {
@@ -50,7 +62,7 @@ export const ContextsProvider = ({ children }: { children: React.ReactNode }) =>
       setLoading(true);
       getContexts().then((contexts) => {
         if (isMounted) {
-          setContexts(contexts);
+          setApiContexts(contexts);
           setLoading(false);
         }
       });
@@ -61,7 +73,38 @@ export const ContextsProvider = ({ children }: { children: React.ReactNode }) =>
     };
   }, [apiReady, authenticated, projectKey, environment, getContexts]);
 
-  return <ContextsContext.Provider value={{ contexts, loading, getContexts }}>{children}</ContextsContext.Provider>;
+  // Merge current SDK context into the contexts list if it doesn't exist
+  // This ensures the current context, if anonymous, is available (since this won't get fetched from the API)
+  const contexts = useMemo(() => {
+    if (!currentSdkContext) {
+      return apiContexts;
+    }
+
+    // Check if the current SDK context already exists in the API contexts
+    const existsInApi = apiContexts.some(
+      (ctx) => ctx.kind === currentSdkContext.kind && ctx.key === currentSdkContext.key,
+    );
+
+    if (existsInApi) {
+      return apiContexts;
+    }
+
+    // Add the current SDK context to the beginning of the list
+    const sdkContextAsApiContext: ApiContext = {
+      kind: currentSdkContext.kind,
+      key: currentSdkContext.key,
+      name: currentSdkContext.name,
+      anonymous: currentSdkContext.anonymous,
+    };
+
+    return [sdkContextAsApiContext, ...apiContexts];
+  }, [apiContexts, currentSdkContext]);
+
+  return (
+    <ContextsContext.Provider value={{ contexts, loading, getContexts, currentSdkContext, isActiveContext }}>
+      {children}
+    </ContextsContext.Provider>
+  );
 };
 
 export function useContextsContext(): ContextsContextType {

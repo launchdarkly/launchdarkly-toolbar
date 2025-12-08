@@ -10,27 +10,34 @@ import * as styles from './ContextList.module.css';
 import { ApiContext } from '../../../types/ldApi';
 
 export function ContextList() {
-  const { contexts, loading } = useContextsContext();
+  const { contexts, loading, isActiveContext } = useContextsContext();
   const { searchTerms } = useTabSearchContext();
   const searchTerm = useMemo(() => searchTerms['flags'] || '', [searchTerms]);
 
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const getScrollElement = useCallback(() => scrollContainerRef.current, []);
 
-  // Filter contexts based on search term
   const filteredContexts = useMemo(() => {
+    const sortedContexts = [...contexts].sort((a, b) => {
+      const aIsActive = isActiveContext(a.kind, a.key);
+      const bIsActive = isActiveContext(b.kind, b.key);
+      if (aIsActive && !bIsActive) return -1;
+      if (!aIsActive && bIsActive) return 1;
+      return 0;
+    });
+
     if (!searchTerm) {
-      return contexts;
+      return sortedContexts;
     }
 
     const searchLower = searchTerm.toLowerCase();
-    return contexts.filter((context: ApiContext) => {
+    return sortedContexts.filter((context: ApiContext) => {
       const matchesKey = context.key.toLowerCase().includes(searchLower);
       const matchesName = context.name?.toLowerCase().includes(searchLower);
       const matchesKind = context.kind.toLowerCase().includes(searchLower);
       return matchesKey || matchesName || matchesKind;
     });
-  }, [contexts, searchTerm]);
+  }, [contexts, searchTerm, isActiveContext]);
 
   const virtualizer = useVirtualizer({
     count: filteredContexts.length,
@@ -44,12 +51,10 @@ export function ContextList() {
   const filteredCount = filteredContexts.length;
   const isFiltered = searchTerm.length > 0;
 
-  // Loading state
   if (loading) {
     return <GenericHelpText title="Loading contexts..." subtitle="Fetching context data from your environment" />;
   }
 
-  // Empty state - no contexts at all
   if (contexts.length === 0) {
     return (
       <GenericHelpText
@@ -59,7 +64,6 @@ export function ContextList() {
     );
   }
 
-  // Empty state - no matching contexts
   if (filteredContexts.length === 0 && searchTerm) {
     return (
       <div className={styles.container}>
@@ -102,7 +106,7 @@ export function ContextList() {
                   transform: `translateY(${virtualItem.start}px)`,
                 }}
               >
-                <ContextItem context={context} />
+                <ContextItem context={context} isActive={isActiveContext(context.kind, context.key)} />
               </div>
             );
           })}
