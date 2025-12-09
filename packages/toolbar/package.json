@@ -96,7 +96,7 @@
     "jsdom": "^27.2.0",
     "launchdarkly-js-client-sdk": "^3.9.0",
     "motion": "^12.23.25",
-    "oxlint": "^1.30.0",
+    "oxlint": "^1.32.0",
     "react": "^19.2.1",
     "react-dom": "^19.2.1",
     "storybook": "^10.1.4",
