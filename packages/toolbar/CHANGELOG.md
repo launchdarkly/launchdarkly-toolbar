@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.3.0-beta.1](https://github.com/launchdarkly/launchdarkly-toolbar/compare/2.2.0-beta.1...2.3.0-beta.1) (2025-12-09)
+
+
+### Features
+
+* [REL-11096] update context on login + fix api calls bug ([#386](https://github.com/launchdarkly/launchdarkly-toolbar/issues/386)) ([d61e53b](https://github.com/launchdarkly/launchdarkly-toolbar/commit/d61e53b837eefdc787f9bdb2f0521195960e1608))
+
 ## [2.2.0-beta.1](https://github.com/launchdarkly/launchdarkly-toolbar/compare/2.1.1-beta.1...2.2.0-beta.1) (2025-12-05)
 
 
