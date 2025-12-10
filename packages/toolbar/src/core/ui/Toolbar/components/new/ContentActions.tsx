@@ -1,4 +1,4 @@
-import { useCallback, useState, useMemo } from 'react';
+import { useCallback, useState, useMemo, useEffect } from 'react';
 import {
   useActiveTabContext,
   useDevServerContext,
@@ -12,7 +12,7 @@ import { CancelCircleIcon, DeleteIcon, SearchIcon, SyncIcon } from '../icons';
 import { SearchSection } from './SearchSection';
 import { FilterButton } from './FilterOverlay';
 import { IconButton } from '../../../Buttons/IconButton';
-import { TabId } from '../../types';
+import { SubTab } from './types';
 import * as styles from './ContentActions.module.css';
 
 export function ContentActions() {
@@ -20,10 +20,20 @@ export function ContentActions() {
   const { activeSubtab } = useActiveSubtabContext();
   const { eventInterceptionPlugin } = usePlugins();
   const { searchTerms } = useTabSearchContext();
-  const searchTerm = useMemo(() => searchTerms[activeTab as TabId] || '', [searchTerms, activeTab]);
+  const searchTerm = useMemo(() => searchTerms[activeSubtab as SubTab] || '', [searchTerms, activeSubtab]);
   const { events } = useEvents(eventInterceptionPlugin, searchTerm);
   const { setSearchTerm } = useTabSearchContext();
   const [searchIsExpanded, setSearchIsExpanded] = useState(false);
+
+  // Update search expansion when subtab changes
+  // Expand if the new subtab has a search term, collapse if it doesn't
+  useEffect(() => {
+    if (searchTerm.trim()) {
+      setSearchIsExpanded(true);
+    } else {
+      setSearchIsExpanded(false);
+    }
+  }, [activeSubtab, searchTerm]);
 
   const { selectedElement, clearSelection } = useElementSelection();
 
@@ -53,10 +63,10 @@ export function ContentActions() {
 
   const handleSearch = useCallback(
     (input: string) => {
-      if (!activeTab) return;
-      setSearchTerm(activeTab, input);
+      if (!activeSubtab) return;
+      setSearchTerm(activeSubtab as SubTab, input);
     },
-    [activeTab, setSearchTerm],
+    [activeSubtab, setSearchTerm],
   );
 
   return (
@@ -74,7 +84,12 @@ export function ContentActions() {
       {showSearch && (
         <>
           {searchIsExpanded && (
-            <SearchSection searchTerm={searchTerm} onSearch={handleSearch} setSearchIsExpanded={setSearchIsExpanded} />
+            <SearchSection
+              key={activeSubtab} // Force remount when subtab changes to ensure correct value
+              searchTerm={searchTerm}
+              onSearch={handleSearch}
+              setSearchIsExpanded={setSearchIsExpanded}
+            />
           )}
           {!searchIsExpanded && (
             <IconButton icon={<SearchIcon />} label="Search" onClick={() => setSearchIsExpanded(true)} />

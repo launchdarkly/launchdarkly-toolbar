@@ -14,7 +14,7 @@ const SCROLL_THRESHOLD = 200; // pixels from bottom to trigger load more
 export function ContextList() {
   const { contexts, loading, loadingMore, hasMore, totalCount, loadMore, isActiveContext } = useContextsContext();
   const { searchTerms } = useTabSearchContext();
-  const searchTerm = useMemo(() => searchTerms['flags'] || '', [searchTerms]);
+  const searchTerm = useMemo(() => searchTerms['contexts'] || '', [searchTerms]);
 
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const getScrollElement = useCallback(() => scrollContainerRef.current, []);
