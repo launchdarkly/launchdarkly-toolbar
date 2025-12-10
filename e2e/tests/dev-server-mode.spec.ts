@@ -158,7 +158,8 @@ test.describe('LaunchDarkly Toolbar - Dev Server Mode', () => {
         await route.abort();
       });
 
-      await expect(page.getByText(/Error connecting to dev server/i)).toBeVisible();
+      // Wait for the error to appear (depends on polling interval)
+      await expect(page.getByText(/Error connecting to dev server/i)).toBeVisible({ timeout: 10000 });
 
       // Restore connection
       await page.unroute('**/dev/**');

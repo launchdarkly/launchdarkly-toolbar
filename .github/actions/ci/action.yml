@@ -25,12 +25,12 @@ runs:
       shell: bash
       run: pnpm format:ci
 
-    - name: Build Library
+    - name: Build Library (for testing)
       shell: bash
       id: build
       run: pnpm build
 
-    - name: Build Demo App
+    - name: Build Demo App (for testing)
       shell: bash
       run: pnpm demo:build
       env:
@@ -38,10 +38,6 @@ runs:
         VITE_LD_BASE_URL: https://app.launchdarkly.com
         VITE_LD_STREAM_URL: https://clientstream.launchdarkly.com
         VITE_LD_EVENTS_URL: https://events.launchdarkly.com
-        TOOLBAR_INTERNAL_CLIENT_ID: ${{ env.TOOLBAR_INTERNAL_CLIENT_ID }}
-        TOOLBAR_INTERNAL_BASE_URL: ${{ env.TOOLBAR_INTERNAL_BASE_URL }}
-        TOOLBAR_INTERNAL_STREAM_URL: ${{ env.TOOLBAR_INTERNAL_STREAM_URL }}
-        TOOLBAR_INTERNAL_EVENTS_URL: ${{ env.TOOLBAR_INTERNAL_EVENTS_URL }}
         VITE_LD_DEV_SERVER_URL: http://localhost:8765
         VITE_LD_DEV_SERVER_PROJECT_KEY: developer-toolbar-sandbox
 
@@ -97,10 +93,6 @@ runs:
         VITE_LD_BASE_URL: https://app.launchdarkly.com
         VITE_LD_STREAM_URL: https://clientstream.launchdarkly.com
         VITE_LD_EVENTS_URL: https://events.launchdarkly.com
-        TOOLBAR_INTERNAL_CLIENT_ID: ${{ env.TOOLBAR_INTERNAL_CLIENT_ID }}
-        TOOLBAR_INTERNAL_BASE_URL: ${{ env.TOOLBAR_INTERNAL_BASE_URL }}
-        TOOLBAR_INTERNAL_STREAM_URL: ${{ env.TOOLBAR_INTERNAL_STREAM_URL }}
-        TOOLBAR_INTERNAL_EVENTS_URL: ${{ env.TOOLBAR_INTERNAL_EVENTS_URL }}
         VITE_LD_DEV_SERVER_URL: http://localhost:8765
         VITE_LD_DEV_SERVER_PROJECT_KEY: developer-toolbar-sandbox
 
@@ -113,3 +105,13 @@ runs:
           e2e/test-results/
           e2e/playwright-report/
         retention-days: 7
+
+    - name: Build library (for production)
+      shell: bash
+      id: build-production
+      run: pnpm --filter @launchdarkly/toolbar build
+      env:
+        TOOLBAR_INTERNAL_CLIENT_ID: ${{ env.TOOLBAR_INTERNAL_CLIENT_ID }}
+        TOOLBAR_INTERNAL_BASE_URL: ${{ env.TOOLBAR_INTERNAL_BASE_URL }}
+        TOOLBAR_INTERNAL_STREAM_URL: ${{ env.TOOLBAR_INTERNAL_STREAM_URL }}
+        TOOLBAR_INTERNAL_EVENTS_URL: ${{ env.TOOLBAR_INTERNAL_EVENTS_URL }}
