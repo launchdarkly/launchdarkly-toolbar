@@ -7,14 +7,20 @@ export const container = style({
   borderRadius: '8px',
   padding: '16px',
   display: 'flex',
-  alignItems: 'center',
-  gap: '12px',
+  flexDirection: 'column',
+  gap: '0',
   transition: 'all 0.2s ease',
 
   ':hover': {
     backgroundColor: 'var(--lp-color-gray-800)',
     borderColor: 'var(--lp-color-gray-600)',
   },
+});
+
+export const header = style({
+  display: 'flex',
+  alignItems: 'center',
+  gap: '12px',
 });
 
 export const containerActive = style({
@@ -125,4 +131,48 @@ export const activeDot = style({
   height: '6px',
   borderRadius: '50%',
   backgroundColor: 'var(--lp-color-brand-cyan-base)',
+});
+
+export const actions = style({
+  display: 'flex',
+  alignItems: 'center',
+  gap: '8px',
+  flexShrink: 0,
+});
+
+export const expandButton = style({
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  background: 'none',
+  border: 'none',
+  cursor: 'pointer',
+  padding: '4px',
+  borderRadius: '4px',
+  color: 'var(--lp-color-gray-400)',
+  transition: 'all 0.2s ease',
+
+  ':hover': {
+    backgroundColor: 'var(--lp-color-gray-800)',
+    color: 'var(--lp-color-gray-300)',
+  },
+
+  ':focus-visible': {
+    outline: '2px solid var(--lp-color-brand-cyan-base)',
+    outlineOffset: '2px',
+  },
+});
+
+export const chevron = style({
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  color: 'var(--lp-color-gray-500)',
+  transition: 'transform 0.2s',
+  width: '20px',
+  height: '20px',
+});
+
+export const chevronExpanded = style({
+  transform: 'rotate(180deg)',
 });

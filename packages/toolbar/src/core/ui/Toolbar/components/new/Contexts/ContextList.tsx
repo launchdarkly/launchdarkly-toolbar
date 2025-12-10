@@ -70,6 +70,19 @@ export function ContextList() {
     overscan: VIRTUALIZATION.OVERSCAN,
   });
 
+  const handleHeightChange = useCallback(
+    (index: number, height: number) => {
+      if (height > VIRTUALIZATION.ITEM_HEIGHT) {
+        virtualizer.resizeItem(index, height);
+      } else {
+        setTimeout(() => {
+          virtualizer.resizeItem(index, height);
+        }, 125);
+      }
+    },
+    [virtualizer],
+  );
+
   // Calculate stats
   const displayedCount = sortedContexts.length;
   const isFiltered = filter.length > 0;
@@ -164,7 +177,12 @@ export function ContextList() {
                   transform: `translateY(${virtualItem.start}px)`,
                 }}
               >
-                <ContextItem context={context} isActive={isActiveContext(context.kind, context.key)} />
+                <ContextItem
+                  context={context}
+                  isActive={isActiveContext(context.kind, context.key)}
+                  handleHeightChange={handleHeightChange}
+                  index={virtualItem.index}
+                />
               </div>
             );
           })}
