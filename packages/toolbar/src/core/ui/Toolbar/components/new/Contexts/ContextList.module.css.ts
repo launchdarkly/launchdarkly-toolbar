@@ -32,3 +32,16 @@ export const virtualInner = style({
   width: '100%',
   position: 'relative',
 });
+
+export const loadingMore = style({
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  padding: '12px 20px',
+});
+
+export const loadingMoreText = style({
+  fontSize: '12px',
+  color: 'var(--lp-color-gray-400)',
+  fontStyle: 'italic',
+});

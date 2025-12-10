@@ -35,12 +35,15 @@ import { useEnvironmentContext } from '../ui/Toolbar/context/api/EnvironmentProv
 
 // Test component
 function TestConsumer() {
-  const { contexts, loading } = useContextsContext();
+  const { contexts, loading, loadingMore, hasMore, totalCount } = useContextsContext();
 
   return (
     <div>
       <div data-testid="contexts-count">{contexts.length}</div>
       <div data-testid="loading">{loading ? 'true' : 'false'}</div>
+      <div data-testid="loading-more">{loadingMore ? 'true' : 'false'}</div>
+      <div data-testid="has-more">{hasMore ? 'true' : 'false'}</div>
+      <div data-testid="total-count">{totalCount ?? 'undefined'}</div>
       {contexts.map((context) => (
         <div key={`${context.kind}-${context.key}`} data-testid={`context-${context.kind}-${context.key}`}>
           {context.name || context.key}
@@ -51,9 +54,14 @@ function TestConsumer() {
 }
 
 // Helper to create proper contexts response
-function createContextsResponse(contexts: ApiContext[]): SearchContextsResponse {
+function createContextsResponse(
+  contexts: ApiContext[],
+  options?: { totalCount?: number; continuationToken?: string },
+): SearchContextsResponse {
   return {
     items: contexts.map((context) => ({ context })),
+    totalCount: options?.totalCount,
+    continuationToken: options?.continuationToken,
   };
 }
 
@@ -258,7 +266,7 @@ describe('ContextsProvider', () => {
 
       await waitFor(() => {
         expect(screen.getByTestId('contexts-count')).toHaveTextContent('1');
-        expect(mockGetContexts).toHaveBeenCalledWith('test-project', 'production');
+        expect(mockGetContexts).toHaveBeenCalledWith('test-project', 'production', expect.any(Object));
       });
 
       // WHEN: They switch to staging environment
@@ -281,7 +289,7 @@ describe('ContextsProvider', () => {
 
       // THEN: New contexts are loaded for staging environment
       await waitFor(() => {
-        expect(mockGetContexts).toHaveBeenCalledWith('test-project', 'staging');
+        expect(mockGetContexts).toHaveBeenCalledWith('test-project', 'staging', expect.any(Object));
       });
 
       await waitFor(() => {
@@ -290,46 +298,38 @@ describe('ContextsProvider', () => {
     });
   });
 
-  describe('Manual Context Fetching', () => {
-    test('allows manual context fetching via getContexts', async () => {
+  describe('Manual Context Refresh', () => {
+    test('allows manual context refresh via refresh()', async () => {
       // GIVEN: Developer wants to manually refresh contexts
       mockGetContexts.mockResolvedValue(
         createContextsResponse([{ kind: 'user', key: 'initial-user', name: 'Initial User' }]),
       );
 
-      const TestWithManualFetch = () => {
-        const { getContexts, contexts } = useContextsContext();
-        const [manualContexts, setManualContexts] = React.useState<ApiContext[]>([]);
+      const TestWithManualRefresh = () => {
+        const { refresh, contexts } = useContextsContext();
 
         return (
           <div>
-            <button
-              data-testid="fetch-manual"
-              onClick={async () => {
-                const result = await getContexts();
-                setManualContexts(result);
-              }}
-            >
-              Fetch Manual
+            <button data-testid="refresh" onClick={() => refresh()}>
+              Refresh
             </button>
-            <div data-testid="auto-contexts-count">{contexts.length}</div>
-            <div data-testid="manual-contexts-count">{manualContexts.length}</div>
+            <div data-testid="contexts-count">{contexts.length}</div>
           </div>
         );
       };
 
       render(
         <ContextsProvider>
-          <TestWithManualFetch />
+          <TestWithManualRefresh />
         </ContextsProvider>,
       );
 
       // Wait for initial auto-fetch
       await waitFor(() => {
-        expect(screen.getByTestId('auto-contexts-count')).toHaveTextContent('1');
+        expect(screen.getByTestId('contexts-count')).toHaveTextContent('1');
       });
 
-      // WHEN: They manually fetch contexts
+      // WHEN: They manually refresh contexts
       mockGetContexts.mockResolvedValue(
         createContextsResponse([
           { kind: 'user', key: 'new-user-1', name: 'New User 1' },
@@ -337,97 +337,12 @@ describe('ContextsProvider', () => {
         ]),
       );
 
-      const fetchButton = screen.getByTestId('fetch-manual');
-      fetchButton.click();
+      const refreshButton = screen.getByTestId('refresh');
+      refreshButton.click();
 
-      // THEN: Manual fetch returns the new contexts
+      // THEN: Contexts are refreshed with new data
       await waitFor(() => {
-        expect(screen.getByTestId('manual-contexts-count')).toHaveTextContent('2');
-      });
-    });
-
-    test('returns empty array when fetching contexts without API ready', async () => {
-      // GIVEN: API is not ready
-      (useApi as any).mockReturnValue({
-        getContexts: mockGetContexts,
-        apiReady: false,
-      });
-
-      const TestManualFetch = () => {
-        const { getContexts } = useContextsContext();
-        const [result, setResult] = React.useState<ApiContext[] | null>(null);
-
-        return (
-          <div>
-            <button
-              data-testid="fetch"
-              onClick={async () => {
-                const contexts = await getContexts();
-                setResult(contexts);
-              }}
-            >
-              Fetch
-            </button>
-            <div data-testid="result">{result ? result.length.toString() : 'null'}</div>
-          </div>
-        );
-      };
-
-      render(
-        <ContextsProvider>
-          <TestManualFetch />
-        </ContextsProvider>,
-      );
-
-      // WHEN: They try to fetch contexts
-      const fetchButton = screen.getByTestId('fetch');
-      fetchButton.click();
-
-      // THEN: Returns empty array (no API ready)
-      await waitFor(() => {
-        expect(screen.getByTestId('result')).toHaveTextContent('0');
-      });
-    });
-
-    test('returns empty array when fetching contexts without authentication', async () => {
-      // GIVEN: User is not authenticated
-      (useAuthContext as any).mockReturnValue({
-        authenticated: false,
-      });
-
-      const TestManualFetch = () => {
-        const { getContexts } = useContextsContext();
-        const [result, setResult] = React.useState<ApiContext[] | null>(null);
-
-        return (
-          <div>
-            <button
-              data-testid="fetch"
-              onClick={async () => {
-                const contexts = await getContexts();
-                setResult(contexts);
-              }}
-            >
-              Fetch
-            </button>
-            <div data-testid="result">{result ? result.length.toString() : 'null'}</div>
-          </div>
-        );
-      };
-
-      render(
-        <ContextsProvider>
-          <TestManualFetch />
-        </ContextsProvider>,
-      );
-
-      // WHEN: They try to fetch contexts
-      const fetchButton = screen.getByTestId('fetch');
-      fetchButton.click();
-
-      // THEN: Returns empty array (not authenticated)
-      await waitFor(() => {
-        expect(screen.getByTestId('result')).toHaveTextContent('0');
+        expect(screen.getByTestId('contexts-count')).toHaveTextContent('2');
       });
     });
   });
@@ -582,6 +497,223 @@ describe('ContextsProvider', () => {
       expect(screen.getByTestId('context-organization-org-1')).toHaveTextContent('Organization One');
       expect(screen.getByTestId('context-device-device-1')).toHaveTextContent('Device One');
       expect(screen.getByTestId('context-user-user-2')).toHaveTextContent('User Two');
+    });
+  });
+
+  describe('Infinite Scrolling / Pagination', () => {
+    test('tracks hasMore state when continuationToken is present', async () => {
+      // GIVEN: API returns a continuation token (more pages available)
+      mockGetContexts.mockResolvedValue(
+        createContextsResponse([{ kind: 'user', key: 'user-1', name: 'User One' }], {
+          totalCount: 50,
+          continuationToken: 'next-page-token',
+        }),
+      );
+
+      // WHEN: Contexts are loaded
+      render(
+        <ContextsProvider>
+          <TestConsumer />
+        </ContextsProvider>,
+      );
+
+      // THEN: hasMore should be true
+      await waitFor(() => {
+        expect(screen.getByTestId('has-more')).toHaveTextContent('true');
+      });
+
+      // AND: totalCount should be set
+      await waitFor(() => {
+        expect(screen.getByTestId('total-count')).toHaveTextContent('50');
+      });
+    });
+
+    test('hasMore is false when no continuationToken', async () => {
+      // GIVEN: API returns no continuation token (last page)
+      mockGetContexts.mockResolvedValue(
+        createContextsResponse([{ kind: 'user', key: 'user-1', name: 'User One' }], {
+          totalCount: 1,
+        }),
+      );
+
+      // WHEN: Contexts are loaded
+      render(
+        <ContextsProvider>
+          <TestConsumer />
+        </ContextsProvider>,
+      );
+
+      // THEN: hasMore should be false
+      await waitFor(() => {
+        expect(screen.getByTestId('has-more')).toHaveTextContent('false');
+      });
+    });
+
+    test('loadMore appends additional contexts', async () => {
+      // GIVEN: Initial page with continuation token
+      mockGetContexts.mockResolvedValue(
+        createContextsResponse([{ kind: 'user', key: 'user-1', name: 'User One' }], {
+          totalCount: 3,
+          continuationToken: 'page-2-token',
+        }),
+      );
+
+      const TestWithLoadMore = () => {
+        const { contexts, loadMore, hasMore, loadingMore } = useContextsContext();
+
+        return (
+          <div>
+            <div data-testid="contexts-count">{contexts.length}</div>
+            <div data-testid="has-more">{hasMore ? 'true' : 'false'}</div>
+            <div data-testid="loading-more">{loadingMore ? 'true' : 'false'}</div>
+            <button data-testid="load-more" onClick={() => loadMore()}>
+              Load More
+            </button>
+          </div>
+        );
+      };
+
+      render(
+        <ContextsProvider>
+          <TestWithLoadMore />
+        </ContextsProvider>,
+      );
+
+      // Wait for initial load
+      await waitFor(() => {
+        expect(screen.getByTestId('contexts-count')).toHaveTextContent('1');
+        expect(screen.getByTestId('has-more')).toHaveTextContent('true');
+      });
+
+      // WHEN: loadMore is called - return last page (no continuation token)
+      mockGetContexts.mockResolvedValue(
+        createContextsResponse(
+          [
+            { kind: 'user', key: 'user-2', name: 'User Two' },
+            { kind: 'user', key: 'user-3', name: 'User Three' },
+          ],
+          { totalCount: 3 },
+        ),
+      );
+
+      const loadMoreButton = screen.getByTestId('load-more');
+      loadMoreButton.click();
+
+      // THEN: Additional contexts are appended
+      await waitFor(() => {
+        expect(screen.getByTestId('contexts-count')).toHaveTextContent('3');
+      });
+
+      // AND: hasMore is now false (no more continuation token)
+      await waitFor(() => {
+        expect(screen.getByTestId('has-more')).toHaveTextContent('false');
+      });
+    });
+
+    test('loadMore deduplicates contexts', async () => {
+      // GIVEN: Initial page with continuation token
+      mockGetContexts.mockResolvedValue(
+        createContextsResponse([{ kind: 'user', key: 'user-1', name: 'User One' }], {
+          totalCount: 3,
+          continuationToken: 'page-2-token',
+        }),
+      );
+
+      const TestWithLoadMore = () => {
+        const { contexts, loadMore } = useContextsContext();
+
+        return (
+          <div>
+            <div data-testid="contexts-count">{contexts.length}</div>
+            <button data-testid="load-more" onClick={() => loadMore()}>
+              Load More
+            </button>
+          </div>
+        );
+      };
+
+      render(
+        <ContextsProvider>
+          <TestWithLoadMore />
+        </ContextsProvider>,
+      );
+
+      await waitFor(() => {
+        expect(screen.getByTestId('contexts-count')).toHaveTextContent('1');
+      });
+
+      // WHEN: loadMore returns a duplicate context
+      mockGetContexts.mockResolvedValue(
+        createContextsResponse(
+          [
+            { kind: 'user', key: 'user-1', name: 'User One (Duplicate)' }, // Same key
+            { kind: 'user', key: 'user-2', name: 'User Two' },
+          ],
+          { totalCount: 3 },
+        ),
+      );
+
+      const loadMoreButton = screen.getByTestId('load-more');
+      loadMoreButton.click();
+
+      // THEN: Duplicate is not added
+      await waitFor(() => {
+        expect(screen.getByTestId('contexts-count')).toHaveTextContent('2');
+      });
+    });
+
+    test('loadMore passes continuationToken to API', async () => {
+      // GIVEN: Initial page with continuation token
+      mockGetContexts.mockResolvedValue(
+        createContextsResponse([{ kind: 'user', key: 'user-1', name: 'User One' }], {
+          totalCount: 50,
+          continuationToken: 'my-continuation-token',
+        }),
+      );
+
+      const TestWithLoadMore = () => {
+        const { loadMore } = useContextsContext();
+
+        return (
+          <button data-testid="load-more" onClick={() => loadMore()}>
+            Load More
+          </button>
+        );
+      };
+
+      render(
+        <ContextsProvider>
+          <TestWithLoadMore />
+        </ContextsProvider>,
+      );
+
+      // Wait for initial load
+      await waitFor(() => {
+        expect(mockGetContexts).toHaveBeenCalledWith(
+          'test-project',
+          'production',
+          expect.objectContaining({ limit: 20, sort: '-ts' }),
+        );
+      });
+
+      // WHEN: loadMore is called
+      mockGetContexts.mockResolvedValue(createContextsResponse([], { totalCount: 50 }));
+
+      const loadMoreButton = screen.getByTestId('load-more');
+      loadMoreButton.click();
+
+      // THEN: API is called with continuationToken
+      await waitFor(() => {
+        expect(mockGetContexts).toHaveBeenCalledWith(
+          'test-project',
+          'production',
+          expect.objectContaining({
+            continuationToken: 'my-continuation-token',
+            limit: 20,
+            sort: '-ts',
+          }),
+        );
+      });
     });
   });
 

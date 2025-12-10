@@ -45,8 +45,17 @@ export interface FlagsPaginationParams {
   query?: string;
 }
 
+export interface ContextsPaginationParams {
+  limit?: number;
+  continuationToken?: string;
+  sort?: string;
+  filter?: string;
+}
+
 export interface SearchContextsResponse {
   items: SearchContextResult[];
+  totalCount?: number;
+  continuationToken?: string;
 }
 
 export interface SearchContextResult {

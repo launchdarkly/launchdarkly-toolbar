@@ -1,14 +1,24 @@
 import { createContext, useCallback, useContext, useEffect, useState } from 'react';
 import { useAuthContext } from './AuthProvider';
 import { getResponseTopic, getErrorTopic, IFRAME_COMMANDS, useIFrameContext, IFRAME_EVENTS } from './IFrameProvider';
-import { FlagsPaginationParams, FlagsResponse, ProjectsResponse, SearchContextsResponse } from '../../types/ldApi';
+import {
+  ContextsPaginationParams,
+  FlagsPaginationParams,
+  FlagsResponse,
+  ProjectsResponse,
+  SearchContextsResponse,
+} from '../../types/ldApi';
 import { useAnalytics } from '../telemetry';
 
 interface ApiProviderContextValue {
   apiReady: boolean;
   getProjects: () => Promise<ProjectsResponse>;
   getFlags: (projectKey: string, params?: FlagsPaginationParams) => Promise<FlagsResponse>;
-  getContexts: (projectKey: string, environmentKey: string) => Promise<SearchContextsResponse>;
+  getContexts: (
+    projectKey: string,
+    environmentKey: string,
+    params?: ContextsPaginationParams,
+  ) => Promise<SearchContextsResponse>;
 }
 
 const ApiContext = createContext<ApiProviderContextValue | null>(null);
@@ -126,7 +136,7 @@ export function ApiProvider({ children }: { children: React.ReactNode }) {
   );
 
   const getContexts = useCallback(
-    async (projectKey: string, environmentKey: string) => {
+    async (projectKey: string, environmentKey: string, params?: ContextsPaginationParams) => {
       if (!authenticated) {
         return { items: [] };
       }
@@ -134,6 +144,10 @@ export function ApiProvider({ children }: { children: React.ReactNode }) {
       return sendMessage(IFRAME_COMMANDS.GET_CONTEXTS, {
         projectKey,
         environmentKey,
+        limit: params?.limit,
+        continuationToken: params?.continuationToken,
+        sort: params?.sort,
+        filter: params?.filter,
       }) as Promise<SearchContextsResponse>;
     },
     [authenticated, sendMessage],

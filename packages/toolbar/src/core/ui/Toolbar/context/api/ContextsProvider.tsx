@@ -1,4 +1,4 @@
-import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
+import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { ApiContext } from '../../types/ldApi';
 import { useProjectContext } from './ProjectProvider';
 import { useAuthContext } from './AuthProvider';
@@ -6,10 +6,16 @@ import { useApi } from './ApiProvider';
 import { useEnvironmentContext } from './EnvironmentProvider';
 import { useCurrentSdkContext, CurrentContextInfo, isCurrentContext } from '../state/useCurrentSdkContext';
 
+const DEFAULT_PAGE_SIZE = 20;
+
 interface ContextsContextType {
   contexts: ApiContext[];
   loading: boolean;
-  getContexts: () => Promise<ApiContext[]>;
+  loadingMore: boolean;
+  hasMore: boolean;
+  totalCount: number | undefined;
+  loadMore: () => Promise<void>;
+  refresh: () => Promise<void>;
   currentSdkContext: CurrentContextInfo | null;
   isActiveContext: (contextKind: string, contextKey: string) => boolean;
 }
@@ -25,6 +31,13 @@ export const ContextsProvider = ({ children }: { children: React.ReactNode }) =>
 
   const [apiContexts, setApiContexts] = useState<ApiContext[]>([]);
   const [loading, setLoading] = useState(false);
+  const [loadingMore, setLoadingMore] = useState(false);
+  const [continuationToken, setContinuationToken] = useState<string | undefined>(undefined);
+  const [hasMore, setHasMore] = useState(false);
+  const [totalCount, setTotalCount] = useState<number | undefined>(undefined);
+
+  // Track the current project/environment to reset on change
+  const currentKeyRef = useRef<string>('');
 
   // Helper function to check if a context is the active SDK context
   const isActiveContext = useCallback(
@@ -34,44 +47,127 @@ export const ContextsProvider = ({ children }: { children: React.ReactNode }) =>
     [currentSdkContext],
   );
 
-  const getContexts = useCallback(async () => {
-    if (!apiReady || !authenticated) {
-      return [];
+  // Fetch initial page of contexts
+  const fetchContexts = useCallback(
+    async (reset: boolean = false) => {
+      if (!apiReady || !authenticated) {
+        return;
+      }
+
+      if (!projectKey || !environment) {
+        console.warn('No project key or environment found. Cannot fetch contexts.');
+        return;
+      }
+
+      const key = `${projectKey}-${environment}`;
+
+      // Reset state if project/environment changed
+      if (reset || key !== currentKeyRef.current) {
+        currentKeyRef.current = key;
+        setApiContexts([]);
+        setContinuationToken(undefined);
+        setHasMore(false);
+        setTotalCount(undefined);
+      }
+
+      setLoading(true);
+
+      try {
+        const response = await getApiContexts(projectKey, environment, {
+          limit: DEFAULT_PAGE_SIZE,
+          sort: '-ts', // Sort by most recent first
+        });
+
+        if (!response || !response.items) {
+          console.warn('No contexts found.');
+          setApiContexts([]);
+          setHasMore(false);
+          setLoading(false);
+          return;
+        }
+
+        const contexts = response.items.map((item) => item.context as ApiContext);
+        setApiContexts(contexts);
+        setContinuationToken(response.continuationToken);
+        setTotalCount(response.totalCount);
+
+        // Has more if there's a continuation token
+        setHasMore(!!response.continuationToken);
+      } catch (error) {
+        console.error('Error fetching contexts:', error);
+      } finally {
+        setLoading(false);
+      }
+    },
+    [apiReady, authenticated, getApiContexts, projectKey, environment],
+  );
+
+  // Load more contexts (pagination)
+  const loadMore = useCallback(async () => {
+    if (!apiReady || !authenticated || !hasMore || loadingMore || loading || !continuationToken) {
+      return;
     }
 
     if (!projectKey || !environment) {
-      console.warn('No project key or environment found. Cannot fetch contexts.');
-      return [];
+      return;
     }
 
-    const contextsResponse = await getApiContexts(projectKey, environment);
-    if (!contextsResponse || !contextsResponse.items) {
-      console.warn('No contexts found. Cannot fetch contexts.');
-      return [];
-    }
+    setLoadingMore(true);
 
-    const contexts = contextsResponse.items.map((item) => item.context as ApiContext);
-
-    return contexts;
-  }, [apiReady, authenticated, getApiContexts, projectKey, environment]);
-
-  useEffect(() => {
-    let isMounted = true;
-
-    if (apiReady && authenticated && projectKey && environment) {
-      setLoading(true);
-      getContexts().then((contexts) => {
-        if (isMounted) {
-          setApiContexts(contexts);
-          setLoading(false);
-        }
+    try {
+      const response = await getApiContexts(projectKey, environment, {
+        limit: DEFAULT_PAGE_SIZE,
+        continuationToken,
+        sort: '-ts',
       });
-    }
 
-    return () => {
-      isMounted = false;
-    };
-  }, [apiReady, authenticated, projectKey, environment, getContexts]);
+      if (!response || !response.items) {
+        setHasMore(false);
+        setContinuationToken(undefined);
+        setLoadingMore(false);
+        return;
+      }
+
+      const newContexts = response.items.map((item) => item.context as ApiContext);
+
+      // Deduplicate contexts (in case of race conditions)
+      setApiContexts((prev) => {
+        const existingKeys = new Set(prev.map((c) => `${c.kind}:${c.key}`));
+        const uniqueNew = newContexts.filter((c) => !existingKeys.has(`${c.kind}:${c.key}`));
+        return [...prev, ...uniqueNew];
+      });
+
+      // Update continuation token and hasMore
+      setContinuationToken(response.continuationToken);
+      setHasMore(!!response.continuationToken);
+    } catch (error) {
+      console.error('Error loading more contexts:', error);
+    } finally {
+      setLoadingMore(false);
+    }
+  }, [
+    apiReady,
+    authenticated,
+    getApiContexts,
+    projectKey,
+    environment,
+    continuationToken,
+    hasMore,
+    loadingMore,
+    loading,
+  ]);
+
+  // Refresh contexts (reset and fetch first page)
+  const refresh = useCallback(async () => {
+    await fetchContexts(true);
+  }, [fetchContexts]);
+
+  // Initial fetch when dependencies change
+  useEffect(() => {
+    if (apiReady && authenticated && projectKey && environment) {
+      fetchContexts(true);
+    }
+  }, [apiReady, authenticated, projectKey, environment, fetchContexts]);
 
   // Merge current SDK context into the contexts list if it doesn't exist
   // This ensures the current context, if anonymous, is available (since this won't get fetched from the API)
@@ -101,7 +197,19 @@ export const ContextsProvider = ({ children }: { children: React.ReactNode }) =>
   }, [apiContexts, currentSdkContext]);
 
   return (
-    <ContextsContext.Provider value={{ contexts, loading, getContexts, currentSdkContext, isActiveContext }}>
+    <ContextsContext.Provider
+      value={{
+        contexts,
+        loading,
+        loadingMore,
+        hasMore,
+        totalCount,
+        loadMore,
+        refresh,
+        currentSdkContext,
+        isActiveContext,
+      }}
+    >
       {children}
     </ContextsContext.Provider>
   );
