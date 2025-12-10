@@ -7,44 +7,40 @@ import { ContextItem } from './ContextItem';
 import { GenericHelpText } from '../../GenericHelpText';
 import { VIRTUALIZATION } from '../../../constants';
 import * as styles from './ContextList.module.css';
-import { ApiContext } from '../../../types/ldApi';
 
 const SCROLL_THRESHOLD = 200; // pixels from bottom to trigger load more
 
 export function ContextList() {
-  const { contexts, loading, loadingMore, hasMore, totalCount, loadMore, isActiveContext } = useContextsContext();
+  const { contexts, loading, loadingMore, hasMore, totalCount, loadMore, isActiveContext, filter, setFilter } =
+    useContextsContext();
   const { searchTerms } = useTabSearchContext();
+
+  // Sync the search term from the tab search context to the provider's filter
   const searchTerm = useMemo(() => searchTerms['contexts'] || '', [searchTerms]);
+
+  // Update the provider's filter when the search term changes
+  useEffect(() => {
+    setFilter(searchTerm);
+  }, [searchTerm, setFilter]);
 
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const getScrollElement = useCallback(() => scrollContainerRef.current, []);
 
-  const filteredContexts = useMemo(() => {
-    const sortedContexts = [...contexts].sort((a, b) => {
+  // Sort contexts to put active context first (no client-side filtering - API handles it)
+  const sortedContexts = useMemo(() => {
+    return [...contexts].sort((a, b) => {
       const aIsActive = isActiveContext(a.kind, a.key);
       const bIsActive = isActiveContext(b.kind, b.key);
       if (aIsActive && !bIsActive) return -1;
       if (!aIsActive && bIsActive) return 1;
       return 0;
     });
+  }, [contexts, isActiveContext]);
 
-    if (!searchTerm) {
-      return sortedContexts;
-    }
-
-    const searchLower = searchTerm.toLowerCase();
-    return sortedContexts.filter((context: ApiContext) => {
-      const matchesKey = context.key.toLowerCase().includes(searchLower);
-      const matchesName = context.name?.toLowerCase().includes(searchLower);
-      const matchesKind = context.kind.toLowerCase().includes(searchLower);
-      return matchesKey || matchesName || matchesKind;
-    });
-  }, [contexts, searchTerm, isActiveContext]);
-
-  // Handle infinite scroll
+  // Handle infinite scroll (works with API filtering too)
   const handleScroll = useCallback(() => {
     const container = scrollContainerRef.current;
-    if (!container || loadingMore || !hasMore || searchTerm) return;
+    if (!container || loadingMore || !hasMore) return;
 
     const { scrollTop, scrollHeight, clientHeight } = container;
     const distanceFromBottom = scrollHeight - scrollTop - clientHeight;
@@ -52,7 +48,7 @@ export function ContextList() {
     if (distanceFromBottom < SCROLL_THRESHOLD) {
       loadMore();
     }
-  }, [loadMore, loadingMore, hasMore, searchTerm]);
+  }, [loadMore, loadingMore, hasMore]);
 
   // Attach scroll listener
   useEffect(() => {
@@ -64,24 +60,27 @@ export function ContextList() {
   }, [handleScroll]);
 
   const virtualizer = useVirtualizer({
-    count: filteredContexts.length + (loadingMore ? 1 : 0), // Add 1 for loading indicator
+    count: sortedContexts.length + (loadingMore ? 1 : 0), // Add 1 for loading indicator
     getScrollElement,
     estimateSize: (index) => {
       // Loading indicator is smaller
-      if (index === filteredContexts.length) return 48;
+      if (index === sortedContexts.length) return 48;
       return VIRTUALIZATION.ITEM_HEIGHT + VIRTUALIZATION.GAP;
     },
     overscan: VIRTUALIZATION.OVERSCAN,
   });
 
   // Calculate stats
-  const displayedCount = filteredContexts.length;
-  const isFiltered = searchTerm.length > 0;
+  const displayedCount = sortedContexts.length;
+  const isFiltered = filter.length > 0;
 
   // Format stats text
   const getStatsText = () => {
     if (isFiltered) {
-      return `${displayedCount} of ${contexts.length} contexts`;
+      if (totalCount !== undefined) {
+        return `${displayedCount} of ${totalCount} contexts`;
+      }
+      return `${displayedCount} contexts matching "${filter}"`;
     }
     if (totalCount !== undefined && totalCount > contexts.length) {
       return `${contexts.length} of ${totalCount} contexts`;
@@ -96,7 +95,7 @@ export function ContextList() {
     return <GenericHelpText title="Loading contexts..." subtitle="Fetching context data from your environment" />;
   }
 
-  if (contexts.length === 0) {
+  if (contexts.length === 0 && !isFiltered) {
     return (
       <GenericHelpText
         title="No contexts found"
@@ -105,11 +104,11 @@ export function ContextList() {
     );
   }
 
-  if (filteredContexts.length === 0 && searchTerm) {
+  if (sortedContexts.length === 0 && isFiltered) {
     return (
       <div className={styles.container}>
         <div className={styles.statsHeader}>
-          <span className={styles.statsText}>0 of {contexts.length} contexts</span>
+          <span className={styles.statsText}>0 contexts matching "{filter}"</span>
         </div>
         <GenericHelpText title="No matching contexts" subtitle="Try adjusting your search" />
       </div>
@@ -131,7 +130,7 @@ export function ContextList() {
         >
           {virtualizer.getVirtualItems().map((virtualItem) => {
             // Render loading indicator as last item
-            if (virtualItem.index === filteredContexts.length) {
+            if (virtualItem.index === sortedContexts.length) {
               return (
                 <div
                   key="loading-more"
@@ -150,7 +149,7 @@ export function ContextList() {
               );
             }
 
-            const context = filteredContexts[virtualItem.index];
+            const context = sortedContexts[virtualItem.index];
             if (!context) return null;
 
             return (

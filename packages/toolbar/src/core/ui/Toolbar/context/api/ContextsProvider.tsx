@@ -7,6 +7,7 @@ import { useEnvironmentContext } from './EnvironmentProvider';
 import { useCurrentSdkContext, CurrentContextInfo, isCurrentContext } from '../state/useCurrentSdkContext';
 
 const DEFAULT_PAGE_SIZE = 20;
+const FILTER_DEBOUNCE_MS = 300;
 
 interface ContextsContextType {
   contexts: ApiContext[];
@@ -14,6 +15,8 @@ interface ContextsContextType {
   loadingMore: boolean;
   hasMore: boolean;
   totalCount: number | undefined;
+  filter: string;
+  setFilter: (filter: string) => void;
   loadMore: () => Promise<void>;
   refresh: () => Promise<void>;
   currentSdkContext: CurrentContextInfo | null;
@@ -35,9 +38,12 @@ export const ContextsProvider = ({ children }: { children: React.ReactNode }) =>
   const [continuationToken, setContinuationToken] = useState<string | undefined>(undefined);
   const [hasMore, setHasMore] = useState(false);
   const [totalCount, setTotalCount] = useState<number | undefined>(undefined);
+  const [filter, setFilterState] = useState('');
+  const [debouncedFilter, setDebouncedFilter] = useState('');
 
   // Track the current project/environment to reset on change
   const currentKeyRef = useRef<string>('');
+  const debounceTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Helper function to check if a context is the active SDK context
   const isActiveContext = useCallback(
@@ -46,6 +52,44 @@ export const ContextsProvider = ({ children }: { children: React.ReactNode }) =>
     },
     [currentSdkContext],
   );
+
+  // Debounced filter setter
+  const setFilter = useCallback((newFilter: string) => {
+    setFilterState(newFilter);
+
+    // Clear existing timer
+    if (debounceTimerRef.current) {
+      clearTimeout(debounceTimerRef.current);
+    }
+
+    // Set debounced value after delay
+    debounceTimerRef.current = setTimeout(() => {
+      setDebouncedFilter(newFilter);
+    }, FILTER_DEBOUNCE_MS);
+  }, []);
+
+  // Cleanup debounce timer on unmount
+  useEffect(() => {
+    return () => {
+      if (debounceTimerRef.current) {
+        clearTimeout(debounceTimerRef.current);
+      }
+    };
+  }, []);
+
+  // Build the filter string for the API
+  // The API supports filtering with syntax like: key contains "value" or kind contains "value"
+  // We'll search across key, name, and kind fields
+  const buildApiFilter = useCallback((searchTerm: string): string | undefined => {
+    if (!searchTerm.trim()) {
+      return undefined;
+    }
+
+    const trimmed = searchTerm.trim();
+    // Build filter that searches key, name, and kind
+    // Format: (key contains "term" or name contains "term" or kind contains "term")
+    return `q equals "${trimmed}"`;
+  }, []);
 
   // Fetch initial page of contexts
   const fetchContexts = useCallback(
@@ -76,6 +120,7 @@ export const ContextsProvider = ({ children }: { children: React.ReactNode }) =>
         const response = await getApiContexts(projectKey, environment, {
           limit: DEFAULT_PAGE_SIZE,
           sort: '-ts', // Sort by most recent first
+          filter: buildApiFilter(debouncedFilter),
         });
 
         if (!response || !response.items) {
@@ -99,7 +144,7 @@ export const ContextsProvider = ({ children }: { children: React.ReactNode }) =>
         setLoading(false);
       }
     },
-    [apiReady, authenticated, getApiContexts, projectKey, environment],
+    [apiReady, authenticated, getApiContexts, projectKey, environment, debouncedFilter, buildApiFilter],
   );
 
   // Load more contexts (pagination)
@@ -119,6 +164,7 @@ export const ContextsProvider = ({ children }: { children: React.ReactNode }) =>
         limit: DEFAULT_PAGE_SIZE,
         continuationToken,
         sort: '-ts',
+        filter: buildApiFilter(debouncedFilter),
       });
 
       if (!response || !response.items) {
@@ -155,6 +201,8 @@ export const ContextsProvider = ({ children }: { children: React.ReactNode }) =>
     hasMore,
     loadingMore,
     loading,
+    debouncedFilter,
+    buildApiFilter,
   ]);
 
   // Refresh contexts (reset and fetch first page)
@@ -168,6 +216,15 @@ export const ContextsProvider = ({ children }: { children: React.ReactNode }) =>
       fetchContexts(true);
     }
   }, [apiReady, authenticated, projectKey, environment, fetchContexts]);
+
+  // Refetch when debounced filter changes
+  useEffect(() => {
+    if (apiReady && authenticated && projectKey && environment) {
+      fetchContexts(true);
+    }
+    // Only trigger on debouncedFilter change, not on fetchContexts change
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [debouncedFilter]);
 
   // Merge current SDK context into the contexts list if it doesn't exist
   // This ensures the current context, if anonymous, is available (since this won't get fetched from the API)
@@ -185,6 +242,18 @@ export const ContextsProvider = ({ children }: { children: React.ReactNode }) =>
       return apiContexts;
     }
 
+    // When filtering, only add the SDK context if it matches the filter
+    if (debouncedFilter) {
+      const filterLower = debouncedFilter.toLowerCase();
+      const matchesKey = currentSdkContext.key.toLowerCase().includes(filterLower);
+      const matchesKind = currentSdkContext.kind.toLowerCase().includes(filterLower);
+      const matchesName = currentSdkContext.name?.toLowerCase().includes(filterLower);
+
+      if (!matchesKey && !matchesKind && !matchesName) {
+        return apiContexts;
+      }
+    }
+
     // Add the current SDK context to the beginning of the list
     const sdkContextAsApiContext: ApiContext = {
       kind: currentSdkContext.kind,
@@ -194,7 +263,7 @@ export const ContextsProvider = ({ children }: { children: React.ReactNode }) =>
     };
 
     return [sdkContextAsApiContext, ...apiContexts];
-  }, [apiContexts, currentSdkContext]);
+  }, [apiContexts, currentSdkContext, debouncedFilter]);
 
   return (
     <ContextsContext.Provider
@@ -204,6 +273,8 @@ export const ContextsProvider = ({ children }: { children: React.ReactNode }) =>
         loadingMore,
         hasMore,
         totalCount,
+        filter,
+        setFilter,
         loadMore,
         refresh,
         currentSdkContext,
