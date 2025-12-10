@@ -3,7 +3,7 @@ import { initialize } from 'launchdarkly-js-client-sdk';
 import type { LDClient, LDContext } from 'launchdarkly-js-client-sdk';
 import Observability from '@launchdarkly/observability';
 import SessionReplay from '@launchdarkly/session-replay';
-import { ENABLE_SESSION_REPLAY_FLAG_KEY, enableSessionReplay, setToolbarFlagClient } from '../../../../../flags';
+import { setToolbarFlagClient } from '../../../../../flags';
 
 export interface AuthState {
   authenticated: boolean;
@@ -172,7 +172,7 @@ export function InternalClientProvider({
         clientToCleanup.close();
       }
     };
-  }, [clientSideId, initialContext, baseUrl, streamUrl, eventsUrl]); // Re-initialize if any config changes
+  }, [clientSideId, initialContext, baseUrl, streamUrl, eventsUrl, backendUrl]); // Re-initialize if any config changes
 
   const updateContext = useCallback(
     async (accountId: string, memberId: string) => {
@@ -196,50 +196,6 @@ export function InternalClientProvider({
     },
     [client],
   );
-  // Monitor Session Replay flag and start/stop recording accordingly
-  // Monitor Session Replay flag and start/stop recording and observability accordingly
-  useEffect(() => {
-    if (!client) {
-      return;
-    }
-
-    const checkAndUpdateSessionReplay = async () => {
-      try {
-        const shouldEnableReplay = enableSessionReplay();
-
-        const [{ LDRecord }, { LDObserve }] = await Promise.all([
-          import('@launchdarkly/session-replay'),
-          import('@launchdarkly/observability'),
-        ]);
-
-        if (shouldEnableReplay) {
-          LDObserve.start();
-          LDRecord.start({ forceNew: false, silent: false });
-          console.log('[InternalClientProvider] Observability and Session Replay started');
-        } else {
-          LDObserve.stop();
-          LDRecord.stop();
-          console.log('[InternalClientProvider] Observability and Session Replay stopped');
-        }
-      } catch (err) {
-        console.error('[InternalClientProvider] Failed to control Session Replay:', err);
-      }
-    };
-
-    // Check initial state
-    checkAndUpdateSessionReplay();
-
-    // Listen for flag changes
-    const handleFlagChange = () => {
-      checkAndUpdateSessionReplay();
-    };
-
-    client.on(`change:${ENABLE_SESSION_REPLAY_FLAG_KEY}`, handleFlagChange);
-
-    return () => {
-      client.off(`change:${ENABLE_SESSION_REPLAY_FLAG_KEY}`, handleFlagChange);
-    };
-  }, [clientSideId, initialContext, baseUrl, streamUrl, eventsUrl, backendUrl]);
 
   const value: InternalClientContextValue = {
     client,
