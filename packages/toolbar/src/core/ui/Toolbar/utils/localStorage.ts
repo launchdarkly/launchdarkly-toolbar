@@ -1,3 +1,4 @@
+import { Context } from '../types/ldApi';
 import { ToolbarPosition, TOOLBAR_POSITIONS } from '../types/toolbar';
 
 export const TOOLBAR_STORAGE_KEYS = {
@@ -174,7 +175,7 @@ export function loadMCPAlertDismissed(): boolean {
   }
 }
 
-export function loadContexts(): Array<{ kind: string; key: string; name?: string; anonymous?: boolean }> {
+export function loadContexts(): Array<Context> {
   try {
     const stored = localStorage.getItem(TOOLBAR_STORAGE_KEYS.CONTEXTS);
     if (stored) {
@@ -187,7 +188,7 @@ export function loadContexts(): Array<{ kind: string; key: string; name?: string
   return [];
 }
 
-export function saveContexts(contexts: Array<{ kind: string; key: string; name?: string; anonymous?: boolean }>): void {
+export function saveContexts(contexts: Array<Context>): void {
   try {
     const value = JSON.stringify(contexts);
     localStorage.setItem(TOOLBAR_STORAGE_KEYS.CONTEXTS, value);

@@ -1,12 +1,12 @@
 import { useState, useCallback, useMemo } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { ApiContext } from '../../../types/ldApi';
 import { useContextsContext } from '../../../context/api/ContextsProvider';
 import { CancelIcon } from '../../icons';
 import { EASING } from '../../../constants';
 import { JsonEditor } from '../../../../JsonEditor/JsonEditor';
 import type { Diagnostic } from '@codemirror/lint';
 import * as styles from './AddContextForm.module.css';
+import { Context } from '../../../types/ldApi';
 
 interface AddContextFormProps {
   isOpen: boolean;
@@ -15,7 +15,8 @@ interface AddContextFormProps {
 
 const DEFAULT_CONTEXT_JSON = `{
   "kind": "",
-  "key": ""
+  "key": "",
+  "name": ""
 }`;
 
 export function AddContextForm({ isOpen, onClose }: AddContextFormProps) {
@@ -50,6 +51,10 @@ export function AddContextForm({ isOpen, onClose }: AddContextFormProps) {
 
       // Check if it's a multi-kind context
       if (parsed.kind === 'multi') {
+        if (typeof parsed.name !== 'string' || parsed.name.trim() === '') {
+          return false;
+        }
+
         // For multi-kind, check that there's at least one nested context with a key
         const contextKinds = Object.keys(parsed).filter((k) => k !== 'kind');
         if (contextKinds.length === 0) {
@@ -73,7 +78,9 @@ export function AddContextForm({ isOpen, onClose }: AddContextFormProps) {
         typeof parsed.kind === 'string' &&
         parsed.kind.trim() !== '' &&
         typeof parsed.key === 'string' &&
-        parsed.key.trim() !== ''
+        parsed.key.trim() !== '' &&
+        typeof parsed.name === 'string' &&
+        parsed.name.trim() !== ''
       );
     } catch {
       return false;
@@ -125,7 +132,7 @@ export function AddContextForm({ isOpen, onClose }: AddContextFormProps) {
           return;
         }
 
-        const context: ApiContext = {
+        const context: Context = {
           kind: parsed.kind.trim(),
           key: parsed.key.trim(),
           name: parsed.name?.trim() || undefined,

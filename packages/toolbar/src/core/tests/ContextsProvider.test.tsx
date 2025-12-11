@@ -3,7 +3,7 @@ import { expect, test, describe, vi, beforeEach } from 'vitest';
 import { ContextsProvider, useContextsContext } from '../ui/Toolbar/context/api/ContextsProvider';
 import '@testing-library/jest-dom/vitest';
 import React from 'react';
-import { ApiContext } from '../ui/Toolbar/types/ldApi';
+import { Context } from '../ui/Toolbar/types/ldApi';
 import { loadContexts, saveContexts } from '../ui/Toolbar/utils/localStorage';
 
 // Mock localStorage utilities
@@ -58,7 +58,7 @@ describe('ContextsProvider', () => {
 
   describe('Initialization', () => {
     test('loads contexts from localStorage on mount', () => {
-      const storedContexts: ApiContext[] = [
+      const storedContexts: Context[] = [
         { kind: 'user', key: 'user-1', name: 'User One' },
         { kind: 'organization', key: 'org-1', name: 'Org One' },
       ];
@@ -110,7 +110,7 @@ describe('ContextsProvider', () => {
     });
 
     test('does not add duplicate contexts', () => {
-      const storedContexts: ApiContext[] = [{ kind: 'user', key: 'test-user', name: 'Existing User' }];
+      const storedContexts: Context[] = [{ kind: 'user', key: 'test-user', name: 'Existing User' }];
       (loadContexts as any).mockReturnValue(storedContexts);
 
       render(
@@ -131,7 +131,7 @@ describe('ContextsProvider', () => {
 
   describe('Removing Contexts', () => {
     test('removes a context from the list', async () => {
-      const storedContexts: ApiContext[] = [
+      const storedContexts: Context[] = [
         { kind: 'user', key: 'user-1', name: 'User One' },
         { kind: 'user', key: 'test-user', name: 'Test User' },
       ];
@@ -158,7 +158,7 @@ describe('ContextsProvider', () => {
     });
 
     test('prevents deletion of active context', async () => {
-      const storedContexts: ApiContext[] = [
+      const storedContexts: Context[] = [
         { kind: 'user', key: 'user-1', name: 'User One' },
         { kind: 'user', key: 'test-user', name: 'Test User' },
       ];
@@ -198,7 +198,7 @@ describe('ContextsProvider', () => {
 
   describe('Filtering', () => {
     test('filters contexts by key, kind, or name', async () => {
-      const storedContexts: ApiContext[] = [
+      const storedContexts: Context[] = [
         { kind: 'user', key: 'user-1', name: 'John Doe' },
         { kind: 'organization', key: 'org-1', name: 'Acme Corp' },
         { kind: 'user', key: 'user-2', name: 'Jane Smith' },
@@ -223,7 +223,7 @@ describe('ContextsProvider', () => {
     });
 
     test('filters by key', async () => {
-      const storedContexts: ApiContext[] = [
+      const storedContexts: Context[] = [
         { kind: 'user', key: 'user-1', name: 'User One' },
         { kind: 'user', key: 'user-2', name: 'User Two' },
       ];
@@ -298,7 +298,7 @@ describe('ContextsProvider', () => {
 
   describe('Sorting', () => {
     test('sorts contexts to put active context first', () => {
-      const storedContexts: ApiContext[] = [
+      const storedContexts: Context[] = [
         { kind: 'user', key: 'user-1', name: 'User One' },
         { kind: 'user', key: 'user-2', name: 'User Two' },
         { kind: 'user', key: 'user-3', name: 'User Three' },

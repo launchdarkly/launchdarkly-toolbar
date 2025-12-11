@@ -110,7 +110,7 @@ export function ContextList() {
               >
                 <ContextItem
                   context={context}
-                  isActive={isActiveContext(context.kind, context.key)}
+                  isActive={isActiveContext(context.kind, context.name)}
                   handleHeightChange={handleHeightChange}
                   index={virtualItem.index}
                 />

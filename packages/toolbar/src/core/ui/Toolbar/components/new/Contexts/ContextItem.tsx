@@ -1,7 +1,7 @@
 import { useState, useCallback, useMemo, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import * as styles from './ContextItem.module.css';
-import { ApiContext } from '../../../types/ldApi';
+import { Context } from '../../../types/ldApi';
 import { CopyableText } from '../../CopyableText';
 import { FingerprintIcon, PersonIcon, ChevronDownIcon, DeleteIcon } from '../../icons';
 import { useContextsContext } from '../../../context/api/ContextsProvider';
@@ -9,7 +9,7 @@ import { JsonEditor } from '../../../../JsonEditor/JsonEditor';
 import { VIRTUALIZATION, EASING } from '../../../constants';
 
 interface ContextItemProps {
-  context: ApiContext;
+  context: Context;
   /** Whether this context is the currently active SDK context */
   isActive?: boolean;
   /** Callback to notify parent of height changes */
@@ -57,7 +57,7 @@ export function ContextItem({ context, isActive = false, handleHeightChange, ind
     if (isActive) {
       return;
     }
-    removeContext(context.kind, context.key);
+    removeContext(context.kind, context.name);
   }, [removeContext, context.kind, context.key, isActive]);
 
   // Reset height on mount if not expanded (ensures clean state when item is remounted)
@@ -93,7 +93,7 @@ export function ContextItem({ context, isActive = false, handleHeightChange, ind
             </span>
           </div>
           <div className={styles.keyRow}>
-            <CopyableText text={context.key} />
+            <CopyableText text={context.name || ''} />
           </div>
         </div>
         <div className={styles.actions}>

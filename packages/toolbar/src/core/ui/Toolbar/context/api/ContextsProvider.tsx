@@ -1,13 +1,13 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
-import { ApiContext } from '../../types/ldApi';
 import { useCurrentSdkContext, CurrentContextInfo, isCurrentContext } from '../state/useCurrentSdkContext';
 import { loadContexts, saveContexts } from '../../utils/localStorage';
+import { Context } from '../../types/ldApi';
 
 interface ContextsContextType {
-  contexts: ApiContext[];
+  contexts: Context[];
   filter: string;
   setFilter: (filter: string) => void;
-  addContext: (context: ApiContext) => void;
+  addContext: (context: Context) => void;
   removeContext: (kind: string, key: string) => void;
   currentSdkContext: CurrentContextInfo | null;
   isActiveContext: (contextKind: string, contextKey: string) => boolean;
@@ -17,7 +17,7 @@ const ContextsContext = createContext<ContextsContextType | undefined>(undefined
 
 export const ContextsProvider = ({ children }: { children: React.ReactNode }) => {
   const currentSdkContext = useCurrentSdkContext();
-  const [storedContexts, setStoredContexts] = useState<ApiContext[]>(loadContexts);
+  const [storedContexts, setStoredContexts] = useState<Context[]>(loadContexts);
   const [filter, setFilter] = useState('');
   const lastAddedContextRef = useRef<string | null>(null);
 
@@ -30,7 +30,7 @@ export const ContextsProvider = ({ children }: { children: React.ReactNode }) =>
   );
 
   // Add a new context to the list
-  const addContext = useCallback((context: ApiContext) => {
+  const addContext = useCallback((context: Context) => {
     setStoredContexts((prev) => {
       // Check if context already exists (by kind and key)
       const exists = prev.some((c) => c.kind === context.kind && c.key === context.key);
@@ -87,10 +87,11 @@ export const ContextsProvider = ({ children }: { children: React.ReactNode }) =>
       }
 
       // Convert CurrentContextInfo to ApiContext format
-      const apiContext: ApiContext = {
+      // Use key for name if name is not present
+      const apiContext: Context = {
         kind: currentSdkContext.kind,
         key: currentSdkContext.key,
-        name: currentSdkContext.name,
+        name: currentSdkContext.name || currentSdkContext.key,
         anonymous: currentSdkContext.anonymous,
       };
 
@@ -118,8 +119,8 @@ export const ContextsProvider = ({ children }: { children: React.ReactNode }) =>
 
     // Sort to put active context first
     return filtered.sort((a, b) => {
-      const aIsActive = isActiveContext(a.kind, a.key);
-      const bIsActive = isActiveContext(b.kind, b.key);
+      const aIsActive = isActiveContext(a.kind, a.name || '');
+      const bIsActive = isActiveContext(b.kind, b.name || '');
       if (aIsActive && !bIsActive) return -1;
       if (!aIsActive && bIsActive) return 1;
       return 0;

@@ -106,7 +106,7 @@ describe('AddContextForm', () => {
       );
 
       const editor = screen.getByTestId('json-editor');
-      const invalidContext = JSON.stringify({ kind: 'user' }, null, 2); // Missing key
+      const invalidContext = JSON.stringify({ kind: 'user' }, null, 2); // Missing key and name
 
       fireEvent.change(editor, { target: { value: invalidContext } });
 
@@ -126,6 +126,7 @@ describe('AddContextForm', () => {
         {
           kind: 'user',
           key: 'test-user',
+          name: 'Test User',
           anonymous: true,
         },
         null,
@@ -187,6 +188,8 @@ describe('AddContextForm', () => {
       const savedContext = savedContexts[0];
       // Should have kind "multi" and contain all nested contexts
       expect(savedContext.kind).toBe('multi');
+      // Name should be composite of nested keys
+      expect(savedContext.name).toBe('62e3bcd1192f058dc89b437c:68e55f1d420bec09b171e191');
       expect(savedContext.account).toBeDefined();
       expect(savedContext.account.key).toBe('62e3bcd1192f058dc89b437c');
       expect(savedContext.account.name).toBe('Account One');
@@ -256,6 +259,7 @@ describe('AddContextForm', () => {
       const multiKindWithInvalid = JSON.stringify(
         {
           kind: 'multi',
+          name: 'Multi Kind Context',
           account: {
             key: 'valid-account-key',
           },
@@ -284,6 +288,8 @@ describe('AddContextForm', () => {
       const savedContext = savedContexts[0];
       // Should have kind "multi" and contain all nested contexts (even invalid ones)
       expect(savedContext.kind).toBe('multi');
+      // Name should be composite of valid nested keys
+      expect(savedContext.name).toBe('valid-account-key:valid-org-key');
       expect(savedContext.account).toBeDefined();
       expect(savedContext.account.key).toBe('valid-account-key');
       expect(savedContext.user).toBeDefined(); // User context is still saved even without key
@@ -409,11 +415,28 @@ describe('AddContextForm', () => {
       );
 
       const editor = screen.getByTestId('json-editor');
-      const contextWithoutKey = JSON.stringify({ kind: 'user' }, null, 2);
+      const contextWithoutKey = JSON.stringify({ kind: 'user', name: 'Test User' }, null, 2);
 
       fireEvent.change(editor, { target: { value: contextWithoutKey } });
 
       // Button should be disabled when key is missing
+      const submitButton = screen.getByRole('button', { name: /add context/i });
+      expect(submitButton).toBeDisabled();
+    });
+
+    test('validates that name field is required for single-kind context', () => {
+      render(
+        <ContextsProvider>
+          <AddContextForm isOpen={true} onClose={mockOnClose} />
+        </ContextsProvider>,
+      );
+
+      const editor = screen.getByTestId('json-editor');
+      const contextWithoutName = JSON.stringify({ kind: 'user', key: 'test-user' }, null, 2);
+
+      fireEvent.change(editor, { target: { value: contextWithoutName } });
+
+      // Button should be disabled when name is missing
       const submitButton = screen.getByRole('button', { name: /add context/i });
       expect(submitButton).toBeDisabled();
     });

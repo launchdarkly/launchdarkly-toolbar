@@ -59,14 +59,14 @@ export interface SearchContextsResponse {
 }
 
 export interface SearchContextResult {
-  context: ApiContext;
+  context: Context;
   lastSeen?: Date;
   applicationId?: string;
 }
 
-export interface ApiContext {
+export interface Context {
   kind: string;
-  key: string;
-  name?: string;
+  key?: string;
+  name: string;
   anonymous?: boolean;
 }
