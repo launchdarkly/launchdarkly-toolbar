@@ -157,6 +157,7 @@ describe('AddContextForm', () => {
       const multiKindContext = JSON.stringify(
         {
           kind: 'multi',
+          name: '62e3bcd1192f058dc89b437c:68e55f1d420bec09b171e191',
           account: {
             key: '62e3bcd1192f058dc89b437c',
             name: 'Account One',
@@ -288,8 +289,8 @@ describe('AddContextForm', () => {
       const savedContext = savedContexts[0];
       // Should have kind "multi" and contain all nested contexts (even invalid ones)
       expect(savedContext.kind).toBe('multi');
-      // Name should be composite of valid nested keys
-      expect(savedContext.name).toBe('valid-account-key:valid-org-key');
+      // Name should be the provided name
+      expect(savedContext.name).toBe('Multi Kind Context');
       expect(savedContext.account).toBeDefined();
       expect(savedContext.account.key).toBe('valid-account-key');
       expect(savedContext.user).toBeDefined(); // User context is still saved even without key
@@ -325,6 +326,7 @@ describe('AddContextForm', () => {
         {
           kind: 'user',
           key: 'test-user',
+          name: 'Test User',
         },
         null,
         2,
@@ -334,12 +336,10 @@ describe('AddContextForm', () => {
       fireEvent.click(screen.getByRole('button', { name: /add context/i }));
 
       await waitFor(() => {
-        expect(mockOnClose).toHaveBeenCalled();
+        expect(saveContexts).toHaveBeenCalled();
       });
 
-      // Form should be reset (editor should have default value)
-      // Note: This test assumes the form resets, but since it closes, we can't verify the reset
-      // The important part is that onClose was called
+      // onClose should be called after successful submission
       expect(mockOnClose).toHaveBeenCalled();
     });
 

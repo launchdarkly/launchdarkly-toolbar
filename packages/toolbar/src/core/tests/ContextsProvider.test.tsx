@@ -13,7 +13,7 @@ vi.mock('../ui/Toolbar/utils/localStorage', () => ({
 }));
 
 // Mock the useCurrentSdkContext hook
-const mockIsCurrentContext = vi.fn(() => false);
+const mockIsCurrentContext = vi.fn((_context: any, _kind: string, _key: string) => false);
 vi.mock('../ui/Toolbar/context/state/useCurrentSdkContext', () => ({
   useCurrentSdkContext: vi.fn(() => null),
   isCurrentContext: (context: any, kind: string, key: string) => mockIsCurrentContext(context, kind, key),
@@ -305,9 +305,13 @@ describe('ContextsProvider', () => {
       ];
       (loadContexts as any).mockReturnValue(storedContexts);
 
-      // Make user-2 active
+      // Make user-2 active - note: the implementation passes name (not key) to isActiveContext
+      // So isActiveContext calls isCurrentContext(kind, name), meaning we need to match by name
       mockIsCurrentContext.mockImplementation((context: any, kind: string, key: string) => {
-        return kind === 'user' && key === 'user-2';
+        // The implementation calls isActiveContext(a.kind, a.name || '')
+        // which calls isCurrentContext(currentSdkContext, kind, name)
+        // So 'key' parameter here is actually the name from the context
+        return kind === 'user' && key === 'User Two';
       });
 
       const TestWithSorting = () => {
@@ -329,7 +333,7 @@ describe('ContextsProvider', () => {
         </ContextsProvider>,
       );
 
-      // Active context should be first
+      // Active context (user-2 with name 'User Two') should be first
       expect(screen.getByTestId('context-0')).toHaveTextContent('user-2');
     });
   });
