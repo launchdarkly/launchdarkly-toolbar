@@ -10,9 +10,11 @@ import { PositionSelector } from './PositionSelector';
 import { ConnectionStatus } from './ConnectionStatus';
 import { LogoutButton } from './LogoutButton';
 import { GenericHelpText } from '../../GenericHelpText';
+import { Feedback } from '../../Feedback/Feedback';
 import * as styles from './SettingsContent.module.css';
 import * as settingsItemStyles from './SettingsItem.module.css';
 import { EnvironmentSelector } from './EnvironmentSelector';
+import { FeedbackSentiment } from '../../../../../../types';
 
 interface SettingItemData {
   id: string;
@@ -50,6 +52,10 @@ export function GeneralSettings() {
   const handleReloadToggle = () => {
     analytics.trackReloadOnFlagChangeToggle(!reloadOnFlagChangeIsEnabled);
     handleToggleReloadOnFlagChange();
+  };
+
+  const handleFeedbackSubmit = (feedback: string, sentiment: FeedbackSentiment) => {
+    analytics.trackFeedback(feedback, sentiment);
   };
 
   // Build settings structure based on mode
@@ -243,6 +249,10 @@ export function GeneralSettings() {
           </SettingsSection>
         );
       })}
+      <div className={styles.feedbackSection}>
+        <h3 className={styles.feedbackTitle}>Feedback</h3>
+        <Feedback onSubmit={handleFeedbackSubmit} />
+      </div>
     </div>
   );
 }

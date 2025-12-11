@@ -17,3 +17,21 @@ export const placeholder = style({
   color: 'var(--lp-color-gray-400)',
   textAlign: 'center',
 });
+
+export const feedbackSection = style({
+  marginTop: '10px',
+  paddingTop: '10px',
+  borderTop: '1px solid var(--lp-color-gray-700)',
+  marginLeft: '-20px',
+  marginRight: '-20px',
+});
+
+export const feedbackTitle = style({
+  fontSize: '12px',
+  fontWeight: 600,
+  color: 'var(--lp-color-gray-400)',
+  textTransform: 'uppercase',
+  letterSpacing: '0.5px',
+  marginLeft: '20px',
+  padding: '0px',
+});
