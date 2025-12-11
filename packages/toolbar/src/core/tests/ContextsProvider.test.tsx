@@ -19,6 +19,15 @@ vi.mock('../ui/Toolbar/context/state/useCurrentSdkContext', () => ({
   isCurrentContext: (context: any, kind: string, key: string) => mockIsCurrentContext(context, kind, key),
 }));
 
+// Mock the usePlugins hook
+vi.mock('../ui/Toolbar/context/state/PluginsProvider', () => ({
+  usePlugins: vi.fn(() => ({
+    flagOverridePlugin: null,
+    eventInterceptionPlugin: null,
+    baseUrl: '',
+  })),
+}));
+
 // Test component
 function TestConsumer() {
   const { contexts, filter, setFilter, addContext, removeContext, isActiveContext } = useContextsContext();

@@ -18,6 +18,15 @@ vi.mock('../ui/Toolbar/context/state/useCurrentSdkContext', () => ({
   isCurrentContext: vi.fn(() => false),
 }));
 
+// Mock the usePlugins hook
+vi.mock('../ui/Toolbar/context/state/PluginsProvider', () => ({
+  usePlugins: vi.fn(() => ({
+    flagOverridePlugin: null,
+    eventInterceptionPlugin: null,
+    baseUrl: '',
+  })),
+}));
+
 // Mock JsonEditor
 vi.mock('../ui/Toolbar/components/../../JsonEditor/JsonEditor', () => ({
   JsonEditor: ({ docString, onChange, onLintErrors }: any) => {

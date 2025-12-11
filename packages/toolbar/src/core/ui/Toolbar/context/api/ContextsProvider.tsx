@@ -2,6 +2,8 @@ import { createContext, useCallback, useContext, useEffect, useMemo, useRef, use
 import { useCurrentSdkContext, CurrentContextInfo, isCurrentContext } from '../state/useCurrentSdkContext';
 import { loadContexts, saveContexts } from '../../utils/localStorage';
 import { Context } from '../../types/ldApi';
+import { usePlugins } from '../state/PluginsProvider';
+import type { LDContext } from 'launchdarkly-js-client-sdk';
 
 interface ContextsContextType {
   contexts: Context[];
@@ -9,6 +11,7 @@ interface ContextsContextType {
   setFilter: (filter: string) => void;
   addContext: (context: Context) => void;
   removeContext: (kind: string, key: string) => void;
+  setContext: (context: Context) => Promise<void>;
   currentSdkContext: CurrentContextInfo | null;
   isActiveContext: (contextKind: string, contextKey: string) => boolean;
 }
@@ -17,9 +20,13 @@ const ContextsContext = createContext<ContextsContextType | undefined>(undefined
 
 export const ContextsProvider = ({ children }: { children: React.ReactNode }) => {
   const currentSdkContext = useCurrentSdkContext();
+  const { flagOverridePlugin, eventInterceptionPlugin } = usePlugins();
   const [storedContexts, setStoredContexts] = useState<Context[]>(loadContexts);
   const [filter, setFilter] = useState('');
   const lastAddedContextRef = useRef<string | null>(null);
+
+  // Get the LD client from plugins
+  const ldClient = flagOverridePlugin?.getClient() ?? eventInterceptionPlugin?.getClient() ?? null;
 
   // Helper function to check if a context is the active SDK context
   const isActiveContext = useCallback(
@@ -58,6 +65,37 @@ export const ContextsProvider = ({ children }: { children: React.ReactNode }) =>
       });
     },
     [isActiveContext],
+  );
+
+  // Set the current context and update the host application's LD Client via identify
+  const setContext = useCallback(
+    async (context: Context) => {
+      if (!ldClient) {
+        console.warn('LD Client not available. Cannot set context.');
+        return;
+      }
+
+      try {
+        // Convert Context to LDContext format for identify
+        // If it's already a multi-kind context, use it as-is
+        // Otherwise, construct a single-kind context
+        const ldContext: LDContext =
+          context.kind === 'multi'
+            ? (context as any) // Multi-kind contexts are already in the correct format
+            : {
+                kind: context.kind,
+                key: context.key || context.name,
+                ...(context.name && context.name !== (context.key || context.name) && { name: context.name }),
+                ...(context.anonymous !== undefined && { anonymous: context.anonymous }),
+              };
+
+        await ldClient.identify(ldContext);
+      } catch (error) {
+        console.error('Failed to identify context:', error);
+        throw error;
+      }
+    },
+    [ldClient],
   );
 
   // Automatically add the current SDK context to the list if it's not already there
@@ -135,6 +173,7 @@ export const ContextsProvider = ({ children }: { children: React.ReactNode }) =>
         setFilter,
         addContext,
         removeContext,
+        setContext,
         currentSdkContext,
         isActiveContext,
       }}
