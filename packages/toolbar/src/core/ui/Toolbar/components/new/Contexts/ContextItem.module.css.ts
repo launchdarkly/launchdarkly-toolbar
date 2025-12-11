@@ -21,6 +21,7 @@ export const header = style({
   display: 'flex',
   alignItems: 'center',
   gap: '12px',
+  position: 'relative',
 });
 
 export const containerActive = style({
@@ -111,26 +112,12 @@ export const anonymousBadge = style({
   flexShrink: 0,
 });
 
-export const activeBadge = style({
-  display: 'inline-flex',
-  alignItems: 'center',
-  gap: '4px',
-  padding: '2px 8px',
-  fontSize: '10px',
-  fontWeight: 600,
-  textTransform: 'uppercase',
-  letterSpacing: '0.5px',
-  borderRadius: '4px',
-  backgroundColor: 'rgba(from var(--lp-color-brand-cyan-base) r g b / 0.2)',
-  color: 'var(--lp-color-brand-cyan-base)',
-  flexShrink: 0,
-});
-
 export const activeDot = style({
-  width: '6px',
-  height: '6px',
+  width: '8px',
+  height: '8px',
   borderRadius: '50%',
   backgroundColor: 'var(--lp-color-brand-cyan-base)',
+  flexShrink: 0,
 });
 
 export const actions = style({
@@ -138,6 +125,31 @@ export const actions = style({
   alignItems: 'center',
   gap: '8px',
   flexShrink: 0,
+});
+
+export const deleteButton = style({
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  background: 'none',
+  border: 'none',
+  cursor: 'pointer',
+  padding: '4px',
+  borderRadius: '4px',
+  color: 'var(--lp-color-gray-400)',
+  transition: 'all 0.2s ease',
+  width: '20px',
+  height: '20px',
+
+  ':hover': {
+    backgroundColor: 'rgba(from var(--lp-color-red-500) r g b / 0.15)',
+    color: 'var(--lp-color-red-400)',
+  },
+
+  ':focus-visible': {
+    outline: '2px solid var(--lp-color-red-500)',
+    outlineOffset: '2px',
+  },
 });
 
 export const expandButton = style({

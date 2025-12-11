@@ -3,7 +3,8 @@ import { motion, AnimatePresence } from 'motion/react';
 import * as styles from './ContextItem.module.css';
 import { ApiContext } from '../../../types/ldApi';
 import { CopyableText } from '../../CopyableText';
-import { FingerprintIcon, PersonIcon, ChevronDownIcon } from '../../icons';
+import { FingerprintIcon, PersonIcon, ChevronDownIcon, DeleteIcon } from '../../icons';
+import { useContextsContext } from '../../../context/api/ContextsProvider';
 import { JsonEditor } from '../../../../JsonEditor/JsonEditor';
 import { VIRTUALIZATION, EASING } from '../../../constants';
 
@@ -20,6 +21,7 @@ interface ContextItemProps {
 export function ContextItem({ context, isActive = false, handleHeightChange, index }: ContextItemProps) {
   const [isExpanded, setIsExpanded] = useState(false);
   const hasResetOnMountRef = useRef(false);
+  const { removeContext } = useContextsContext();
   const displayName = context.name || context.key;
   const isUser = context.kind === 'user';
 
@@ -50,6 +52,10 @@ export function ContextItem({ context, isActive = false, handleHeightChange, ind
     [handleHeightChange, index, isExpanded],
   );
 
+  const handleDelete = useCallback(() => {
+    removeContext(context.kind, context.key);
+  }, [removeContext, context.kind, context.key]);
+
   // Reset height on mount if not expanded (ensures clean state when item is remounted)
   // This handles the case where an item was expanded, scrolled out of view, then scrolled back
   useEffect(() => {
@@ -74,19 +80,13 @@ export function ContextItem({ context, isActive = false, handleHeightChange, ind
   return (
     <div className={containerClassName}>
       <div className={styles.header}>
+        {isActive && <span className={styles.activeDot} />}
         <div className={styles.iconContainer}>{isUser ? <PersonIcon /> : <FingerprintIcon />}</div>
         <div className={styles.info}>
           <div className={styles.nameRow}>
             <span className={styles.name} title={displayName}>
               {displayName}
             </span>
-            {context.anonymous && <span className={styles.anonymousBadge}>Anonymous</span>}
-            {isActive && (
-              <span className={styles.activeBadge}>
-                <span className={styles.activeDot} />
-                Active
-              </span>
-            )}
           </div>
           <div className={styles.keyRow}>
             <CopyableText text={context.key} />
@@ -94,6 +94,14 @@ export function ContextItem({ context, isActive = false, handleHeightChange, ind
         </div>
         <div className={styles.actions}>
           <span className={styles.kindBadge}>{context.kind}</span>
+          <button
+            className={styles.deleteButton}
+            onClick={handleDelete}
+            aria-label={`Delete context ${context.key}`}
+            title="Delete context"
+          >
+            <DeleteIcon />
+          </button>
           <button
             className={styles.expandButton}
             onClick={handleToggleExpand}

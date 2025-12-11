@@ -1,24 +1,14 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { ApiContext } from '../../types/ldApi';
-import { useProjectContext } from './ProjectProvider';
-import { useAuthContext } from './AuthProvider';
-import { useApi } from './ApiProvider';
-import { useEnvironmentContext } from './EnvironmentProvider';
 import { useCurrentSdkContext, CurrentContextInfo, isCurrentContext } from '../state/useCurrentSdkContext';
-
-const DEFAULT_PAGE_SIZE = 20;
-const FILTER_DEBOUNCE_MS = 300;
+import { loadContexts, saveContexts } from '../../utils/localStorage';
 
 interface ContextsContextType {
   contexts: ApiContext[];
-  loading: boolean;
-  loadingMore: boolean;
-  hasMore: boolean;
-  totalCount: number | undefined;
   filter: string;
   setFilter: (filter: string) => void;
-  loadMore: () => Promise<void>;
-  refresh: () => Promise<void>;
+  addContext: (context: ApiContext) => void;
+  removeContext: (kind: string, key: string) => void;
   currentSdkContext: CurrentContextInfo | null;
   isActiveContext: (contextKind: string, contextKey: string) => boolean;
 }
@@ -26,24 +16,10 @@ interface ContextsContextType {
 const ContextsContext = createContext<ContextsContextType | undefined>(undefined);
 
 export const ContextsProvider = ({ children }: { children: React.ReactNode }) => {
-  const { projectKey } = useProjectContext();
-  const { environment } = useEnvironmentContext();
-  const { authenticated } = useAuthContext();
-  const { getContexts: getApiContexts, apiReady } = useApi();
   const currentSdkContext = useCurrentSdkContext();
-
-  const [apiContexts, setApiContexts] = useState<ApiContext[]>([]);
-  const [loading, setLoading] = useState(false);
-  const [loadingMore, setLoadingMore] = useState(false);
-  const [continuationToken, setContinuationToken] = useState<string | undefined>(undefined);
-  const [hasMore, setHasMore] = useState(false);
-  const [totalCount, setTotalCount] = useState<number | undefined>(undefined);
-  const [filter, setFilterState] = useState('');
-  const [debouncedFilter, setDebouncedFilter] = useState('');
-
-  // Track the current project/environment to reset on change
-  const currentKeyRef = useRef<string>('');
-  const debounceTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const [storedContexts, setStoredContexts] = useState<ApiContext[]>(loadContexts);
+  const [filter, setFilter] = useState('');
+  const lastAddedContextRef = useRef<string | null>(null);
 
   // Helper function to check if a context is the active SDK context
   const isActiveContext = useCallback(
@@ -53,230 +29,103 @@ export const ContextsProvider = ({ children }: { children: React.ReactNode }) =>
     [currentSdkContext],
   );
 
-  // Debounced filter setter
-  const setFilter = useCallback((newFilter: string) => {
-    setFilterState(newFilter);
-
-    // Clear existing timer
-    if (debounceTimerRef.current) {
-      clearTimeout(debounceTimerRef.current);
-    }
-
-    // Set debounced value after delay
-    debounceTimerRef.current = setTimeout(() => {
-      setDebouncedFilter(newFilter);
-    }, FILTER_DEBOUNCE_MS);
+  // Add a new context to the list
+  const addContext = useCallback((context: ApiContext) => {
+    setStoredContexts((prev) => {
+      // Check if context already exists (by kind and key)
+      const exists = prev.some((c) => c.kind === context.kind && c.key === context.key);
+      if (exists) {
+        return prev; // Don't add duplicates
+      }
+      const updated = [...prev, context];
+      saveContexts(updated);
+      return updated;
+    });
   }, []);
 
-  // Cleanup debounce timer on unmount
-  useEffect(() => {
-    return () => {
-      if (debounceTimerRef.current) {
-        clearTimeout(debounceTimerRef.current);
-      }
-    };
+  // Remove a context from the list
+  const removeContext = useCallback((kind: string, key: string) => {
+    setStoredContexts((prev) => {
+      const updated = prev.filter((c) => !(c.kind === kind && c.key === key));
+      saveContexts(updated);
+      return updated;
+    });
   }, []);
 
-  // Build the filter string for the API
-  // The API supports filtering with syntax like: key contains "value" or kind contains "value"
-  // We'll search across key, name, and kind fields
-  const buildApiFilter = useCallback((searchTerm: string): string | undefined => {
-    if (!searchTerm.trim()) {
-      return undefined;
-    }
-
-    const trimmed = searchTerm.trim();
-    // Build filter that searches key, name, and kind
-    // Format: (key contains "term" or name contains "term" or kind contains "term")
-    return `q equals "${trimmed}"`;
-  }, []);
-
-  // Fetch initial page of contexts
-  const fetchContexts = useCallback(
-    async (reset: boolean = false) => {
-      if (!apiReady || !authenticated) {
-        return;
-      }
-
-      if (!projectKey || !environment) {
-        console.warn('No project key or environment found. Cannot fetch contexts.');
-        return;
-      }
-
-      const key = `${projectKey}-${environment}`;
-
-      // Reset state if project/environment changed
-      if (reset || key !== currentKeyRef.current) {
-        currentKeyRef.current = key;
-        setApiContexts([]);
-        setContinuationToken(undefined);
-        setHasMore(false);
-        setTotalCount(undefined);
-      }
-
-      setLoading(true);
-
-      try {
-        const response = await getApiContexts(projectKey, environment, {
-          limit: DEFAULT_PAGE_SIZE,
-          sort: '-ts', // Sort by most recent first
-          filter: buildApiFilter(debouncedFilter),
-        });
-
-        if (!response || !response.items) {
-          console.warn('No contexts found.');
-          setApiContexts([]);
-          setHasMore(false);
-          setLoading(false);
-          return;
-        }
-
-        const contexts = response.items.map((item) => item.context as ApiContext);
-        setApiContexts(contexts);
-        setContinuationToken(response.continuationToken);
-        setTotalCount(response.totalCount);
-
-        // Has more if there's a continuation token
-        setHasMore(!!response.continuationToken);
-      } catch (error) {
-        console.error('Error fetching contexts:', error);
-      } finally {
-        setLoading(false);
-      }
-    },
-    [apiReady, authenticated, getApiContexts, projectKey, environment, debouncedFilter, buildApiFilter],
-  );
-
-  // Load more contexts (pagination)
-  const loadMore = useCallback(async () => {
-    if (!apiReady || !authenticated || !hasMore || loadingMore || loading || !continuationToken) {
-      return;
-    }
-
-    if (!projectKey || !environment) {
-      return;
-    }
-
-    setLoadingMore(true);
-
-    try {
-      const response = await getApiContexts(projectKey, environment, {
-        limit: DEFAULT_PAGE_SIZE,
-        continuationToken,
-        sort: '-ts',
-        filter: buildApiFilter(debouncedFilter),
-      });
-
-      if (!response || !response.items) {
-        setHasMore(false);
-        setContinuationToken(undefined);
-        setLoadingMore(false);
-        return;
-      }
-
-      const newContexts = response.items.map((item) => item.context as ApiContext);
-
-      // Deduplicate contexts (in case of race conditions)
-      setApiContexts((prev) => {
-        const existingKeys = new Set(prev.map((c) => `${c.kind}:${c.key}`));
-        const uniqueNew = newContexts.filter((c) => !existingKeys.has(`${c.kind}:${c.key}`));
-        return [...prev, ...uniqueNew];
-      });
-
-      // Update continuation token and hasMore
-      setContinuationToken(response.continuationToken);
-      setHasMore(!!response.continuationToken);
-    } catch (error) {
-      console.error('Error loading more contexts:', error);
-    } finally {
-      setLoadingMore(false);
-    }
-  }, [
-    apiReady,
-    authenticated,
-    getApiContexts,
-    projectKey,
-    environment,
-    continuationToken,
-    hasMore,
-    loadingMore,
-    loading,
-    debouncedFilter,
-    buildApiFilter,
-  ]);
-
-  // Refresh contexts (reset and fetch first page)
-  const refresh = useCallback(async () => {
-    await fetchContexts(true);
-  }, [fetchContexts]);
-
-  // Initial fetch when dependencies change
+  // Automatically add the current SDK context to the list if it's not already there
   useEffect(() => {
-    if (apiReady && authenticated && projectKey && environment) {
-      fetchContexts(true);
-    }
-  }, [apiReady, authenticated, projectKey, environment, fetchContexts]);
-
-  // Refetch when debounced filter changes
-  useEffect(() => {
-    if (apiReady && authenticated && projectKey && environment) {
-      fetchContexts(true);
-    }
-    // Only trigger on debouncedFilter change, not on fetchContexts change
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [debouncedFilter]);
-
-  // Merge current SDK context into the contexts list if it doesn't exist
-  // This ensures the current context, if anonymous, is available (since this won't get fetched from the API)
-  const contexts = useMemo(() => {
     if (!currentSdkContext) {
-      return apiContexts;
+      lastAddedContextRef.current = null;
+      return;
     }
 
-    // Check if the current SDK context already exists in the API contexts
-    const existsInApi = apiContexts.some(
-      (ctx) => ctx.kind === currentSdkContext.kind && ctx.key === currentSdkContext.key,
-    );
+    // Create a unique identifier for this context
+    const contextId = `${currentSdkContext.kind}:${currentSdkContext.key}`;
 
-    if (existsInApi) {
-      return apiContexts;
+    // Skip if we've already processed this context
+    if (lastAddedContextRef.current === contextId) {
+      return;
     }
 
-    // When filtering, only add the SDK context if it matches the filter
-    if (debouncedFilter) {
-      const filterLower = debouncedFilter.toLowerCase();
-      const matchesKey = currentSdkContext.key.toLowerCase().includes(filterLower);
-      const matchesKind = currentSdkContext.kind.toLowerCase().includes(filterLower);
-      const matchesName = currentSdkContext.name?.toLowerCase().includes(filterLower);
+    // Use functional update to check current state and add if needed
+    setStoredContexts((prev) => {
+      // Check if context already exists in stored contexts
+      const exists = prev.some((c) => c.kind === currentSdkContext.kind && c.key === currentSdkContext.key);
 
-      if (!matchesKey && !matchesKind && !matchesName) {
-        return apiContexts;
+      if (exists) {
+        // Track that we've seen this context (even if it already existed)
+        lastAddedContextRef.current = contextId;
+        return prev;
       }
+
+      // Convert CurrentContextInfo to ApiContext format
+      const apiContext: ApiContext = {
+        kind: currentSdkContext.kind,
+        key: currentSdkContext.key,
+        name: currentSdkContext.name,
+        anonymous: currentSdkContext.anonymous,
+      };
+
+      const updated = [...prev, apiContext];
+      saveContexts(updated);
+      // Track that we've added this context
+      lastAddedContextRef.current = contextId;
+      return updated;
+    });
+  }, [currentSdkContext]);
+
+  // Filter contexts client-side
+  const contexts = useMemo(() => {
+    let filtered = storedContexts;
+
+    if (filter.trim()) {
+      const filterLower = filter.toLowerCase();
+      filtered = storedContexts.filter((ctx) => {
+        const matchesKey = ctx.key.toLowerCase().includes(filterLower);
+        const matchesKind = ctx.kind.toLowerCase().includes(filterLower);
+        const matchesName = ctx.name?.toLowerCase().includes(filterLower);
+        return matchesKey || matchesKind || matchesName;
+      });
     }
 
-    // Add the current SDK context to the beginning of the list
-    const sdkContextAsApiContext: ApiContext = {
-      kind: currentSdkContext.kind,
-      key: currentSdkContext.key,
-      name: currentSdkContext.name,
-      anonymous: currentSdkContext.anonymous,
-    };
-
-    return [sdkContextAsApiContext, ...apiContexts];
-  }, [apiContexts, currentSdkContext, debouncedFilter]);
+    // Sort to put active context first
+    return filtered.sort((a, b) => {
+      const aIsActive = isActiveContext(a.kind, a.key);
+      const bIsActive = isActiveContext(b.kind, b.key);
+      if (aIsActive && !bIsActive) return -1;
+      if (!aIsActive && bIsActive) return 1;
+      return 0;
+    });
+  }, [storedContexts, filter, isActiveContext]);
 
   return (
     <ContextsContext.Provider
       value={{
         contexts,
-        loading,
-        loadingMore,
-        hasMore,
-        totalCount,
         filter,
         setFilter,
-        loadMore,
-        refresh,
+        addContext,
+        removeContext,
         currentSdkContext,
         isActiveContext,
       }}

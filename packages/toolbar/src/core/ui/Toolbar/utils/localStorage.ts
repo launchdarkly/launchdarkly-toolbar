@@ -7,6 +7,7 @@ export const TOOLBAR_STORAGE_KEYS = {
   PROJECT: 'ld-toolbar-project',
   STARRED_FLAGS: 'ld-toolbar-starred-flags',
   MCP_ALERT_DISMISSED: 'ld-toolbar-mcp-alert-dismissed',
+  CONTEXTS: 'ld-toolbar-contexts',
 } as const;
 
 export type PreferredIde = 'cursor' | 'windsurf' | 'vscode' | 'github-copilot';
@@ -170,5 +171,27 @@ export function loadMCPAlertDismissed(): boolean {
   } catch (error) {
     console.warn('Failed to load MCP alert dismissed state from localStorage:', error);
     return false;
+  }
+}
+
+export function loadContexts(): Array<{ kind: string; key: string; name?: string; anonymous?: boolean }> {
+  try {
+    const stored = localStorage.getItem(TOOLBAR_STORAGE_KEYS.CONTEXTS);
+    if (stored) {
+      const parsed = JSON.parse(stored);
+      return Array.isArray(parsed) ? parsed : [];
+    }
+  } catch (error) {
+    console.error('Error reading contexts from localStorage:', error);
+  }
+  return [];
+}
+
+export function saveContexts(contexts: Array<{ kind: string; key: string; name?: string; anonymous?: boolean }>): void {
+  try {
+    const value = JSON.stringify(contexts);
+    localStorage.setItem(TOOLBAR_STORAGE_KEYS.CONTEXTS, value);
+  } catch (error) {
+    console.error('Error saving contexts to localStorage:', error);
   }
 }

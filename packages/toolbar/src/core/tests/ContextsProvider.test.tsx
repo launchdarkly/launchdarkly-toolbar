@@ -3,790 +3,295 @@ import { expect, test, describe, vi, beforeEach } from 'vitest';
 import { ContextsProvider, useContextsContext } from '../ui/Toolbar/context/api/ContextsProvider';
 import '@testing-library/jest-dom/vitest';
 import React from 'react';
-import { ApiContext, SearchContextsResponse } from '../ui/Toolbar/types/ldApi';
+import { ApiContext } from '../ui/Toolbar/types/ldApi';
+import { loadContexts, saveContexts } from '../ui/Toolbar/utils/localStorage';
 
-// Mock the dependencies
-vi.mock('../ui/Toolbar/context/api/ProjectProvider', () => ({
-  useProjectContext: vi.fn(),
+// Mock localStorage utilities
+vi.mock('../ui/Toolbar/utils/localStorage', () => ({
+  loadContexts: vi.fn(() => []),
+  saveContexts: vi.fn(),
 }));
 
-vi.mock('../ui/Toolbar/context/api/ApiProvider', () => ({
-  useApi: vi.fn(),
-}));
-
-vi.mock('../ui/Toolbar/context/api/AuthProvider', () => ({
-  useAuthContext: vi.fn(),
-}));
-
-vi.mock('../ui/Toolbar/context/api/EnvironmentProvider', () => ({
-  useEnvironmentContext: vi.fn(),
-}));
-
-// Mock the useCurrentSdkContext hook to avoid requiring PluginsProvider
+// Mock the useCurrentSdkContext hook
+const mockIsCurrentContext = vi.fn(() => false);
 vi.mock('../ui/Toolbar/context/state/useCurrentSdkContext', () => ({
   useCurrentSdkContext: vi.fn(() => null),
-  isCurrentContext: vi.fn(() => false),
+  isCurrentContext: (context: any, kind: string, key: string) => mockIsCurrentContext(context, kind, key),
 }));
-
-import { useProjectContext } from '../ui/Toolbar/context/api/ProjectProvider';
-import { useApi } from '../ui/Toolbar/context/api/ApiProvider';
-import { useAuthContext } from '../ui/Toolbar/context/api/AuthProvider';
-import { useEnvironmentContext } from '../ui/Toolbar/context/api/EnvironmentProvider';
 
 // Test component
 function TestConsumer() {
-  const { contexts, loading, loadingMore, hasMore, totalCount } = useContextsContext();
+  const { contexts, filter, setFilter, addContext, removeContext, isActiveContext } = useContextsContext();
 
   return (
     <div>
       <div data-testid="contexts-count">{contexts.length}</div>
-      <div data-testid="loading">{loading ? 'true' : 'false'}</div>
-      <div data-testid="loading-more">{loadingMore ? 'true' : 'false'}</div>
-      <div data-testid="has-more">{hasMore ? 'true' : 'false'}</div>
-      <div data-testid="total-count">{totalCount ?? 'undefined'}</div>
+      <div data-testid="filter">{filter}</div>
       {contexts.map((context) => (
         <div key={`${context.kind}-${context.key}`} data-testid={`context-${context.kind}-${context.key}`}>
           {context.name || context.key}
         </div>
       ))}
+      <button
+        data-testid="add-context"
+        onClick={() => addContext({ kind: 'user', key: 'test-user', name: 'Test User' })}
+      >
+        Add
+      </button>
+      <button data-testid="remove-context" onClick={() => removeContext('user', 'test-user')}>
+        Remove
+      </button>
+      <button data-testid="set-filter" onClick={() => setFilter('test')}>
+        Set Filter
+      </button>
+      <div data-testid="is-active">{isActiveContext('user', 'test-user') ? 'true' : 'false'}</div>
     </div>
   );
 }
 
-// Helper to create proper contexts response
-function createContextsResponse(
-  contexts: ApiContext[],
-  options?: { totalCount?: number; continuationToken?: string },
-): SearchContextsResponse {
-  return {
-    items: contexts.map((context) => ({ context })),
-    totalCount: options?.totalCount,
-    continuationToken: options?.continuationToken,
-  };
-}
-
 describe('ContextsProvider', () => {
-  const mockGetContexts = vi.fn();
-
   beforeEach(() => {
     vi.clearAllMocks();
-
-    (useAuthContext as any).mockReturnValue({
-      authenticated: true,
-    });
-
-    (useProjectContext as any).mockReturnValue({
-      projectKey: 'test-project',
-    });
-
-    (useEnvironmentContext as any).mockReturnValue({
-      environment: 'production',
-    });
-
-    (useApi as any).mockReturnValue({
-      getContexts: mockGetContexts,
-      apiReady: true,
-    });
+    (loadContexts as any).mockReturnValue([]);
+    mockIsCurrentContext.mockReturnValue(false);
   });
 
-  describe('Contexts Loading - Developer Workflow', () => {
-    test('automatically fetches contexts when project and environment are selected', async () => {
-      // GIVEN: Developer has selected a project and environment
-      mockGetContexts.mockResolvedValue(
-        createContextsResponse([
-          { kind: 'user', key: 'user-1', name: 'User One' },
-          { kind: 'user', key: 'user-2', name: 'User Two' },
-        ]),
-      );
+  describe('Initialization', () => {
+    test('loads contexts from localStorage on mount', () => {
+      const storedContexts: ApiContext[] = [
+        { kind: 'user', key: 'user-1', name: 'User One' },
+        { kind: 'organization', key: 'org-1', name: 'Org One' },
+      ];
+      (loadContexts as any).mockReturnValue(storedContexts);
 
-      // WHEN: ContextsProvider initializes
       render(
         <ContextsProvider>
           <TestConsumer />
         </ContextsProvider>,
       );
 
-      // THEN: Shows loading state initially
-      expect(screen.getByTestId('loading')).toHaveTextContent('true');
-
-      // AND: Eventually loads the contexts
-      await waitFor(() => {
-        expect(screen.getByTestId('contexts-count')).toHaveTextContent('2');
-      });
-
-      await waitFor(() => {
-        expect(screen.getByTestId('loading')).toHaveTextContent('false');
-      });
-
-      // AND: All contexts are available
+      expect(screen.getByTestId('contexts-count')).toHaveTextContent('2');
       expect(screen.getByTestId('context-user-user-1')).toHaveTextContent('User One');
-      expect(screen.getByTestId('context-user-user-2')).toHaveTextContent('User Two');
+      expect(screen.getByTestId('context-organization-org-1')).toHaveTextContent('Org One');
     });
 
-    test('does not fetch contexts when API is not ready', async () => {
-      // GIVEN: API is not ready
-      (useApi as any).mockReturnValue({
-        getContexts: mockGetContexts,
-        apiReady: false,
-      });
+    test('starts with empty list when localStorage is empty', () => {
+      (loadContexts as any).mockReturnValue([]);
 
-      // WHEN: Provider tries to initialize
       render(
         <ContextsProvider>
           <TestConsumer />
         </ContextsProvider>,
       );
 
-      // THEN: No API call is made
-      await waitFor(() => {
-        expect(mockGetContexts).not.toHaveBeenCalled();
-      });
-
-      // AND: No contexts are shown
-      expect(screen.getByTestId('contexts-count')).toHaveTextContent('0');
-    });
-
-    test('does not fetch contexts when not authenticated', async () => {
-      // GIVEN: User is not authenticated
-      (useAuthContext as any).mockReturnValue({
-        authenticated: false,
-      });
-
-      // WHEN: Provider tries to initialize
-      render(
-        <ContextsProvider>
-          <TestConsumer />
-        </ContextsProvider>,
-      );
-
-      // THEN: No API call is made
-      await waitFor(() => {
-        expect(mockGetContexts).not.toHaveBeenCalled();
-      });
-
-      // AND: No contexts are shown
-      expect(screen.getByTestId('contexts-count')).toHaveTextContent('0');
-    });
-
-    test('does not fetch contexts when project key is missing', async () => {
-      // GIVEN: No project selected
-      (useProjectContext as any).mockReturnValue({
-        projectKey: '',
-      });
-
-      // WHEN: Provider tries to initialize
-      render(
-        <ContextsProvider>
-          <TestConsumer />
-        </ContextsProvider>,
-      );
-
-      // THEN: No API call is made
-      await waitFor(() => {
-        expect(mockGetContexts).not.toHaveBeenCalled();
-      });
-
-      // AND: No contexts are shown
-      expect(screen.getByTestId('contexts-count')).toHaveTextContent('0');
-    });
-
-    test('does not fetch contexts when environment is missing', async () => {
-      // GIVEN: No environment selected
-      (useEnvironmentContext as any).mockReturnValue({
-        environment: '',
-      });
-
-      // WHEN: Provider tries to initialize
-      render(
-        <ContextsProvider>
-          <TestConsumer />
-        </ContextsProvider>,
-      );
-
-      // THEN: No API call is made
-      await waitFor(() => {
-        expect(mockGetContexts).not.toHaveBeenCalled();
-      });
-
-      // AND: No contexts are shown
       expect(screen.getByTestId('contexts-count')).toHaveTextContent('0');
     });
   });
 
-  describe('Project/Environment Switching - Dynamic Updates', () => {
-    test('refetches contexts when project changes', async () => {
-      // GIVEN: Developer is viewing contexts for project-1
-      mockGetContexts.mockResolvedValue(createContextsResponse([{ kind: 'user', key: 'user-a', name: 'User A' }]));
-
-      const { rerender } = render(
+  describe('Adding Contexts', () => {
+    test('adds a new context to the list', async () => {
+      render(
         <ContextsProvider>
           <TestConsumer />
         </ContextsProvider>,
       );
+
+      expect(screen.getByTestId('contexts-count')).toHaveTextContent('0');
+
+      const addButton = screen.getByTestId('add-context');
+      addButton.click();
 
       await waitFor(() => {
         expect(screen.getByTestId('contexts-count')).toHaveTextContent('1');
       });
 
-      // WHEN: They switch to project-2
-      (useProjectContext as any).mockReturnValue({
-        projectKey: 'project-2',
-      });
-
-      mockGetContexts.mockResolvedValue(
-        createContextsResponse([
-          { kind: 'user', key: 'user-x', name: 'User X' },
-          { kind: 'organization', key: 'org-1', name: 'Org One' },
-        ]),
-      );
-
-      rerender(
-        <ContextsProvider>
-          <TestConsumer />
-        </ContextsProvider>,
-      );
-
-      // THEN: New contexts are loaded for project-2
-      await waitFor(() => {
-        expect(screen.getByTestId('contexts-count')).toHaveTextContent('2');
-      });
+      expect(screen.getByTestId('context-user-test-user')).toHaveTextContent('Test User');
+      expect(saveContexts).toHaveBeenCalledWith([{ kind: 'user', key: 'test-user', name: 'Test User' }]);
     });
 
-    test('refetches contexts when environment changes', async () => {
-      // GIVEN: Developer is viewing contexts for production environment
-      mockGetContexts.mockResolvedValue(
-        createContextsResponse([{ kind: 'user', key: 'prod-user', name: 'Production User' }]),
-      );
+    test('does not add duplicate contexts', () => {
+      const storedContexts: ApiContext[] = [{ kind: 'user', key: 'test-user', name: 'Existing User' }];
+      (loadContexts as any).mockReturnValue(storedContexts);
 
-      const { rerender } = render(
+      render(
         <ContextsProvider>
           <TestConsumer />
         </ContextsProvider>,
       );
 
-      await waitFor(() => {
-        expect(screen.getByTestId('contexts-count')).toHaveTextContent('1');
-        expect(mockGetContexts).toHaveBeenCalledWith('test-project', 'production', expect.any(Object));
-      });
+      expect(screen.getByTestId('contexts-count')).toHaveTextContent('1');
 
-      // WHEN: They switch to staging environment
-      (useEnvironmentContext as any).mockReturnValue({
-        environment: 'staging',
-      });
+      const addButton = screen.getByTestId('add-context');
+      addButton.click();
 
-      mockGetContexts.mockResolvedValue(
-        createContextsResponse([
-          { kind: 'user', key: 'staging-user-1', name: 'Staging User 1' },
-          { kind: 'user', key: 'staging-user-2', name: 'Staging User 2' },
-        ]),
-      );
-
-      rerender(
-        <ContextsProvider>
-          <TestConsumer />
-        </ContextsProvider>,
-      );
-
-      // THEN: New contexts are loaded for staging environment
-      await waitFor(() => {
-        expect(mockGetContexts).toHaveBeenCalledWith('test-project', 'staging', expect.any(Object));
-      });
-
-      await waitFor(() => {
-        expect(screen.getByTestId('contexts-count')).toHaveTextContent('2');
-      });
+      // Should still be 1 (duplicate not added)
+      expect(screen.getByTestId('contexts-count')).toHaveTextContent('1');
     });
   });
 
-  describe('Manual Context Refresh', () => {
-    test('allows manual context refresh via refresh()', async () => {
-      // GIVEN: Developer wants to manually refresh contexts
-      mockGetContexts.mockResolvedValue(
-        createContextsResponse([{ kind: 'user', key: 'initial-user', name: 'Initial User' }]),
+  describe('Removing Contexts', () => {
+    test('removes a context from the list', async () => {
+      const storedContexts: ApiContext[] = [
+        { kind: 'user', key: 'user-1', name: 'User One' },
+        { kind: 'user', key: 'test-user', name: 'Test User' },
+      ];
+      (loadContexts as any).mockReturnValue(storedContexts);
+
+      render(
+        <ContextsProvider>
+          <TestConsumer />
+        </ContextsProvider>,
       );
 
-      const TestWithManualRefresh = () => {
-        const { refresh, contexts } = useContextsContext();
+      expect(screen.getByTestId('contexts-count')).toHaveTextContent('2');
 
+      const removeButton = screen.getByTestId('remove-context');
+      removeButton.click();
+
+      await waitFor(() => {
+        expect(screen.getByTestId('contexts-count')).toHaveTextContent('1');
+      });
+
+      expect(screen.queryByTestId('context-user-test-user')).not.toBeInTheDocument();
+      expect(saveContexts).toHaveBeenCalled();
+    });
+  });
+
+  describe('Filtering', () => {
+    test('filters contexts by key, kind, or name', async () => {
+      const storedContexts: ApiContext[] = [
+        { kind: 'user', key: 'user-1', name: 'John Doe' },
+        { kind: 'organization', key: 'org-1', name: 'Acme Corp' },
+        { kind: 'user', key: 'user-2', name: 'Jane Smith' },
+      ];
+      (loadContexts as any).mockReturnValue(storedContexts);
+
+      render(
+        <ContextsProvider>
+          <TestConsumer />
+        </ContextsProvider>,
+      );
+
+      expect(screen.getByTestId('contexts-count')).toHaveTextContent('3');
+
+      const setFilterButton = screen.getByTestId('set-filter');
+      setFilterButton.click();
+
+      // Filter "test" should match nothing
+      await waitFor(() => {
+        expect(screen.getByTestId('contexts-count')).toHaveTextContent('0');
+      });
+    });
+
+    test('filters by key', async () => {
+      const storedContexts: ApiContext[] = [
+        { kind: 'user', key: 'user-1', name: 'User One' },
+        { kind: 'user', key: 'user-2', name: 'User Two' },
+      ];
+      (loadContexts as any).mockReturnValue(storedContexts);
+
+      const TestWithFilter = () => {
+        const { contexts, setFilter } = useContextsContext();
         return (
           <div>
-            <button data-testid="refresh" onClick={() => refresh()}>
-              Refresh
-            </button>
             <div data-testid="contexts-count">{contexts.length}</div>
+            <button data-testid="filter-user-1" onClick={() => setFilter('user-1')}>
+              Filter
+            </button>
           </div>
         );
       };
 
       render(
         <ContextsProvider>
-          <TestWithManualRefresh />
+          <TestWithFilter />
         </ContextsProvider>,
       );
 
-      // Wait for initial auto-fetch
+      expect(screen.getByTestId('contexts-count')).toHaveTextContent('2');
+
+      screen.getByTestId('filter-user-1').click();
+
       await waitFor(() => {
         expect(screen.getByTestId('contexts-count')).toHaveTextContent('1');
-      });
-
-      // WHEN: They manually refresh contexts
-      mockGetContexts.mockResolvedValue(
-        createContextsResponse([
-          { kind: 'user', key: 'new-user-1', name: 'New User 1' },
-          { kind: 'user', key: 'new-user-2', name: 'New User 2' },
-        ]),
-      );
-
-      const refreshButton = screen.getByTestId('refresh');
-      refreshButton.click();
-
-      // THEN: Contexts are refreshed with new data
-      await waitFor(() => {
-        expect(screen.getByTestId('contexts-count')).toHaveTextContent('2');
       });
     });
   });
 
-  describe('Empty States', () => {
-    test('handles environment with no contexts gracefully', async () => {
-      // GIVEN: Environment exists but has no contexts yet
-      mockGetContexts.mockResolvedValue(createContextsResponse([]));
+  describe('Active Context Detection', () => {
+    test('correctly identifies active context', () => {
+      mockIsCurrentContext.mockReturnValue(true);
 
-      // WHEN: Contexts are loaded
       render(
         <ContextsProvider>
           <TestConsumer />
         </ContextsProvider>,
       );
 
-      // THEN: Shows no contexts (but doesn't error)
-      await waitFor(() => {
-        expect(screen.getByTestId('contexts-count')).toHaveTextContent('0');
-      });
-
-      await waitFor(() => {
-        expect(screen.getByTestId('loading')).toHaveTextContent('false');
-      });
+      expect(screen.getByTestId('is-active')).toHaveTextContent('true');
     });
 
-    test('handles null response from API gracefully', async () => {
-      // GIVEN: API returns null
-      mockGetContexts.mockResolvedValue(null);
+    test('returns false for non-active context', () => {
+      mockIsCurrentContext.mockReturnValue(false);
 
-      // WHEN: Contexts are loaded
       render(
         <ContextsProvider>
           <TestConsumer />
         </ContextsProvider>,
       );
 
-      // THEN: Shows no contexts (but doesn't error)
-      await waitFor(() => {
-        expect(screen.getByTestId('contexts-count')).toHaveTextContent('0');
-      });
-
-      await waitFor(() => {
-        expect(screen.getByTestId('loading')).toHaveTextContent('false');
-      });
-    });
-
-    test('handles response without items gracefully', async () => {
-      // GIVEN: API returns response without items array
-      mockGetContexts.mockResolvedValue({});
-
-      // WHEN: Contexts are loaded
-      render(
-        <ContextsProvider>
-          <TestConsumer />
-        </ContextsProvider>,
-      );
-
-      // THEN: Shows no contexts (but doesn't error)
-      await waitFor(() => {
-        expect(screen.getByTestId('contexts-count')).toHaveTextContent('0');
-      });
-
-      await waitFor(() => {
-        expect(screen.getByTestId('loading')).toHaveTextContent('false');
-      });
+      expect(screen.getByTestId('is-active')).toHaveTextContent('false');
     });
   });
 
   describe('Context Hook - useContextsContext', () => {
     test('throws error when used without ContextsProvider', () => {
-      // GIVEN: Component uses context without provider
       const TestDefault = () => {
-        const { contexts, loading } = useContextsContext();
-        return (
-          <div>
-            <div data-testid="default-contexts">{contexts.length}</div>
-            <div data-testid="default-loading">{loading.toString()}</div>
-          </div>
-        );
+        const { contexts } = useContextsContext();
+        return <div data-testid="default-contexts">{contexts.length}</div>;
       };
 
-      // WHEN: Rendered without ContextsProvider
-      // THEN: Should throw an error
       expect(() => {
         render(<TestDefault />);
       }).toThrow('useContextsContext must be used within a ContextsProvider');
     });
   });
 
-  describe('Loading State Management', () => {
-    test('properly manages loading state through fetch lifecycle', async () => {
-      // GIVEN: Contexts take time to load
-      let resolveContexts: any;
-      const contextsPromise = new Promise((resolve) => {
-        resolveContexts = resolve;
-      });
-      mockGetContexts.mockReturnValue(contextsPromise);
+  describe('Sorting', () => {
+    test('sorts contexts to put active context first', () => {
+      const storedContexts: ApiContext[] = [
+        { kind: 'user', key: 'user-1', name: 'User One' },
+        { kind: 'user', key: 'user-2', name: 'User Two' },
+        { kind: 'user', key: 'user-3', name: 'User Three' },
+      ];
+      (loadContexts as any).mockReturnValue(storedContexts);
 
-      // WHEN: Provider starts loading
-      render(
-        <ContextsProvider>
-          <TestConsumer />
-        </ContextsProvider>,
-      );
-
-      // THEN: Loading is true
-      await waitFor(() => {
-        expect(screen.getByTestId('loading')).toHaveTextContent('true');
+      // Make user-2 active
+      mockIsCurrentContext.mockImplementation((context: any, kind: string, key: string) => {
+        return kind === 'user' && key === 'user-2';
       });
 
-      // WHEN: Contexts finish loading
-      resolveContexts(createContextsResponse([{ kind: 'user', key: 'user-1', name: 'User One' }]));
-
-      // THEN: Loading becomes false
-      await waitFor(() => {
-        expect(screen.getByTestId('loading')).toHaveTextContent('false');
-      });
-
-      // AND: Contexts are available
-      await waitFor(() => {
-        expect(screen.getByTestId('contexts-count')).toHaveTextContent('1');
-      });
-    });
-  });
-
-  describe('Multi-kind Contexts', () => {
-    test('handles multiple context kinds correctly', async () => {
-      // GIVEN: Environment has multiple context kinds
-      mockGetContexts.mockResolvedValue(
-        createContextsResponse([
-          { kind: 'user', key: 'user-1', name: 'User One' },
-          { kind: 'organization', key: 'org-1', name: 'Organization One' },
-          { kind: 'device', key: 'device-1', name: 'Device One' },
-          { kind: 'user', key: 'user-2', name: 'User Two', anonymous: true },
-        ]),
-      );
-
-      // WHEN: Contexts are loaded
-      render(
-        <ContextsProvider>
-          <TestConsumer />
-        </ContextsProvider>,
-      );
-
-      // THEN: All context kinds are loaded
-      await waitFor(() => {
-        expect(screen.getByTestId('contexts-count')).toHaveTextContent('4');
-      });
-
-      expect(screen.getByTestId('context-user-user-1')).toHaveTextContent('User One');
-      expect(screen.getByTestId('context-organization-org-1')).toHaveTextContent('Organization One');
-      expect(screen.getByTestId('context-device-device-1')).toHaveTextContent('Device One');
-      expect(screen.getByTestId('context-user-user-2')).toHaveTextContent('User Two');
-    });
-  });
-
-  describe('Infinite Scrolling / Pagination', () => {
-    test('tracks hasMore state when continuationToken is present', async () => {
-      // GIVEN: API returns a continuation token (more pages available)
-      mockGetContexts.mockResolvedValue(
-        createContextsResponse([{ kind: 'user', key: 'user-1', name: 'User One' }], {
-          totalCount: 50,
-          continuationToken: 'next-page-token',
-        }),
-      );
-
-      // WHEN: Contexts are loaded
-      render(
-        <ContextsProvider>
-          <TestConsumer />
-        </ContextsProvider>,
-      );
-
-      // THEN: hasMore should be true
-      await waitFor(() => {
-        expect(screen.getByTestId('has-more')).toHaveTextContent('true');
-      });
-
-      // AND: totalCount should be set
-      await waitFor(() => {
-        expect(screen.getByTestId('total-count')).toHaveTextContent('50');
-      });
-    });
-
-    test('hasMore is false when no continuationToken', async () => {
-      // GIVEN: API returns no continuation token (last page)
-      mockGetContexts.mockResolvedValue(
-        createContextsResponse([{ kind: 'user', key: 'user-1', name: 'User One' }], {
-          totalCount: 1,
-        }),
-      );
-
-      // WHEN: Contexts are loaded
-      render(
-        <ContextsProvider>
-          <TestConsumer />
-        </ContextsProvider>,
-      );
-
-      // THEN: hasMore should be false
-      await waitFor(() => {
-        expect(screen.getByTestId('has-more')).toHaveTextContent('false');
-      });
-    });
-
-    test('loadMore appends additional contexts', async () => {
-      // GIVEN: Initial page with continuation token
-      mockGetContexts.mockResolvedValue(
-        createContextsResponse([{ kind: 'user', key: 'user-1', name: 'User One' }], {
-          totalCount: 3,
-          continuationToken: 'page-2-token',
-        }),
-      );
-
-      const TestWithLoadMore = () => {
-        const { contexts, loadMore, hasMore, loadingMore } = useContextsContext();
-
+      const TestWithSorting = () => {
+        const { contexts } = useContextsContext();
         return (
           <div>
-            <div data-testid="contexts-count">{contexts.length}</div>
-            <div data-testid="has-more">{hasMore ? 'true' : 'false'}</div>
-            <div data-testid="loading-more">{loadingMore ? 'true' : 'false'}</div>
-            <button data-testid="load-more" onClick={() => loadMore()}>
-              Load More
-            </button>
+            {contexts.map((ctx, idx) => (
+              <div key={ctx.key} data-testid={`context-${idx}`}>
+                {ctx.key}
+              </div>
+            ))}
           </div>
         );
       };
 
       render(
         <ContextsProvider>
-          <TestWithLoadMore />
+          <TestWithSorting />
         </ContextsProvider>,
       );
 
-      // Wait for initial load
-      await waitFor(() => {
-        expect(screen.getByTestId('contexts-count')).toHaveTextContent('1');
-        expect(screen.getByTestId('has-more')).toHaveTextContent('true');
-      });
-
-      // WHEN: loadMore is called - return last page (no continuation token)
-      mockGetContexts.mockResolvedValue(
-        createContextsResponse(
-          [
-            { kind: 'user', key: 'user-2', name: 'User Two' },
-            { kind: 'user', key: 'user-3', name: 'User Three' },
-          ],
-          { totalCount: 3 },
-        ),
-      );
-
-      const loadMoreButton = screen.getByTestId('load-more');
-      loadMoreButton.click();
-
-      // THEN: Additional contexts are appended
-      await waitFor(() => {
-        expect(screen.getByTestId('contexts-count')).toHaveTextContent('3');
-      });
-
-      // AND: hasMore is now false (no more continuation token)
-      await waitFor(() => {
-        expect(screen.getByTestId('has-more')).toHaveTextContent('false');
-      });
-    });
-
-    test('loadMore deduplicates contexts', async () => {
-      // GIVEN: Initial page with continuation token
-      mockGetContexts.mockResolvedValue(
-        createContextsResponse([{ kind: 'user', key: 'user-1', name: 'User One' }], {
-          totalCount: 3,
-          continuationToken: 'page-2-token',
-        }),
-      );
-
-      const TestWithLoadMore = () => {
-        const { contexts, loadMore } = useContextsContext();
-
-        return (
-          <div>
-            <div data-testid="contexts-count">{contexts.length}</div>
-            <button data-testid="load-more" onClick={() => loadMore()}>
-              Load More
-            </button>
-          </div>
-        );
-      };
-
-      render(
-        <ContextsProvider>
-          <TestWithLoadMore />
-        </ContextsProvider>,
-      );
-
-      await waitFor(() => {
-        expect(screen.getByTestId('contexts-count')).toHaveTextContent('1');
-      });
-
-      // WHEN: loadMore returns a duplicate context
-      mockGetContexts.mockResolvedValue(
-        createContextsResponse(
-          [
-            { kind: 'user', key: 'user-1', name: 'User One (Duplicate)' }, // Same key
-            { kind: 'user', key: 'user-2', name: 'User Two' },
-          ],
-          { totalCount: 3 },
-        ),
-      );
-
-      const loadMoreButton = screen.getByTestId('load-more');
-      loadMoreButton.click();
-
-      // THEN: Duplicate is not added
-      await waitFor(() => {
-        expect(screen.getByTestId('contexts-count')).toHaveTextContent('2');
-      });
-    });
-
-    test('loadMore passes continuationToken to API', async () => {
-      // GIVEN: Initial page with continuation token
-      mockGetContexts.mockResolvedValue(
-        createContextsResponse([{ kind: 'user', key: 'user-1', name: 'User One' }], {
-          totalCount: 50,
-          continuationToken: 'my-continuation-token',
-        }),
-      );
-
-      const TestWithLoadMore = () => {
-        const { loadMore } = useContextsContext();
-
-        return (
-          <button data-testid="load-more" onClick={() => loadMore()}>
-            Load More
-          </button>
-        );
-      };
-
-      render(
-        <ContextsProvider>
-          <TestWithLoadMore />
-        </ContextsProvider>,
-      );
-
-      // Wait for initial load
-      await waitFor(() => {
-        expect(mockGetContexts).toHaveBeenCalledWith(
-          'test-project',
-          'production',
-          expect.objectContaining({ limit: 20, sort: '-ts' }),
-        );
-      });
-
-      // WHEN: loadMore is called
-      mockGetContexts.mockResolvedValue(createContextsResponse([], { totalCount: 50 }));
-
-      const loadMoreButton = screen.getByTestId('load-more');
-      loadMoreButton.click();
-
-      // THEN: API is called with continuationToken
-      await waitFor(() => {
-        expect(mockGetContexts).toHaveBeenCalledWith(
-          'test-project',
-          'production',
-          expect.objectContaining({
-            continuationToken: 'my-continuation-token',
-            limit: 20,
-            sort: '-ts',
-          }),
-        );
-      });
-    });
-  });
-
-  describe('Integration - Real World Scenarios', () => {
-    test('handles complete authentication -> project selection -> environment selection -> contexts loading flow', async () => {
-      // GIVEN: API is not ready
-      (useAuthContext as any).mockReturnValue({ authenticated: false });
-      (useProjectContext as any).mockReturnValue({ projectKey: '' });
-      (useEnvironmentContext as any).mockReturnValue({ environment: '' });
-      (useApi as any).mockReturnValue({ getContexts: mockGetContexts, apiReady: false });
-
-      const { rerender } = render(
-        <ContextsProvider>
-          <TestConsumer />
-        </ContextsProvider>,
-      );
-
-      // No contexts loaded yet
-      expect(screen.getByTestId('contexts-count')).toHaveTextContent('0');
-
-      // WHEN: User authenticates
-      (useAuthContext as any).mockReturnValue({ authenticated: true });
-      (useApi as any).mockReturnValue({ getContexts: mockGetContexts, apiReady: true });
-
-      rerender(
-        <ContextsProvider>
-          <TestConsumer />
-        </ContextsProvider>,
-      );
-
-      // Still no contexts (no project/environment)
-      await waitFor(() => {
-        expect(mockGetContexts).not.toHaveBeenCalled();
-      });
-
-      // WHEN: Project is selected
-      (useProjectContext as any).mockReturnValue({ projectKey: 'my-project' });
-
-      rerender(
-        <ContextsProvider>
-          <TestConsumer />
-        </ContextsProvider>,
-      );
-
-      // Still no contexts (no environment)
-      await waitFor(() => {
-        expect(mockGetContexts).not.toHaveBeenCalled();
-      });
-
-      // WHEN: Environment is selected
-      (useEnvironmentContext as any).mockReturnValue({ environment: 'production' });
-      mockGetContexts.mockResolvedValue(
-        createContextsResponse([
-          { kind: 'user', key: 'user-1', name: 'User One' },
-          { kind: 'user', key: 'user-2', name: 'User Two' },
-          { kind: 'organization', key: 'org-1', name: 'Organization One' },
-        ]),
-      );
-
-      rerender(
-        <ContextsProvider>
-          <TestConsumer />
-        </ContextsProvider>,
-      );
-
-      // THEN: Contexts are loaded
-      await waitFor(() => {
-        expect(screen.getByTestId('contexts-count')).toHaveTextContent('3');
-      });
-
-      await waitFor(() => {
-        expect(screen.getByTestId('loading')).toHaveTextContent('false');
-      });
+      // Active context should be first
+      expect(screen.getByTestId('context-0')).toHaveTextContent('user-2');
     });
   });
 });

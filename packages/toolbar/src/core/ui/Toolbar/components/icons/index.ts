@@ -25,3 +25,4 @@ export { CursorIcon } from './CursorIcon';
 export { InfoIcon } from './InfoIcon';
 export { PersonIcon } from './PersonIcon';
 export { FingerprintIcon } from './FingerprintIcon';
+export { AddIcon } from './AddIcon';
