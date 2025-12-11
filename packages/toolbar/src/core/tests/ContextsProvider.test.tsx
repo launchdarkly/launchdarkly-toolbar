@@ -136,6 +136,7 @@ describe('ContextsProvider', () => {
         { kind: 'user', key: 'test-user', name: 'Test User' },
       ];
       (loadContexts as any).mockReturnValue(storedContexts);
+      mockIsCurrentContext.mockReturnValue(false);
 
       render(
         <ContextsProvider>
@@ -154,6 +155,44 @@ describe('ContextsProvider', () => {
 
       expect(screen.queryByTestId('context-user-test-user')).not.toBeInTheDocument();
       expect(saveContexts).toHaveBeenCalled();
+    });
+
+    test('prevents deletion of active context', async () => {
+      const storedContexts: ApiContext[] = [
+        { kind: 'user', key: 'user-1', name: 'User One' },
+        { kind: 'user', key: 'test-user', name: 'Test User' },
+      ];
+      (loadContexts as any).mockReturnValue(storedContexts);
+      // Make test-user the active context
+      mockIsCurrentContext.mockImplementation((context: any, kind: string, key: string) => {
+        return kind === 'user' && key === 'test-user';
+      });
+
+      const consoleSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
+
+      render(
+        <ContextsProvider>
+          <TestConsumer />
+        </ContextsProvider>,
+      );
+
+      expect(screen.getByTestId('contexts-count')).toHaveTextContent('2');
+
+      const removeButton = screen.getByTestId('remove-context');
+      removeButton.click();
+
+      // Wait a bit to ensure the function has been called
+      await waitFor(() => {
+        expect(consoleSpy).toHaveBeenCalledWith('Cannot delete active context');
+      });
+
+      // Context should still be in the list
+      expect(screen.getByTestId('contexts-count')).toHaveTextContent('2');
+      expect(screen.getByTestId('context-user-test-user')).toBeInTheDocument();
+      // saveContexts should not have been called
+      expect(saveContexts).not.toHaveBeenCalled();
+
+      consoleSpy.mockRestore();
     });
   });
 

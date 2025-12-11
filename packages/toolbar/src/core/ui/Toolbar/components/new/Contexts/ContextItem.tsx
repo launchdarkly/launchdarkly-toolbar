@@ -53,8 +53,12 @@ export function ContextItem({ context, isActive = false, handleHeightChange, ind
   );
 
   const handleDelete = useCallback(() => {
+    // Prevent deletion of active context
+    if (isActive) {
+      return;
+    }
     removeContext(context.kind, context.key);
-  }, [removeContext, context.kind, context.key]);
+  }, [removeContext, context.kind, context.key, isActive]);
 
   // Reset height on mount if not expanded (ensures clean state when item is remounted)
   // This handles the case where an item was expanded, scrolled out of view, then scrolled back
@@ -97,8 +101,9 @@ export function ContextItem({ context, isActive = false, handleHeightChange, ind
           <button
             className={styles.deleteButton}
             onClick={handleDelete}
-            aria-label={`Delete context ${context.key}`}
-            title="Delete context"
+            disabled={isActive}
+            aria-label={isActive ? `Cannot delete active context ${context.key}` : `Delete context ${context.key}`}
+            title={isActive ? 'Cannot delete active context' : 'Delete context'}
           >
             <DeleteIcon />
           </button>

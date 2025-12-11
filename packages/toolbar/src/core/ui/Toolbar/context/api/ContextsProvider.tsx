@@ -44,13 +44,21 @@ export const ContextsProvider = ({ children }: { children: React.ReactNode }) =>
   }, []);
 
   // Remove a context from the list
-  const removeContext = useCallback((kind: string, key: string) => {
-    setStoredContexts((prev) => {
-      const updated = prev.filter((c) => !(c.kind === kind && c.key === key));
-      saveContexts(updated);
-      return updated;
-    });
-  }, []);
+  const removeContext = useCallback(
+    (kind: string, key: string) => {
+      // Prevent deletion of active context
+      if (isActiveContext(kind, key)) {
+        console.warn('Cannot delete active context');
+        return;
+      }
+      setStoredContexts((prev) => {
+        const updated = prev.filter((c) => !(c.kind === kind && c.key === key));
+        saveContexts(updated);
+        return updated;
+      });
+    },
+    [isActiveContext],
+  );
 
   // Automatically add the current SDK context to the list if it's not already there
   useEffect(() => {
@@ -101,7 +109,7 @@ export const ContextsProvider = ({ children }: { children: React.ReactNode }) =>
     if (filter.trim()) {
       const filterLower = filter.toLowerCase();
       filtered = storedContexts.filter((ctx) => {
-        const matchesKey = ctx.key.toLowerCase().includes(filterLower);
+        const matchesKey = ctx.key?.toLowerCase().includes(filterLower);
         const matchesKind = ctx.kind.toLowerCase().includes(filterLower);
         const matchesName = ctx.name?.toLowerCase().includes(filterLower);
         return matchesKey || matchesKind || matchesName;

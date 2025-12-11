@@ -150,6 +150,18 @@ export const deleteButton = style({
     outline: '2px solid var(--lp-color-red-500)',
     outlineOffset: '2px',
   },
+
+  ':disabled': {
+    cursor: 'not-allowed',
+    opacity: 0.4,
+  },
+
+  selectors: {
+    '&:hover:disabled': {
+      backgroundColor: 'transparent',
+      color: 'var(--lp-color-gray-400)',
+    },
+  },
 });
 
 export const expandButton = style({
