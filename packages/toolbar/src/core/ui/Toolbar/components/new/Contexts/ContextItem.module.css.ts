@@ -34,6 +34,22 @@ export const containerActive = style({
   },
 });
 
+export const containerClickable = style({
+  cursor: 'pointer',
+
+  ':hover': {
+    backgroundColor: 'var(--lp-color-gray-800)',
+    borderColor: 'var(--lp-color-gray-600)',
+    transform: 'translateY(-1px)',
+    boxShadow: '0 2px 8px rgba(0, 0, 0, 0.15)',
+  },
+
+  ':active': {
+    transform: 'translateY(0)',
+    boxShadow: '0 1px 4px rgba(0, 0, 0, 0.1)',
+  },
+});
+
 export const iconContainer = style({
   display: 'flex',
   alignItems: 'center',

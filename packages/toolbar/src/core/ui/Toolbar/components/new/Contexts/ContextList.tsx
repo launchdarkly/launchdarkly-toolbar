@@ -12,7 +12,7 @@ import * as styles from './ContextList.module.css';
 import { IconButton } from '../../../../Buttons/IconButton';
 
 export function ContextList() {
-  const { contexts, isActiveContext, filter, setFilter } = useContextsContext();
+  const { contexts, activeContext, filter, setFilter } = useContextsContext();
   const { searchTerms } = useTabSearchContext();
   const [isAddFormOpen, setIsAddFormOpen] = useState(false);
 
@@ -110,7 +110,7 @@ export function ContextList() {
               >
                 <ContextItem
                   context={context}
-                  isActive={isActiveContext(context.kind, context.name)}
+                  isActive={activeContext?.kind === context.kind && activeContext?.key === context.key}
                   handleHeightChange={handleHeightChange}
                   index={virtualItem.index}
                 />

@@ -20,12 +20,18 @@ interface ContextItemProps {
 
 export function ContextItem({ context, isActive = false, handleHeightChange, index }: ContextItemProps) {
   const [isExpanded, setIsExpanded] = useState(false);
+  const [isSelecting, setIsSelecting] = useState(false);
   const hasResetOnMountRef = useRef(false);
-  const { removeContext } = useContextsContext();
+  const { removeContext, setContext } = useContextsContext();
   const displayName = context.name || context.key;
   const isUser = context.kind === 'user';
+  const isClickable = !isActive && !isSelecting;
 
-  const containerClassName = isActive ? `${styles.container} ${styles.containerActive}` : styles.container;
+  const containerClassName = isActive
+    ? `${styles.container} ${styles.containerActive}`
+    : isClickable
+      ? `${styles.container} ${styles.containerClickable}`
+      : styles.container;
 
   // Serialize context to JSON for display
   const contextJson = useMemo(() => {
@@ -52,13 +58,33 @@ export function ContextItem({ context, isActive = false, handleHeightChange, ind
     [handleHeightChange, index, isExpanded],
   );
 
-  const handleDelete = useCallback(() => {
-    // Prevent deletion of active context
-    if (isActive) {
+  const handleDelete = useCallback(
+    (e: React.MouseEvent) => {
+      e.stopPropagation();
+      // Prevent deletion of active context
+      if (isActive) {
+        return;
+      }
+      removeContext(context.kind, context.name);
+    },
+    [removeContext, context.kind, context.key, isActive],
+  );
+
+  const handleSelect = useCallback(async () => {
+    // Don't select if already active or if currently selecting
+    if (isActive || isSelecting) {
       return;
     }
-    removeContext(context.kind, context.name);
-  }, [removeContext, context.kind, context.key, isActive]);
+
+    setIsSelecting(true);
+    try {
+      await setContext(context);
+    } catch (error) {
+      console.error('Failed to set context:', error);
+    } finally {
+      setIsSelecting(false);
+    }
+  }, [context, isActive, isSelecting, setContext]);
 
   // Reset height on mount if not expanded (ensures clean state when item is remounted)
   // This handles the case where an item was expanded, scrolled out of view, then scrolled back
@@ -82,7 +108,20 @@ export function ContextItem({ context, isActive = false, handleHeightChange, ind
   }, [handleHeightChange, index]);
 
   return (
-    <div className={containerClassName}>
+    <div
+      className={containerClassName}
+      onClick={isClickable ? handleSelect : undefined}
+      style={{ cursor: isClickable ? 'pointer' : 'default' }}
+      role={isClickable ? 'button' : undefined}
+      tabIndex={isClickable ? 0 : undefined}
+      aria-label={isClickable ? `Select context ${displayName}` : undefined}
+      onKeyDown={(e) => {
+        if (isClickable && (e.key === 'Enter' || e.key === ' ')) {
+          e.preventDefault();
+          handleSelect();
+        }
+      }}
+    >
       <div className={styles.header}>
         {isActive && <span className={styles.activeDot} />}
         <div className={styles.iconContainer}>{isUser ? <PersonIcon /> : <FingerprintIcon />}</div>
@@ -92,11 +131,11 @@ export function ContextItem({ context, isActive = false, handleHeightChange, ind
               {displayName}
             </span>
           </div>
-          <div className={styles.keyRow}>
+          <div className={styles.keyRow} onClick={(e) => e.stopPropagation()}>
             <CopyableText text={context.name || ''} />
           </div>
         </div>
-        <div className={styles.actions}>
+        <div className={styles.actions} onClick={(e) => e.stopPropagation()}>
           <span className={styles.kindBadge}>{context.kind}</span>
           <button
             className={styles.deleteButton}
@@ -124,6 +163,7 @@ export function ContextItem({ context, isActive = false, handleHeightChange, ind
           <motion.div
             key={`json-editor-${context.kind}-${context.key}`}
             data-testid={`json-editor-${context.kind}-${context.key}`}
+            onClick={(e) => e.stopPropagation()}
             initial={{
               opacity: 0,
               height: 0,

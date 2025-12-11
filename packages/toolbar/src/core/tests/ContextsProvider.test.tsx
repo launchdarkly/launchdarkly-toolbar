@@ -1,15 +1,17 @@
-import { render, screen, waitFor } from '@testing-library/react';
+import { render, screen, waitFor, act } from '@testing-library/react';
 import { expect, test, describe, vi, beforeEach } from 'vitest';
 import { ContextsProvider, useContextsContext } from '../ui/Toolbar/context/api/ContextsProvider';
 import '@testing-library/jest-dom/vitest';
 import React from 'react';
 import { Context } from '../ui/Toolbar/types/ldApi';
-import { loadContexts, saveContexts } from '../ui/Toolbar/utils/localStorage';
+import { loadContexts, saveContexts, loadActiveContext, saveActiveContext } from '../ui/Toolbar/utils/localStorage';
 
 // Mock localStorage utilities
 vi.mock('../ui/Toolbar/utils/localStorage', () => ({
   loadContexts: vi.fn(() => []),
   saveContexts: vi.fn(),
+  loadActiveContext: vi.fn(() => null),
+  saveActiveContext: vi.fn(),
 }));
 
 // Mock the useCurrentSdkContext hook
@@ -19,18 +21,34 @@ vi.mock('../ui/Toolbar/context/state/useCurrentSdkContext', () => ({
   isCurrentContext: (context: any, kind: string, key: string) => mockIsCurrentContext(context, kind, key),
 }));
 
-// Mock the usePlugins hook
-vi.mock('../ui/Toolbar/context/state/PluginsProvider', () => ({
-  usePlugins: vi.fn(() => ({
-    flagOverridePlugin: null,
-    eventInterceptionPlugin: null,
-    baseUrl: '',
-  })),
-}));
+// Mock the usePlugins hook with LD client
+// Note: We need to create the mock client inside the factory to avoid hoisting issues
+vi.mock('../ui/Toolbar/context/state/PluginsProvider', () => {
+  const mockClient = {
+    identify: vi.fn().mockResolvedValue(undefined),
+    getContext: vi.fn(() => null), // Return null to prevent auto-adding contexts in tests
+    on: vi.fn(),
+    off: vi.fn(),
+  };
+
+  return {
+    usePlugins: () => ({
+      flagOverridePlugin: {
+        getClient: () => mockClient,
+      },
+      eventInterceptionPlugin: null,
+      baseUrl: '',
+    }),
+  };
+});
 
 // Test component
 function TestConsumer() {
-  const { contexts, filter, setFilter, addContext, removeContext, isActiveContext } = useContextsContext();
+  const { contexts, filter, setFilter, addContext, removeContext, activeContext } = useContextsContext();
+
+  const isActive = (kind: string, key: string) => {
+    return activeContext?.kind === kind && activeContext?.key === key;
+  };
 
   return (
     <div>
@@ -53,7 +71,7 @@ function TestConsumer() {
       <button data-testid="set-filter" onClick={() => setFilter('test')}>
         Set Filter
       </button>
-      <div data-testid="is-active">{isActiveContext('user', 'test-user') ? 'true' : 'false'}</div>
+      <div data-testid="is-active">{isActive('user', 'test-user') ? 'true' : 'false'}</div>
     </div>
   );
 }
@@ -62,6 +80,7 @@ describe('ContextsProvider', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     (loadContexts as any).mockReturnValue([]);
+    (loadActiveContext as any).mockReturnValue(null);
     mockIsCurrentContext.mockReturnValue(false);
   });
 
@@ -172,18 +191,41 @@ describe('ContextsProvider', () => {
         { kind: 'user', key: 'test-user', name: 'Test User' },
       ];
       (loadContexts as any).mockReturnValue(storedContexts);
-      // Make test-user the active context
-      mockIsCurrentContext.mockImplementation((context: any, kind: string, key: string) => {
-        return kind === 'user' && key === 'test-user';
-      });
+
+      const TestWithActiveContext = () => {
+        const { contexts, removeContext, setContext, activeContext } = useContextsContext();
+        React.useEffect(() => {
+          // Set test-user as active
+          setContext(storedContexts[1]);
+        }, [setContext]);
+
+        return (
+          <div>
+            <div data-testid="contexts-count">{contexts.length}</div>
+            {contexts.map((context) => (
+              <div key={`${context.kind}-${context.key}`} data-testid={`context-${context.kind}-${context.key}`}>
+                {context.name || context.key}
+              </div>
+            ))}
+            <button data-testid="remove-context" onClick={() => removeContext('user', 'test-user')}>
+              Remove
+            </button>
+            <div data-testid="active-context">{activeContext?.key === 'test-user' ? 'active' : 'inactive'}</div>
+          </div>
+        );
+      };
 
       const consoleSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
 
       render(
         <ContextsProvider>
-          <TestConsumer />
+          <TestWithActiveContext />
         </ContextsProvider>,
       );
+
+      await waitFor(() => {
+        expect(screen.getByTestId('active-context')).toHaveTextContent('active');
+      });
 
       expect(screen.getByTestId('contexts-count')).toHaveTextContent('2');
 
@@ -267,21 +309,38 @@ describe('ContextsProvider', () => {
   });
 
   describe('Active Context Detection', () => {
-    test('correctly identifies active context', () => {
-      mockIsCurrentContext.mockReturnValue(true);
+    test('correctly identifies active context', async () => {
+      const storedContexts: Context[] = [{ kind: 'user', key: 'test-user', name: 'Test User' }];
+      (loadContexts as any).mockReturnValue(storedContexts);
+
+      const TestWithActiveContext = () => {
+        const { activeContext, setContext } = useContextsContext();
+        React.useEffect(() => {
+          // Set the context as active
+          setContext(storedContexts[0]);
+        }, [setContext]);
+
+        return (
+          <div>
+            <div data-testid="is-active">
+              {activeContext?.kind === 'user' && activeContext?.key === 'test-user' ? 'true' : 'false'}
+            </div>
+          </div>
+        );
+      };
 
       render(
         <ContextsProvider>
-          <TestConsumer />
+          <TestWithActiveContext />
         </ContextsProvider>,
       );
 
-      expect(screen.getByTestId('is-active')).toHaveTextContent('true');
+      await waitFor(() => {
+        expect(screen.getByTestId('is-active')).toHaveTextContent('true');
+      });
     });
 
     test('returns false for non-active context', () => {
-      mockIsCurrentContext.mockReturnValue(false);
-
       render(
         <ContextsProvider>
           <TestConsumer />
@@ -306,7 +365,7 @@ describe('ContextsProvider', () => {
   });
 
   describe('Sorting', () => {
-    test('sorts contexts to put active context first', () => {
+    test('sorts contexts to put active context first', async () => {
       const storedContexts: Context[] = [
         { kind: 'user', key: 'user-1', name: 'User One' },
         { kind: 'user', key: 'user-2', name: 'User Two' },
@@ -314,17 +373,13 @@ describe('ContextsProvider', () => {
       ];
       (loadContexts as any).mockReturnValue(storedContexts);
 
-      // Make user-2 active - note: the implementation passes name (not key) to isActiveContext
-      // So isActiveContext calls isCurrentContext(kind, name), meaning we need to match by name
-      mockIsCurrentContext.mockImplementation((context: any, kind: string, key: string) => {
-        // The implementation calls isActiveContext(a.kind, a.name || '')
-        // which calls isCurrentContext(currentSdkContext, kind, name)
-        // So 'key' parameter here is actually the name from the context
-        return kind === 'user' && key === 'User Two';
-      });
-
       const TestWithSorting = () => {
-        const { contexts } = useContextsContext();
+        const { contexts, setContext } = useContextsContext();
+        React.useEffect(() => {
+          // Set user-2 as active
+          setContext(storedContexts[1]);
+        }, [setContext]);
+
         return (
           <div>
             {contexts.map((ctx, idx) => (
@@ -342,8 +397,10 @@ describe('ContextsProvider', () => {
         </ContextsProvider>,
       );
 
-      // Active context (user-2 with name 'User Two') should be first
-      expect(screen.getByTestId('context-0')).toHaveTextContent('user-2');
+      // Active context (user-2) should be first
+      await waitFor(() => {
+        expect(screen.getByTestId('context-0')).toHaveTextContent('user-2');
+      });
     });
   });
 });

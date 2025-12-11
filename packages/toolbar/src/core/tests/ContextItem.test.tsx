@@ -11,6 +11,8 @@ import { loadContexts, saveContexts } from '../ui/Toolbar/utils/localStorage';
 vi.mock('../ui/Toolbar/utils/localStorage', () => ({
   loadContexts: vi.fn(() => []),
   saveContexts: vi.fn(),
+  loadActiveContext: vi.fn(() => null),
+  saveActiveContext: vi.fn(),
 }));
 
 // Mock the useCurrentSdkContext hook

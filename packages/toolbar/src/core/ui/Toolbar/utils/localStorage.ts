@@ -9,6 +9,7 @@ export const TOOLBAR_STORAGE_KEYS = {
   STARRED_FLAGS: 'ld-toolbar-starred-flags',
   MCP_ALERT_DISMISSED: 'ld-toolbar-mcp-alert-dismissed',
   CONTEXTS: 'ld-toolbar-contexts',
+  ACTIVE_CONTEXT: 'ld-toolbar-active-context',
 } as const;
 
 export type PreferredIde = 'cursor' | 'windsurf' | 'vscode' | 'github-copilot';
@@ -194,5 +195,34 @@ export function saveContexts(contexts: Array<Context>): void {
     localStorage.setItem(TOOLBAR_STORAGE_KEYS.CONTEXTS, value);
   } catch (error) {
     console.error('Error saving contexts to localStorage:', error);
+  }
+}
+
+export function loadActiveContext(): Context | null {
+  try {
+    const stored = localStorage.getItem(TOOLBAR_STORAGE_KEYS.ACTIVE_CONTEXT);
+    if (stored) {
+      const parsed = JSON.parse(stored);
+      // Validate that it's a valid Context object
+      if (parsed && typeof parsed === 'object' && parsed.kind) {
+        return parsed as Context;
+      }
+    }
+  } catch (error) {
+    console.error('Error reading active context from localStorage:', error);
+  }
+  return null;
+}
+
+export function saveActiveContext(context: Context | null): void {
+  try {
+    if (context) {
+      const value = JSON.stringify(context);
+      localStorage.setItem(TOOLBAR_STORAGE_KEYS.ACTIVE_CONTEXT, value);
+    } else {
+      localStorage.removeItem(TOOLBAR_STORAGE_KEYS.ACTIVE_CONTEXT);
+    }
+  } catch (error) {
+    console.error('Error saving active context to localStorage:', error);
   }
 }
