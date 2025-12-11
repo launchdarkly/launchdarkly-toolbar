@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { AnimatePresence, motion } from 'motion/react';
 
 import {
@@ -39,6 +39,7 @@ export function LdToolbar(props: LdToolbarProps) {
   const { activeTab, setActiveTab } = useActiveTabContext();
   const newToolbarDesign = useNewToolbarDesign();
   const defaultActiveTab = getDefaultActiveTab(mode, !!flagOverridePlugin, !!eventInterceptionPlugin, newToolbarDesign);
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
 
   const toolbarState = useToolbarState();
   const circleButtonRef = useRef<HTMLButtonElement>(null);
@@ -197,10 +198,11 @@ export function LdToolbar(props: LdToolbarProps) {
             onClose={handleClose}
             onHeaderMouseDown={handleMouseDown}
             defaultActiveTab={defaultActiveTab}
+            onOpenAuthModal={() => setIsAuthModalOpen(true)}
           />
         )}
       </AnimatePresence>
-      <AuthenticationModal isOpen={false} onClose={() => {}} />
+      <AuthenticationModal isOpen={isAuthModalOpen} onClose={() => setIsAuthModalOpen(false)} />
     </motion.div>
   );
 }
