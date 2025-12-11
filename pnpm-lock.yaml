@@ -163,8 +163,8 @@ importers:
         specifier: ^10.0.8
         version: 10.0.8(react@19.2.1)(storybook@10.1.4(@testing-library/dom@10.4.0)(prettier@3.7.4)(react-dom@19.2.1(react@19.2.1))(react@19.2.1))
       '@storybook/addon-onboarding':
-        specifier: ^10.1.5
-        version: 10.1.5(storybook@10.1.4(@testing-library/dom@10.4.0)(prettier@3.7.4)(react-dom@19.2.1(react@19.2.1))(react@19.2.1))
+        specifier: ^10.1.6
+        version: 10.1.6(storybook@10.1.4(@testing-library/dom@10.4.0)(prettier@3.7.4)(react-dom@19.2.1(react@19.2.1))(react@19.2.1))
       '@storybook/blocks':
         specifier: ^9.0.0-alpha.17
         version: 9.0.0-alpha.17(react-dom@19.2.1(react@19.2.1))(react@19.2.1)(storybook@10.1.4(@testing-library/dom@10.4.0)(prettier@3.7.4)(react-dom@19.2.1(react@19.2.1))(react@19.2.1))
@@ -1972,10 +1972,10 @@ packages:
     peerDependencies:
       storybook: ^9.0.0-alpha.12
 
-  '@storybook/addon-onboarding@10.1.5':
-    resolution: {integrity: sha512-fb7m6roDiLOywvnI4w4H5X3K8nMVUDPAvY51BXR/VnS3yuaOrvuvcU/hKbIloMfTN4klSjVD5tgXuMr6HPSYSg==}
+  '@storybook/addon-onboarding@10.1.6':
+    resolution: {integrity: sha512-E4iuMK9Lm6ipcJ7y/+RQkQGeDR3QevjihtZMQWGK7yngltiJ1z9QdBl9Bcxl/QPGlQhfXLC/JSh98hQoOALOlQ==}
     peerDependencies:
-      storybook: ^10.1.5
+      storybook: ^10.1.6
 
   '@storybook/addon-outline@9.0.0-alpha.12':
     resolution: {integrity: sha512-I7opVIK8bNUYSC+P+b8AwP6sE2pFyXH5F0gz8WA0pdkRcxerQmYnhlsXrI5T0QMu79tZnjVNrQTUrqpy/Z5oqQ==}
@@ -6836,7 +6836,7 @@ snapshots:
       storybook: 10.1.4(@testing-library/dom@10.4.0)(prettier@3.7.4)(react-dom@19.2.1(react@19.2.1))(react@19.2.1)
       tiny-invariant: 1.3.3
 
-  '@storybook/addon-onboarding@10.1.5(storybook@10.1.4(@testing-library/dom@10.4.0)(prettier@3.7.4)(react-dom@19.2.1(react@19.2.1))(react@19.2.1))':
+  '@storybook/addon-onboarding@10.1.6(storybook@10.1.4(@testing-library/dom@10.4.0)(prettier@3.7.4)(react-dom@19.2.1(react@19.2.1))(react@19.2.1))':
     dependencies:
       storybook: 10.1.4(@testing-library/dom@10.4.0)(prettier@3.7.4)(react-dom@19.2.1(react@19.2.1))(react@19.2.1)
 
