@@ -5,7 +5,6 @@ export const IFRAME_COMMANDS = {
   GET_PROJECTS: 'get-projects',
   GET_FLAGS: 'get-flags',
   GET_FLAG: 'get-flag',
-  GET_CONTEXTS: 'get-contexts',
 };
 
 export const getResponseTopic = (command: string) => `${command}-response`;

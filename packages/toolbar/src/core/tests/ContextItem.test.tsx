@@ -4,7 +4,7 @@ import { ContextItem } from '../ui/Toolbar/components/new/Contexts/ContextItem';
 import { ContextsProvider } from '../ui/Toolbar/context/api/ContextsProvider';
 import '@testing-library/jest-dom/vitest';
 import React from 'react';
-import { ApiContext } from '../ui/Toolbar/types/ldApi';
+import { Context } from '../ui/Toolbar/types/ldApi';
 import { loadContexts, saveContexts } from '../ui/Toolbar/utils/localStorage';
 
 // Mock localStorage utilities
@@ -13,13 +13,6 @@ vi.mock('../ui/Toolbar/utils/localStorage', () => ({
   saveContexts: vi.fn(),
   loadActiveContext: vi.fn(() => null),
   saveActiveContext: vi.fn(),
-}));
-
-// Mock the useCurrentSdkContext hook
-const mockIsCurrentContext = vi.fn(() => false);
-vi.mock('../ui/Toolbar/context/state/useCurrentSdkContext', () => ({
-  useCurrentSdkContext: vi.fn(() => null),
-  isCurrentContext: (context: any, kind: string, key: string) => mockIsCurrentContext(context, kind, key),
 }));
 
 // Mock the usePlugins hook
@@ -57,7 +50,7 @@ vi.mock('motion/react', () => ({
 }));
 
 describe('ContextItem', () => {
-  const mockContext: ApiContext = {
+  const mockContext: Context = {
     kind: 'user',
     key: 'test-user-123',
     name: 'Test User',
@@ -68,7 +61,6 @@ describe('ContextItem', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     (loadContexts as any).mockReturnValue([]);
-    mockIsCurrentContext.mockReturnValue(false);
   });
 
   describe('Rendering', () => {
@@ -118,7 +110,7 @@ describe('ContextItem', () => {
 
   describe('Delete Functionality', () => {
     test('deletes context when delete button is clicked', async () => {
-      const storedContexts: ApiContext[] = [mockContext];
+      const storedContexts: Context[] = [mockContext];
       (loadContexts as any).mockReturnValue(storedContexts);
 
       render(
@@ -154,11 +146,8 @@ describe('ContextItem', () => {
     });
 
     test('prevents deletion when context is active (button not rendered)', async () => {
-      const storedContexts: ApiContext[] = [mockContext];
+      const storedContexts: Context[] = [mockContext];
       (loadContexts as any).mockReturnValue(storedContexts);
-      mockIsCurrentContext.mockImplementation((context: any, kind: string, key: string) => {
-        return kind === 'user' && key === 'test-user-123';
-      });
 
       render(
         <ContextsProvider>

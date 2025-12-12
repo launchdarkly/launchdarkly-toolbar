@@ -48,7 +48,13 @@ export default defineConfig({
   /* Run your local dev server before starting the tests */
   webServer: [
     {
-      // Demo app defaults to http://localhost:9090 for authUrl
+      // Mock auth server on port 9090
+      command: 'pnpm dev:server',
+      url: 'http://localhost:9090/health',
+      reuseExistingServer: !process.env.CI,
+      timeout: 30 * 1000,
+    },
+    {
       command: 'pnpm demo',
       url: 'http://localhost:5173',
       env: {
@@ -57,13 +63,6 @@ export default defineConfig({
       },
       reuseExistingServer: !process.env.CI,
       timeout: 120 * 1000,
-    },
-    {
-      // Mock auth server on port 9090
-      command: 'pnpm dev:server',
-      url: 'http://localhost:9090/health',
-      reuseExistingServer: !process.env.CI,
-      timeout: 30 * 1000,
     },
   ],
 });

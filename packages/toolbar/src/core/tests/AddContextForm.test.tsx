@@ -14,12 +14,6 @@ vi.mock('../ui/Toolbar/utils/localStorage', () => ({
   saveActiveContext: vi.fn(),
 }));
 
-// Mock the useCurrentSdkContext hook
-vi.mock('../ui/Toolbar/context/state/useCurrentSdkContext', () => ({
-  useCurrentSdkContext: vi.fn(() => null),
-  isCurrentContext: vi.fn(() => false),
-}));
-
 // Mock the usePlugins hook
 vi.mock('../ui/Toolbar/context/state/PluginsProvider', () => ({
   usePlugins: vi.fn(() => ({

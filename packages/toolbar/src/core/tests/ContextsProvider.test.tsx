@@ -14,13 +14,6 @@ vi.mock('../ui/Toolbar/utils/localStorage', () => ({
   saveActiveContext: vi.fn(),
 }));
 
-// Mock the useCurrentSdkContext hook
-const mockIsCurrentContext = vi.fn((_context: any, _kind: string, _key: string) => false);
-vi.mock('../ui/Toolbar/context/state/useCurrentSdkContext', () => ({
-  useCurrentSdkContext: vi.fn(() => null),
-  isCurrentContext: (context: any, kind: string, key: string) => mockIsCurrentContext(context, kind, key),
-}));
-
 // Mock the usePlugins hook with LD client
 // Note: We need to create the mock client inside the factory to avoid hoisting issues
 vi.mock('../ui/Toolbar/context/state/PluginsProvider', () => {

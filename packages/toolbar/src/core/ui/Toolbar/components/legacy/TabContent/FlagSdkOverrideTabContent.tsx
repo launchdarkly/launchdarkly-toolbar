@@ -124,6 +124,37 @@ function FlagSdkOverrideTabContentInner(props: FlagSdkOverrideTabContentInnerPro
     overscan: VIRTUALIZATION.OVERSCAN,
   });
 
+  // All hooks must be called before any conditional returns
+  const handleToggleStarred = useCallback(
+    (flagKey: string) => {
+      const wasPreviouslyStarred = isStarred(flagKey);
+      toggleStarred(flagKey);
+      analytics.trackStarredFlag(flagKey, wasPreviouslyStarred ? 'unstar' : 'star');
+    },
+    [isStarred, toggleStarred, analytics],
+  );
+
+  const handleHeightChange = useCallback(
+    (index: number, height: number) => {
+      if (height > VIRTUALIZATION.ITEM_HEIGHT) {
+        virtualizer.resizeItem(index, height);
+      } else {
+        setTimeout(() => {
+          virtualizer.resizeItem(index, height);
+        }, 125);
+      }
+    },
+    [virtualizer],
+  );
+
+  const handleCopy = useCallback(
+    (text: string) => {
+      analytics.trackFlagKeyCopy(text);
+    },
+    [analytics],
+  );
+
+  // Now we can do conditional returns
   if (!flagOverridePlugin) {
     return (
       <GenericHelpText
@@ -165,28 +196,6 @@ function FlagSdkOverrideTabContentInner(props: FlagSdkOverrideTabContentInnerPro
     analytics.trackFilterChange(FILTER_MODES.ALL, 'selected');
     setActiveFilters(new Set([FILTER_MODES.ALL]));
   };
-
-  const handleToggleStarred = useCallback(
-    (flagKey: string) => {
-      const wasPreviouslyStarred = isStarred(flagKey);
-      toggleStarred(flagKey);
-      analytics.trackStarredFlag(flagKey, wasPreviouslyStarred ? 'unstar' : 'star');
-    },
-    [isStarred, toggleStarred, analytics],
-  );
-
-  const handleHeightChange = useCallback(
-    (index: number, height: number) => {
-      if (height > VIRTUALIZATION.ITEM_HEIGHT) {
-        virtualizer.resizeItem(index, height);
-      } else {
-        setTimeout(() => {
-          virtualizer.resizeItem(index, height);
-        }, 125);
-      }
-    },
-    [virtualizer],
-  );
 
   const renderFlagControl = (flag: LocalFlag) => {
     const handleOverride = (value: any) => handleSetOverride(flag.key, value);
@@ -238,13 +247,6 @@ function FlagSdkOverrideTabContentInner(props: FlagSdkOverrideTabContentInnerPro
   };
 
   const { title: genericHelpTitle, subtitle: genericHelpSubtitle } = getGenericHelpText();
-
-  const handleCopy = useCallback(
-    (text: string) => {
-      analytics.trackFlagKeyCopy(text);
-    },
-    [analytics],
-  );
 
   return (
     <FlagFilterOptionsContext.Provider value={{ activeFilters, onFilterToggle: handleFilterToggle }}>
