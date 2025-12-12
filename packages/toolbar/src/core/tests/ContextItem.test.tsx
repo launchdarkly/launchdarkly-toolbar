@@ -75,7 +75,7 @@ describe('ContextItem', () => {
     test('renders context information correctly', () => {
       render(
         <ContextsProvider>
-          <ContextItem context={mockContext} isActive={false} />
+          <ContextItem context={mockContext} isActiveContext={false} />
         </ContextsProvider>,
       );
 
@@ -89,7 +89,7 @@ describe('ContextItem', () => {
     test('shows active dot when context is active', () => {
       render(
         <ContextsProvider>
-          <ContextItem context={mockContext} isActive={true} />
+          <ContextItem context={mockContext} isActiveContext={true} />
         </ContextsProvider>,
       );
 
@@ -104,7 +104,7 @@ describe('ContextItem', () => {
     test('does not show active dot when context is not active', () => {
       render(
         <ContextsProvider>
-          <ContextItem context={mockContext} isActive={false} />
+          <ContextItem context={mockContext} isActiveContext={false} />
         </ContextsProvider>,
       );
 
@@ -123,7 +123,7 @@ describe('ContextItem', () => {
 
       render(
         <ContextsProvider>
-          <ContextItem context={mockContext} isActive={false} />
+          <ContextItem context={mockContext} isActiveContext={false} />
         </ContextsProvider>,
       );
 
@@ -142,18 +142,18 @@ describe('ContextItem', () => {
       expect(saveContexts).toHaveBeenCalled();
     });
 
-    test('disables delete button when context is active', () => {
+    test('does not render delete button when context is active', () => {
       render(
         <ContextsProvider>
-          <ContextItem context={mockContext} isActive={true} />
+          <ContextItem context={mockContext} isActiveContext={true} />
         </ContextsProvider>,
       );
 
-      const deleteButton = screen.getByRole('button', { name: /cannot delete active context/i });
-      expect(deleteButton).toBeDisabled();
+      const deleteButton = screen.queryByRole('button', { name: /delete context/i });
+      expect(deleteButton).not.toBeInTheDocument();
     });
 
-    test('prevents deletion when delete button is clicked on active context', async () => {
+    test('prevents deletion when context is active (button not rendered)', async () => {
       const storedContexts: ApiContext[] = [mockContext];
       (loadContexts as any).mockReturnValue(storedContexts);
       mockIsCurrentContext.mockImplementation((context: any, kind: string, key: string) => {
@@ -162,41 +162,33 @@ describe('ContextItem', () => {
 
       render(
         <ContextsProvider>
-          <ContextItem context={mockContext} isActive={true} />
+          <ContextItem context={mockContext} isActiveContext={true} />
         </ContextsProvider>,
       );
 
-      const deleteButton = screen.getByRole('button', { name: /cannot delete active context/i });
-      expect(deleteButton).toBeDisabled();
+      // Delete button should not be rendered for active contexts
+      const deleteButton = screen.queryByRole('button', { name: /delete context/i });
+      expect(deleteButton).not.toBeInTheDocument();
 
-      // Even if we try to click it (which shouldn't work), the context should remain
-      fireEvent.click(deleteButton);
-
-      // Wait a bit to ensure no deletion happened
-      await waitFor(
-        () => {
-          // saveContexts should not have been called
-          expect(saveContexts).not.toHaveBeenCalled();
-        },
-        { timeout: 100 },
-      );
+      // saveContexts should not have been called
+      expect(saveContexts).not.toHaveBeenCalled();
     });
 
-    test('shows correct tooltip for active context delete button', () => {
+    test('does not render delete button for active context', () => {
       render(
         <ContextsProvider>
-          <ContextItem context={mockContext} isActive={true} />
+          <ContextItem context={mockContext} isActiveContext={true} />
         </ContextsProvider>,
       );
 
-      const deleteButton = screen.getByRole('button', { name: /cannot delete active context/i });
-      expect(deleteButton).toHaveAttribute('title', 'Cannot delete active context');
+      const deleteButton = screen.queryByRole('button', { name: /delete context/i });
+      expect(deleteButton).not.toBeInTheDocument();
     });
 
     test('shows correct tooltip for non-active context delete button', () => {
       render(
         <ContextsProvider>
-          <ContextItem context={mockContext} isActive={false} />
+          <ContextItem context={mockContext} isActiveContext={false} />
         </ContextsProvider>,
       );
 
@@ -206,15 +198,20 @@ describe('ContextItem', () => {
   });
 
   describe('Expand/Collapse', () => {
-    test('expands to show JSON editor when chevron is clicked', async () => {
+    test('expands to show JSON editor when edit button is clicked', async () => {
       render(
         <ContextsProvider>
-          <ContextItem context={mockContext} isActive={false} handleHeightChange={mockHandleHeightChange} index={0} />
+          <ContextItem
+            context={mockContext}
+            isActiveContext={false}
+            handleHeightChange={mockHandleHeightChange}
+            index={0}
+          />
         </ContextsProvider>,
       );
 
-      const expandButton = screen.getByRole('button', { name: /expand context details/i });
-      fireEvent.click(expandButton);
+      const editButton = screen.getByRole('button', { name: /edit context/i });
+      fireEvent.click(editButton);
 
       await waitFor(() => {
         expect(screen.getByTestId('json-editor')).toBeInTheDocument();
@@ -223,24 +220,29 @@ describe('ContextItem', () => {
       expect(mockHandleHeightChange).toHaveBeenCalled();
     });
 
-    test('collapses JSON editor when chevron is clicked again', async () => {
+    test('collapses JSON editor when cancel button is clicked', async () => {
       render(
         <ContextsProvider>
-          <ContextItem context={mockContext} isActive={false} handleHeightChange={mockHandleHeightChange} index={0} />
+          <ContextItem
+            context={mockContext}
+            isActiveContext={false}
+            handleHeightChange={mockHandleHeightChange}
+            index={0}
+          />
         </ContextsProvider>,
       );
 
-      const expandButton = screen.getByRole('button', { name: /expand context details/i });
+      const editButton = screen.getByRole('button', { name: /edit context/i });
 
-      // Expand
-      fireEvent.click(expandButton);
+      // Expand and enter edit mode
+      fireEvent.click(editButton);
       await waitFor(() => {
         expect(screen.getByTestId('json-editor')).toBeInTheDocument();
       });
 
-      // Collapse
-      const collapseButton = screen.getByRole('button', { name: /collapse context details/i });
-      fireEvent.click(collapseButton);
+      // Cancel (which also collapses)
+      const cancelButton = screen.getByRole('button', { name: /cancel/i });
+      fireEvent.click(cancelButton);
 
       await waitFor(() => {
         expect(screen.queryByTestId('json-editor')).not.toBeInTheDocument();
@@ -255,7 +257,7 @@ describe('ContextItem', () => {
     test('renders context with user kind', () => {
       render(
         <ContextsProvider>
-          <ContextItem context={{ kind: 'user', key: 'user-1', name: 'User One' }} isActive={false} />
+          <ContextItem context={{ kind: 'user', key: 'user-1', name: 'User One' }} isActiveContext={false} />
         </ContextsProvider>,
       );
 
@@ -268,7 +270,7 @@ describe('ContextItem', () => {
     test('renders context with non-user kind', () => {
       render(
         <ContextsProvider>
-          <ContextItem context={{ kind: 'organization', key: 'org-1', name: 'Org One' }} isActive={false} />
+          <ContextItem context={{ kind: 'organization', key: 'org-1', name: 'Org One' }} isActiveContext={false} />
         </ContextsProvider>,
       );
 

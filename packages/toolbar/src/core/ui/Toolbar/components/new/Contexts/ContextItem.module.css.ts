@@ -50,17 +50,6 @@ export const containerClickable = style({
   },
 });
 
-export const iconContainer = style({
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center',
-  width: '32px',
-  height: '32px',
-  borderRadius: '6px',
-  backgroundColor: 'var(--lp-color-gray-800)',
-  flexShrink: 0,
-});
-
 export const info = style({
   display: 'flex',
   flexDirection: 'column',
@@ -180,6 +169,11 @@ export const deleteButton = style({
   },
 });
 
+export const iconButton = style({
+  width: '34px',
+  height: '34px',
+});
+
 export const expandButton = style({
   display: 'flex',
   alignItems: 'center',
@@ -215,4 +209,14 @@ export const chevron = style({
 
 export const chevronExpanded = style({
   transform: 'rotate(180deg)',
+});
+
+export const editActions = style({
+  display: 'flex',
+  gap: '8px',
+  alignItems: 'center',
+  flexShrink: 0,
+  marginTop: '12px',
+  paddingTop: '12px',
+  borderTop: '1px solid var(--lp-color-gray-700)',
 });

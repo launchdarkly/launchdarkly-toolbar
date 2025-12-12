@@ -11,6 +11,7 @@ interface ContextsContextType {
   setFilter: (filter: string) => void;
   addContext: (context: Context) => void;
   removeContext: (kind: string, key: string) => void;
+  updateContext: (oldKind: string, oldKey: string, newContext: Context) => void;
   setContext: (context: Context) => Promise<void>;
   activeContext: Context | null;
 }
@@ -56,6 +57,29 @@ export const ContextsProvider = ({ children }: { children: React.ReactNode }) =>
         saveContexts(updated);
         return updated;
       });
+    },
+    [activeContext],
+  );
+
+  // Update a context in the list
+  const updateContext = useCallback(
+    (oldKind: string, oldKey: string, newContext: Context) => {
+      setStoredContexts((prev) => {
+        const updated = prev.map((c) => {
+          if (c.kind === oldKind && c.key === oldKey) {
+            return newContext;
+          }
+          return c;
+        });
+        saveContexts(updated);
+        return updated;
+      });
+
+      // If the updated context is the active context, update it
+      if (activeContext?.kind === oldKind && activeContext?.key === oldKey) {
+        setActiveContext(newContext);
+        saveActiveContext(newContext);
+      }
     },
     [activeContext],
   );
@@ -263,6 +287,7 @@ export const ContextsProvider = ({ children }: { children: React.ReactNode }) =>
         setFilter,
         addContext,
         removeContext,
+        updateContext,
         setContext,
         activeContext,
       }}

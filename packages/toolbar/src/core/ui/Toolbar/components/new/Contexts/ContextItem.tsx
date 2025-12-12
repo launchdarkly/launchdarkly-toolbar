@@ -3,76 +3,119 @@ import { motion, AnimatePresence } from 'motion/react';
 import * as styles from './ContextItem.module.css';
 import { Context } from '../../../types/ldApi';
 import { CopyableText } from '../../CopyableText';
-import { FingerprintIcon, PersonIcon, ChevronDownIcon, DeleteIcon } from '../../icons';
+import { EditIcon, DeleteIcon, CheckIcon, CancelIcon } from '../../icons';
 import { useContextsContext } from '../../../context/api/ContextsProvider';
 import { JsonEditor } from '../../../../JsonEditor/JsonEditor';
 import { VIRTUALIZATION, EASING } from '../../../constants';
+import { IconButton } from '../../../../Buttons/IconButton';
 
 interface ContextItemProps {
   context: Context;
-  /** Whether this context is the currently active SDK context */
-  isActive?: boolean;
-  /** Callback to notify parent of height changes */
+  isActiveContext: boolean;
   handleHeightChange?: (index: number, height: number) => void;
-  /** Index of this item in the virtualized list */
   index?: number;
 }
 
-export function ContextItem({ context, isActive = false, handleHeightChange, index }: ContextItemProps) {
-  const [isExpanded, setIsExpanded] = useState(false);
+export function ContextItem({ context, isActiveContext, handleHeightChange, index }: ContextItemProps) {
+  const [isEditing, setIsEditing] = useState(false);
+  const [editedJson, setEditedJson] = useState('');
+  const [hasLintErrors, setHasLintErrors] = useState(false);
   const [isSelecting, setIsSelecting] = useState(false);
   const hasResetOnMountRef = useRef(false);
-  const { removeContext, setContext } = useContextsContext();
+  const { removeContext, updateContext, setContext } = useContextsContext();
   const displayName = context.name || context.key;
-  const isUser = context.kind === 'user';
-  const isClickable = !isActive && !isSelecting;
+  const isClickable = !isActiveContext && !isSelecting && !isEditing;
 
-  const containerClassName = isActive
+  const containerClassName = isActiveContext
     ? `${styles.container} ${styles.containerActive}`
     : isClickable
       ? `${styles.container} ${styles.containerClickable}`
       : styles.container;
 
-  // Serialize context to JSON for display
   const contextJson = useMemo(() => {
     return JSON.stringify(context, null, 2);
   }, [context]);
 
-  const handleToggleExpand = useCallback(() => {
-    const newExpanded = !isExpanded;
-    setIsExpanded(newExpanded);
+  const handleEdit = useCallback(() => {
+    setEditedJson(contextJson);
+    setIsEditing(true);
+    setHasLintErrors(false);
+  }, [contextJson]);
 
-    // Notify parent of height change immediately when collapsing
-    if (handleHeightChange && index !== undefined && !newExpanded) {
-      // Reset to default height immediately when collapsing
+  const handleSave = useCallback(() => {
+    if (hasLintErrors) {
+      return;
+    }
+
+    try {
+      const parsed = JSON.parse(editedJson);
+      if (!parsed || typeof parsed !== 'object') {
+        console.error('Invalid JSON: must be an object');
+        return;
+      }
+
+      if (!parsed.kind || typeof parsed.kind !== 'string') {
+        console.error('Context must have a "kind" field');
+        return;
+      }
+
+      // Update the context
+      const oldKey = context.key || context.name;
+      updateContext(context.kind, oldKey, parsed as Context);
+      setIsEditing(false);
+
+      // Reset height when collapsing
+      if (handleHeightChange && index !== undefined) {
+        handleHeightChange(index, VIRTUALIZATION.ITEM_HEIGHT + VIRTUALIZATION.GAP);
+      }
+    } catch (error) {
+      console.error('Failed to parse JSON:', error);
+    }
+  }, [editedJson, hasLintErrors, context, updateContext, handleHeightChange, index]);
+
+  const handleCancel = useCallback(() => {
+    setIsEditing(false);
+    setEditedJson('');
+    setHasLintErrors(false);
+
+    // Reset height when collapsing
+    if (handleHeightChange && index !== undefined) {
       handleHeightChange(index, VIRTUALIZATION.ITEM_HEIGHT + VIRTUALIZATION.GAP);
     }
-  }, [isExpanded, handleHeightChange, index]);
+  }, [handleHeightChange, index]);
+
+  const handleJsonChange = useCallback((value: string) => {
+    setEditedJson(value);
+  }, []);
+
+  const handleLintErrors = useCallback((errors: any[]) => {
+    setHasLintErrors(errors.length > 0);
+  }, []);
 
   const handleEditorHeightChange = useCallback(
     (height: number) => {
-      if (handleHeightChange && index !== undefined && isExpanded) {
+      if (handleHeightChange && index !== undefined && isEditing) {
         handleHeightChange(index, VIRTUALIZATION.ITEM_HEIGHT + height + 36); // 36px for padding
       }
     },
-    [handleHeightChange, index, isExpanded],
+    [handleHeightChange, index, isEditing],
   );
 
   const handleDelete = useCallback(
     (e: React.MouseEvent) => {
       e.stopPropagation();
       // Prevent deletion of active context
-      if (isActive) {
+      if (isActiveContext) {
         return;
       }
       removeContext(context.kind, context.name);
     },
-    [removeContext, context.kind, context.key, isActive],
+    [removeContext, context.kind, context.key, isActiveContext],
   );
 
   const handleSelect = useCallback(async () => {
     // Don't select if already active or if currently selecting
-    if (isActive || isSelecting) {
+    if (isActiveContext || isSelecting) {
       return;
     }
 
@@ -84,7 +127,7 @@ export function ContextItem({ context, isActive = false, handleHeightChange, ind
     } finally {
       setIsSelecting(false);
     }
-  }, [context, isActive, isSelecting, setContext]);
+  }, [context, isActiveContext, isSelecting, setContext]);
 
   // Reset height on mount if not expanded (ensures clean state when item is remounted)
   // This handles the case where an item was expanded, scrolled out of view, then scrolled back
@@ -123,8 +166,7 @@ export function ContextItem({ context, isActive = false, handleHeightChange, ind
       }}
     >
       <div className={styles.header}>
-        {isActive && <span className={styles.activeDot} />}
-        <div className={styles.iconContainer}>{isUser ? <PersonIcon /> : <FingerprintIcon />}</div>
+        {isActiveContext && <span className={styles.activeDot} />}
         <div className={styles.info}>
           <div className={styles.nameRow}>
             <span className={styles.name} title={displayName}>
@@ -137,29 +179,42 @@ export function ContextItem({ context, isActive = false, handleHeightChange, ind
         </div>
         <div className={styles.actions} onClick={(e) => e.stopPropagation()}>
           <span className={styles.kindBadge}>{context.kind}</span>
-          <button
-            className={styles.deleteButton}
-            onClick={handleDelete}
-            disabled={isActive}
-            aria-label={isActive ? `Cannot delete active context ${context.key}` : `Delete context ${context.key}`}
-            title={isActive ? 'Cannot delete active context' : 'Delete context'}
-          >
-            <DeleteIcon />
-          </button>
-          <button
-            className={styles.expandButton}
-            onClick={handleToggleExpand}
-            aria-label={isExpanded ? 'Collapse context details' : 'Expand context details'}
-            aria-expanded={isExpanded}
-          >
-            <span className={`${styles.chevron} ${isExpanded ? styles.chevronExpanded : ''}`}>
-              <ChevronDownIcon />
-            </span>
-          </button>
+          {!isEditing ? (
+            <>
+              <IconButton icon={<EditIcon />} onClick={handleEdit} label="Edit context" title="Edit context" />
+              <IconButton
+                icon={<DeleteIcon />}
+                onClick={handleDelete}
+                disabled={isActiveContext}
+                label={
+                  isActiveContext ? `Cannot delete active context ${context.key}` : `Delete context ${context.key}`
+                }
+                title={isActiveContext ? 'Cannot delete active context' : 'Delete context'}
+              />
+            </>
+          ) : (
+            <>
+              <IconButton
+                icon={<CheckIcon />}
+                onClick={handleSave}
+                disabled={hasLintErrors}
+                label="Save context"
+                title="Save context"
+                data-testid={`save-context-${context.kind}-${context.key}`}
+              />
+              <IconButton
+                icon={<CancelIcon />}
+                onClick={handleCancel}
+                label="Cancel editing"
+                title="Cancel editing"
+                data-testid={`cancel-context-${context.kind}-${context.key}`}
+              />
+            </>
+          )}
         </div>
       </div>
       <AnimatePresence mode="wait">
-        {isExpanded && (
+        {isEditing && (
           <motion.div
             key={`json-editor-${context.kind}-${context.key}`}
             data-testid={`json-editor-${context.kind}-${context.key}`}
@@ -192,11 +247,16 @@ export function ContextItem({ context, isActive = false, handleHeightChange, ind
             }}
           >
             <JsonEditor
-              docString={contextJson}
+              docString={editedJson}
+              onChange={handleJsonChange}
+              onLintErrors={handleLintErrors}
               data-testid={`context-json-${context.kind}-${context.key}`}
               editorId={`json-editor-${context.kind}-${context.key}`}
               onEditorHeightChange={handleEditorHeightChange}
-              readOnly={true}
+              initialState={{
+                startCursorAtLine: 0,
+                autoFocus: true,
+              }}
             />
           </motion.div>
         )}
