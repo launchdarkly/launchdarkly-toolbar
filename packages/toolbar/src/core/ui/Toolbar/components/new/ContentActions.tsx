@@ -7,8 +7,9 @@ import {
   useToolbarState,
 } from '../../context';
 import { useActiveSubtabContext, useTabSearchContext } from './context';
+import { useContextsContext } from '../../context/api/ContextsProvider';
 import { useEvents } from '../../hooks';
-import { CancelCircleIcon, DeleteIcon, SearchIcon, SyncIcon } from '../icons';
+import { CancelCircleIcon, DeleteIcon, SearchIcon, SyncIcon, AddIcon } from '../icons';
 import { SearchSection } from './SearchSection';
 import { FilterButton } from './FilterOverlay';
 import { IconButton } from '../../../Buttons/IconButton';
@@ -50,6 +51,11 @@ export function ContentActions() {
 
   const showClearEvents = activeTab === 'monitoring' && activeSubtab === 'events';
   const showSync = mode === 'dev-server' && activeTab === 'flags' && activeSubtab === 'flags';
+  const showAddContext = activeTab === 'flags' && activeSubtab === 'contexts';
+
+  // Get context form state for contexts tab
+  // ContextsProvider is always available in the component tree
+  const { setIsAddFormOpen } = useContextsContext();
 
   const handleClearEvents = useCallback(() => {
     if (eventInterceptionPlugin) {
@@ -95,6 +101,9 @@ export function ContentActions() {
             <IconButton icon={<SearchIcon />} label="Search" onClick={() => setSearchIsExpanded(true)} />
           )}
         </>
+      )}
+      {showAddContext && setIsAddFormOpen && (
+        <IconButton icon={<AddIcon />} label="Add context" onClick={() => setIsAddFormOpen(true)} />
       )}
       {showFilter && <FilterButton />}
       {showSync && (

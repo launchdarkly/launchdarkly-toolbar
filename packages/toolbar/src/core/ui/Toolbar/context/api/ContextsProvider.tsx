@@ -14,6 +14,8 @@ interface ContextsContextType {
   updateContext: (oldKind: string, oldKey: string, newContext: Context) => void;
   setContext: (context: Context) => Promise<void>;
   activeContext: Context | null;
+  isAddFormOpen: boolean;
+  setIsAddFormOpen: (isOpen: boolean) => void;
 }
 
 const ContextsContext = createContext<ContextsContextType | undefined>(undefined);
@@ -23,6 +25,7 @@ export const ContextsProvider = ({ children }: { children: React.ReactNode }) =>
   const [storedContexts, setStoredContexts] = useState<Context[]>(loadContexts);
   const [activeContext, setActiveContext] = useState<Context | null>(loadActiveContext());
   const [filter, setFilter] = useState('');
+  const [isAddFormOpen, setIsAddFormOpen] = useState(false);
   const lastAddedContextRef = useRef<string | null>(null);
   const hasRestoredContextRef = useRef(false);
 
@@ -290,6 +293,8 @@ export const ContextsProvider = ({ children }: { children: React.ReactNode }) =>
         updateContext,
         setContext,
         activeContext,
+        isAddFormOpen,
+        setIsAddFormOpen,
       }}
     >
       {children}

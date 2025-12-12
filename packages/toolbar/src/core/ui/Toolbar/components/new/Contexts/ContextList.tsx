@@ -1,4 +1,4 @@
-import { useRef, useCallback, useMemo, useEffect, useState } from 'react';
+import { useRef, useCallback, useMemo, useEffect } from 'react';
 import { useVirtualizer } from '@tanstack/react-virtual';
 
 import { useContextsContext } from '../../../context/api/ContextsProvider';
@@ -6,15 +6,12 @@ import { useTabSearchContext } from '../context';
 import { ContextItem } from './ContextItem';
 import { GenericHelpText } from '../../GenericHelpText';
 import { AddContextForm } from './AddContextForm';
-import { AddIcon } from '../../icons';
 import { VIRTUALIZATION } from '../../../constants';
 import * as styles from './ContextList.module.css';
-import { IconButton } from '../../../../Buttons/IconButton';
 
 export function ContextList() {
-  const { contexts, activeContext, filter, setFilter } = useContextsContext();
+  const { contexts, activeContext, filter, setFilter, isAddFormOpen, setIsAddFormOpen } = useContextsContext();
   const { searchTerms } = useTabSearchContext();
-  const [isAddFormOpen, setIsAddFormOpen] = useState(false);
 
   // Sync the search term from the tab search context to the provider's filter
   const searchTerm = useMemo(() => searchTerms['contexts'] || '', [searchTerms]);
@@ -76,12 +73,6 @@ export function ContextList() {
     <div className={styles.container}>
       <div className={styles.statsHeader}>
         <span className={styles.statsText}>{getStatsText()}</span>
-        <IconButton
-          label="Add context"
-          onClick={() => setIsAddFormOpen(true)}
-          aria-label="Add context"
-          icon={<AddIcon />}
-        />
       </div>
       <AddContextForm isOpen={isAddFormOpen} onClose={() => setIsAddFormOpen(false)} />
       <div ref={scrollContainerRef} className={styles.scrollContainer}>
