@@ -74,7 +74,6 @@ describe('ContextsProvider', () => {
     vi.clearAllMocks();
     (loadContexts as any).mockReturnValue([]);
     (loadActiveContext as any).mockReturnValue(null);
-    mockIsCurrentContext.mockReturnValue(false);
   });
 
   describe('Initialization', () => {
@@ -157,7 +156,6 @@ describe('ContextsProvider', () => {
         { kind: 'user', key: 'test-user', name: 'Test User' },
       ];
       (loadContexts as any).mockReturnValue(storedContexts);
-      mockIsCurrentContext.mockReturnValue(false);
 
       render(
         <ContextsProvider>
