@@ -13,8 +13,8 @@ import { type FlagFilterMode, FlagFilterOptionsContext, FILTER_MODES } from '../
 import { FilterOptions } from '../../FilterOptions/FilterOptions';
 import { VIRTUALIZATION } from '../../../constants';
 import { LocalObjectFlagControlListItem } from '../LocalObjectFlagControlListItem';
-import { FlagKeyWithCopy } from '../../FlagKeyWithCopy';
 import * as styles from './FlagDevServerTabContent.css';
+import { CopyableText } from '../../CopyableText';
 
 interface FlagDevServerTabContentProps {
   reloadOnFlagChangeIsEnabled: boolean;
@@ -205,6 +205,13 @@ export function FlagDevServerTabContent(props: FlagDevServerTabContentProps) {
 
   const { title: genericHelpTitle, subtitle: genericHelpSubtitle } = getGenericHelpText();
 
+  const handleCopy = useCallback(
+    (text: string) => {
+      analytics.trackFlagKeyCopy(text);
+    },
+    [analytics],
+  );
+
   return (
     <FlagFilterOptionsContext.Provider value={{ activeFilters, onFilterToggle: handleFilterToggle }}>
       <div data-testid="flag-dev-server-tab-content">
@@ -267,7 +274,7 @@ export function FlagDevServerTabContent(props: FlagDevServerTabContentProps) {
                               <span className={styles.flagNameText}>{flag.name}</span>
                               {flag.isOverridden && <OverrideIndicator onClear={() => onClearOverride(flag.key)} />}
                             </span>
-                            <FlagKeyWithCopy flagKey={flag.key} className={styles.flagKey} />
+                            <CopyableText text={flag.key} className={styles.flagKey} onCopy={handleCopy} />
                           </div>
 
                           <div className={styles.flagOptions}>

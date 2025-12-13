@@ -48,6 +48,10 @@ vi.mock('../../ui/Toolbar/components/new/Interactive', () => ({
   InteractiveContent: () => <div data-testid="interactive-content">Interactive Content</div>,
 }));
 
+vi.mock('../../ui/Toolbar/components/new/Contexts/ContextListContent', () => ({
+  ContextListContent: () => <div data-testid="context-list-content">Context List Content</div>,
+}));
+
 describe('ContentRenderer', () => {
   beforeEach(() => {
     mockActiveTab = 'flags';
@@ -62,13 +66,12 @@ describe('ContentRenderer', () => {
     expect(screen.getByTestId('flag-list-content')).toBeInTheDocument();
   });
 
-  it('should render FlagListContent for flags tab with context subtab', () => {
+  it('should render ContextListContent for flags tab with contexts subtab', () => {
     mockActiveTab = 'flags';
-    mockActiveSubtab = 'context';
+    mockActiveSubtab = 'contexts';
     render(<ContentRenderer />);
 
-    // Should render context content, but we mocked it to return a placeholder
-    expect(screen.getByText('Context Content')).toBeInTheDocument();
+    expect(screen.getByTestId('context-list-content')).toBeInTheDocument();
   });
 
   it('should render FlagListContent as default for flags tab with undefined subtab', () => {

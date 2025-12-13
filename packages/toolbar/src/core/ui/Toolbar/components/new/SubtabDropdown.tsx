@@ -34,7 +34,8 @@ export function SubtabDropdown({ subtabs, activeSubtab, onSelectSubtab }: Subtab
     };
   }, [isOpen]);
 
-  const handleSelect = (subtab: SubTab) => {
+  const handleSelect = (event: React.MouseEvent, subtab: SubTab) => {
+    event.stopPropagation();
     onSelectSubtab(subtab);
     setIsOpen(false);
   };
@@ -71,13 +72,17 @@ export function SubtabDropdown({ subtabs, activeSubtab, onSelectSubtab }: Subtab
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -8 }}
             transition={{ duration: 0.15 }}
+            onClick={(e) => e.stopPropagation()}
           >
             {subtabs.map((tab) => (
               <button
                 key={tab.id}
                 className={`${styles.menuItem} ${tab.id === activeSubtab ? styles.menuItemActive : ''}`}
-                onClick={() => handleSelect(tab.id as SubTab)}
+                onClick={(e) => {
+                  handleSelect(e, tab.id as SubTab);
+                }}
                 role="menuitem"
+                type="button"
               >
                 {tab.label}
               </button>

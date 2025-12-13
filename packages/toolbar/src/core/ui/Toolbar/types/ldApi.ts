@@ -44,3 +44,10 @@ export interface FlagsPaginationParams {
   offset?: number;
   query?: string;
 }
+
+export interface Context {
+  kind: string;
+  key?: string;
+  name: string;
+  anonymous?: boolean;
+}

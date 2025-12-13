@@ -33,7 +33,7 @@ function formatTimeAgo(timestamp: number, currentDate: Date): string {
 export function EventsContent() {
   const { eventInterceptionPlugin, baseUrl } = usePlugins();
   const { searchTerms } = useTabSearchContext();
-  const searchTerm = useMemo(() => searchTerms['monitoring'] || '', [searchTerms]);
+  const searchTerm = useMemo(() => searchTerms['events'] || '', [searchTerms]);
   const { activeFilters } = useSubtabFilters('events');
   const analytics = useAnalytics();
   const { events: allEvents, eventStats } = useEvents(eventInterceptionPlugin, searchTerm);

@@ -1,47 +1,48 @@
-import { createContext } from 'react';
-import { useState } from 'react';
-import { TabId } from '../../../types';
-import { useCallback } from 'react';
-import { useContext } from 'react';
+import { createContext, useState, useCallback, useContext } from 'react';
+import { SubTab } from '../types';
 
-type TabSearchContextType = {
-  searchTerms: Record<TabId, string>;
-  setSearchTerm: (tab: TabId, searchTerm: string) => void;
+type SubTabSearchContextType = {
+  searchTerms: Record<SubTab, string>;
+  setSearchTerm: (subtab: SubTab, searchTerm: string) => void;
+  clearSearchTerm: (subtab: SubTab) => void;
+  clearAllSearchTerms: () => void;
 };
 
-const TabSearchContext = createContext<TabSearchContextType>({
-  searchTerms: {
-    'flag-sdk': '',
-    'flag-dev-server': '',
-    events: '',
-    settings: '',
-    flags: '',
-    monitoring: '',
-    interactive: '',
-    ai: '',
-    optimize: '',
-  },
+const defaultSearchTerms: Record<SubTab, string> = {
+  flags: '',
+  contexts: '',
+  events: '',
+  general: '',
+  workflows: '',
+};
+
+const TabSearchContext = createContext<SubTabSearchContextType>({
+  searchTerms: defaultSearchTerms,
   setSearchTerm: () => {},
+  clearSearchTerm: () => {},
+  clearAllSearchTerms: () => {},
 });
 
 export function TabSearchProvider({ children }: { children: React.ReactNode }) {
-  const [searchTerms, setSearchTerms] = useState<Record<TabId, string>>({
-    'flag-sdk': '',
-    'flag-dev-server': '',
-    events: '',
-    settings: '',
-    flags: '',
-    monitoring: '',
-    interactive: '',
-    ai: '',
-    optimize: '',
-  });
+  const [searchTerms, setSearchTerms] = useState<Record<SubTab, string>>(defaultSearchTerms);
 
-  const setSearchTerm = useCallback((tab: TabId, searchTerm: string) => {
-    setSearchTerms((prev) => ({ ...prev, [tab]: searchTerm }));
+  const setSearchTerm = useCallback((subtab: SubTab, searchTerm: string) => {
+    setSearchTerms((prev) => ({ ...prev, [subtab]: searchTerm }));
   }, []);
 
-  return <TabSearchContext.Provider value={{ searchTerms, setSearchTerm }}>{children}</TabSearchContext.Provider>;
+  const clearSearchTerm = useCallback((subtab: SubTab) => {
+    setSearchTerms((prev) => ({ ...prev, [subtab]: '' }));
+  }, []);
+
+  const clearAllSearchTerms = useCallback(() => {
+    setSearchTerms(defaultSearchTerms);
+  }, []);
+
+  return (
+    <TabSearchContext.Provider value={{ searchTerms, setSearchTerm, clearSearchTerm, clearAllSearchTerms }}>
+      {children}
+    </TabSearchContext.Provider>
+  );
 }
 
 export function useTabSearchContext() {

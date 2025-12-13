@@ -1,6 +1,7 @@
 export { ActionButtonsContainer } from './legacy/ActionButtonsContainer';
 export { CircleLogo } from './CircleLogo';
 export { ConnectionStatus } from './ConnectionStatus';
+export { CopyableText } from './CopyableText';
 export { DoNotTrackWarning } from './DoNotTrackWarning';
 export { LaunchDarklyIcon } from './icons/LaunchDarklyIcon';
 export { StatusDot } from './StatusDot';

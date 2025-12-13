@@ -1,6 +1,7 @@
 export * from './ApiBundleProvider';
 export * from './ApiProvider';
 export * from './AuthProvider';
+export * from './ContextsProvider';
 export * from './EnvironmentProvider';
 export * from './FlagsProvider';
 export * from './IFrameProvider';

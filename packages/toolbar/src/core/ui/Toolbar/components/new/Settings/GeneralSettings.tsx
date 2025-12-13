@@ -40,7 +40,7 @@ export function GeneralSettings() {
   const { position } = useToolbarUIContext();
   const analytics = useAnalytics();
   const { searchTerms } = useTabSearchContext();
-  const searchTerm = useMemo(() => searchTerms['settings'] || '', [searchTerms]);
+  const searchTerm = useMemo(() => searchTerms['general'] || '', [searchTerms]);
 
   const handleAutoCollapseToggle = () => {
     analytics.trackAutoCollapseToggle(!isAutoCollapseEnabled ? 'enable' : 'disable');

@@ -79,6 +79,7 @@ export const menu = style({
   `,
   zIndex: Z_INDEX.POPOVER,
   overflow: 'hidden',
+  pointerEvents: 'auto',
 });
 
 export const menuItem = style({
@@ -93,6 +94,8 @@ export const menuItem = style({
   textAlign: 'left',
   cursor: 'pointer',
   transition: 'all 0.15s ease',
+  pointerEvents: 'auto',
+  userSelect: 'none',
 
   ':hover': {
     backgroundColor: 'var(--lp-color-gray-750)',
@@ -102,6 +105,10 @@ export const menuItem = style({
   ':focus': {
     outline: 'none',
     backgroundColor: 'var(--lp-color-gray-750)',
+  },
+
+  ':active': {
+    backgroundColor: 'var(--lp-color-gray-700)',
   },
 });
 
