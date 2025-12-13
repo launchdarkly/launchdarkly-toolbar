@@ -10,7 +10,7 @@ export const loginContainer = style({
   flexDirection: 'column',
   backgroundColor: 'var(--lp-color-gray-950)',
   border: '1px solid var(--lp-color-gray-700)',
-  borderRadius: '0px',
+  borderRadius: '12px',
   width: '100%',
   height: '600px',
   overflow: 'hidden',

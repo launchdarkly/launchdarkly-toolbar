@@ -5,6 +5,7 @@ import {
   useElementSelection,
   usePlugins,
   useToolbarState,
+  useFlagsContext,
 } from '../../context';
 import { useActiveSubtabContext, useTabSearchContext } from './context';
 import { useEvents } from '../../hooks';
@@ -32,6 +33,7 @@ export function ContentActions() {
   const showClearSelection = activeTab === 'interactive' && selectedElement;
   const { mode } = useToolbarState();
   const { refresh, state } = useDevServerContext();
+  const { refreshFlags, loading: flagsLoading } = useFlagsContext();
 
   const showFilter =
     (activeTab === 'flags' && activeSubtab === 'flags') || (activeTab === 'monitoring' && activeSubtab === 'events');
@@ -40,6 +42,7 @@ export function ContentActions() {
 
   const showClearEvents = activeTab === 'monitoring' && activeSubtab === 'events';
   const showSync = mode === 'dev-server' && activeTab === 'flags' && activeSubtab === 'flags';
+  const showRefreshFlags = mode === 'sdk' && activeTab === 'flags' && activeSubtab === 'flags';
 
   const handleClearEvents = useCallback(() => {
     if (eventInterceptionPlugin) {
@@ -50,6 +53,10 @@ export function ContentActions() {
   const handleSync = useCallback(() => {
     refresh();
   }, [refresh]);
+
+  const handleRefreshFlags = useCallback(() => {
+    refreshFlags();
+  }, [refreshFlags]);
 
   const handleSearch = useCallback(
     (input: string) => {
@@ -84,6 +91,9 @@ export function ContentActions() {
       {showFilter && <FilterButton />}
       {showSync && (
         <IconButton icon={<SyncIcon />} label="Sync flags" onClick={handleSync} disabled={state.isLoading} />
+      )}
+      {showRefreshFlags && (
+        <IconButton icon={<SyncIcon />} label="Refresh flags" onClick={handleRefreshFlags} disabled={flagsLoading} />
       )}
       {showClearEvents && (
         <button

@@ -62,35 +62,30 @@ export function FlagSdkOverrideProvider({ children, flagOverridePlugin }: FlagSd
   const buildFlags = useCallback(
     (allFlags: Record<string, any>, apiFlags: ApiFlag[]): Record<string, LocalFlag> => {
       const overrides = flagOverridePlugin.getAllOverrides();
-      const result: Record<string, LocalFlag> = {};
 
-      // First, add all flags from the API (these have proper names)
+      // Create a map of API flags for quick lookup
+      const apiFlagsMap = new Map<string, ApiFlag>();
       apiFlags.forEach((apiFlag) => {
-        const currentValue = allFlags[apiFlag.key];
-        result[apiFlag.key] = {
-          key: apiFlag.key,
-          name: apiFlag.name,
-          currentValue,
-          isOverridden: apiFlag.key in overrides,
-          type: determineFlagType(apiFlag.variations, currentValue),
-          availableVariations: apiFlag.variations,
-        };
+        apiFlagsMap.set(apiFlag.key, apiFlag);
       });
 
-      // Then, add any flags from the LD client that aren't in apiFlags
-      // This ensures flags are displayed even if the API hasn't loaded yet
-      Object.keys(allFlags).forEach((flagKey) => {
-        if (!result[flagKey]) {
-          const currentValue = allFlags[flagKey];
-          result[flagKey] = {
-            key: flagKey,
-            name: formatFlagName(flagKey),
-            currentValue,
-            isOverridden: flagKey in overrides,
-            type: determineFlagType([], currentValue),
-            availableVariations: [],
-          };
-        }
+      // Build result using SDK client order (allFlags) to preserve initial ordering
+      // Then sort by key for consistent ordering
+      const result: Record<string, LocalFlag> = {};
+      const flagKeys = Object.keys(allFlags).sort((a, b) => a.localeCompare(b));
+
+      flagKeys.forEach((flagKey) => {
+        const currentValue = allFlags[flagKey];
+        const apiFlag = apiFlagsMap.get(flagKey);
+
+        result[flagKey] = {
+          key: flagKey,
+          name: apiFlag?.name || formatFlagName(flagKey),
+          currentValue,
+          isOverridden: flagKey in overrides,
+          type: determineFlagType(apiFlag?.variations || [], currentValue),
+          availableVariations: apiFlag?.variations || [],
+        };
       });
 
       return result;
