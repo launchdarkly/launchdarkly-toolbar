@@ -1,5 +1,5 @@
 import { render, screen, waitFor } from '@testing-library/react';
-import { expect, test, describe, vi, beforeEach } from 'vitest';
+import { expect, test, describe, vi, beforeEach, afterEach } from 'vitest';
 
 // Create mocks in hoisted scope
 const mockLDClient = {
@@ -12,12 +12,58 @@ const mockLDClient = {
   track: vi.fn(),
 };
 
-const mockInitialize = vi.fn();
+vi.mock('launchdarkly-js-client-sdk', () => {
+  return {
+    initialize: vi.fn(),
+  };
+});
 
-// Mock the SDK module
-vi.mock('launchdarkly-js-client-sdk', () => ({
-  initialize: mockInitialize,
-}));
+vi.mock('@launchdarkly/observability', () => {
+  class MockObservability {
+    options: { manualStart: boolean; networkRecording?: { enabled: boolean; recordHeadersAndBody: boolean } };
+
+    constructor(options?: {
+      manualStart?: boolean;
+      backendUrl?: string;
+      networkRecording?: { enabled: boolean; recordHeadersAndBody: boolean };
+    }) {
+      this.options = {
+        manualStart: options?.manualStart ?? true,
+        networkRecording: options?.networkRecording,
+      };
+    }
+  }
+
+  return {
+    default: MockObservability,
+    LDObserve: {
+      start: vi.fn(),
+      stop: vi.fn(),
+    },
+  };
+});
+
+vi.mock('@launchdarkly/session-replay', () => {
+  class MockSessionReplay {
+    options: { manualStart: boolean; privacySetting: string; backendUrl?: string };
+
+    constructor(options?: { manualStart?: boolean; privacySetting?: string; backendUrl?: string }) {
+      this.options = {
+        manualStart: options?.manualStart ?? true,
+        privacySetting: options?.privacySetting ?? 'default',
+        backendUrl: options?.backendUrl,
+      };
+    }
+  }
+
+  return {
+    default: MockSessionReplay,
+    LDRecord: {
+      start: vi.fn(),
+      stop: vi.fn(),
+    },
+  };
+});
 
 import {
   InternalClientProvider,
@@ -26,11 +72,16 @@ import {
 } from '../ui/Toolbar/context/telemetry/InternalClientProvider';
 import { setToolbarFlagClient } from '../../flags/createToolbarFlagFunction';
 import * as toolbarFlagClient from '../../flags/createToolbarFlagFunction';
+import { initialize } from 'launchdarkly-js-client-sdk';
+import { LDObserve } from '@launchdarkly/observability';
+import { LDRecord } from '@launchdarkly/session-replay';
 
-// Spy on setToolbarFlagClient
+const mockInitialize = vi.mocked(initialize);
+const mockLDObserveMethods = vi.mocked(LDObserve);
+const mockLDRecordMethods = vi.mocked(LDRecord);
+
 const setToolbarFlagClientSpy = vi.spyOn(toolbarFlagClient, 'setToolbarFlagClient');
 
-// Test component that consumes the context
 function TestConsumer() {
   const { client, loading, error } = useInternalClient();
 
@@ -43,7 +94,6 @@ function TestConsumer() {
   );
 }
 
-// Test component for useInternalClientInstance hook
 function TestClientInstanceConsumer() {
   const client = useInternalClientInstance();
 
@@ -58,10 +108,10 @@ describe('InternalClientProvider', () => {
   beforeEach(() => {
     vi.clearAllMocks();
 
-    // Reset all mock functions to default behavior
     mockLDClient.waitForInitialization.mockResolvedValue(undefined);
     mockLDClient.identify.mockResolvedValue(undefined);
-    mockLDClient.variation.mockReturnValue(true);
+    // Return false for session replay flag by default to prevent it from starting
+    mockLDClient.variation.mockReturnValue(false);
     mockLDClient.close.mockImplementation(() => {});
     mockLDClient.on.mockImplementation(() => {});
     mockLDClient.off.mockImplementation(() => {});
@@ -69,15 +119,17 @@ describe('InternalClientProvider', () => {
 
     mockInitialize.mockReturnValue(mockLDClient);
 
-    // Clear the internal client singleton
+    mockLDObserveMethods.start.mockClear();
+    mockLDObserveMethods.stop.mockClear();
+    mockLDRecordMethods.start.mockClear();
+    mockLDRecordMethods.stop.mockClear();
+
     setToolbarFlagClient(null);
 
-    // Clear the spy AFTER the cleanup call so it doesn't count
     setToolbarFlagClientSpy.mockClear();
   });
 
   afterEach(() => {
-    // Additional cleanup to ensure no hanging promises or state
     vi.clearAllTimers();
     vi.unstubAllGlobals();
   });
@@ -90,11 +142,9 @@ describe('InternalClientProvider', () => {
         </InternalClientProvider>,
       );
 
-      // Initially loading
       expect(screen.getByTestId('loading-status')).toHaveTextContent('true');
       expect(screen.getByTestId('client-status')).toHaveTextContent('null');
 
-      // Wait for initialization
       await waitFor(() => {
         expect(screen.getByTestId('loading-status')).toHaveTextContent('false');
       });
@@ -130,7 +180,9 @@ describe('InternalClientProvider', () => {
             key: 'toolbar-anonymous',
             anonymous: true,
           },
-          undefined,
+          expect.objectContaining({
+            plugins: expect.any(Array),
+          }),
         );
       });
     });
@@ -149,7 +201,13 @@ describe('InternalClientProvider', () => {
       );
 
       await waitFor(() => {
-        expect(mockInitialize).toHaveBeenCalledWith('test-client-id-123', customContext, undefined);
+        expect(mockInitialize).toHaveBeenCalledWith(
+          'test-client-id-123',
+          customContext,
+          expect.objectContaining({
+            plugins: expect.any(Array),
+          }),
+        );
       });
     });
 
@@ -203,13 +261,22 @@ describe('InternalClientProvider', () => {
       );
 
       await waitFor(() => {
-        expect(mockInitialize).toHaveBeenCalledWith('test-client-id-123', expect.any(Object), {
-          baseUrl: 'https://app.ld.catamorphic.com',
-        });
+        expect(mockInitialize).toHaveBeenCalledWith(
+          'test-client-id-123',
+          expect.objectContaining({
+            kind: 'user',
+            key: 'toolbar-anonymous',
+            anonymous: true,
+          }),
+          expect.objectContaining({
+            baseUrl: 'https://app.ld.catamorphic.com',
+            plugins: expect.any(Array),
+          }),
+        );
       });
     });
 
-    test('does not provide options when baseUrl is not specified', async () => {
+    test('includes observabilityPlugins even when baseUrl is not specified', async () => {
       render(
         <InternalClientProvider clientSideId="test-client-id-123">
           <TestConsumer />
@@ -217,7 +284,13 @@ describe('InternalClientProvider', () => {
       );
 
       await waitFor(() => {
-        expect(mockInitialize).toHaveBeenCalledWith('test-client-id-123', expect.any(Object), undefined);
+        expect(mockInitialize).toHaveBeenCalledWith(
+          'test-client-id-123',
+          expect.any(Object),
+          expect.objectContaining({
+            plugins: expect.any(Array),
+          }),
+        );
       });
     });
   });

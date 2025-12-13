@@ -1,5 +1,8 @@
 import { createContext, useCallback, useContext, useEffect, useState, type ReactNode } from 'react';
+import { initialize } from 'launchdarkly-js-client-sdk';
 import type { LDClient, LDContext } from 'launchdarkly-js-client-sdk';
+import Observability from '@launchdarkly/observability';
+import SessionReplay from '@launchdarkly/session-replay';
 import { setToolbarFlagClient } from '../../../../../flags';
 
 export interface AuthState {
@@ -63,6 +66,11 @@ export interface InternalClientProviderProps {
    * Set this if using a custom LaunchDarkly instance.
    */
   eventsUrl?: string;
+  /**
+   * Backend URL for Observability and Session Replay.
+   * Defaults to standard LaunchDarkly observability backend.
+   */
+  backendUrl?: string;
 }
 
 /**
@@ -82,6 +90,7 @@ export function InternalClientProvider({
   baseUrl,
   streamUrl,
   eventsUrl,
+  backendUrl,
 }: InternalClientProviderProps) {
   const [client, setClient] = useState<LDClient | null>(null);
   const [loading, setLoading] = useState(false);
@@ -102,23 +111,34 @@ export function InternalClientProvider({
         setLoading(true);
         setError(null);
 
-        const { initialize } = await import('launchdarkly-js-client-sdk');
-
         const context = initialContext || {
           kind: 'user',
           key: 'toolbar-anonymous',
           anonymous: true,
         };
 
-        // Configure SDK options for custom URLs if provided
-        const hasCustomUrls = baseUrl || streamUrl || eventsUrl;
-        const options = hasCustomUrls
-          ? {
-              ...(baseUrl && { baseUrl }),
-              ...(streamUrl && { streamUrl }),
-              ...(eventsUrl && { eventsUrl }),
-            }
-          : undefined;
+        const observabilityPlugin = new Observability({
+          manualStart: true,
+          ...(backendUrl && { backendUrl }),
+          networkRecording: {
+            enabled: true,
+            recordHeadersAndBody: true,
+          },
+        });
+        const sessionReplayPlugin = new SessionReplay({
+          manualStart: true,
+          privacySetting: 'default',
+          ...(backendUrl && { backendUrl }),
+          // Block everything except the toolbar's shadow DOM
+          blockSelector: 'body > *:not(#ld-toolbar)',
+        });
+
+        const options = {
+          ...(baseUrl && { baseUrl }),
+          ...(streamUrl && { streamUrl }),
+          ...(eventsUrl && { eventsUrl }),
+          plugins: [observabilityPlugin, sessionReplayPlugin],
+        };
 
         const ldClient = initialize(clientSideId, context, options);
         clientToCleanup = ldClient;
@@ -152,7 +172,7 @@ export function InternalClientProvider({
         clientToCleanup.close();
       }
     };
-  }, [clientSideId, initialContext, baseUrl, streamUrl, eventsUrl]); // Re-initialize if any config changes
+  }, [clientSideId, initialContext, baseUrl, streamUrl, eventsUrl, backendUrl]); // Re-initialize if any config changes
 
   const updateContext = useCallback(
     async (accountId: string, memberId: string) => {
