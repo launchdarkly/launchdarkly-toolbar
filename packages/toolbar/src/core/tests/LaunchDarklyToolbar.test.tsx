@@ -4,6 +4,21 @@ import { expect, test, describe, vi, beforeEach } from 'vitest';
 import { LaunchDarklyToolbar } from '../ui/Toolbar/LaunchDarklyToolbar';
 import '@testing-library/jest-dom/vitest';
 
+// Mock observability and session replay
+vi.mock('@launchdarkly/observability', () => ({
+  LDObserve: {
+    start: vi.fn(),
+    stop: vi.fn(),
+  },
+}));
+
+vi.mock('@launchdarkly/session-replay', () => ({
+  LDRecord: {
+    start: vi.fn(),
+    stop: vi.fn(),
+  },
+}));
+
 // Mock the DevServerClient to avoid actual network calls in tests
 vi.mock('../services/DevServerClient', () => {
   function MockDevServerClient() {
@@ -48,6 +63,38 @@ vi.mock('../ui/Toolbar/context/api/AuthProvider', () => ({
     authenticating: false,
     loading: false,
     setAuthenticating: vi.fn(),
+  }),
+}));
+
+// Mock the InternalClientProvider to return ready state
+vi.mock('../ui/Toolbar/context/telemetry/InternalClientProvider', () => ({
+  InternalClientProvider: ({ children }: { children: React.ReactNode }) => <>{children}</>,
+  useInternalClient: () => ({
+    client: {
+      variation: vi.fn().mockReturnValue(false),
+      on: vi.fn(),
+      off: vi.fn(),
+      track: vi.fn(),
+      identify: vi.fn(),
+      flush: vi.fn(),
+      close: vi.fn(),
+      waitForInitialization: vi.fn().mockResolvedValue(undefined),
+      allFlags: vi.fn().mockReturnValue({}),
+    },
+    loading: false,
+    error: null,
+    updateContext: vi.fn(),
+  }),
+  useInternalClientInstance: () => ({
+    variation: vi.fn().mockReturnValue(false),
+    on: vi.fn(),
+    off: vi.fn(),
+    track: vi.fn(),
+    identify: vi.fn(),
+    flush: vi.fn(),
+    close: vi.fn(),
+    waitForInitialization: vi.fn().mockResolvedValue(undefined),
+    allFlags: vi.fn().mockReturnValue({}),
   }),
 }));
 
