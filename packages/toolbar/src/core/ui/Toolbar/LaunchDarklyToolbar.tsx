@@ -11,12 +11,14 @@ import {
   ToolbarStateBundleProvider,
   useActiveTabContext,
   useAnalytics,
+  useAuthContext,
   useInternalClient,
   useSearchContext,
   useToolbarState,
   useToolbarUIContext,
 } from './context';
 import { CircleLogo } from './components';
+import { LoadingScreen } from './components/LoadingScreen';
 import { ExpandedToolbarContentLegacy } from './components/legacy';
 import { ExpandedToolbarContent } from './components/new/ExpandedToolbarContent';
 import { InteractiveWrapper } from './components/new/Interactive';
@@ -40,8 +42,12 @@ export function LdToolbar(props: LdToolbarProps) {
   const { position, handlePositionChange } = useToolbarUIContext();
   const analytics = useAnalytics();
   const { activeTab, setActiveTab } = useActiveTabContext();
+  const { loading: authLoading } = useAuthContext();
+  const { loading: internalClientLoading } = useInternalClient();
   const newToolbarDesign = useNewToolbarDesign();
   const defaultActiveTab = getDefaultActiveTab(mode, !!flagOverridePlugin, !!eventInterceptionPlugin, newToolbarDesign);
+
+  const isInitializing = authLoading || internalClientLoading;
 
   const toolbarState = useToolbarState();
   const circleButtonRef = useRef<HTMLButtonElement>(null);
@@ -192,7 +198,8 @@ export function LdToolbar(props: LdToolbarProps) {
         )}
       </AnimatePresence>
       <AnimatePresence>
-        {isExpanded && !newToolbarDesign && (
+        {isExpanded && isInitializing && <LoadingScreen onMouseDown={handleMouseDown} />}
+        {isExpanded && !isInitializing && !newToolbarDesign && (
           <ExpandedToolbarContentLegacy
             ref={expandedContentRef}
             activeTab={activeTab as ActiveTabId}
@@ -215,7 +222,7 @@ export function LdToolbar(props: LdToolbarProps) {
             onToggleReloadOnFlagChange={handleToggleReloadOnFlagChange}
           />
         )}
-        {isExpanded && newToolbarDesign && (
+        {isExpanded && !isInitializing && newToolbarDesign && (
           <ExpandedToolbarContent
             onClose={handleClose}
             onHeaderMouseDown={handleMouseDown}
