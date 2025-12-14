@@ -26,17 +26,19 @@ export function SubtabDropdown({ subtabs, activeSubtab, onSelectSubtab }: Subtab
     };
 
     if (isOpen) {
-      document.addEventListener('mousedown', handleClickOutside);
+      document.addEventListener('click', handleClickOutside);
+      return () => document.removeEventListener('click', handleClickOutside);
     }
-
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
   }, [isOpen]);
 
   const handleSelect = (subtab: SubTab) => {
     onSelectSubtab(subtab);
     setIsOpen(false);
+  };
+
+  const handleToggle = (event: React.MouseEvent) => {
+    event.stopPropagation();
+    setIsOpen((prev) => !prev);
   };
 
   const handleKeyDown = (event: React.KeyboardEvent) => {
@@ -52,7 +54,7 @@ export function SubtabDropdown({ subtabs, activeSubtab, onSelectSubtab }: Subtab
     <div className={styles.container} ref={dropdownRef}>
       <button
         className={`${styles.trigger} ${isOpen ? styles.triggerOpen : ''}`}
-        onClick={() => setIsOpen(!isOpen)}
+        onClick={handleToggle}
         onKeyDown={handleKeyDown}
         aria-expanded={isOpen}
         aria-haspopup="true"
