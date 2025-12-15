@@ -66,8 +66,7 @@ export function ContextItem({ context, isActiveContext, handleHeightChange, inde
       }
 
       // Update the context
-      const oldKey = context.key || context.name;
-      updateContext(context.kind, oldKey, parsed as Context);
+      updateContext(context.id, parsed as Context);
       setIsEditing(false);
 
       // Reset height when collapsing
@@ -119,7 +118,7 @@ export function ContextItem({ context, isActiveContext, handleHeightChange, inde
         return;
       }
       // Note: Analytics tracking happens in removeContext in ContextsProvider
-      removeContext(context.kind, context.key || context.name || '');
+      removeContext(context.id);
     },
     [removeContext, context.kind, context.key, context.name, isActiveContext],
   );
@@ -217,14 +216,14 @@ export function ContextItem({ context, isActiveContext, handleHeightChange, inde
                 disabled={hasLintErrors}
                 label="Save context"
                 title="Save context"
-                data-testid={`save-context-${context.kind}-${context.key}`}
+                data-testid={`save-context-${context.id}`}
               />
               <IconButton
                 icon={<CancelIcon />}
                 onClick={handleCancel}
                 label="Cancel editing"
                 title="Cancel editing"
-                data-testid={`cancel-context-${context.kind}-${context.key}`}
+                data-testid={`cancel-context-${context.id}`}
               />
             </>
           )}
@@ -233,8 +232,8 @@ export function ContextItem({ context, isActiveContext, handleHeightChange, inde
       <AnimatePresence mode="wait">
         {isEditing && (
           <motion.div
-            key={`json-editor-${context.kind}-${context.key}`}
-            data-testid={`json-editor-${context.kind}-${context.key}`}
+            key={`json-editor-${context.id}`}
+            data-testid={`json-editor-${context.id}`}
             onClick={(e) => e.stopPropagation()}
             initial={{
               opacity: 0,
@@ -267,8 +266,8 @@ export function ContextItem({ context, isActiveContext, handleHeightChange, inde
               docString={editedJson}
               onChange={handleJsonChange}
               onLintErrors={handleLintErrors}
-              data-testid={`context-json-${context.kind}-${context.key}`}
-              editorId={`json-editor-${context.kind}-${context.key}`}
+              data-testid={`context-json-${context.id}`}
+              editorId={`json-editor-${context.id}`}
               onEditorHeightChange={handleEditorHeightChange}
               initialState={{
                 startCursorAtLine: 0,

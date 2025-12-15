@@ -6,6 +6,17 @@ import React from 'react';
 import { Context } from '../ui/Toolbar/types/ldApi';
 import { loadContexts, saveContexts, loadActiveContext } from '../ui/Toolbar/utils/localStorage';
 
+// Helper to create test contexts with ids
+function createTestContext(overrides: Partial<Context> & { kind: string; key?: string; name: string }): Context {
+  return {
+    id: `test-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`,
+    kind: overrides.kind,
+    key: overrides.key,
+    name: overrides.name,
+    anonymous: overrides.anonymous,
+  };
+}
+
 // Mock localStorage utilities
 vi.mock('../ui/Toolbar/utils/localStorage', () => ({
   loadContexts: vi.fn(() => []),
@@ -51,33 +62,49 @@ vi.mock('../ui/Toolbar/context/telemetry/AnalyticsProvider', () => ({
 // Test component
 function TestConsumer() {
   const { contexts, filter, setFilter, addContext, removeContext, activeContext } = useContextsContext();
+  const testContextIdRef = React.useRef<string | null>(null);
 
-  const isActive = (kind: string, key: string) => {
-    return activeContext?.kind === kind && activeContext?.key === key;
+  const isActive = (id: string) => {
+    return activeContext?.id === id;
   };
 
   return (
     <div>
       <div data-testid="contexts-count">{contexts.length}</div>
       <div data-testid="filter">{filter}</div>
-      {contexts.map((context) => (
-        <div key={`${context.kind}-${context.key}`} data-testid={`context-${context.kind}-${context.key}`}>
-          {context.name || context.key}
-        </div>
-      ))}
+      {contexts.map((context) => {
+        if (!testContextIdRef.current && context.key === 'test-user') {
+          testContextIdRef.current = context.id;
+        }
+        return (
+          <div key={context.id} data-testid={`context-${context.id}`}>
+            {context.name || context.key}
+          </div>
+        );
+      })}
       <button
         data-testid="add-context"
         onClick={() => addContext({ kind: 'user', key: 'test-user', name: 'Test User' })}
       >
         Add
       </button>
-      <button data-testid="remove-context" onClick={() => removeContext('user', 'test-user')}>
+      <button
+        data-testid="remove-context"
+        onClick={() => {
+          const contextToRemove = contexts.find((c) => c.key === 'test-user');
+          if (contextToRemove) {
+            removeContext(contextToRemove.id);
+          }
+        }}
+      >
         Remove
       </button>
       <button data-testid="set-filter" onClick={() => setFilter('test')}>
         Set Filter
       </button>
-      <div data-testid="is-active">{isActive('user', 'test-user') ? 'true' : 'false'}</div>
+      <div data-testid="is-active">
+        {testContextIdRef.current && isActive(testContextIdRef.current) ? 'true' : 'false'}
+      </div>
     </div>
   );
 }
@@ -92,8 +119,8 @@ describe('ContextsProvider', () => {
   describe('Initialization', () => {
     test('loads contexts from localStorage on mount', () => {
       const storedContexts: Context[] = [
-        { kind: 'user', key: 'user-1', name: 'User One' },
-        { kind: 'organization', key: 'org-1', name: 'Org One' },
+        createTestContext({ kind: 'user', key: 'user-1', name: 'User One' }),
+        createTestContext({ kind: 'organization', key: 'org-1', name: 'Org One' }),
       ];
       (loadContexts as any).mockReturnValue(storedContexts);
 
@@ -104,8 +131,8 @@ describe('ContextsProvider', () => {
       );
 
       expect(screen.getByTestId('contexts-count')).toHaveTextContent('2');
-      expect(screen.getByTestId('context-user-user-1')).toHaveTextContent('User One');
-      expect(screen.getByTestId('context-organization-org-1')).toHaveTextContent('Org One');
+      expect(screen.getByTestId(`context-${storedContexts[0].id}`)).toHaveTextContent('User One');
+      expect(screen.getByTestId(`context-${storedContexts[1].id}`)).toHaveTextContent('Org One');
     });
 
     test('starts with empty list when localStorage is empty', () => {
@@ -138,12 +165,16 @@ describe('ContextsProvider', () => {
         expect(screen.getByTestId('contexts-count')).toHaveTextContent('1');
       });
 
-      expect(screen.getByTestId('context-user-test-user')).toHaveTextContent('Test User');
-      expect(saveContexts).toHaveBeenCalledWith([{ kind: 'user', key: 'test-user', name: 'Test User' }]);
+      const savedContexts = (saveContexts as any).mock.calls[0][0];
+      expect(savedContexts).toHaveLength(1);
+      expect(savedContexts[0].kind).toBe('user');
+      expect(savedContexts[0].key).toBe('test-user');
+      expect(savedContexts[0].name).toBe('Test User');
+      expect(savedContexts[0].id).toBeDefined();
     });
 
     test('does not add duplicate contexts', () => {
-      const storedContexts: Context[] = [{ kind: 'user', key: 'test-user', name: 'Existing User' }];
+      const storedContexts: Context[] = [createTestContext({ kind: 'user', key: 'test-user', name: 'Existing User' })];
       (loadContexts as any).mockReturnValue(storedContexts);
 
       render(
@@ -165,8 +196,8 @@ describe('ContextsProvider', () => {
   describe('Removing Contexts', () => {
     test('removes a context from the list', async () => {
       const storedContexts: Context[] = [
-        { kind: 'user', key: 'user-1', name: 'User One' },
-        { kind: 'user', key: 'test-user', name: 'Test User' },
+        createTestContext({ kind: 'user', key: 'user-1', name: 'User One' }),
+        createTestContext({ kind: 'user', key: 'test-user', name: 'Test User' }),
       ];
       (loadContexts as any).mockReturnValue(storedContexts);
 
@@ -185,14 +216,14 @@ describe('ContextsProvider', () => {
         expect(screen.getByTestId('contexts-count')).toHaveTextContent('1');
       });
 
-      expect(screen.queryByTestId('context-user-test-user')).not.toBeInTheDocument();
+      expect(screen.queryByTestId(`context-${storedContexts[1].id}`)).not.toBeInTheDocument();
       expect(saveContexts).toHaveBeenCalled();
     });
 
     test('prevents deletion of active context', async () => {
       const storedContexts: Context[] = [
-        { kind: 'user', key: 'user-1', name: 'User One' },
-        { kind: 'user', key: 'test-user', name: 'Test User' },
+        createTestContext({ kind: 'user', key: 'user-1', name: 'User One' }),
+        createTestContext({ kind: 'user', key: 'test-user', name: 'Test User' }),
       ];
       (loadContexts as any).mockReturnValue(storedContexts);
 
@@ -207,14 +238,22 @@ describe('ContextsProvider', () => {
           <div>
             <div data-testid="contexts-count">{contexts.length}</div>
             {contexts.map((context) => (
-              <div key={`${context.kind}-${context.key}`} data-testid={`context-${context.kind}-${context.key}`}>
+              <div key={context.id} data-testid={`context-${context.id}`}>
                 {context.name || context.key}
               </div>
             ))}
-            <button data-testid="remove-context" onClick={() => removeContext('user', 'test-user')}>
+            <button
+              data-testid="remove-context"
+              onClick={() => {
+                const contextToRemove = contexts.find((c) => c.key === 'test-user');
+                if (contextToRemove) {
+                  removeContext(contextToRemove.id);
+                }
+              }}
+            >
               Remove
             </button>
-            <div data-testid="active-context">{activeContext?.key === 'test-user' ? 'active' : 'inactive'}</div>
+            <div data-testid="active-context">{activeContext?.id === storedContexts[1].id ? 'active' : 'inactive'}</div>
           </div>
         );
       };
@@ -243,7 +282,7 @@ describe('ContextsProvider', () => {
 
       // Context should still be in the list
       expect(screen.getByTestId('contexts-count')).toHaveTextContent('2');
-      expect(screen.getByTestId('context-user-test-user')).toBeInTheDocument();
+      expect(screen.getByTestId(`context-${storedContexts[1].id}`)).toBeInTheDocument();
       // saveContexts should not have been called
       expect(saveContexts).not.toHaveBeenCalled();
 
@@ -254,9 +293,9 @@ describe('ContextsProvider', () => {
   describe('Filtering', () => {
     test('filters contexts by key, kind, or name', async () => {
       const storedContexts: Context[] = [
-        { kind: 'user', key: 'user-1', name: 'John Doe' },
-        { kind: 'organization', key: 'org-1', name: 'Acme Corp' },
-        { kind: 'user', key: 'user-2', name: 'Jane Smith' },
+        createTestContext({ kind: 'user', key: 'user-1', name: 'John Doe' }),
+        createTestContext({ kind: 'organization', key: 'org-1', name: 'Acme Corp' }),
+        createTestContext({ kind: 'user', key: 'user-2', name: 'Jane Smith' }),
       ];
       (loadContexts as any).mockReturnValue(storedContexts);
 
@@ -279,8 +318,8 @@ describe('ContextsProvider', () => {
 
     test('filters by key', async () => {
       const storedContexts: Context[] = [
-        { kind: 'user', key: 'user-1', name: 'User One' },
-        { kind: 'user', key: 'user-2', name: 'User Two' },
+        createTestContext({ kind: 'user', key: 'user-1', name: 'User One' }),
+        createTestContext({ kind: 'user', key: 'user-2', name: 'User Two' }),
       ];
       (loadContexts as any).mockReturnValue(storedContexts);
 
@@ -314,7 +353,7 @@ describe('ContextsProvider', () => {
 
   describe('Active Context Detection', () => {
     test('correctly identifies active context', async () => {
-      const storedContexts: Context[] = [{ kind: 'user', key: 'test-user', name: 'Test User' }];
+      const storedContexts: Context[] = [createTestContext({ kind: 'user', key: 'test-user', name: 'Test User' })];
       (loadContexts as any).mockReturnValue(storedContexts);
 
       const TestWithActiveContext = () => {
@@ -326,9 +365,7 @@ describe('ContextsProvider', () => {
 
         return (
           <div>
-            <div data-testid="is-active">
-              {activeContext?.kind === 'user' && activeContext?.key === 'test-user' ? 'true' : 'false'}
-            </div>
+            <div data-testid="is-active">{activeContext?.id === storedContexts[0].id ? 'true' : 'false'}</div>
           </div>
         );
       };
@@ -371,9 +408,9 @@ describe('ContextsProvider', () => {
   describe('Sorting', () => {
     test('sorts contexts to put active context first', async () => {
       const storedContexts: Context[] = [
-        { kind: 'user', key: 'user-1', name: 'User One' },
-        { kind: 'user', key: 'user-2', name: 'User Two' },
-        { kind: 'user', key: 'user-3', name: 'User Three' },
+        createTestContext({ kind: 'user', key: 'user-1', name: 'User One' }),
+        createTestContext({ kind: 'user', key: 'user-2', name: 'User Two' }),
+        createTestContext({ kind: 'user', key: 'user-3', name: 'User Three' }),
       ];
       (loadContexts as any).mockReturnValue(storedContexts);
 

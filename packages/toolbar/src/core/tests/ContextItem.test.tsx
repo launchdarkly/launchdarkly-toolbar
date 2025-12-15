@@ -64,6 +64,7 @@ vi.mock('motion/react', () => ({
 
 describe('ContextItem', () => {
   const mockContext: Context = {
+    id: 'test-context-id-123',
     kind: 'user',
     key: 'test-user-123',
     name: 'Test User',

@@ -46,6 +46,7 @@ export interface FlagsPaginationParams {
 }
 
 export interface Context {
+  id: string;
   kind: string;
   key?: string;
   name: string;

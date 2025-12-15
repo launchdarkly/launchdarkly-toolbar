@@ -2,7 +2,7 @@ import { createContext, useCallback, useContext, useEffect, useMemo, useRef, use
 import { loadContexts, saveContexts, loadActiveContext, saveActiveContext } from '../../utils/localStorage';
 import { Context } from '../../types/ldApi';
 import { usePlugins } from '../state/PluginsProvider';
-import { extractContextInfo } from '../../utils/context';
+import { extractContextInfo, generateContextId } from '../../utils/context';
 import { useAnalytics } from '../telemetry/AnalyticsProvider';
 import type { LDContext } from 'launchdarkly-js-client-sdk';
 
@@ -11,8 +11,8 @@ interface ContextsContextType {
   filter: string;
   setFilter: (filter: string) => void;
   addContext: (context: Context) => void;
-  removeContext: (kind: string, key: string) => void;
-  updateContext: (oldKind: string, oldKey: string, newContext: Context) => void;
+  removeContext: (id: string) => void;
+  updateContext: (id: string, newContext: Context) => void;
   setContext: (context: Context) => Promise<void>;
   activeContext: Context | null;
   isAddFormOpen: boolean;
@@ -38,18 +38,21 @@ export const ContextsProvider = ({ children }: { children: React.ReactNode }) =>
   const addContext = useCallback(
     (context: Context) => {
       setStoredContexts((prev) => {
-        // Check if context already exists (by kind and key)
-        const exists = prev.some((c) => c.kind === context.kind && c.key === context.key);
+        // Ensure context has an id
+        const contextWithId = context.id ? context : { ...context, id: generateContextId() };
+
+        // Check if context already exists (by id)
+        const exists = prev.some((c) => c.id === contextWithId.id);
         if (exists) {
           return prev; // Don't add duplicates
         }
-        const updated = [...prev, context];
+        const updated = [...prev, contextWithId];
         saveContexts(updated);
 
         // Track analytics
-        const isMultiKind = context.kind === 'multi';
-        const contextKey = isMultiKind ? context.name || 'multi-kind' : context.key || '';
-        analytics.trackContextAdded(context.kind, contextKey, isMultiKind);
+        const isMultiKind = contextWithId.kind === 'multi';
+        const contextKey = isMultiKind ? contextWithId.name || 'multi-kind' : contextWithId.key || '';
+        analytics.trackContextAdded(contextWithId.kind, contextKey, isMultiKind);
 
         return updated;
       });
@@ -59,19 +62,22 @@ export const ContextsProvider = ({ children }: { children: React.ReactNode }) =>
 
   // Remove a context from the list
   const removeContext = useCallback(
-    (kind: string, key: string) => {
+    (id: string) => {
       // Prevent deletion of active context
-      if (activeContext?.kind === kind && activeContext?.key === key) {
+      if (activeContext?.id === id) {
         console.warn('Cannot delete active context');
         return;
       }
 
       setStoredContexts((prev) => {
-        const updated = prev.filter((c) => !(c.kind === kind && c.key === key));
+        const contextToRemove = prev.find((c) => c.id === id);
+        const updated = prev.filter((c) => c.id !== id);
         saveContexts(updated);
 
         // Track analytics
-        analytics.trackContextRemoved(kind, key);
+        if (contextToRemove) {
+          analytics.trackContextRemoved(contextToRemove.kind, contextToRemove.key ?? '');
+        }
 
         return updated;
       });
@@ -81,27 +87,34 @@ export const ContextsProvider = ({ children }: { children: React.ReactNode }) =>
 
   // Update a context in the list
   const updateContext = useCallback(
-    (oldKind: string, oldKey: string, newContext: Context) => {
+    (id: string, newContext: Context) => {
       setStoredContexts((prev) => {
+        const oldContext = prev.find((c) => c.id === id);
         const updated = prev.map((c) => {
-          if (c.kind === oldKind && c.key === oldKey) {
-            return newContext;
+          if (c.id === id) {
+            // Preserve the id when updating
+            return { ...newContext, id };
           }
           return c;
         });
         saveContexts(updated);
+
+        // If the updated context is the active context, update it
+        if (activeContext?.id === id) {
+          const updatedActiveContext = { ...newContext, id };
+          setActiveContext(updatedActiveContext);
+          saveActiveContext(updatedActiveContext);
+        }
+
+        // Track analytics
+        if (oldContext) {
+          const oldKey = oldContext.key || oldContext.name || '';
+          const newKey = newContext.key || newContext.name || '';
+          analytics.trackContextUpdated(oldContext.kind, oldKey, newContext.kind, newKey);
+        }
+
         return updated;
       });
-
-      // If the updated context is the active context, update it
-      if (activeContext?.kind === oldKind && activeContext?.key === oldKey) {
-        setActiveContext(newContext);
-        saveActiveContext(newContext);
-      }
-
-      // Track analytics
-      const newKey = newContext.key || newContext.name || '';
-      analytics.trackContextUpdated(oldKind, oldKey, newContext.kind, newKey);
     },
     [activeContext, analytics],
   );
@@ -152,9 +165,7 @@ export const ContextsProvider = ({ children }: { children: React.ReactNode }) =>
     const savedActiveContext = loadActiveContext();
     if (savedActiveContext) {
       // Verify the saved context still exists in the stored contexts
-      const contextExists = storedContexts.some(
-        (c) => c.kind === savedActiveContext.kind && c.key === savedActiveContext.key,
-      );
+      const contextExists = storedContexts.some((c) => c.id === savedActiveContext.id);
 
       if (contextExists) {
         // Set the context asynchronously to avoid blocking render
@@ -188,17 +199,15 @@ export const ContextsProvider = ({ children }: { children: React.ReactNode }) =>
         const currentContext = extractContextInfo(currentLdContext);
 
         if (currentContext) {
-          // Find matching context in stored contexts
+          // Find matching context in stored contexts by kind and key
+          // (since currentContext from SDK doesn't have our id)
           const matchingContext = storedContexts.find(
             (c) => c.kind === currentContext.kind && c.key === currentContext.key,
           );
 
           if (matchingContext) {
             // Update active context if it's different
-            const isDifferent =
-              !activeContext ||
-              activeContext.kind !== matchingContext.kind ||
-              activeContext.key !== matchingContext.key;
+            const isDifferent = !activeContext || activeContext.id !== matchingContext.id;
 
             if (isDifferent) {
               setActiveContext(matchingContext);
@@ -265,6 +274,7 @@ export const ContextsProvider = ({ children }: { children: React.ReactNode }) =>
       // Convert CurrentContextInfo to ApiContext format
       // Use key for name if name is not present
       const apiContext: Context = {
+        id: generateContextId(),
         kind: currentSdkContext.kind,
         key: currentSdkContext.key,
         name: currentSdkContext.name,
@@ -295,10 +305,8 @@ export const ContextsProvider = ({ children }: { children: React.ReactNode }) =>
 
     // Sort to put active context first
     return filtered.sort((a, b) => {
-      const aIsActive =
-        activeContext?.kind === a.kind && activeContext?.key === a.key && activeContext?.name === a.name;
-      const bIsActive =
-        activeContext?.kind === b.kind && activeContext?.key === b.key && activeContext?.name === b.name;
+      const aIsActive = activeContext?.id === a.id;
+      const bIsActive = activeContext?.id === b.id;
       if (aIsActive && !bIsActive) return -1;
       if (!aIsActive && bIsActive) return 1;
       return 0;
