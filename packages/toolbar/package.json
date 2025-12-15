@@ -95,7 +95,7 @@
     "@vanilla-extract/webpack-plugin": "^2.3.24",
     "@vitest/coverage-v8": "4.0.15",
     "css-loader": "^7.1.2",
-    "jsdom": "^27.2.0",
+    "jsdom": "^27.3.0",
     "launchdarkly-js-client-sdk": "^3.9.0",
     "motion": "^12.23.26",
     "oxlint": "^1.32.0",
