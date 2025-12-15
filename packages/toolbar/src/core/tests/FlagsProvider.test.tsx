@@ -32,6 +32,12 @@ vi.mock('../ui/Toolbar/context/state/ActiveTabProvider', () => ({
   })),
 }));
 
+vi.mock('../ui/Toolbar/context/state/ToolbarStateProvider', () => ({
+  useToolbarState: vi.fn(() => ({
+    mode: 'sdk',
+  })),
+}));
+
 import { useProjectContext } from '../ui/Toolbar/context/api/ProjectProvider';
 import { useApi } from '../ui/Toolbar/context/api/ApiProvider';
 import { useAuthContext } from '../ui/Toolbar/context/api/AuthProvider';
@@ -172,7 +178,7 @@ describe('FlagsProvider', () => {
       });
     });
 
-    test('shows loading state when no project is selected yet', async () => {
+    test('does not show loading state when no project is selected yet', async () => {
       // GIVEN: Project hasn't been selected/loaded yet
       (useProjectContext as any).mockReturnValue({
         projectKey: '', // Empty!
@@ -180,15 +186,16 @@ describe('FlagsProvider', () => {
 
       // WHEN: Provider initializes
       render(
-        <FlagsProvider>
-          <TestConsumer />
-        </FlagsProvider>,
+        <TestWrapper>
+          <FlagsProvider>
+            <TestConsumer />
+          </FlagsProvider>
+        </TestWrapper>,
       );
 
-      // THEN: Shows loading (waiting for project)
-      await waitFor(() => {
-        expect(screen.getByTestId('loading')).toHaveTextContent('true');
-      });
+      // THEN: Does not show loading (no project to load)
+      expect(screen.getByTestId('loading')).toHaveTextContent('false');
+      expect(screen.getByTestId('flags-count')).toHaveTextContent('0');
     });
   });
 
@@ -433,32 +440,30 @@ describe('FlagsProvider', () => {
     });
   });
 
-  describe('Active Tab Optimization', () => {
-    test('only fetches flags when a flag tab is active', async () => {
-      // GIVEN: Settings tab is active (not a flag tab)
-      (useActiveTabContext as any).mockReturnValue({
-        activeTab: 'settings',
-        setActiveTab: vi.fn(),
-      });
-
+  describe('SDK Mode - Initial Load Only', () => {
+    test('only loads flags initially for SDK mode, not when switching tabs', async () => {
+      // GIVEN: SDK mode, flags should load initially regardless of active tab
       mockGetFlags.mockResolvedValue(
         createFlagsResponse([{ key: 'flag-1', name: 'Flag 1', kind: 'boolean' } as ApiFlag]),
       );
 
-      // WHEN: Provider initializes
+      // WHEN: Provider initializes in SDK mode
       render(
-        <FlagsProvider>
-          <TestConsumer />
-        </FlagsProvider>,
+        <TestWrapper>
+          <FlagsProvider>
+            <TestConsumer />
+          </FlagsProvider>
+        </TestWrapper>,
       );
 
-      // THEN: No API call is made (tab is not active)
+      // THEN: Flags are loaded initially (for SDK mode)
       await waitFor(() => {
-        expect(mockGetFlags).not.toHaveBeenCalled();
+        expect(mockGetFlags).toHaveBeenCalled();
       });
 
-      // AND: No flags are loaded
-      expect(screen.getByTestId('flags-count')).toHaveTextContent('0');
+      await waitFor(() => {
+        expect(screen.getByTestId('flags-count')).toHaveTextContent('1');
+      });
     });
 
     test('fetches flags when flag-sdk tab is active', async () => {
@@ -653,10 +658,8 @@ describe('FlagsProvider', () => {
         </TestWrapper>,
       );
 
-      // Still waiting for project
-      await waitFor(() => {
-        expect(screen.getByTestId('loading')).toHaveTextContent('true');
-      });
+      // Still no flags (no project selected)
+      expect(screen.getByTestId('flags-count')).toHaveTextContent('0');
 
       // WHEN: Project is selected
       (useProjectContext as any).mockReturnValue({ projectKey: 'my-project' });

@@ -5,7 +5,6 @@ export const toolbarContainer = style({
   position: 'fixed',
   zIndex: Z_INDEX.TOOLBAR,
   backgroundColor: 'var(--lp-color-gray-950)',
-  border: '1px solid var(--lp-color-gray-700)',
   overflow: 'hidden',
   cursor: 'pointer',
   display: 'flex',

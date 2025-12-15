@@ -4,7 +4,7 @@ export const container = style({
   backgroundColor: 'var(--lp-color-gray-950)',
   color: 'var(--lp-color-gray-200)',
   height: '600px',
-  borderRadius: '8px',
+  borderRadius: '12px',
   border: '1px solid var(--lp-color-gray-700)',
   display: 'flex',
   flexDirection: 'column',
