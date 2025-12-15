@@ -28,6 +28,19 @@
   "module": "./dist/js/index.js",
   "types": "./dist/index.d.ts",
   "typings": "./dist/index.d.ts",
+  "typesVersions": {
+    "*": {
+      "plugins": [
+        "./dist/plugins.d.ts"
+      ],
+      "react": [
+        "./dist/react.d.ts"
+      ],
+      "types": [
+        "./dist/types-entry.d.ts"
+      ]
+    }
+  },
   "sideEffects": false,
   "files": [
     "dist",
@@ -44,6 +57,36 @@
       "require": {
         "types": "./dist/index.d.ts",
         "default": "./dist/index.cjs"
+      }
+    },
+    "./plugins": {
+      "import": {
+        "types": "./dist/plugins.d.ts",
+        "default": "./dist/js/plugins.js"
+      },
+      "require": {
+        "types": "./dist/plugins.d.ts",
+        "default": "./dist/plugins.cjs"
+      }
+    },
+    "./react": {
+      "import": {
+        "types": "./dist/react.d.ts",
+        "default": "./dist/js/react.js"
+      },
+      "require": {
+        "types": "./dist/react.d.ts",
+        "default": "./dist/react.cjs"
+      }
+    },
+    "./types": {
+      "import": {
+        "types": "./dist/types-entry.d.ts",
+        "default": "./dist/js/types-entry.js"
+      },
+      "require": {
+        "types": "./dist/types-entry.d.ts",
+        "default": "./dist/types-entry.cjs"
       }
     }
   },
