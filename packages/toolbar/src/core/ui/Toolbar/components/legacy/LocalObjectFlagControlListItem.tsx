@@ -1,18 +1,18 @@
 import { LocalObjectFlagControl } from './LocalFlagControls';
 import { Diagnostic } from '@codemirror/lint';
 import { AnimatePresence, motion } from 'motion/react';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { EnhancedFlag } from '../../../../types/devServer';
 import { JsonEditor } from '../../../JsonEditor/JsonEditor';
 import { ListItem } from '../../../List/ListItem';
 import { VIRTUALIZATION, EASING } from '../../constants';
-import { LocalFlag, useStarredFlags } from '../../context';
+import { LocalFlag, useAnalytics, useStarredFlags } from '../../context';
 import { OverrideIndicator } from '../OverrideIndicator';
 import { StarButton } from '../../../Buttons/StarButton';
 
 import * as sharedStyles from './TabContent/FlagDevServerTabContent.css';
 import * as styles from './LocalObjectFlagControlListItem.css';
-import { FlagKeyWithCopy } from '../FlagKeyWithCopy';
+import { CopyableText } from '../CopyableText';
 
 interface LocalObjectFlagControlListItemProps {
   handleClearOverride: (key: string) => void;
@@ -32,6 +32,7 @@ export function LocalObjectFlagControlListItem(props: LocalObjectFlagControlList
   const [isEditing, setIsEditing] = useState(false);
   const [tempValue, setTempValue] = useState(currentValue);
   const [hasErrors, setHasErrors] = useState(false);
+  const analytics = useAnalytics();
 
   // Since this is a virtualized item, we need to set the height to the standard item height when the component mounts
   // This happens specifically if the user is editing a JSON flag, scrolls to the point where the item is no longer visible,
@@ -68,6 +69,13 @@ export function LocalObjectFlagControlListItem(props: LocalObjectFlagControlList
     handleHeightChange(VIRTUALIZATION.ITEM_HEIGHT + height + 20); // 20px for padding
   };
 
+  const handleCopy = useCallback(
+    (text: string) => {
+      analytics.trackFlagKeyCopy(text);
+    },
+    [analytics],
+  );
+
   return (
     <div
       data-testid={`flag-row-${flag.key}`}
@@ -88,7 +96,7 @@ export function LocalObjectFlagControlListItem(props: LocalObjectFlagControlList
                 </span>
                 {flag.isOverridden && <OverrideIndicator onClear={() => handleClearOverride(flag.key)} />}
               </span>
-              <FlagKeyWithCopy flagKey={flag.key} className={sharedStyles.flagKey} />
+              <CopyableText text={flag.key} className={sharedStyles.flagKey} onCopy={handleCopy} />
             </div>
             <div className={sharedStyles.flagOptions}>
               <LocalObjectFlagControl

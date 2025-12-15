@@ -45,7 +45,7 @@ jobs:
         run: npm install -g npm@latest
 
       - name: Publish Package (prerelease)
-        if: ${{ fromJson(steps.release.outputs.releases_created) && contains(steps.release.outputs.tag_name, '-') }}
+        if: ${{ fromJson(steps.release.outputs.releases_created) && contains(steps.release.outputs.tag_name, 'beta') }}
         shell: bash
         working-directory: ./packages/toolbar
         run: npm publish --provenance --tag next --access public
@@ -53,7 +53,7 @@ jobs:
           NPM_CONFIG_PROVENANCE: true
 
       - name: Publish Package (release)
-        if: ${{ fromJson(steps.release.outputs.releases_created) && !contains(steps.release.outputs.tag_name, '-') }}
+        if: ${{ fromJson(steps.release.outputs.releases_created) && !contains(steps.release.outputs.tag_name, 'beta') }}
         shell: bash
         working-directory: ./packages/toolbar
         run: npm publish --provenance --access public

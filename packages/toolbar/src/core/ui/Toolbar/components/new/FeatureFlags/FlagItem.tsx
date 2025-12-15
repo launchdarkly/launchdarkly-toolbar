@@ -1,7 +1,7 @@
 import React, { useState, useCallback } from 'react';
 import { motion } from 'motion/react';
 import * as styles from './FlagItem.module.css';
-import { FlagKeyWithCopy } from '../../FlagKeyWithCopy';
+import { CopyableText } from '../../CopyableText';
 import { NormalizedFlag } from './types';
 import {
   BooleanFlagControl,
@@ -98,6 +98,13 @@ export function FlagItem({
     analytics.trackOpenFlagDeeplink(flag.key, baseUrl);
   }, [analytics, flag.key, baseUrl]);
 
+  const handleCopy = useCallback(
+    (text: string) => {
+      analytics.trackFlagKeyCopy(text);
+    },
+    [analytics],
+  );
+
   // Object/JSON flags have a different layout structure
   if (flag.type === 'object') {
     return (
@@ -120,7 +127,7 @@ export function FlagItem({
                   <ExternalLinkIcon size="small" className={styles.externalLinkIcon} />
                 </a>
               </div>
-              <FlagKeyWithCopy flagKey={flag.key} />
+              <CopyableText text={flag.key} onCopy={handleCopy} />
             </div>
           </div>
           <div className={styles.control}>
@@ -194,7 +201,7 @@ export function FlagItem({
               <ExternalLinkIcon size="small" className={styles.externalLinkIcon} />
             </a>
           </div>
-          <FlagKeyWithCopy flagKey={flag.key} />
+          <CopyableText text={flag.key} onCopy={handleCopy} />
         </div>
       </div>
       <div className={styles.control}>{renderControl()}</div>

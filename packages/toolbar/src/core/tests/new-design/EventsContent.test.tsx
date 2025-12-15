@@ -15,7 +15,7 @@ let mockEventPlugin: IEventInterceptionPlugin | undefined = undefined;
 // Mock the new context hooks
 vi.mock('../../ui/Toolbar/components/new/context', () => ({
   useTabSearchContext: () => ({
-    searchTerms: { monitoring: mockSearchTerm },
+    searchTerms: { events: mockSearchTerm },
     setSearchTerm: vi.fn(),
   }),
   TabSearchProvider: ({ children }: { children: React.ReactNode }) => <>{children}</>,

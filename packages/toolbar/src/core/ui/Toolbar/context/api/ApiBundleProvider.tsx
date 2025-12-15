@@ -1,5 +1,6 @@
 import { ApiProvider } from './ApiProvider';
 import { AuthProvider } from './AuthProvider';
+import { ContextsProvider } from './ContextsProvider';
 import { EnvironmentProvider } from './EnvironmentProvider';
 import { FlagsProvider } from './FlagsProvider';
 import { IFrameProvider } from './IFrameProvider';
@@ -21,7 +22,9 @@ export function ApiBundleProvider(props: ApiBundleProviderProps) {
         <ApiProvider>
           <ProjectProvider clientSideId={clientSideId} providedProjectKey={providedProjectKey}>
             <EnvironmentProvider clientSideId={clientSideId}>
-              <FlagsProvider>{children}</FlagsProvider>
+              <FlagsProvider>
+                <ContextsProvider>{children}</ContextsProvider>
+              </FlagsProvider>
             </EnvironmentProvider>
           </ProjectProvider>
         </ApiProvider>

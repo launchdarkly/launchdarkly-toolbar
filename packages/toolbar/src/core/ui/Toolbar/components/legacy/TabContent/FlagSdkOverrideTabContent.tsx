@@ -20,9 +20,9 @@ import { OverrideIndicator } from '../../OverrideIndicator';
 import { StarButton } from '../../../../Buttons/StarButton';
 import { LocalBooleanFlagControl, LocalStringNumberFlagControl } from '../LocalFlagControls';
 import { LocalObjectFlagControlListItem } from '../LocalObjectFlagControlListItem';
+import { CopyableText } from '../../CopyableText';
 
 import * as sharedStyles from './FlagDevServerTabContent.css';
-import { FlagKeyWithCopy } from '../../FlagKeyWithCopy';
 
 interface FlagSdkOverrideTabContentInnerProps {
   flagOverridePlugin: IFlagOverridePlugin;
@@ -124,6 +124,37 @@ function FlagSdkOverrideTabContentInner(props: FlagSdkOverrideTabContentInnerPro
     overscan: VIRTUALIZATION.OVERSCAN,
   });
 
+  // All hooks must be called before any conditional returns
+  const handleToggleStarred = useCallback(
+    (flagKey: string) => {
+      const wasPreviouslyStarred = isStarred(flagKey);
+      toggleStarred(flagKey);
+      analytics.trackStarredFlag(flagKey, wasPreviouslyStarred ? 'unstar' : 'star');
+    },
+    [isStarred, toggleStarred, analytics],
+  );
+
+  const handleHeightChange = useCallback(
+    (index: number, height: number) => {
+      if (height > VIRTUALIZATION.ITEM_HEIGHT) {
+        virtualizer.resizeItem(index, height);
+      } else {
+        setTimeout(() => {
+          virtualizer.resizeItem(index, height);
+        }, 125);
+      }
+    },
+    [virtualizer],
+  );
+
+  const handleCopy = useCallback(
+    (text: string) => {
+      analytics.trackFlagKeyCopy(text);
+    },
+    [analytics],
+  );
+
+  // Now we can do conditional returns
   if (!flagOverridePlugin) {
     return (
       <GenericHelpText
@@ -165,28 +196,6 @@ function FlagSdkOverrideTabContentInner(props: FlagSdkOverrideTabContentInnerPro
     analytics.trackFilterChange(FILTER_MODES.ALL, 'selected');
     setActiveFilters(new Set([FILTER_MODES.ALL]));
   };
-
-  const handleToggleStarred = useCallback(
-    (flagKey: string) => {
-      const wasPreviouslyStarred = isStarred(flagKey);
-      toggleStarred(flagKey);
-      analytics.trackStarredFlag(flagKey, wasPreviouslyStarred ? 'unstar' : 'star');
-    },
-    [isStarred, toggleStarred, analytics],
-  );
-
-  const handleHeightChange = useCallback(
-    (index: number, height: number) => {
-      if (height > VIRTUALIZATION.ITEM_HEIGHT) {
-        virtualizer.resizeItem(index, height);
-      } else {
-        setTimeout(() => {
-          virtualizer.resizeItem(index, height);
-        }, 125);
-      }
-    },
-    [virtualizer],
-  );
 
   const renderFlagControl = (flag: LocalFlag) => {
     const handleOverride = (value: any) => handleSetOverride(flag.key, value);
@@ -319,7 +328,7 @@ function FlagSdkOverrideTabContentInner(props: FlagSdkOverrideTabContentInnerPro
                               </span>
                               {flag.isOverridden && <OverrideIndicator onClear={() => handleClearOverride(flagKey)} />}
                             </span>
-                            <FlagKeyWithCopy flagKey={flagKey} className={sharedStyles.flagKey} />
+                            <CopyableText text={flagKey} className={sharedStyles.flagKey} onCopy={handleCopy} />
                           </div>
 
                           <div className={sharedStyles.flagOptions}>

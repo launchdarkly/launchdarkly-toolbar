@@ -23,3 +23,4 @@ export { FlaskIcon } from './FlaskIcon';
 export { ExternalLinkIcon } from './ExternalLinkIcon';
 export { CursorIcon } from './CursorIcon';
 export { InfoIcon } from './InfoIcon';
+export { AddIcon } from './AddIcon';
