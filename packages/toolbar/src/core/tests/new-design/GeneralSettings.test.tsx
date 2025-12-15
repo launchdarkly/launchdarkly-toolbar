@@ -12,7 +12,7 @@ let mockSearchTerm = '';
 // Mock the TabSearchProvider hook
 vi.mock('../../ui/Toolbar/components/new/context/TabSearchProvider', () => ({
   useTabSearchContext: () => ({
-    searchTerms: { settings: mockSearchTerm },
+    searchTerms: { general: mockSearchTerm },
     setSearchTerm: vi.fn(),
   }),
   TabSearchProvider: ({ children }: { children: React.ReactNode }) => <>{children}</>,

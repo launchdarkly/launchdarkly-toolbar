@@ -28,6 +28,13 @@ const EVENTS = {
   PROJECT_SWITCHED: 'project.switched',
   REFRESH: 'refresh',
   FEEDBACK_SUBMITTED: 'feedback.submitted',
+  CONTEXT_ADDED: 'context.added',
+  CONTEXT_REMOVED: 'context.removed',
+  CONTEXT_UPDATED: 'context.updated',
+  CONTEXT_SELECTED: 'context.selected',
+  CONTEXT_EDIT_STARTED: 'context.edit.started',
+  CONTEXT_EDIT_CANCELLED: 'context.edit.cancelled',
+  CONTEXT_KEY_COPIED: 'context.key.copied',
 } as const;
 
 /**
@@ -275,6 +282,78 @@ export class ToolbarAnalytics {
   trackFlagKeyCopy(flagKey: string): void {
     this.track(EVENTS.COPY_FLAG_KEY, {
       flagKey,
+    });
+  }
+
+  /**
+   * Track context added
+   */
+  trackContextAdded(contextKind: string, contextKey: string, isMultiKind: boolean): void {
+    this.track(EVENTS.CONTEXT_ADDED, {
+      contextKind,
+      contextKey,
+      isMultiKind,
+    });
+  }
+
+  /**
+   * Track context removed
+   */
+  trackContextRemoved(contextKind: string, contextKey: string): void {
+    this.track(EVENTS.CONTEXT_REMOVED, {
+      contextKind,
+      contextKey,
+    });
+  }
+
+  /**
+   * Track context updated
+   */
+  trackContextUpdated(oldKind: string, oldKey: string, newKind: string, newKey: string): void {
+    this.track(EVENTS.CONTEXT_UPDATED, {
+      oldKind,
+      oldKey,
+      newKind,
+      newKey,
+    });
+  }
+
+  /**
+   * Track context selected/activated
+   */
+  trackContextSelected(contextKind: string, contextKey: string): void {
+    this.track(EVENTS.CONTEXT_SELECTED, {
+      contextKind,
+      contextKey,
+    });
+  }
+
+  /**
+   * Track context edit started
+   */
+  trackContextEditStarted(contextKind: string, contextKey: string): void {
+    this.track(EVENTS.CONTEXT_EDIT_STARTED, {
+      contextKind,
+      contextKey,
+    });
+  }
+
+  /**
+   * Track context edit cancelled
+   */
+  trackContextEditCancelled(contextKind: string, contextKey: string): void {
+    this.track(EVENTS.CONTEXT_EDIT_CANCELLED, {
+      contextKind,
+      contextKey,
+    });
+  }
+
+  /**
+   * Track context key copy
+   */
+  trackContextKeyCopy(contextKey: string): void {
+    this.track(EVENTS.CONTEXT_KEY_COPIED, {
+      contextKey,
     });
   }
 }

@@ -1,5 +1,13 @@
 # Changelog
 
+## [2.4.1-beta.1](https://github.com/launchdarkly/launchdarkly-toolbar/compare/2.4.0-beta.1...2.4.1-beta.1) (2025-12-15)
+
+
+### Bug Fixes
+
+* prevent UI flashing during initialization ([#429](https://github.com/launchdarkly/launchdarkly-toolbar/issues/429)) ([e09e22d](https://github.com/launchdarkly/launchdarkly-toolbar/commit/e09e22d96cdeb1cd8e34e869722ac4dd9a59b210))
+* update click handling in SubtabDropdown component ([#428](https://github.com/launchdarkly/launchdarkly-toolbar/issues/428)) ([72a8843](https://github.com/launchdarkly/launchdarkly-toolbar/commit/72a8843607b6d266526490a0f7c4d9f64debc902))
+
 ## [2.4.0-beta.1](https://github.com/launchdarkly/launchdarkly-toolbar/compare/2.3.0-beta.1...2.4.0-beta.1) (2025-12-15)
 
 

@@ -36,6 +36,16 @@ vi.mock('../../ui/Toolbar/components/new/Tooltip', () => ({
   ),
 }));
 
+// Mock the usePlugins hook
+vi.mock('../../ui/Toolbar/context/state/PluginsProvider', () => ({
+  usePlugins: vi.fn(() => ({
+    flagOverridePlugin: null,
+    eventInterceptionPlugin: null,
+    baseUrl: '',
+  })),
+  PluginsProvider: ({ children }: { children: React.ReactNode }) => <>{children}</>,
+}));
+
 vi.mock('../../ui/Toolbar/components/new/Interactive/SelectionOverlay', () => ({
   SelectionOverlay: () => {
     const { isSelecting, selectedElement } = useElementSelection();

@@ -32,7 +32,7 @@ export const container = style({
   },
 });
 
-export const flagKeyText = style({
+export const text = style({
   fontSize: '12px',
   color: 'var(--lp-color-gray-400)',
   fontFamily: 'var(--lp-font-family-monospace)',

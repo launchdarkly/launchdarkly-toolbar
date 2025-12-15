@@ -14,18 +14,20 @@ interface JsonEditorProps {
   onFocus?: () => void;
   onBlur?: (e: React.FocusEvent<HTMLDivElement>, value: string) => void;
   onChange?: (value: string, viewUpdate: ViewUpdate) => void;
-  onLintErrors: (errors: Diagnostic[]) => void;
+  onLintErrors?: (errors: Diagnostic[]) => void;
   initialState?: {
     startCursorAtLine?: number;
     autoFocus?: boolean;
   };
   onEditorHeightChange: (height: number) => void;
+  readOnly?: boolean;
 }
 
 const External = Annotation.define<boolean>();
 
 export function JsonEditor(props: JsonEditorProps) {
-  const { editorId, docString, onFocus, onBlur, onChange, onLintErrors, initialState, onEditorHeightChange } = props;
+  const { editorId, docString, onFocus, onBlur, onChange, onLintErrors, initialState, onEditorHeightChange, readOnly } =
+    props;
 
   const containerRef = useRef<HTMLDivElement | null>(null);
   const editorRef = useRef<EditorView | null>(null);
@@ -65,16 +67,17 @@ export function JsonEditor(props: JsonEditorProps) {
     if (containerRef.current && !editorRef.current) {
       const theme = getThemeForMode();
 
-      const keymaps = [...defaultKeymap, ...lintKeymap, ...historyKeymap, indentWithTab];
+      const keymaps = readOnly ? [] : [...defaultKeymap, ...lintKeymap, ...historyKeymap, indentWithTab];
       const extensions = [
         EditorView.updateListener.of(onChangeCallback),
         EditorView.updateListener.of(onLintChangeCallback),
         json(),
-        jsonLint(),
-        history(),
+        ...(readOnly ? [] : [jsonLint()]),
+        ...(readOnly ? [] : [history()]),
         ...theme,
         EditorView.lineWrapping,
-        keymap.of(keymaps),
+        ...(readOnly ? [EditorState.readOnly.of(true)] : []),
+        ...(keymaps.length > 0 ? [keymap.of(keymaps)] : []),
       ];
       const state = EditorState.create({
         doc: docString,

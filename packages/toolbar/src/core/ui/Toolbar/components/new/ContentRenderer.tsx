@@ -2,13 +2,9 @@ import { useActiveTabContext } from '../../context';
 import { useActiveSubtabContext } from './context/ActiveSubtabProvider';
 import { SettingsContent } from './Settings/SettingsContent';
 import { FlagListContent } from './FeatureFlags/FlagListContent';
+import { ContextListContent } from './Contexts/ContextListContent';
 import { EventsContent } from './Monitoring/EventsContent';
 import { InteractiveContent } from './Interactive';
-
-// Placeholder content components - to be implemented later
-function ContextContent() {
-  return <div>Context Content</div>;
-}
 
 export function ContentRenderer() {
   const { activeTab } = useActiveTabContext();
@@ -19,8 +15,8 @@ export function ContentRenderer() {
     switch (activeSubtab) {
       case 'flags':
         return <FlagListContent />;
-      case 'context':
-        return <ContextContent />;
+      case 'contexts':
+        return <ContextListContent />;
       default:
         return <FlagListContent />;
     }
