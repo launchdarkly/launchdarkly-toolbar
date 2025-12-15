@@ -23,6 +23,19 @@ vi.mock('../ui/Toolbar/context/state/PluginsProvider', () => ({
   })),
 }));
 
+// Mock analytics
+vi.mock('../ui/Toolbar/context/telemetry/AnalyticsProvider', () => ({
+  useAnalytics: vi.fn().mockReturnValue({
+    trackContextAdded: vi.fn(),
+    trackContextRemoved: vi.fn(),
+    trackContextUpdated: vi.fn(),
+    trackContextSelected: vi.fn(),
+    trackContextEditStarted: vi.fn(),
+    trackContextEditCancelled: vi.fn(),
+    trackContextKeyCopy: vi.fn(),
+  }),
+}));
+
 // Mock JsonEditor
 vi.mock('../ui/Toolbar/components/../../JsonEditor/JsonEditor', () => ({
   JsonEditor: ({ docString, onChange, onLintErrors }: any) => {

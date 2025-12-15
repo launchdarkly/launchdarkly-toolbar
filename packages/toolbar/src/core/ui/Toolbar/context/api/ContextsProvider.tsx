@@ -3,6 +3,7 @@ import { loadContexts, saveContexts, loadActiveContext, saveActiveContext } from
 import { Context } from '../../types/ldApi';
 import { usePlugins } from '../state/PluginsProvider';
 import { extractContextInfo } from '../../utils/context';
+import { useAnalytics } from '../telemetry/AnalyticsProvider';
 import type { LDContext } from 'launchdarkly-js-client-sdk';
 
 interface ContextsContextType {
@@ -22,6 +23,7 @@ const ContextsContext = createContext<ContextsContextType | undefined>(undefined
 
 export const ContextsProvider = ({ children }: { children: React.ReactNode }) => {
   const { flagOverridePlugin, eventInterceptionPlugin } = usePlugins();
+  const analytics = useAnalytics();
   const [storedContexts, setStoredContexts] = useState<Context[]>(loadContexts);
   const [activeContext, setActiveContext] = useState<Context | null>(loadActiveContext());
   const [filter, setFilter] = useState('');
@@ -33,18 +35,27 @@ export const ContextsProvider = ({ children }: { children: React.ReactNode }) =>
   const ldClient = flagOverridePlugin?.getClient() ?? eventInterceptionPlugin?.getClient() ?? null;
 
   // Add a new context to the list
-  const addContext = useCallback((context: Context) => {
-    setStoredContexts((prev) => {
-      // Check if context already exists (by kind and key)
-      const exists = prev.some((c) => c.kind === context.kind && c.key === context.key);
-      if (exists) {
-        return prev; // Don't add duplicates
-      }
-      const updated = [...prev, context];
-      saveContexts(updated);
-      return updated;
-    });
-  }, []);
+  const addContext = useCallback(
+    (context: Context) => {
+      setStoredContexts((prev) => {
+        // Check if context already exists (by kind and key)
+        const exists = prev.some((c) => c.kind === context.kind && c.key === context.key);
+        if (exists) {
+          return prev; // Don't add duplicates
+        }
+        const updated = [...prev, context];
+        saveContexts(updated);
+
+        // Track analytics
+        const isMultiKind = context.kind === 'multi';
+        const contextKey = isMultiKind ? context.name || 'multi-kind' : context.key || '';
+        analytics.trackContextAdded(context.kind, contextKey, isMultiKind);
+
+        return updated;
+      });
+    },
+    [analytics],
+  );
 
   // Remove a context from the list
   const removeContext = useCallback(
@@ -58,10 +69,14 @@ export const ContextsProvider = ({ children }: { children: React.ReactNode }) =>
       setStoredContexts((prev) => {
         const updated = prev.filter((c) => !(c.kind === kind && c.key === key));
         saveContexts(updated);
+
+        // Track analytics
+        analytics.trackContextRemoved(kind, key);
+
         return updated;
       });
     },
-    [activeContext],
+    [activeContext, analytics],
   );
 
   // Update a context in the list
@@ -83,8 +98,12 @@ export const ContextsProvider = ({ children }: { children: React.ReactNode }) =>
         setActiveContext(newContext);
         saveActiveContext(newContext);
       }
+
+      // Track analytics
+      const newKey = newContext.key || newContext.name || '';
+      analytics.trackContextUpdated(oldKind, oldKey, newContext.kind, newKey);
     },
-    [activeContext],
+    [activeContext, analytics],
   );
 
   // Set the current context and update the host application's LD Client via identify
@@ -112,12 +131,16 @@ export const ContextsProvider = ({ children }: { children: React.ReactNode }) =>
         setActiveContext(context);
         saveActiveContext(context);
         await ldClient.identify(ldContext);
+
+        // Track analytics
+        const contextKey = context.kind === 'multi' ? context.name || 'multi-kind' : context.key || '';
+        analytics.trackContextSelected(context.kind, contextKey);
       } catch (error) {
         console.error('Failed to identify context:', error);
         throw error;
       }
     },
-    [ldClient],
+    [ldClient, analytics],
   );
 
   // Restore saved active context on mount when LD client is available

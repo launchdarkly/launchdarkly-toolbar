@@ -4,7 +4,7 @@ import { ContextsProvider, useContextsContext } from '../ui/Toolbar/context/api/
 import '@testing-library/jest-dom/vitest';
 import React from 'react';
 import { Context } from '../ui/Toolbar/types/ldApi';
-import { loadContexts, saveContexts, loadActiveContext, saveActiveContext } from '../ui/Toolbar/utils/localStorage';
+import { loadContexts, saveContexts, loadActiveContext } from '../ui/Toolbar/utils/localStorage';
 
 // Mock localStorage utilities
 vi.mock('../ui/Toolbar/utils/localStorage', () => ({
@@ -34,6 +34,19 @@ vi.mock('../ui/Toolbar/context/state/PluginsProvider', () => {
     }),
   };
 });
+
+// Mock analytics
+vi.mock('../ui/Toolbar/context/telemetry/AnalyticsProvider', () => ({
+  useAnalytics: vi.fn().mockReturnValue({
+    trackContextAdded: vi.fn(),
+    trackContextRemoved: vi.fn(),
+    trackContextUpdated: vi.fn(),
+    trackContextSelected: vi.fn(),
+    trackContextEditStarted: vi.fn(),
+    trackContextEditCancelled: vi.fn(),
+    trackContextKeyCopy: vi.fn(),
+  }),
+}));
 
 // Test component
 function TestConsumer() {

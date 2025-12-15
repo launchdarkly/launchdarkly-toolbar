@@ -8,6 +8,7 @@ import { useContextsContext } from '../../../context/api/ContextsProvider';
 import { JsonEditor } from '../../../../JsonEditor/JsonEditor';
 import { VIRTUALIZATION, EASING } from '../../../constants';
 import { IconButton } from '../../../../Buttons/IconButton';
+import { useAnalytics } from '../../../context/telemetry/AnalyticsProvider';
 
 interface ContextItemProps {
   context: Context;
@@ -23,6 +24,7 @@ export function ContextItem({ context, isActiveContext, handleHeightChange, inde
   const [isSelecting, setIsSelecting] = useState(false);
   const hasResetOnMountRef = useRef(false);
   const { removeContext, updateContext, setContext } = useContextsContext();
+  const analytics = useAnalytics();
   const displayName = context.name || context.key;
   const isClickable = !isActiveContext && !isSelecting && !isEditing;
 
@@ -40,7 +42,11 @@ export function ContextItem({ context, isActiveContext, handleHeightChange, inde
     setEditedJson(contextJson);
     setIsEditing(true);
     setHasLintErrors(false);
-  }, [contextJson]);
+
+    // Track analytics
+    const contextKey = context.kind === 'multi' ? context.name || 'multi-kind' : context.key || '';
+    analytics.trackContextEditStarted(context.kind, contextKey);
+  }, [contextJson, context, analytics]);
 
   const handleSave = useCallback(() => {
     if (hasLintErrors) {
@@ -78,11 +84,15 @@ export function ContextItem({ context, isActiveContext, handleHeightChange, inde
     setEditedJson('');
     setHasLintErrors(false);
 
+    // Track analytics
+    const contextKey = context.kind === 'multi' ? context.name || 'multi-kind' : context.key || '';
+    analytics.trackContextEditCancelled(context.kind, contextKey);
+
     // Reset height when collapsing
     if (handleHeightChange && index !== undefined) {
       handleHeightChange(index, VIRTUALIZATION.ITEM_HEIGHT + VIRTUALIZATION.GAP);
     }
-  }, [handleHeightChange, index]);
+  }, [handleHeightChange, index, context, analytics]);
 
   const handleJsonChange = useCallback((value: string) => {
     setEditedJson(value);
@@ -108,9 +118,10 @@ export function ContextItem({ context, isActiveContext, handleHeightChange, inde
       if (isActiveContext) {
         return;
       }
-      removeContext(context.kind, context.name);
+      // Note: Analytics tracking happens in removeContext in ContextsProvider
+      removeContext(context.kind, context.key || context.name || '');
     },
-    [removeContext, context.kind, context.key, isActiveContext],
+    [removeContext, context.kind, context.key, context.name, isActiveContext],
   );
 
   const handleSelect = useCallback(async () => {
@@ -174,7 +185,13 @@ export function ContextItem({ context, isActiveContext, handleHeightChange, inde
             </span>
           </div>
           <div className={styles.keyRow} onClick={(e) => e.stopPropagation()}>
-            <CopyableText text={context.name || ''} />
+            <CopyableText
+              text={context.name || context.key || ''}
+              onCopy={() => {
+                const contextKey = context.name || context.key || '';
+                analytics.trackContextKeyCopy(contextKey);
+              }}
+            />
           </div>
         </div>
         <div className={styles.actions} onClick={(e) => e.stopPropagation()}>
