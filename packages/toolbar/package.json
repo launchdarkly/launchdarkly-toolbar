@@ -1,7 +1,7 @@
 {
   "private": false,
   "name": "@launchdarkly/toolbar",
-  "version": "2.3.0-beta.1",
+  "version": "2.4.0-beta.1",
   "description": "A framework-agnostic developer toolbar for interacting with LaunchDarkly during development",
   "keywords": [
     "launchdarkly",
@@ -65,6 +65,8 @@
     "@codemirror/lint": "^6.9.2",
     "@codemirror/state": "^6.5.2",
     "@codemirror/view": "^6.38.8",
+    "@launchdarkly/observability": "^0.4.9",
+    "@launchdarkly/session-replay": "^0.4.9",
     "@launchpad-ui/components": "^0.17.7",
     "@launchpad-ui/tokens": "^0.15.1",
     "@lezer/highlight": "^1.2.3",
@@ -85,7 +87,7 @@
     "@tanstack/react-virtual": "^3.13.13",
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.3.0",
-    "@types/node": "^25.0.0",
+    "@types/node": "^25.0.1",
     "@types/react": "19.2.7",
     "@types/react-dom": "19.2.3",
     "@vanilla-extract/css": "^1.17.5",

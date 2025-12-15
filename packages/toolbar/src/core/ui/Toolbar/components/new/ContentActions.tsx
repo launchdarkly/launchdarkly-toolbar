@@ -5,6 +5,7 @@ import {
   useElementSelection,
   usePlugins,
   useToolbarState,
+  useFlagsContext,
 } from '../../context';
 import { useActiveSubtabContext, useTabSearchContext } from './context';
 import { useContextsContext } from '../../context/api/ContextsProvider';
@@ -43,6 +44,7 @@ export function ContentActions() {
   const showClearSelection = activeTab === 'interactive' && selectedElement;
   const { mode } = useToolbarState();
   const { refresh, state } = useDevServerContext();
+  const { refreshFlags, loading: flagsLoading } = useFlagsContext();
 
   const showFilter =
     (activeTab === 'flags' && activeSubtab === 'flags') || (activeTab === 'monitoring' && activeSubtab === 'events');
@@ -56,6 +58,7 @@ export function ContentActions() {
   // Get context form state for contexts tab
   // ContextsProvider is always available in the component tree
   const { setIsAddFormOpen } = useContextsContext();
+  const showRefreshFlags = mode === 'sdk' && activeTab === 'flags' && activeSubtab === 'flags';
 
   const handleClearEvents = useCallback(() => {
     if (eventInterceptionPlugin) {
@@ -66,6 +69,10 @@ export function ContentActions() {
   const handleSync = useCallback(() => {
     refresh();
   }, [refresh]);
+
+  const handleRefreshFlags = useCallback(() => {
+    refreshFlags();
+  }, [refreshFlags]);
 
   const handleSearch = useCallback(
     (input: string) => {
@@ -108,6 +115,9 @@ export function ContentActions() {
       {showFilter && <FilterButton />}
       {showSync && (
         <IconButton icon={<SyncIcon />} label="Sync flags" onClick={handleSync} disabled={state.isLoading} />
+      )}
+      {showRefreshFlags && (
+        <IconButton icon={<SyncIcon />} label="Refresh flags" onClick={handleRefreshFlags} disabled={flagsLoading} />
       )}
       {showClearEvents && (
         <button

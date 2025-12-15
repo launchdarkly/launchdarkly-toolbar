@@ -82,21 +82,21 @@ describe('Element Selection Integration', () => {
         <AnalyticsProvider>
           <SearchProvider>
             <ActiveTabProvider>
-              <ApiBundleProvider authUrl="https://app.launchdarkly.com" clientSideId="test-client-id">
-                <ElementSelectionProvider>
-                  <ActiveSubtabProvider>
-                    <TabSearchProvider>
-                      <FiltersProvider>
-                        <DevServerProvider config={{ devServerUrl: '', pollIntervalInMs: 5000 }}>
-                          <ToolbarStateProvider domId="test-toolbar">
+              <ToolbarStateProvider domId="test-toolbar">
+                <ApiBundleProvider authUrl="https://app.launchdarkly.com" clientSideId="test-client-id">
+                  <ElementSelectionProvider>
+                    <ActiveSubtabProvider>
+                      <TabSearchProvider>
+                        <FiltersProvider>
+                          <DevServerProvider config={{ devServerUrl: '', pollIntervalInMs: 5000 }}>
                             <PluginsProvider baseUrl="https://app.launchdarkly.com">{children}</PluginsProvider>
-                          </ToolbarStateProvider>
-                        </DevServerProvider>
-                      </FiltersProvider>
-                    </TabSearchProvider>
-                  </ActiveSubtabProvider>
-                </ElementSelectionProvider>
-              </ApiBundleProvider>
+                          </DevServerProvider>
+                        </FiltersProvider>
+                      </TabSearchProvider>
+                    </ActiveSubtabProvider>
+                  </ElementSelectionProvider>
+                </ApiBundleProvider>
+              </ToolbarStateProvider>
             </ActiveTabProvider>
           </SearchProvider>
         </AnalyticsProvider>

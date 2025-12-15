@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.4.0-beta.1](https://github.com/launchdarkly/launchdarkly-toolbar/compare/2.3.0-beta.1...2.4.0-beta.1) (2025-12-15)
+
+
+### Features
+
+* [REL-10964] add Session Replay capabilities to Toolbar ([#370](https://github.com/launchdarkly/launchdarkly-toolbar/issues/370)) ([026bb50](https://github.com/launchdarkly/launchdarkly-toolbar/commit/026bb5005bddc894e84ca40fc79b6dc2a1568fe3))
+
 ## [2.3.0-beta.1](https://github.com/launchdarkly/launchdarkly-toolbar/compare/2.2.0-beta.1...2.3.0-beta.1) (2025-12-09)
 
 
