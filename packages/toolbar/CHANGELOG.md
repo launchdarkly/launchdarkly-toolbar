@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.5.0-beta.1](https://github.com/launchdarkly/launchdarkly-toolbar/compare/2.4.1-beta.1...2.5.0-beta.1) (2025-12-15)
+
+
+### Features
+
+* [REL-10307] Context Management ([#422](https://github.com/launchdarkly/launchdarkly-toolbar/issues/422)) ([2cedb92](https://github.com/launchdarkly/launchdarkly-toolbar/commit/2cedb92d0f05e5e3f40e3a7b2b25eefa80a5029a))
+
 ## [2.4.1-beta.1](https://github.com/launchdarkly/launchdarkly-toolbar/compare/2.4.0-beta.1...2.4.1-beta.1) (2025-12-15)
 
 
