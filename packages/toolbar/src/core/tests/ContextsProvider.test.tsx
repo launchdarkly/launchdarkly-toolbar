@@ -84,7 +84,7 @@ function TestConsumer() {
       })}
       <button
         data-testid="add-context"
-        onClick={() => addContext({ kind: 'user', key: 'test-user', name: 'Test User' })}
+        onClick={() => addContext({ id: 'test-context-id', kind: 'user', key: 'test-user', name: 'Test User' })}
       >
         Add
       </button>

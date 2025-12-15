@@ -133,6 +133,7 @@ export function AddContextForm({ isOpen, onClose }: AddContextFormProps) {
         }
 
         const context: Context = {
+          id: parsed.id?.toString() ?? '',
           kind: parsed.kind.trim(),
           key: parsed.key.trim(),
           name: parsed.name?.trim() || undefined,
