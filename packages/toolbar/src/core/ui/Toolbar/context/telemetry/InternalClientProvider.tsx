@@ -180,19 +180,30 @@ export function InternalClientProvider({
         return;
       }
 
-      try {
-        await client.identify({
-          kind: 'multi',
-          account: {
-            key: accountId,
+      // Wrap identify in a Promise that resolves when the onDone callback fires
+      // This ensures flags have been re-evaluated before we return
+      return new Promise<void>((resolve) => {
+        client.identify(
+          {
+            kind: 'multi',
+            account: {
+              key: accountId,
+            },
+            user: {
+              key: memberId,
+            },
           },
-          user: {
-            key: memberId,
+          undefined,
+          (err) => {
+            if (err) {
+              console.error('[InternalClientProvider] Failed to update context:', err);
+              resolve();
+            } else {
+              resolve();
+            }
           },
-        });
-      } catch (err) {
-        console.error('[InternalClientProvider] Failed to update context:', err);
-      }
+        );
+      });
     },
     [client],
   );
