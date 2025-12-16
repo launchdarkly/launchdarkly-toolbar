@@ -1,5 +1,13 @@
 # Changelog
 
+## [2.5.1-beta.1](https://github.com/launchdarkly/launchdarkly-toolbar/compare/2.5.0-beta.1...2.5.1-beta.1) (2025-12-16)
+
+
+### Bug Fixes
+
+* [REL-11305] wait for context to update to load toolbar ([#436](https://github.com/launchdarkly/launchdarkly-toolbar/issues/436)) ([46fbbe1](https://github.com/launchdarkly/launchdarkly-toolbar/commit/46fbbe153450c09f67e05019e1f704031535dcf3))
+* wait for context to update to load toolbar ([46fbbe1](https://github.com/launchdarkly/launchdarkly-toolbar/commit/46fbbe153450c09f67e05019e1f704031535dcf3))
+
 ## [2.5.0-beta.1](https://github.com/launchdarkly/launchdarkly-toolbar/compare/2.4.1-beta.1...2.5.0-beta.1) (2025-12-15)
 
 
