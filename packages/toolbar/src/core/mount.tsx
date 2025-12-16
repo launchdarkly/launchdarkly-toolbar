@@ -3,6 +3,12 @@ import { createRoot } from 'react-dom/client';
 import { InitializationConfig } from '../types';
 import { TOOLBAR_DOM_ID } from '../types/constants';
 
+/**
+ * Module-level cache for toolbar styles.
+ * This persists across HMR cycles since it's outside the component lifecycle.
+ */
+const toolbarStyleCache = new Set<string>();
+
 export default function mount(rootNode: HTMLElement, config: InitializationConfig) {
   const cleanup: (() => void)[] = [];
 
@@ -92,6 +98,14 @@ function buildDom() {
     }
   }
 
+  // Restore cached toolbar styles from previous mounts (HMR support)
+  // These styles were removed from document.head on previous mount but cached
+  toolbarStyleCache.forEach((cachedContent) => {
+    const style = document.createElement('style');
+    style.textContent = cachedContent;
+    shadowRoot.appendChild(style);
+  });
+
   reactMount.dataset.name = 'react-mount';
   reactMount.id = 'ld-toolbar-react-mount';
   shadowRoot.appendChild(reactMount);
@@ -110,6 +124,9 @@ function buildDom() {
             !existingStylesSnapshot.has(content) && (content.includes('--lp-') || content.includes('_'));
 
           if (isNewToolbarStyle) {
+            // Cache the style content for HMR support
+            toolbarStyleCache.add(content);
+
             // Copy to shadow root so toolbar still works
             const shadowStyleEl = document.createElement('style');
             shadowStyleEl.textContent = content;
@@ -133,8 +150,8 @@ function buildDom() {
     observer.observe(document.head, { childList: true });
   }
 
-  // Stop observing after 500ms (toolbar should be fully loaded by then)
-  setTimeout(() => observer.disconnect(), 500);
+  // Keep observer running longer for HMR scenarios where styles may be re-injected
+  setTimeout(() => observer.disconnect(), 5000);
 
   return { host, reactMount, observer };
 }

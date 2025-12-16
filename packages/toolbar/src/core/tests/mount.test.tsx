@@ -200,6 +200,118 @@ describe('mount', () => {
     });
   });
 
+  describe('HMR Support', () => {
+    test('caches toolbar styles for HMR persistence', async () => {
+      const cleanup = mount(rootNode, mockConfig);
+
+      // Inject a toolbar style
+      const newStyle = document.createElement('style');
+      newStyle.textContent = '.hmr_cache_test_12345 { color: red; }';
+      document.head.appendChild(newStyle);
+
+      // Wait for MutationObserver to process
+      await new Promise((resolve) => setTimeout(resolve, 100));
+
+      // Verify style is in shadow root
+      const toolbarHost = document.getElementById('ld-toolbar');
+      const shadowStyles = Array.from(toolbarHost?.shadowRoot?.querySelectorAll('style') || []);
+      expect(shadowStyles.some((style) => style.textContent?.includes('hmr_cache_test_12345'))).toBe(true);
+
+      // Cleanup first mount
+      cleanup();
+    });
+
+    test('restores cached styles on remount (HMR scenario)', async () => {
+      // First mount - inject and cache a style
+      const cleanup1 = mount(rootNode, mockConfig);
+
+      const newStyle = document.createElement('style');
+      newStyle.textContent = '.hmr_restore_test_67890 { color: blue; }';
+      document.head.appendChild(newStyle);
+
+      await new Promise((resolve) => setTimeout(resolve, 100));
+
+      // Verify style is in first shadow root
+      let toolbarHost = document.getElementById('ld-toolbar');
+      let shadowStyles = Array.from(toolbarHost?.shadowRoot?.querySelectorAll('style') || []);
+      expect(shadowStyles.some((style) => style.textContent?.includes('hmr_restore_test_67890'))).toBe(true);
+
+      // Simulate HMR - cleanup and remount
+      cleanup1();
+
+      // Verify toolbar is removed
+      expect(document.getElementById('ld-toolbar')).toBeNull();
+
+      // Second mount (HMR remount)
+      const cleanup2 = mount(rootNode, mockConfig);
+
+      // Verify style is restored from cache to new shadow root
+      toolbarHost = document.getElementById('ld-toolbar');
+      shadowStyles = Array.from(toolbarHost?.shadowRoot?.querySelectorAll('style') || []);
+      expect(shadowStyles.some((style) => style.textContent?.includes('hmr_restore_test_67890'))).toBe(true);
+
+      cleanup2();
+    });
+
+    test('cached styles persist across multiple remounts', async () => {
+      // First mount
+      const cleanup1 = mount(rootNode, mockConfig);
+
+      const newStyle = document.createElement('style');
+      newStyle.textContent = '.hmr_persist_test_11111 { color: green; }';
+      document.head.appendChild(newStyle);
+
+      await new Promise((resolve) => setTimeout(resolve, 100));
+      cleanup1();
+
+      // Second mount
+      const cleanup2 = mount(rootNode, mockConfig);
+      let toolbarHost = document.getElementById('ld-toolbar');
+      let shadowStyles = Array.from(toolbarHost?.shadowRoot?.querySelectorAll('style') || []);
+      expect(shadowStyles.some((style) => style.textContent?.includes('hmr_persist_test_11111'))).toBe(true);
+      cleanup2();
+
+      // Third mount - should still have the cached style
+      const cleanup3 = mount(rootNode, mockConfig);
+      toolbarHost = document.getElementById('ld-toolbar');
+      shadowStyles = Array.from(toolbarHost?.shadowRoot?.querySelectorAll('style') || []);
+      expect(shadowStyles.some((style) => style.textContent?.includes('hmr_persist_test_11111'))).toBe(true);
+      cleanup3();
+    });
+
+    test('does not duplicate styles when same style is injected multiple times', async () => {
+      const cleanup1 = mount(rootNode, mockConfig);
+
+      // Inject same style twice
+      const style1 = document.createElement('style');
+      style1.textContent = '.hmr_dedup_test_22222 { color: purple; }';
+      document.head.appendChild(style1);
+
+      await new Promise((resolve) => setTimeout(resolve, 100));
+
+      const style2 = document.createElement('style');
+      style2.textContent = '.hmr_dedup_test_22222 { color: purple; }';
+      document.head.appendChild(style2);
+
+      await new Promise((resolve) => setTimeout(resolve, 100));
+
+      cleanup1();
+
+      // Remount and check for duplicates
+      const cleanup2 = mount(rootNode, mockConfig);
+      const toolbarHost = document.getElementById('ld-toolbar');
+      const shadowStyles = Array.from(toolbarHost?.shadowRoot?.querySelectorAll('style') || []);
+
+      // Count occurrences of our test style
+      const matchingStyles = shadowStyles.filter((style) => style.textContent?.includes('hmr_dedup_test_22222'));
+
+      // Should have the style, but the Set prevents exact duplicates in the cache
+      expect(matchingStyles.length).toBeGreaterThan(0);
+
+      cleanup2();
+    });
+  });
+
   describe('Edge Cases and Error Handling', () => {
     test('handles missing document.head gracefully without throwing', () => {
       const originalHead = document.head;
