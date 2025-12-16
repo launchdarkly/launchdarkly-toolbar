@@ -35,6 +35,8 @@ export const ContextsProvider = ({ children }: { children: React.ReactNode }) =>
   const [isAddFormOpen, setIsAddFormOpen] = useState(false);
   const lastAddedContextRef = useRef<string | null>(null);
   const hasRestoredContextRef = useRef(false);
+  // Track when we're setting context ourselves to avoid the change handler overriding our selection
+  const isSettingContextRef = useRef(false);
 
   // Get the LD client from plugins
   const ldClient = flagOverridePlugin?.getClient() ?? eventInterceptionPlugin?.getClient() ?? null;
@@ -137,14 +139,19 @@ export const ContextsProvider = ({ children }: { children: React.ReactNode }) =>
       }
 
       try {
-        setActiveContext(context);
-        saveActiveContext(context);
+        // Mark that we're setting context ourselves so the change handler doesn't interfere
+        isSettingContextRef.current = true;
 
+        // Skip if the context is already active (using hash comparison)
         if (areContextsEqual(activeContext, context)) {
+          isSettingContextRef.current = false;
           return;
         }
 
         await ldClient.identify(context);
+
+        setActiveContext(context);
+        saveActiveContext(context);
 
         // Track analytics
         const kind = getContextKind(context);
@@ -153,9 +160,14 @@ export const ContextsProvider = ({ children }: { children: React.ReactNode }) =>
       } catch (error) {
         console.error('Failed to identify context:', error);
         throw error;
+      } finally {
+        // Clear the flag after a short delay to let the change event settle
+        setTimeout(() => {
+          isSettingContextRef.current = false;
+        }, 100);
       }
     },
-    [ldClient, analytics],
+    [ldClient, analytics, activeContext],
   );
 
   // Restore saved active context on mount when LD client is available
@@ -163,6 +175,8 @@ export const ContextsProvider = ({ children }: { children: React.ReactNode }) =>
     if (!ldClient || hasRestoredContextRef.current) {
       return;
     }
+
+    hasRestoredContextRef.current = true;
 
     const savedActiveContext = loadActiveContext();
     if (savedActiveContext) {
@@ -178,25 +192,28 @@ export const ContextsProvider = ({ children }: { children: React.ReactNode }) =>
           setActiveContext(null);
           saveActiveContext(null);
         });
-        hasRestoredContextRef.current = true;
       } else {
         // Saved context no longer exists, clear it
         setActiveContext(null);
         saveActiveContext(null);
-        hasRestoredContextRef.current = true;
       }
-    } else {
-      hasRestoredContextRef.current = true;
     }
   }, [ldClient, storedContexts, setContext]);
 
   // Listen to LD client context changes and sync active context
+  // This handles external context changes (e.g., from the host application)
   useEffect(() => {
     if (!ldClient) {
       return;
     }
 
     const handleContextChange = () => {
+      // Skip if we're in the middle of setting context ourselves
+      // This prevents the change handler from overriding our selection
+      if (isSettingContextRef.current) {
+        return;
+      }
+
       try {
         const currentLdContext = ldClient.getContext();
 
