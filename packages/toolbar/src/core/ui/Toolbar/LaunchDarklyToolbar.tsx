@@ -221,6 +221,7 @@ export function LdToolbar(props: LdToolbarProps) {
             onHeaderMouseDown={handleMouseDown}
             reloadOnFlagChangeIsEnabled={reloadOnFlagChangeIsEnabled}
             onToggleReloadOnFlagChange={handleToggleReloadOnFlagChange}
+            onOpenAuthModal={() => setIsAuthModalOpen(true)}
           />
         )}
         {isExpanded && !isInitializing && newToolbarDesign && (

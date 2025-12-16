@@ -28,9 +28,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
       if (event.data.type === IFRAME_EVENTS.AUTHENTICATED) {
         analytics.trackLoginSuccess();
-        await updateContext(event.data.accountId, event.data.memberId);
-        setLoading(false);
-        setAuthenticated(true);
+        if (event.data.accountId && event.data.memberId) {
+          await updateContext(event.data.accountId, event.data.memberId);
+          setAuthenticated(true);
+          setLoading(false);
+        }
       } else if (event.data.type === IFRAME_EVENTS.AUTH_REQUIRED) {
         setAuthenticated(false);
         setLoading(false);
