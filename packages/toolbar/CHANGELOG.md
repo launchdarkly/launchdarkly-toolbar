@@ -1,5 +1,13 @@
 # Changelog
 
+## [2.5.2-beta.1](https://github.com/launchdarkly/launchdarkly-toolbar/compare/2.5.1-beta.1...2.5.2-beta.1) (2025-12-16)
+
+
+### Bug Fixes
+
+* [REL-11306] handle host application hot reloads better ([#438](https://github.com/launchdarkly/launchdarkly-toolbar/issues/438)) ([e825036](https://github.com/launchdarkly/launchdarkly-toolbar/commit/e8250367c2381030199fa6fb1aff736ad469f8f3))
+* handle host application hot reloads better ([e825036](https://github.com/launchdarkly/launchdarkly-toolbar/commit/e8250367c2381030199fa6fb1aff736ad469f8f3))
+
 ## [2.5.1-beta.1](https://github.com/launchdarkly/launchdarkly-toolbar/compare/2.5.0-beta.1...2.5.1-beta.1) (2025-12-16)
 
 
