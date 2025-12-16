@@ -185,20 +185,34 @@ export const ContextsProvider = ({ children }: { children: React.ReactNode }) =>
       const contextExists = storedContexts.some((c) => generateContextId(c) === savedContextId);
 
       if (contextExists) {
-        // Set the context asynchronously to avoid blocking render
-        setContext(savedActiveContext).catch((error) => {
-          console.error('Failed to restore saved active context:', error);
-          // Clear invalid saved context
-          setActiveContext(null);
-          saveActiveContext(null);
-        });
+        // Restore the context by directly calling identify
+        // We bypass setContext because the state is already initialized from localStorage
+        // and setContext would skip the identify call due to equality check
+        isSettingContextRef.current = true;
+        ldClient
+          .identify(savedActiveContext)
+          .then(() => {
+            // Ensure state is in sync (it should already be from useState initialization)
+            setActiveContext(savedActiveContext);
+          })
+          .catch((error) => {
+            console.error('Failed to restore saved active context:', error);
+            // Clear invalid saved context
+            setActiveContext(null);
+            saveActiveContext(null);
+          })
+          .finally(() => {
+            setTimeout(() => {
+              isSettingContextRef.current = false;
+            }, 100);
+          });
       } else {
         // Saved context no longer exists, clear it
         setActiveContext(null);
         saveActiveContext(null);
       }
     }
-  }, [ldClient, storedContexts, setContext]);
+  }, [ldClient, storedContexts]);
 
   // Listen to LD client context changes and sync active context
   // This handles external context changes (e.g., from the host application)
