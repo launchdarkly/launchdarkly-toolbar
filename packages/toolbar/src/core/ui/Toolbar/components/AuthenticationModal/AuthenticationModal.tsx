@@ -1,5 +1,4 @@
 import { useCallback, useEffect } from 'react';
-import * as styles from './AuthenticationModal.css';
 import { useIFrameContext } from '../../context/api/IFrameProvider';
 import { useAuthContext } from '../../context/api';
 import { openOAuthPopup } from '../../utils/oauthPopup';
@@ -12,8 +11,8 @@ interface AuthenticationModalProps {
 export function AuthenticationModal(props: AuthenticationModalProps) {
   const { isOpen, onClose } = props;
 
-  const { ref, iframeSrc } = useIFrameContext();
-  const { authenticated, authenticating, setAuthenticating } = useAuthContext();
+  const { iframeSrc } = useIFrameContext();
+  const { authenticated, setAuthenticating } = useAuthContext();
 
   // Handle escape key to close the modal
   useEffect(() => {
@@ -50,21 +49,7 @@ export function AuthenticationModal(props: AuthenticationModalProps) {
     }
   }, [isOpen, authenticated, handlePopupAuth]);
 
-  // Check auth by going to index.html. If that returns a 401, navigate to authenticating.html
-  // while the user authenticates in the popup. This is done because iframe authentication can
-  // have some issues with setting cookies.
-  return (
-    <div className={styles.iframeContainer}>
-      <iframe
-        src={
-          authenticating
-            ? `${iframeSrc}/toolbar/authenticating.html?originUrl=${window.location.origin}`
-            : `${iframeSrc}/toolbar/index.html?originUrl=${window.location.origin}`
-        }
-        title="LaunchDarkly Toolbar"
-        style={{ display: 'none' }}
-        ref={ref}
-      />
-    </div>
-  );
+  // This component no longer renders anything visible.
+  // The iframe is now persistently mounted in ApiBundleProvider.
+  return null;
 }
