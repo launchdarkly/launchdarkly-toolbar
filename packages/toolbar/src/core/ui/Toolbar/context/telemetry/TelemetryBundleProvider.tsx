@@ -1,4 +1,5 @@
 import { ToolbarMode } from '../../types';
+import { AnalyticsPreferencesProvider } from './AnalyticsPreferencesProvider';
 import { AnalyticsProvider } from './AnalyticsProvider';
 import { InternalClientProvider } from './InternalClientProvider';
 
@@ -16,14 +17,16 @@ export function TelemetryBundleProvider(props: TelemetryBundleProviderProps) {
   const { mode, baseUrl, clientSideId, streamUrl, eventsUrl, backendUrl, children } = props;
 
   return (
-    <InternalClientProvider
-      clientSideId={clientSideId}
-      baseUrl={baseUrl}
-      streamUrl={streamUrl}
-      eventsUrl={eventsUrl}
-      backendUrl={backendUrl}
-    >
-      <AnalyticsProvider mode={mode}>{children}</AnalyticsProvider>
-    </InternalClientProvider>
+    <AnalyticsPreferencesProvider>
+      <InternalClientProvider
+        clientSideId={clientSideId}
+        baseUrl={baseUrl}
+        streamUrl={streamUrl}
+        eventsUrl={eventsUrl}
+        backendUrl={backendUrl}
+      >
+        <AnalyticsProvider mode={mode}>{children}</AnalyticsProvider>
+      </InternalClientProvider>
+    </AnalyticsPreferencesProvider>
   );
 }

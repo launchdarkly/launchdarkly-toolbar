@@ -14,18 +14,13 @@ import React, {
 import { useSearchContext } from './SearchProvider';
 import { useAnalytics } from '../telemetry/AnalyticsProvider';
 import { useActiveTabContext } from './ActiveTabProvider';
+import { useAnalyticsPreferences } from '../telemetry/AnalyticsPreferencesProvider';
 import { TabId, ActiveTabId, TAB_ORDER, ToolbarMode, getToolbarMode } from '../../types';
 import {
   saveToolbarAutoCollapse,
   loadToolbarAutoCollapse,
   loadReloadOnFlagChange,
   saveReloadOnFlagChange,
-  saveIsOptedInToAnalytics,
-  saveIsOptedInToEnhancedAnalytics,
-  loadIsOptedInToEnhancedAnalytics,
-  loadIsOptedInToAnalytics,
-  loadIsOptedInToSessionReplay,
-  saveIsOptedInToSessionReplay,
 } from '../../utils/localStorage';
 
 export interface ToolbarStateContextValue {
@@ -72,6 +67,7 @@ export function ToolbarStateProvider({ children, domId, devServerUrl }: ToolbarS
   const { setSearchTerm } = useSearchContext();
   const analytics = useAnalytics();
   const { activeTab, setActiveTab } = useActiveTabContext();
+  const analyticsPreferences = useAnalyticsPreferences();
 
   // State
   const [isExpanded, setIsExpanded] = useState(false);
@@ -81,11 +77,6 @@ export function ToolbarStateProvider({ children, domId, devServerUrl }: ToolbarS
   const [reloadOnFlagChangeIsEnabled, enableReloadOnFlagChange] = useState(() => loadReloadOnFlagChange());
   const [isAutoCollapseEnabled, setAutoCollapse] = useState(() => loadToolbarAutoCollapse());
   const [mode] = useState<ToolbarMode>(() => getToolbarMode(devServerUrl));
-  const [isOptedInToAnalytics, setIsOptedInToAnalytics] = useState(() => loadIsOptedInToAnalytics());
-  const [isOptedInToEnhancedAnalytics, setIsOptedInToEnhancedAnalytics] = useState(() =>
-    loadIsOptedInToEnhancedAnalytics(),
-  );
-  const [isOptedInToSessionReplay, setIsOptedInToSessionReplay] = useState(() => loadIsOptedInToSessionReplay());
 
   // Refs
   const hasBeenExpandedRef = useRef(false);
@@ -171,26 +162,6 @@ export function ToolbarStateProvider({ children, domId, devServerUrl }: ToolbarS
     }
   }, [isExpanded]);
 
-  const handleToggleAnalyticsOptOut = useCallback((enabled: boolean) => {
-    saveIsOptedInToAnalytics(enabled);
-    setIsOptedInToAnalytics(enabled);
-
-    if (!enabled) {
-      handleToggleEnhancedAnalyticsOptOut(false);
-      handleToggleSessionReplayOptOut(false);
-    }
-  }, []);
-
-  const handleToggleEnhancedAnalyticsOptOut = useCallback((enabled: boolean) => {
-    saveIsOptedInToEnhancedAnalytics(enabled);
-    setIsOptedInToEnhancedAnalytics(enabled);
-  }, []);
-
-  const handleToggleSessionReplayOptOut = useCallback((enabled: boolean) => {
-    saveIsOptedInToSessionReplay(enabled);
-    setIsOptedInToSessionReplay(enabled);
-  }, []);
-
   // Effects
   // Update hasBeenExpanded ref when toolbar shows
   useEffect(() => {
@@ -235,9 +206,9 @@ export function ToolbarStateProvider({ children, domId, devServerUrl }: ToolbarS
       reloadOnFlagChangeIsEnabled,
       isAutoCollapseEnabled,
       mode,
-      isOptedInToAnalytics,
-      isOptedInToEnhancedAnalytics,
-      isOptedInToSessionReplay,
+      isOptedInToAnalytics: analyticsPreferences.isOptedInToAnalytics,
+      isOptedInToEnhancedAnalytics: analyticsPreferences.isOptedInToEnhancedAnalytics,
+      isOptedInToSessionReplay: analyticsPreferences.isOptedInToSessionReplay,
 
       // Refs
       toolbarRef,
@@ -251,9 +222,9 @@ export function ToolbarStateProvider({ children, domId, devServerUrl }: ToolbarS
       handleCircleClick,
       setIsAnimating,
       setSearchIsExpanded,
-      handleToggleAnalyticsOptOut,
-      handleToggleEnhancedAnalyticsOptOut,
-      handleToggleSessionReplayOptOut,
+      handleToggleAnalyticsOptOut: analyticsPreferences.handleToggleAnalyticsOptOut,
+      handleToggleEnhancedAnalyticsOptOut: analyticsPreferences.handleToggleEnhancedAnalyticsOptOut,
+      handleToggleSessionReplayOptOut: analyticsPreferences.handleToggleSessionReplayOptOut,
     }),
     [
       isExpanded,
@@ -264,18 +235,13 @@ export function ToolbarStateProvider({ children, domId, devServerUrl }: ToolbarS
       reloadOnFlagChangeIsEnabled,
       isAutoCollapseEnabled,
       mode,
-      isOptedInToAnalytics,
-      isOptedInToEnhancedAnalytics,
-      isOptedInToSessionReplay,
+      analyticsPreferences,
       handleTabChange,
       handleClose,
       handleSearch,
       handleToggleReloadOnFlagChange,
       handleToggleAutoCollapse,
       handleCircleClick,
-      handleToggleAnalyticsOptOut,
-      handleToggleEnhancedAnalyticsOptOut,
-      handleToggleSessionReplayOptOut,
     ],
   );
 
