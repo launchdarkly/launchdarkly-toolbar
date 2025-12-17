@@ -2,6 +2,20 @@ import '@testing-library/jest-dom/vitest';
 import '@vanilla-extract/css/disableRuntimeStyles';
 import { vi } from 'vitest';
 
+// =============================================================================
+// Global Provider Mocks
+// =============================================================================
+// These mocks are applied globally to all tests. If a test file needs to test
+// the REAL implementation, add `vi.unmock('...')` at the top of that test file.
+// =============================================================================
+
+// Mock AnalyticsPreferencesProvider globally (used by AnalyticsProvider)
+// To test the real implementation, add: vi.unmock('./src/core/ui/Toolbar/context/telemetry/AnalyticsPreferencesProvider')
+vi.mock('./src/core/ui/Toolbar/context/telemetry/AnalyticsPreferencesProvider', async () => {
+  const { createAnalyticsPreferencesProviderMock } = await import('./src/core/tests/mocks/providers');
+  return createAnalyticsPreferencesProviderMock();
+});
+
 // Mock localStorage with actual storage behavior
 const storage: Record<string, string> = {};
 const localStorageMock = {

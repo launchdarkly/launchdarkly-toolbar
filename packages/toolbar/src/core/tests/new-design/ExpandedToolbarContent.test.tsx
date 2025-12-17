@@ -62,12 +62,6 @@ vi.mock('../../ui/Toolbar/context/api/IFrameProvider', () => ({
   }),
 }));
 
-// Mock the AnalyticsPreferencesProvider using shared factory
-vi.mock('../../ui/Toolbar/context/telemetry/AnalyticsPreferencesProvider', async () => {
-  const { createAnalyticsPreferencesProviderMock } = await import('../mocks/providers');
-  return createAnalyticsPreferencesProviderMock();
-});
-
 // Helper component to wrap ExpandedToolbarContent with necessary providers
 function TestWrapper({ children }: { children: React.ReactNode }) {
   return (

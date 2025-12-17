@@ -87,4 +87,3 @@ export function useAnalyticsPreferences(): AnalyticsPreferencesContextValue {
   }
   return context;
 }
-

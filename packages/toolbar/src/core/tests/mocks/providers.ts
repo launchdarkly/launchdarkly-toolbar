@@ -3,30 +3,36 @@ import { vi } from 'vitest';
 /**
  * Shared mock factory functions for provider contexts.
  *
- * USAGE: Use async vi.mock() to import these factories:
- *
- * @example
- * vi.mock('../../ui/Toolbar/context/telemetry/AnalyticsPreferencesProvider', async () => {
- *   const { createAnalyticsPreferencesProviderMock } = await import('../mocks/providers');
- *   return createAnalyticsPreferencesProviderMock();
- * });
+ * GLOBAL MOCKS:
+ * AnalyticsPreferencesProvider is mocked globally in vitest.setup.ts.
+ * Most test files don't need to do anything - the mock is automatic.
  *
  * TESTING REAL IMPLEMENTATIONS:
  * If your test file tests the REAL implementation of a provider, add this at
- * the top of your test file to prevent mocks from other test files interfering:
+ * the top of your test file:
  *
  * @example
  * vi.unmock('../ui/Toolbar/context/telemetry/AnalyticsPreferencesProvider');
+ *
+ * OVERRIDING WITH DYNAMIC VALUES:
+ * If your test needs to change mock values during execution, override the
+ * global mock with createDynamicAnalyticsPreferencesProviderMock:
+ *
+ * @example
+ * const { getMockValue, setMockValue } = vi.hoisted(() => {
+ *   let value = false;
+ *   return { getMockValue: () => value, setMockValue: (v) => { value = v; } };
+ * });
+ *
+ * vi.mock('../ui/Toolbar/context/telemetry/AnalyticsPreferencesProvider', async () => {
+ *   const { createDynamicAnalyticsPreferencesProviderMock } = await import('./mocks/providers');
+ *   return createDynamicAnalyticsPreferencesProviderMock(getMockValue);
+ * });
  */
 
 /**
  * Creates a mock for AnalyticsPreferencesProvider.
- *
- * @example
- * vi.mock('../../ui/Toolbar/context/telemetry/AnalyticsPreferencesProvider', async () => {
- *   const { createAnalyticsPreferencesProviderMock } = await import('../mocks/providers');
- *   return createAnalyticsPreferencesProviderMock();
- * });
+ * Used by vitest.setup.ts for global mocking.
  */
 export function createAnalyticsPreferencesProviderMock(overrides?: {
   isOptedInToAnalytics?: boolean;
@@ -134,4 +140,3 @@ export function createDevServerProviderMock(overrides?: {
     DevServerProvider: ({ children }: { children: React.ReactNode }) => children,
   };
 }
-

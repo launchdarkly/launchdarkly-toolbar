@@ -18,7 +18,10 @@ interface AnalyticsProviderProps {
 export function AnalyticsProvider({ children, mode }: AnalyticsProviderProps) {
   const { client: internalClient, loading } = useInternalClient();
   const { isOptedInToAnalytics } = useAnalyticsPreferences();
-  const analytics = useMemo(() => new ToolbarAnalytics(internalClient, mode, isOptedInToAnalytics), [internalClient, mode, isOptedInToAnalytics]);
+  const analytics = useMemo(
+    () => new ToolbarAnalytics(internalClient, mode, isOptedInToAnalytics),
+    [internalClient, mode, isOptedInToAnalytics],
+  );
   const prevClientRef = useRef<typeof internalClient>(null);
 
   // Track initialization once when the client transitions from null to initialized

@@ -46,12 +46,6 @@ vi.mock('../../ui/Toolbar/context/state/PluginsProvider', () => ({
   PluginsProvider: ({ children }: { children: React.ReactNode }) => <>{children}</>,
 }));
 
-// Mock the AnalyticsPreferencesProvider using shared factory
-vi.mock('../../ui/Toolbar/context/telemetry/AnalyticsPreferencesProvider', async () => {
-  const { createAnalyticsPreferencesProviderMock } = await import('../mocks/providers');
-  return createAnalyticsPreferencesProviderMock();
-});
-
 vi.mock('../../ui/Toolbar/components/new/Interactive/SelectionOverlay', () => ({
   SelectionOverlay: () => {
     const { isSelecting, selectedElement } = useElementSelection();
