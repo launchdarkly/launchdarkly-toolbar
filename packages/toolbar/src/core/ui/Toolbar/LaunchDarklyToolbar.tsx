@@ -11,6 +11,7 @@ import {
   ToolbarStateBundleProvider,
   useActiveTabContext,
   useAnalytics,
+  useAnalyticsPreferences,
   useAuthContext,
   useInternalClient,
   useSearchContext,
@@ -42,11 +43,13 @@ export function LdToolbar(props: LdToolbarProps) {
   const { position, handlePositionChange } = useToolbarUIContext();
   const analytics = useAnalytics();
   const { activeTab, setActiveTab } = useActiveTabContext();
+  const { isOptedInToSessionReplay } = useAnalyticsPreferences();
   const { loading: authLoading } = useAuthContext();
   const { loading: internalClientLoading } = useInternalClient();
   const newToolbarDesign = useNewToolbarDesign();
   const defaultActiveTab = getDefaultActiveTab(mode, !!flagOverridePlugin, !!eventInterceptionPlugin, newToolbarDesign);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+  const [sessionReplayStarted, setSessionReplayStarted] = useState(false);
 
   const isInitializing = authLoading || internalClientLoading;
 
@@ -142,15 +145,18 @@ export function LdToolbar(props: LdToolbarProps) {
     const sessionReplayEnabled = enableSessionReplay();
 
     // Start session replay when toolbar is expanded and flag is enabled
-    if (sessionReplayEnabled && isExpanded) {
+    if (sessionReplayEnabled && isExpanded && isOptedInToSessionReplay) {
       LDObserve.start();
       LDRecord.start({ forceNew: false, silent: false });
-    } else if (!isExpanded) {
-      // Stop session replay when toolbar is collapsed
+      setSessionReplayStarted(true);
+    } else if (!isExpanded && (sessionReplayStarted || !isOptedInToSessionReplay)) {
+      // Stop session replay when toolbar is collapsed or user is not opted in to session replay.
+      // This handles the case where the user opts out of session replay after it has started.
       LDObserve.stop();
       LDRecord.stop();
+      setSessionReplayStarted(false);
     }
-  }, [client, isExpanded]);
+  }, [client, isExpanded, isOptedInToSessionReplay, sessionReplayStarted]);
 
   // Prevent clicks from expanding toolbar if user was dragging
   const handleCircleClickWithDragCheck = useCallback(() => {
