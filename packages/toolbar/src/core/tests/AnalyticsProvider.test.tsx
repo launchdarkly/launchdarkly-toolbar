@@ -39,7 +39,7 @@ vi.mock('../ui/Toolbar/context/telemetry/InternalClientProvider', () => ({
 // Mock the AnalyticsPreferencesProvider using shared dynamic factory
 vi.mock('../ui/Toolbar/context/telemetry/AnalyticsPreferencesProvider', async () => {
   const { createDynamicAnalyticsPreferencesProviderMock } = await import('./mocks/providers');
-  return createDynamicAnalyticsPreferencesProviderMock(getMockIsOptedInToAnalytics);
+  return createDynamicAnalyticsPreferencesProviderMock({ getIsOptedInToAnalytics: getMockIsOptedInToAnalytics });
 });
 
 // Mock browser utilities to ensure isDoNotTrackEnabled returns false

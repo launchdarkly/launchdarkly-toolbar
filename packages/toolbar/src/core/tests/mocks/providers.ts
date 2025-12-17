@@ -26,7 +26,7 @@ import { vi } from 'vitest';
  *
  * vi.mock('../ui/Toolbar/context/telemetry/AnalyticsPreferencesProvider', async () => {
  *   const { createDynamicAnalyticsPreferencesProviderMock } = await import('./mocks/providers');
- *   return createDynamicAnalyticsPreferencesProviderMock(getMockValue);
+ *   return createDynamicAnalyticsPreferencesProviderMock({ getIsOptedInToAnalytics: getMockValue });
  * });
  */
 
@@ -57,27 +57,32 @@ export function createAnalyticsPreferencesProviderMock(overrides?: {
  * Use this when you need to change mock values during test execution.
  *
  * @example
+ * // For dynamic isOptedInToAnalytics:
  * let mockIsOptedIn = false;
  * vi.mock('../ui/Toolbar/context/telemetry/AnalyticsPreferencesProvider', async () => {
  *   const { createDynamicAnalyticsPreferencesProviderMock } = await import('./mocks/providers');
- *   return createDynamicAnalyticsPreferencesProviderMock(() => mockIsOptedIn);
+ *   return createDynamicAnalyticsPreferencesProviderMock({ getIsOptedInToAnalytics: () => mockIsOptedIn });
+ * });
+ *
+ * // For dynamic isOptedInToEnhancedAnalytics:
+ * vi.mock('../ui/Toolbar/context/telemetry/AnalyticsPreferencesProvider', async () => {
+ *   const { createDynamicAnalyticsPreferencesProviderMock } = await import('./mocks/providers');
+ *   return createDynamicAnalyticsPreferencesProviderMock({ getIsOptedInToEnhancedAnalytics: () => mockValue });
  * });
  *
  * // In tests:
  * mockIsOptedIn = true;  // Changes mock behavior
  */
-export function createDynamicAnalyticsPreferencesProviderMock(
-  getIsOptedInToAnalytics: () => boolean,
-  overrides?: {
-    isOptedInToEnhancedAnalytics?: boolean;
-    isOptedInToSessionReplay?: boolean;
-  },
-) {
+export function createDynamicAnalyticsPreferencesProviderMock(options: {
+  getIsOptedInToAnalytics?: () => boolean;
+  getIsOptedInToEnhancedAnalytics?: () => boolean;
+  getIsOptedInToSessionReplay?: () => boolean;
+}) {
   return {
     useAnalyticsPreferences: () => ({
-      isOptedInToAnalytics: getIsOptedInToAnalytics(),
-      isOptedInToEnhancedAnalytics: overrides?.isOptedInToEnhancedAnalytics ?? false,
-      isOptedInToSessionReplay: overrides?.isOptedInToSessionReplay ?? false,
+      isOptedInToAnalytics: options.getIsOptedInToAnalytics?.() ?? false,
+      isOptedInToEnhancedAnalytics: options.getIsOptedInToEnhancedAnalytics?.() ?? false,
+      isOptedInToSessionReplay: options.getIsOptedInToSessionReplay?.() ?? false,
       handleToggleAnalyticsOptOut: vi.fn(),
       handleToggleEnhancedAnalyticsOptOut: vi.fn(),
       handleToggleSessionReplayOptOut: vi.fn(),
