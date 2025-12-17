@@ -1,7 +1,7 @@
 // Subtab types for each main tab
 export type FlagsSubtab = 'flags' | 'contexts';
 export type MonitoringSubtab = 'events';
-export type SettingsSubtab = 'general';
+export type SettingsSubtab = 'general' | 'privacy';
 export type InteractiveSubtab = 'workflows';
 
 export type SubTab = FlagsSubtab | MonitoringSubtab | SettingsSubtab | InteractiveSubtab;
@@ -19,7 +19,10 @@ export const TAB_SUBTABS_MAP = {
     { id: 'contexts', label: 'Contexts' },
   ] as TabConfig[],
   monitoring: [{ id: 'events', label: 'Events' }] as TabConfig[],
-  settings: [{ id: 'general', label: 'General' }] as TabConfig[],
+  settings: [
+    { id: 'general', label: 'General' },
+    { id: 'privacy', label: 'Privacy' },
+  ] as TabConfig[],
   interactive: [{ id: 'workflows', label: 'Workflows' }] as TabConfig[],
 } as const;
 

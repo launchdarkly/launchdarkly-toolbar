@@ -20,6 +20,12 @@ import {
   loadToolbarAutoCollapse,
   loadReloadOnFlagChange,
   saveReloadOnFlagChange,
+  saveIsOptedInToAnalytics,
+  saveIsOptedInToEnhancedAnalytics,
+  loadIsOptedInToEnhancedAnalytics,
+  loadIsOptedInToAnalytics,
+  loadIsOptedInToSessionReplay,
+  saveIsOptedInToSessionReplay,
 } from '../../utils/localStorage';
 
 export interface ToolbarStateContextValue {
@@ -33,6 +39,9 @@ export interface ToolbarStateContextValue {
   reloadOnFlagChangeIsEnabled: boolean;
   isAutoCollapseEnabled: boolean;
   mode: ToolbarMode;
+  isOptedInToAnalytics: boolean;
+  isOptedInToEnhancedAnalytics: boolean;
+  isOptedInToSessionReplay: boolean;
 
   // Refs
   toolbarRef: React.RefObject<HTMLDivElement | null>;
@@ -46,6 +55,9 @@ export interface ToolbarStateContextValue {
   handleCircleClick: () => void;
   setIsAnimating: Dispatch<SetStateAction<boolean>>;
   setSearchIsExpanded: Dispatch<SetStateAction<boolean>>;
+  handleToggleAnalyticsOptOut: (enabled: boolean) => void;
+  handleToggleEnhancedAnalyticsOptOut: (enabled: boolean) => void;
+  handleToggleSessionReplayOptOut: (enabled: boolean) => void;
 }
 
 const ToolbarStateContext = createContext<ToolbarStateContextValue | undefined>(undefined);
@@ -69,6 +81,11 @@ export function ToolbarStateProvider({ children, domId, devServerUrl }: ToolbarS
   const [reloadOnFlagChangeIsEnabled, enableReloadOnFlagChange] = useState(() => loadReloadOnFlagChange());
   const [isAutoCollapseEnabled, setAutoCollapse] = useState(() => loadToolbarAutoCollapse());
   const [mode] = useState<ToolbarMode>(() => getToolbarMode(devServerUrl));
+  const [isOptedInToAnalytics, setIsOptedInToAnalytics] = useState(() => loadIsOptedInToAnalytics());
+  const [isOptedInToEnhancedAnalytics, setIsOptedInToEnhancedAnalytics] = useState(() =>
+    loadIsOptedInToEnhancedAnalytics(),
+  );
+  const [isOptedInToSessionReplay, setIsOptedInToSessionReplay] = useState(() => loadIsOptedInToSessionReplay());
 
   // Refs
   const hasBeenExpandedRef = useRef(false);
@@ -154,6 +171,26 @@ export function ToolbarStateProvider({ children, domId, devServerUrl }: ToolbarS
     }
   }, [isExpanded]);
 
+  const handleToggleAnalyticsOptOut = useCallback((enabled: boolean) => {
+    saveIsOptedInToAnalytics(enabled);
+    setIsOptedInToAnalytics(enabled);
+
+    if (!enabled) {
+      handleToggleEnhancedAnalyticsOptOut(false);
+      handleToggleSessionReplayOptOut(false);
+    }
+  }, []);
+
+  const handleToggleEnhancedAnalyticsOptOut = useCallback((enabled: boolean) => {
+    saveIsOptedInToEnhancedAnalytics(enabled);
+    setIsOptedInToEnhancedAnalytics(enabled);
+  }, []);
+
+  const handleToggleSessionReplayOptOut = useCallback((enabled: boolean) => {
+    saveIsOptedInToSessionReplay(enabled);
+    setIsOptedInToSessionReplay(enabled);
+  }, []);
+
   // Effects
   // Update hasBeenExpanded ref when toolbar shows
   useEffect(() => {
@@ -198,6 +235,9 @@ export function ToolbarStateProvider({ children, domId, devServerUrl }: ToolbarS
       reloadOnFlagChangeIsEnabled,
       isAutoCollapseEnabled,
       mode,
+      isOptedInToAnalytics,
+      isOptedInToEnhancedAnalytics,
+      isOptedInToSessionReplay,
 
       // Refs
       toolbarRef,
@@ -211,6 +251,9 @@ export function ToolbarStateProvider({ children, domId, devServerUrl }: ToolbarS
       handleCircleClick,
       setIsAnimating,
       setSearchIsExpanded,
+      handleToggleAnalyticsOptOut,
+      handleToggleEnhancedAnalyticsOptOut,
+      handleToggleSessionReplayOptOut,
     }),
     [
       isExpanded,
@@ -220,12 +263,19 @@ export function ToolbarStateProvider({ children, domId, devServerUrl }: ToolbarS
       slideDirection,
       reloadOnFlagChangeIsEnabled,
       isAutoCollapseEnabled,
+      mode,
+      isOptedInToAnalytics,
+      isOptedInToEnhancedAnalytics,
+      isOptedInToSessionReplay,
       handleTabChange,
       handleClose,
       handleSearch,
       handleToggleReloadOnFlagChange,
       handleToggleAutoCollapse,
       handleCircleClick,
+      handleToggleAnalyticsOptOut,
+      handleToggleEnhancedAnalyticsOptOut,
+      handleToggleSessionReplayOptOut,
     ],
   );
 

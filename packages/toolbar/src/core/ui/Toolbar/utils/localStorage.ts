@@ -21,6 +21,9 @@ export interface ToolbarSettings {
   reloadOnFlagChange: boolean;
   autoCollapse: boolean;
   preferredIde: PreferredIde;
+  isOptedInToAnalytics: boolean;
+  isOptedInToEnhancedAnalytics: boolean;
+  isOptedInToSessionReplay: boolean;
 }
 
 export const DEFAULT_SETTINGS: ToolbarSettings = {
@@ -28,6 +31,9 @@ export const DEFAULT_SETTINGS: ToolbarSettings = {
   reloadOnFlagChange: false,
   autoCollapse: false,
   preferredIde: 'cursor',
+  isOptedInToAnalytics: false,
+  isOptedInToEnhancedAnalytics: false,
+  isOptedInToSessionReplay: false,
 };
 
 /**
@@ -224,5 +230,68 @@ export function saveActiveContext(context: Context | null): void {
     }
   } catch (error) {
     console.error('Error saving active context to localStorage:', error);
+  }
+}
+
+export function saveIsOptedInToAnalytics(isOptedInToAnalytics: boolean): void {
+  updateSetting('isOptedInToAnalytics', isOptedInToAnalytics);
+}
+
+export function loadIsOptedInToAnalytics(): boolean {
+  try {
+    const stored = localStorage.getItem(TOOLBAR_STORAGE_KEYS.SETTINGS);
+    if (!stored) {
+      return DEFAULT_SETTINGS.isOptedInToAnalytics;
+    }
+
+    const parsed = JSON.parse(stored) as Partial<ToolbarSettings>;
+    return typeof parsed.isOptedInToAnalytics === 'boolean'
+      ? parsed.isOptedInToAnalytics
+      : DEFAULT_SETTINGS.isOptedInToAnalytics;
+  } catch (error) {
+    console.warn('Failed to load is opted in to analytics from localStorage:', error);
+    return DEFAULT_SETTINGS.isOptedInToAnalytics;
+  }
+}
+
+export function saveIsOptedInToEnhancedAnalytics(isOptedInToEnhancedAnalytics: boolean): void {
+  updateSetting('isOptedInToEnhancedAnalytics', isOptedInToEnhancedAnalytics);
+}
+
+export function saveIsOptedInToSessionReplay(isOptedInToSessionReplay: boolean): void {
+  updateSetting('isOptedInToSessionReplay', isOptedInToSessionReplay);
+}
+
+export function loadIsOptedInToSessionReplay(): boolean {
+  try {
+    const stored = localStorage.getItem(TOOLBAR_STORAGE_KEYS.SETTINGS);
+    if (!stored) {
+      return DEFAULT_SETTINGS.isOptedInToSessionReplay;
+    }
+
+    const parsed = JSON.parse(stored) as Partial<ToolbarSettings>;
+    return typeof parsed.isOptedInToSessionReplay === 'boolean'
+      ? parsed.isOptedInToSessionReplay
+      : DEFAULT_SETTINGS.isOptedInToSessionReplay;
+  } catch (error) {
+    console.warn('Failed to load is opted in to session replay from localStorage:', error);
+    return DEFAULT_SETTINGS.isOptedInToSessionReplay;
+  }
+}
+
+export function loadIsOptedInToEnhancedAnalytics(): boolean {
+  try {
+    const stored = localStorage.getItem(TOOLBAR_STORAGE_KEYS.SETTINGS);
+    if (!stored) {
+      return DEFAULT_SETTINGS.isOptedInToEnhancedAnalytics;
+    }
+
+    const parsed = JSON.parse(stored) as Partial<ToolbarSettings>;
+    return typeof parsed.isOptedInToEnhancedAnalytics === 'boolean'
+      ? parsed.isOptedInToEnhancedAnalytics
+      : DEFAULT_SETTINGS.isOptedInToEnhancedAnalytics;
+  } catch (error) {
+    console.warn('Failed to load is opted in to enhanced analytics from localStorage:', error);
+    return DEFAULT_SETTINGS.isOptedInToEnhancedAnalytics;
   }
 }
