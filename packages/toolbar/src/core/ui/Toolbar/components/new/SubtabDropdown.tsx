@@ -2,6 +2,7 @@ import { useState, useRef, useEffect } from 'react';
 import { AnimatePresence, motion } from 'motion/react';
 import { ChevronDownIcon } from '../icons/ChevronDownIcon';
 import { SubTab, TabConfig } from './types';
+import { useAnalytics } from '../../context';
 import * as styles from './SubtabDropdown.module.css.ts';
 
 interface SubtabDropdownProps {
@@ -13,6 +14,7 @@ interface SubtabDropdownProps {
 export function SubtabDropdown({ subtabs, activeSubtab, onSelectSubtab }: SubtabDropdownProps) {
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const analytics = useAnalytics();
 
   const activeTab = subtabs.find((tab) => tab.id === activeSubtab);
   const activeLabel = activeTab?.label || 'Select';
@@ -33,6 +35,11 @@ export function SubtabDropdown({ subtabs, activeSubtab, onSelectSubtab }: Subtab
 
   const handleSelect = (event: React.MouseEvent, subtab: SubTab) => {
     event.stopPropagation();
+
+    if (activeSubtab !== subtab) {
+      analytics.trackSubtabChange(activeSubtab || null, subtab);
+    }
+
     onSelectSubtab(subtab);
     setIsOpen(false);
   };

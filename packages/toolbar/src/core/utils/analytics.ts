@@ -10,6 +10,7 @@ const EVENTS = {
   POSITION_CHANGED: 'position.changed',
   AUTO_COLLAPSE_TOGGLED: 'auto.collapse.toggled',
   TAB_CHANGED: 'tab.changed',
+  SUBTAB_CHANGED: 'subtab.changed',
   SEARCH: 'search',
   TOGGLE: 'toggle',
   TOGGLE_FLAG: 'toggle.flag',
@@ -115,6 +116,16 @@ export class ToolbarAnalytics {
     this.track(EVENTS.TAB_CHANGED, {
       fromTab,
       toTab,
+    });
+  }
+
+  /**
+   * Track toolbar subtab navigation
+   */
+  trackSubtabChange(fromSubtab: string | null, toSubtab: string): void {
+    this.track(EVENTS.SUBTAB_CHANGED, {
+      fromSubtab,
+      toSubtab,
     });
   }
 

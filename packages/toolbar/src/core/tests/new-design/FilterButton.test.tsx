@@ -18,6 +18,13 @@ vi.mock('motion/react', () => ({
   AnimatePresence: ({ children }: { children: React.ReactNode }) => <>{children}</>,
 }));
 
+// Mock analytics
+vi.mock('../../ui/Toolbar/context/telemetry/AnalyticsProvider', () => ({
+  useAnalytics: vi.fn().mockReturnValue({
+    trackFilterChange: vi.fn(),
+  }),
+}));
+
 describe('FilterButton', () => {
   const AllProviders = ({ children }: { children: React.ReactNode }) => (
     <ActiveSubtabProvider>

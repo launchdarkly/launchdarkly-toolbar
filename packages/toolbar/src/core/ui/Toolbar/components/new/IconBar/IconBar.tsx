@@ -8,7 +8,7 @@ import { FlaskIcon } from '../../icons/FlaskIcon';
 import { Tooltip } from '../Tooltip';
 import * as styles from './IconBar.module.css';
 import { enableInteractiveIcon, enableAiIcon, enableOptimizeIcon } from '../../../../../../flags/toolbarFlags';
-import { useActiveTabContext, useElementSelection } from '../../../context';
+import { useActiveTabContext, useElementSelection, useAnalytics } from '../../../context';
 import { TabId } from '../../../types/toolbar';
 
 type Icon = {
@@ -29,6 +29,7 @@ export function IconBar({ defaultActiveTab }: IconBarProps) {
   const optimizeIconEnabled = enableOptimizeIcon();
   const { activeTab, setActiveTab } = useActiveTabContext();
   const { startSelection } = useElementSelection();
+  const analytics = useAnalytics();
   const [hoveredIcon, setHoveredIcon] = useState<TabId | null>(null);
 
   useEffect(() => {
@@ -74,10 +75,15 @@ export function IconBar({ defaultActiveTab }: IconBarProps) {
         startSelection();
       } else {
         // Switch to interactive mode AND start selection
+        analytics.trackTabChange(activeTab || null, id);
         setActiveTab(id);
         startSelection();
       }
     } else {
+      // Only track if actually changing tabs
+      if (activeTab !== id) {
+        analytics.trackTabChange(activeTab || null, id);
+      }
       setActiveTab(id);
     }
   };

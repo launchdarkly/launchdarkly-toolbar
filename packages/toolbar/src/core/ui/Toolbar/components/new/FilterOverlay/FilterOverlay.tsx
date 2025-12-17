@@ -6,6 +6,7 @@ import { useActiveSubtabContext } from '../context/ActiveSubtabProvider';
 import { SubTab } from '../types';
 import { IconButton } from '../../../../Buttons/IconButton';
 import { CheckIcon, FilterTuneIcon } from '../../icons';
+import { useAnalytics } from '../../../context';
 import * as styles from './FilterOverlay.module.css';
 
 interface FilterOptionItemProps {
@@ -42,6 +43,7 @@ interface FilterOverlayContentProps {
 const FilterOverlayContent = memo(function FilterOverlayContent({ subtab, onClose }: FilterOverlayContentProps) {
   const overlayRef = useRef<HTMLDivElement>(null);
   const { getActiveFilters, getFilterConfig, toggleFilter, resetFilters, hasActiveNonDefaultFilters } = useFilters();
+  const analytics = useAnalytics();
 
   const config = getFilterConfig(subtab);
   const activeFilters = getActiveFilters(subtab);
@@ -49,9 +51,11 @@ const FilterOverlayContent = memo(function FilterOverlayContent({ subtab, onClos
 
   const handleToggle = useCallback(
     (optionId: string) => {
+      const wasActive = activeFilters.has(optionId);
       toggleFilter(subtab, optionId);
+      analytics.trackFilterChange(optionId as 'all' | 'overrides' | 'starred', wasActive ? 'deselected' : 'selected');
     },
-    [subtab, toggleFilter],
+    [subtab, toggleFilter, activeFilters, analytics],
   );
 
   const handleReset = useCallback(() => {
