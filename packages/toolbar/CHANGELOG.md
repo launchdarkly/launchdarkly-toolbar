@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.5.3-beta.1](https://github.com/launchdarkly/launchdarkly-toolbar/compare/2.5.2-beta.1...2.5.3-beta.1) (2025-12-17)
+
+
+### Bug Fixes
+
+* [REL-11336] Update inputs to stop propagation ([#441](https://github.com/launchdarkly/launchdarkly-toolbar/issues/441)) ([d0963e4](https://github.com/launchdarkly/launchdarkly-toolbar/commit/d0963e4715d4cdd464ed59519b14ff1b9fa725d2))
+
 ## [2.5.2-beta.1](https://github.com/launchdarkly/launchdarkly-toolbar/compare/2.5.1-beta.1...2.5.2-beta.1) (2025-12-16)
 
 
