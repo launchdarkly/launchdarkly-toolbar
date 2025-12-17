@@ -25,6 +25,13 @@ vi.mock('../../ui/Toolbar/components/new/Tooltip', () => ({
   ),
 }));
 
+// Mock analytics
+vi.mock('../../ui/Toolbar/context/telemetry/AnalyticsProvider', () => ({
+  useAnalytics: vi.fn().mockReturnValue({
+    trackTabChange: vi.fn(),
+  }),
+}));
+
 describe('IconBar', () => {
   const defaultProps = {
     defaultActiveTab: 'flags' as const,
