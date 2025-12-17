@@ -30,6 +30,19 @@ import { vi } from 'vitest';
  * });
  */
 
+// Shared return type for analytics preferences mocks
+interface AnalyticsPreferencesMock {
+  useAnalyticsPreferences: () => {
+    isOptedInToAnalytics: boolean;
+    isOptedInToEnhancedAnalytics: boolean;
+    isOptedInToSessionReplay: boolean;
+    handleToggleAnalyticsOptOut: ReturnType<typeof vi.fn>;
+    handleToggleEnhancedAnalyticsOptOut: ReturnType<typeof vi.fn>;
+    handleToggleSessionReplayOptOut: ReturnType<typeof vi.fn>;
+  };
+  AnalyticsPreferencesProvider: ({ children }: { children: React.ReactNode }) => React.ReactNode;
+}
+
 /**
  * Creates a mock for AnalyticsPreferencesProvider.
  * Used by vitest.setup.ts for global mocking.
@@ -38,7 +51,7 @@ export function createAnalyticsPreferencesProviderMock(overrides?: {
   isOptedInToAnalytics?: boolean;
   isOptedInToEnhancedAnalytics?: boolean;
   isOptedInToSessionReplay?: boolean;
-}) {
+}): AnalyticsPreferencesMock {
   return {
     useAnalyticsPreferences: () => ({
       isOptedInToAnalytics: overrides?.isOptedInToAnalytics ?? false,
@@ -77,7 +90,7 @@ export function createDynamicAnalyticsPreferencesProviderMock(options: {
   getIsOptedInToAnalytics?: () => boolean;
   getIsOptedInToEnhancedAnalytics?: () => boolean;
   getIsOptedInToSessionReplay?: () => boolean;
-}) {
+}): AnalyticsPreferencesMock {
   return {
     useAnalyticsPreferences: () => ({
       isOptedInToAnalytics: options.getIsOptedInToAnalytics?.() ?? false,
@@ -100,7 +113,15 @@ export function createDynamicAnalyticsPreferencesProviderMock(options: {
  *   createInternalClientProviderMock(mockLDClient)
  * );
  */
-export function createInternalClientProviderMock(mockClient?: Record<string, unknown>) {
+export function createInternalClientProviderMock(mockClient?: Record<string, unknown>): {
+  useInternalClient: () => {
+    client: Record<string, unknown> | null;
+    loading: boolean;
+    error: null;
+    updateContext: ReturnType<typeof vi.fn>;
+  };
+  InternalClientProvider: ({ children }: { children: React.ReactNode }) => React.ReactNode;
+} {
   return {
     useInternalClient: () => ({
       client: mockClient ?? null,
@@ -126,7 +147,23 @@ export function createDevServerProviderMock(overrides?: {
   flags?: Record<string, unknown>;
   isLoading?: boolean;
   error?: Error | null;
-}) {
+}): {
+  useDevServerContext: () => {
+    state: {
+      sourceEnvironmentKey: string;
+      connectionStatus: string;
+      flags: Record<string, unknown>;
+      lastSyncTime: number;
+      isLoading: boolean;
+      error: Error | null;
+    };
+    setOverride: ReturnType<typeof vi.fn>;
+    clearOverride: ReturnType<typeof vi.fn>;
+    clearAllOverrides: ReturnType<typeof vi.fn>;
+    refresh: ReturnType<typeof vi.fn>;
+  };
+  DevServerProvider: ({ children }: { children: React.ReactNode }) => React.ReactNode;
+} {
   return {
     useDevServerContext: () => ({
       state: {

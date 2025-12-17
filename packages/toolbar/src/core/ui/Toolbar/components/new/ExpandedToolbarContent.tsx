@@ -7,6 +7,7 @@ import { ToolbarHeader } from './Header/ToolbarHeader';
 import { IconBar } from './IconBar/IconBar';
 import { TabBar } from './TabBar';
 import { ContentRenderer } from './ContentRenderer';
+import { AnalyticsConsentToast } from './AnalyticsConsentToast';
 import { ActiveSubtabProvider, TabSearchProvider, FiltersProvider } from './context';
 import { LoginScreen } from '../LoginScreen/LoginScreen';
 import { NEW_TOOLBAR_TABS, TabId } from '../../types/toolbar';
@@ -67,6 +68,7 @@ const ExpandedToolbarContentInner = forwardRef<HTMLDivElement, ExpandedToolbarCo
             <div className={styles.content}>
               <ContentRenderer />
             </div>
+            <AnalyticsConsentToast />
           </motion.div>
         )}
       </>

@@ -8,6 +8,7 @@ export const TOOLBAR_STORAGE_KEYS = {
   PROJECT: 'ld-toolbar-project',
   STARRED_FLAGS: 'ld-toolbar-starred-flags',
   MCP_ALERT_DISMISSED: 'ld-toolbar-mcp-alert-dismissed',
+  ANALYTICS_CONSENT_SHOWN: 'ld-toolbar-analytics-consent-shown',
   CONTEXTS: 'ld-toolbar-contexts',
   ACTIVE_CONTEXT: 'ld-toolbar-active-context',
 } as const;
@@ -293,5 +294,26 @@ export function loadIsOptedInToEnhancedAnalytics(): boolean {
   } catch (error) {
     console.warn('Failed to load is opted in to enhanced analytics from localStorage:', error);
     return DEFAULT_SETTINGS.isOptedInToEnhancedAnalytics;
+  }
+}
+
+export function saveAnalyticsConsentShown(shown: boolean): void {
+  try {
+    localStorage.setItem(TOOLBAR_STORAGE_KEYS.ANALYTICS_CONSENT_SHOWN, JSON.stringify(shown));
+  } catch (error) {
+    console.warn('Failed to save analytics consent shown state to localStorage:', error);
+  }
+}
+
+export function loadAnalyticsConsentShown(): boolean {
+  try {
+    const stored = localStorage.getItem(TOOLBAR_STORAGE_KEYS.ANALYTICS_CONSENT_SHOWN);
+    if (!stored) {
+      return false;
+    }
+    return JSON.parse(stored) === true;
+  } catch (error) {
+    console.warn('Failed to load analytics consent shown state from localStorage:', error);
+    return false;
   }
 }
