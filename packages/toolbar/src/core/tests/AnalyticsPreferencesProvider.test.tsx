@@ -3,6 +3,9 @@ import { expect, test, describe, vi, beforeEach } from 'vitest';
 import '@testing-library/jest-dom/vitest';
 import React from 'react';
 
+// Ensure we use the real AnalyticsPreferencesProvider, not a mock from other tests
+vi.unmock('../ui/Toolbar/context/telemetry/AnalyticsPreferencesProvider');
+
 // Mock localStorage utilities
 const mockLoadIsOptedInToAnalytics = vi.fn(() => false);
 const mockSaveIsOptedInToAnalytics = vi.fn();

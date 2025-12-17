@@ -77,6 +77,12 @@ vi.mock('@launchpad-ui/components', () => ({
   ),
 }));
 
+// Mock the AnalyticsPreferencesProvider using shared factory from providers.ts
+vi.mock('../../ui/Toolbar/context/telemetry/AnalyticsPreferencesProvider', async () => {
+  const { createAnalyticsPreferencesProviderMock } = await import('../mocks/providers');
+  return createAnalyticsPreferencesProviderMock();
+});
+
 // Helper to wrap component with providers
 function TestWrapper({ children }: { children: React.ReactNode }) {
   return (

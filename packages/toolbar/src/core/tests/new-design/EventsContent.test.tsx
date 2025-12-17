@@ -79,6 +79,12 @@ vi.mock('motion/react', () => ({
   },
 }));
 
+// Mock the AnalyticsPreferencesProvider using shared factory
+vi.mock('../../ui/Toolbar/context/telemetry/AnalyticsPreferencesProvider', async () => {
+  const { createAnalyticsPreferencesProviderMock } = await import('../mocks/providers');
+  return createAnalyticsPreferencesProviderMock();
+});
+
 // Helper functions
 const createMockEvent = (overrides: Partial<ProcessedEvent> = {}): ProcessedEvent => ({
   kind: 'feature',

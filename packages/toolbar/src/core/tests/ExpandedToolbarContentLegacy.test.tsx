@@ -111,6 +111,12 @@ vi.mock('../ui/Toolbar/context/state/ActiveTabProvider', () => ({
   }),
 }));
 
+// Mock the AnalyticsPreferencesProvider using shared factory
+vi.mock('../ui/Toolbar/context/telemetry/AnalyticsPreferencesProvider', async () => {
+  const { createAnalyticsPreferencesProviderMock } = await import('./mocks/providers');
+  return createAnalyticsPreferencesProviderMock();
+});
+
 // Mock the tab content components
 vi.mock('../ui/Toolbar/components/legacy/TabContent/FlagDevServerTabContent', () => ({
   FlagDevServerTabContent: () => <div data-testid="flag-dev-server-tab-content">Flag Tab Content</div>,

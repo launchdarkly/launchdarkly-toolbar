@@ -50,6 +50,12 @@ vi.mock('../../ui/Toolbar/context', () => ({
   }),
 }));
 
+// Mock the AnalyticsPreferencesProvider using shared factory
+vi.mock('../../ui/Toolbar/context/telemetry/AnalyticsPreferencesProvider', async () => {
+  const { createAnalyticsPreferencesProviderMock } = await import('../mocks/providers');
+  return createAnalyticsPreferencesProviderMock();
+});
+
 // Test wrapper with portal support for Select components
 function TestWrapper({ children }: { children: React.ReactNode }) {
   const [portalTarget] = React.useState(() => document.createElement('div'));
