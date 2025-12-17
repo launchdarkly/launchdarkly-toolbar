@@ -172,7 +172,12 @@ export function ContentActions() {
           .writeText(result.url)
           .then(() => {
             console.log('Share URL copied to clipboard:', result.url);
-            analytics.trackFlagOverride('*', { count: Object.keys(overrides).length }, 'share_url');
+            analytics.trackShareState({
+              includeSettings: options.includeSettings,
+              overrideCount: Object.keys(overrides).length,
+              contextCount: toolbarState.contexts.length,
+              starredFlagCount: toolbarState.starredFlags.length,
+            });
           })
           .catch((error) => {
             console.error('Failed to copy share URL:', error);

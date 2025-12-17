@@ -244,7 +244,12 @@ function FlagSdkOverrideTabContentInner(props: FlagSdkOverrideTabContentInnerPro
           .writeText(result.url)
           .then(() => {
             console.log('Share URL copied to clipboard:', result.url);
-            analytics.trackFlagOverride('*', { count: Object.keys(state.overrides).length }, 'share_url');
+            analytics.trackShareState({
+              includeSettings: options.includeSettings,
+              overrideCount: Object.keys(state.overrides).length,
+              contextCount: state.contexts.length,
+              starredFlagCount: state.starredFlags.length,
+            });
           })
           .catch((error) => {
             console.error('Failed to copy share URL:', error);
