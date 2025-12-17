@@ -17,6 +17,7 @@ import * as styles from './FlagDevServerTabContent.css';
 import { CopyableText } from '../../CopyableText';
 import { serializeToolbarState, SHARED_STATE_VERSION, MAX_STATE_SIZE_LIMIT } from '../../../../../utils/urlOverrides';
 import { loadContexts, loadActiveContext, loadAllSettings, loadStarredFlags } from '../../../utils/localStorage';
+import { ShareStatePopover, type ShareStateOptions } from '../../ShareStatePopover';
 
 interface FlagDevServerTabContentProps {
   reloadOnFlagChangeIsEnabled: boolean;
@@ -31,6 +32,7 @@ export function FlagDevServerTabContent(props: FlagDevServerTabContentProps) {
   const { isStarred, toggleStarred, clearAllStarred, starredCount } = useStarredFlags();
 
   const [activeFilters, setActiveFilters] = useState<Set<FlagFilterMode>>(new Set([FILTER_MODES.ALL]));
+  const [isSharePopoverOpen, setIsSharePopoverOpen] = useState(false);
 
   // Ref for scroll container
   const scrollContainerRef = useRef<HTMLDivElement>(null);
@@ -178,61 +180,70 @@ export function FlagDevServerTabContent(props: FlagDevServerTabContentProps) {
     [isStarred, toggleStarred, analytics],
   );
 
-  const handleShareUrl = useCallback(() => {
-    try {
-      // Get all overridden flags from dev server
-      const overrides: Record<string, any> = {};
-      Object.entries(flags).forEach(([flagKey, flag]) => {
-        if (flag.isOverridden) {
-          overrides[flagKey] = flag.currentValue;
+  const handleShareUrlClick = useCallback(() => {
+    setIsSharePopoverOpen((prev) => !prev);
+  }, []);
+
+  const handleShareUrl = useCallback(
+    (options: ShareStateOptions) => {
+      try {
+        // Get overridden flags from dev server only if includeFlagOverrides is true
+        let overrides: Record<string, any> = {};
+        if (options.includeFlagOverrides) {
+          Object.entries(flags).forEach(([flagKey, flag]) => {
+            if (flag.isOverridden) {
+              overrides[flagKey] = flag.currentValue;
+            }
+          });
         }
-      });
 
-      // Gather all toolbar state
-      const toolbarState = {
-        version: SHARED_STATE_VERSION,
-        overrides,
-        contexts: loadContexts(),
-        activeContext: loadActiveContext(),
-        settings: loadAllSettings(),
-        starredFlags: Array.from(loadStarredFlags()),
-      };
+        // Gather all toolbar state based on selected options
+        const toolbarState = {
+          version: SHARED_STATE_VERSION,
+          overrides: options.includeFlagOverrides ? overrides : {},
+          contexts: options.includeContexts ? loadContexts() : [],
+          activeContext: options.includeContexts ? loadActiveContext() : null,
+          settings: options.includeSettings ? loadAllSettings() : {},
+          starredFlags: options.includeFlagOverrides ? Array.from(loadStarredFlags()) : [],
+        };
 
-      // Serialize the state
-      const result = serializeToolbarState(toolbarState);
+        // Serialize the state
+        const result = serializeToolbarState(toolbarState);
 
-      // Check size limits
-      if (result.exceedsLimit) {
-        console.error(
-          `Shared state is too large (${result.size} chars, limit: ${MAX_STATE_SIZE_LIMIT}). Cannot create shareable link.`,
-        );
-        alert(
-          `The toolbar state is too large to share (${result.size} characters). Try reducing the number of overrides, contexts, or starred flags.`,
-        );
-        return;
+        // Check size limits
+        if (result.exceedsLimit) {
+          console.error(
+            `Shared state is too large (${result.size} chars, limit: ${MAX_STATE_SIZE_LIMIT}). Cannot create shareable link.`,
+          );
+          alert(
+            `The toolbar state is too large to share (${result.size} characters). Try reducing the number of overrides, contexts, or starred flags.`,
+          );
+          return;
+        }
+
+        if (result.exceedsWarning) {
+          console.warn(
+            `Shared state is large (${result.size} chars). Some browsers may have issues with URLs this long.`,
+          );
+        }
+
+        navigator.clipboard
+          .writeText(result.url)
+          .then(() => {
+            console.log('Share URL copied to clipboard:', result.url);
+            analytics.trackFlagOverride('*', { count: Object.keys(overrides).length }, 'share_url');
+          })
+          .catch((error) => {
+            console.error('Failed to copy share URL:', error);
+            alert('Failed to copy URL to clipboard. Please copy it manually from the console.');
+          });
+      } catch (error) {
+        console.error('Failed to create share URL:', error);
+        alert('Failed to create shareable link. Check console for details.');
       }
-
-      if (result.exceedsWarning) {
-        console.warn(
-          `Shared state is large (${result.size} chars). Some browsers may have issues with URLs this long.`,
-        );
-      }
-
-      navigator.clipboard
-        .writeText(result.url)
-        .then(() => {
-          console.log('Share URL copied to clipboard:', result.url);
-          analytics.trackFlagOverride('*', { count: Object.keys(overrides).length }, 'share_url');
-        })
-        .catch((error) => {
-          console.error('Failed to copy share URL:', error);
-          alert('Failed to copy URL to clipboard. Please copy it manually from the console.');
-        });
-    } catch (error) {
-      console.error('Failed to create share URL:', error);
-      alert('Failed to create shareable link. Check console for details.');
-    }
-  }, [flags, analytics]);
+    },
+    [flags, analytics],
+  );
 
   const handleHeightChange = useCallback(
     (index: number, height: number) => {
@@ -274,16 +285,25 @@ export function FlagDevServerTabContent(props: FlagDevServerTabContentProps) {
     <FlagFilterOptionsContext.Provider value={{ activeFilters, onFilterToggle: handleFilterToggle }}>
       <div data-testid="flag-dev-server-tab-content">
         <>
-          <FilterOptions
-            totalFlags={flagEntries.length}
-            filteredFlags={filteredFlags.length}
-            totalOverriddenFlags={totalOverriddenFlags}
-            starredCount={starredCount}
-            onClearOverrides={onRemoveAllOverrides}
-            onClearStarred={onClearAllStarred}
-            onShareUrl={handleShareUrl}
-            isLoading={state.isLoading}
-          />
+          <div style={{ position: 'relative' }}>
+            <FilterOptions
+              totalFlags={flagEntries.length}
+              filteredFlags={filteredFlags.length}
+              totalOverriddenFlags={totalOverriddenFlags}
+              starredCount={starredCount}
+              onClearOverrides={onRemoveAllOverrides}
+              onClearStarred={onClearAllStarred}
+              onShareUrl={handleShareUrlClick}
+              isLoading={state.isLoading}
+            />
+            <ShareStatePopover
+              isOpen={isSharePopoverOpen}
+              onClose={() => setIsSharePopoverOpen(false)}
+              onShare={handleShareUrl}
+              overrideCount={totalOverriddenFlags}
+              contextCount={loadContexts().length}
+            />
+          </div>
 
           {filteredFlags.length === 0 && (searchTerm.trim() || !activeFilters.has(FILTER_MODES.ALL)) ? (
             <GenericHelpText title={genericHelpTitle} subtitle={genericHelpSubtitle} />
