@@ -209,6 +209,31 @@ describe('Feedback', () => {
     });
   });
 
+  describe('Event Propagation', () => {
+    test('stops keyboard event propagation on textarea', async () => {
+      const parentKeyDownHandler = vi.fn();
+
+      render(
+        <FeedbackWrapper>
+          <div onKeyDown={parentKeyDownHandler}>
+            <Feedback {...defaultProps} />
+          </div>
+        </FeedbackWrapper>,
+      );
+
+      fireEvent.click(screen.getByRole('radio', { name: 'Positive' }));
+      const textarea = await screen.findByPlaceholderText('Optional feedback...');
+
+      // Fire keyboard events on the textarea
+      fireEvent.keyDown(textarea, { key: 'a', code: 'KeyA' });
+      fireEvent.keyUp(textarea, { key: 'a', code: 'KeyA' });
+      fireEvent.keyPress(textarea, { key: 'a', code: 'KeyA' });
+
+      // Parent should not receive the events
+      expect(parentKeyDownHandler).not.toHaveBeenCalled();
+    });
+  });
+
   describe('Accessibility', () => {
     test('has radiogroup role for sentiment buttons', () => {
       renderFeedback(<Feedback {...defaultProps} />);

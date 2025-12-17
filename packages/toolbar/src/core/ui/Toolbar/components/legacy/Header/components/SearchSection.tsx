@@ -50,6 +50,12 @@ export function SearchSection(props: SearchSectionProps) {
             onChange={(e) => {
               onSearch(e.target.value);
             }}
+            onKeyDown={(e) => {
+              // Stop propagation to prevent parent app keyboard shortcuts from interfering
+              e.stopPropagation();
+            }}
+            onKeyUp={(e) => e.stopPropagation()}
+            onKeyPress={(e) => e.stopPropagation()}
           />
           <IconButton icon={<CancelCircleIcon />} label="Clear" onClick={handleClear} size="medium" />
         </Group>
