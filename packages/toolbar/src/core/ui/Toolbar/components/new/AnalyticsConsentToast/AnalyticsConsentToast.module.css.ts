@@ -160,4 +160,3 @@ export const closeIcon = style({
   width: '14px',
   height: '14px',
 });
-

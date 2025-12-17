@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { AnimatePresence, motion } from 'motion/react';
-
 import { useAnalyticsPreferences } from '../../../context';
 import { loadAnalyticsConsentShown, saveAnalyticsConsentShown } from '../../../utils/localStorage';
 import { InfoIcon, CancelIcon } from '../../icons';
@@ -14,7 +13,8 @@ const PRIVACY_POLICY_URL = 'https://launchdarkly.com/policies/privacy';
  */
 export function AnalyticsConsentToast() {
   const [hasBeenShown, setHasBeenShown] = useState(() => loadAnalyticsConsentShown());
-  const { handleToggleAnalyticsOptOut } = useAnalyticsPreferences();
+  const { handleToggleAnalyticsOptOut, handleToggleEnhancedAnalyticsOptOut, handleToggleSessionReplayOptOut } =
+    useAnalyticsPreferences();
 
   const handleDismiss = () => {
     setHasBeenShown(true);
@@ -23,6 +23,15 @@ export function AnalyticsConsentToast() {
 
   const handleEnableAnalytics = () => {
     handleToggleAnalyticsOptOut(true);
+    handleToggleEnhancedAnalyticsOptOut(true);
+    handleToggleSessionReplayOptOut(true);
+    handleDismiss();
+  };
+
+  const handleDecline = () => {
+    handleToggleAnalyticsOptOut(false);
+    handleToggleEnhancedAnalyticsOptOut(false);
+    handleToggleSessionReplayOptOut(false);
     handleDismiss();
   };
 
@@ -40,12 +49,7 @@ export function AnalyticsConsentToast() {
         exit={{ opacity: 0, y: 20 }}
         transition={{ duration: 0.2, ease: 'easeOut' }}
       >
-        <button
-          type="button"
-          className={styles.closeButton}
-          onClick={handleDismiss}
-          aria-label="Close"
-        >
+        <button type="button" className={styles.closeButton} onClick={handleDismiss} aria-label="Close">
           <CancelIcon className={styles.closeIcon} />
         </button>
 
@@ -54,15 +58,8 @@ export function AnalyticsConsentToast() {
           <div className={styles.content}>
             <div className={styles.textContent}>
               <p className={styles.title}>Help us improve</p>
-              <p className={styles.description}>
-                Help us improve the toolbar by sharing usage data.
-              </p>
-              <a
-                href={PRIVACY_POLICY_URL}
-                target="_blank"
-                rel="noopener noreferrer"
-                className={styles.privacyLink}
-              >
+              <p className={styles.description}>Help us improve the toolbar by sharing usage data.</p>
+              <a href={PRIVACY_POLICY_URL} target="_blank" rel="noopener noreferrer" className={styles.privacyLink}>
                 Privacy Policy
               </a>
             </div>
@@ -74,12 +71,8 @@ export function AnalyticsConsentToast() {
               >
                 Accept
               </button>
-              <button
-                type="button"
-                className={styles.button}
-                onClick={handleDismiss}
-              >
-                Dismiss
+              <button type="button" className={styles.button} onClick={handleDecline}>
+                Decline
               </button>
             </div>
           </div>
@@ -88,4 +81,3 @@ export function AnalyticsConsentToast() {
     </AnimatePresence>
   );
 }
-

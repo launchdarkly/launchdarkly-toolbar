@@ -4,11 +4,7 @@ import { expect, test, describe, vi, beforeEach } from 'vitest';
 import '@testing-library/jest-dom/vitest';
 
 // Control localStorage mock values
-const {
-  getMockAnalyticsConsentShown,
-  setMockAnalyticsConsentShown,
-  mockSaveAnalyticsConsentShown,
-} = vi.hoisted(() => {
+const { getMockAnalyticsConsentShown, setMockAnalyticsConsentShown, mockSaveAnalyticsConsentShown } = vi.hoisted(() => {
   let consentShown = false;
   const saveFn = vi.fn();
   return {
@@ -30,8 +26,10 @@ vi.mock('../ui/Toolbar/utils/localStorage', async (importOriginal) => {
   };
 });
 
-// Mock analytics preferences with trackable function
+// Mock analytics preferences with trackable functions
 const mockHandleToggleAnalyticsOptOut = vi.fn();
+const mockHandleToggleEnhancedAnalyticsOptOut = vi.fn();
+const mockHandleToggleSessionReplayOptOut = vi.fn();
 
 vi.mock('../ui/Toolbar/context/telemetry/AnalyticsPreferencesProvider', () => ({
   useAnalyticsPreferences: () => ({
@@ -39,8 +37,8 @@ vi.mock('../ui/Toolbar/context/telemetry/AnalyticsPreferencesProvider', () => ({
     isOptedInToEnhancedAnalytics: false,
     isOptedInToSessionReplay: false,
     handleToggleAnalyticsOptOut: mockHandleToggleAnalyticsOptOut,
-    handleToggleEnhancedAnalyticsOptOut: vi.fn(),
-    handleToggleSessionReplayOptOut: vi.fn(),
+    handleToggleEnhancedAnalyticsOptOut: mockHandleToggleEnhancedAnalyticsOptOut,
+    handleToggleSessionReplayOptOut: mockHandleToggleSessionReplayOptOut,
   }),
   AnalyticsPreferencesProvider: ({ children }: { children: React.ReactNode }) => children,
 }));
@@ -82,11 +80,11 @@ describe('AnalyticsConsentToast', () => {
       expect(privacyLink).toHaveAttribute('rel', 'noopener noreferrer');
     });
 
-    test('displays Accept and Dismiss buttons', () => {
+    test('displays Accept and Decline buttons', () => {
       render(<AnalyticsConsentToast />);
 
       expect(screen.getByRole('button', { name: /accept/i })).toBeInTheDocument();
-      expect(screen.getByRole('button', { name: /dismiss/i })).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: /decline/i })).toBeInTheDocument();
     });
 
     test('displays close button', () => {
@@ -97,13 +95,43 @@ describe('AnalyticsConsentToast', () => {
   });
 
   describe('Accept Button', () => {
-    test('enables analytics when Accept is clicked', () => {
+    test('enables base analytics when Accept is clicked', () => {
       render(<AnalyticsConsentToast />);
 
       const acceptButton = screen.getByRole('button', { name: /accept/i });
       fireEvent.click(acceptButton);
 
       expect(mockHandleToggleAnalyticsOptOut).toHaveBeenCalledWith(true);
+    });
+
+    test('enables enhanced analytics when Accept is clicked', () => {
+      render(<AnalyticsConsentToast />);
+
+      const acceptButton = screen.getByRole('button', { name: /accept/i });
+      fireEvent.click(acceptButton);
+
+      expect(mockHandleToggleEnhancedAnalyticsOptOut).toHaveBeenCalledWith(true);
+    });
+
+    test('enables session replay when Accept is clicked', () => {
+      render(<AnalyticsConsentToast />);
+
+      const acceptButton = screen.getByRole('button', { name: /accept/i });
+      fireEvent.click(acceptButton);
+
+      expect(mockHandleToggleSessionReplayOptOut).toHaveBeenCalledWith(true);
+    });
+
+    test('enables all analytics preferences when Accept is clicked', () => {
+      render(<AnalyticsConsentToast />);
+
+      const acceptButton = screen.getByRole('button', { name: /accept/i });
+      fireEvent.click(acceptButton);
+
+      // Verify all three analytics preferences are enabled
+      expect(mockHandleToggleAnalyticsOptOut).toHaveBeenCalledWith(true);
+      expect(mockHandleToggleEnhancedAnalyticsOptOut).toHaveBeenCalledWith(true);
+      expect(mockHandleToggleSessionReplayOptOut).toHaveBeenCalledWith(true);
     });
 
     test('saves consent shown state when Accept is clicked', () => {
@@ -125,43 +153,47 @@ describe('AnalyticsConsentToast', () => {
     });
   });
 
-  describe('Dismiss Button', () => {
-    test('does NOT enable analytics when Dismiss is clicked', () => {
+  describe('Decline Button', () => {
+    test('explicitly disables all analytics when Decline is clicked', () => {
       render(<AnalyticsConsentToast />);
 
-      const dismissButton = screen.getByRole('button', { name: /dismiss/i });
-      fireEvent.click(dismissButton);
+      const declineButton = screen.getByRole('button', { name: /decline/i });
+      fireEvent.click(declineButton);
 
-      expect(mockHandleToggleAnalyticsOptOut).not.toHaveBeenCalled();
+      expect(mockHandleToggleAnalyticsOptOut).toHaveBeenCalledWith(false);
+      expect(mockHandleToggleEnhancedAnalyticsOptOut).toHaveBeenCalledWith(false);
+      expect(mockHandleToggleSessionReplayOptOut).toHaveBeenCalledWith(false);
     });
 
-    test('saves consent shown state when Dismiss is clicked', () => {
+    test('saves consent shown state when Decline is clicked', () => {
       render(<AnalyticsConsentToast />);
 
-      const dismissButton = screen.getByRole('button', { name: /dismiss/i });
-      fireEvent.click(dismissButton);
+      const declineButton = screen.getByRole('button', { name: /decline/i });
+      fireEvent.click(declineButton);
 
       expect(mockSaveAnalyticsConsentShown).toHaveBeenCalledWith(true);
     });
 
-    test('hides toast after Dismiss is clicked', () => {
+    test('hides toast after Decline is clicked', () => {
       render(<AnalyticsConsentToast />);
 
-      const dismissButton = screen.getByRole('button', { name: /dismiss/i });
-      fireEvent.click(dismissButton);
+      const declineButton = screen.getByRole('button', { name: /decline/i });
+      fireEvent.click(declineButton);
 
       expect(screen.queryByText('Help us improve')).not.toBeInTheDocument();
     });
   });
 
   describe('Close Button (X)', () => {
-    test('does NOT enable analytics when close button is clicked', () => {
+    test('does NOT enable any analytics when close button is clicked', () => {
       render(<AnalyticsConsentToast />);
 
       const closeButton = screen.getByRole('button', { name: /close/i });
       fireEvent.click(closeButton);
 
       expect(mockHandleToggleAnalyticsOptOut).not.toHaveBeenCalled();
+      expect(mockHandleToggleEnhancedAnalyticsOptOut).not.toHaveBeenCalled();
+      expect(mockHandleToggleSessionReplayOptOut).not.toHaveBeenCalled();
     });
 
     test('saves consent shown state when close button is clicked', () => {
@@ -183,4 +215,3 @@ describe('AnalyticsConsentToast', () => {
     });
   });
 });
-
