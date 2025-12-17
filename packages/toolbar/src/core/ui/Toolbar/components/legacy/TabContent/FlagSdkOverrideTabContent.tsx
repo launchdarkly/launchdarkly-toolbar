@@ -23,7 +23,8 @@ import { LocalObjectFlagControlListItem } from '../LocalObjectFlagControlListIte
 import { CopyableText } from '../../CopyableText';
 
 import * as sharedStyles from './FlagDevServerTabContent.css';
-import { serializeUrlOverrides } from '../../../../../utils/urlOverrides';
+import { serializeToolbarState, SHARED_STATE_VERSION, MAX_STATE_SIZE_LIMIT } from '../../../../../utils/urlOverrides';
+import { loadContexts, loadActiveContext, loadAllSettings, loadStarredFlags } from '../../../utils/localStorage';
 
 interface FlagSdkOverrideTabContentInnerProps {
   flagOverridePlugin: IFlagOverridePlugin;
@@ -169,6 +170,7 @@ function FlagSdkOverrideTabContentInner(props: FlagSdkOverrideTabContentInnerPro
 
   // Override operations
   const handleSetOverride = (flagKey: string, value: any) => {
+    console.log('🚀 ~ handleSetOverride ~ handleSetOverride:', flagKey, value);
     flagOverridePlugin.setOverride(flagKey, value);
     analytics.trackFlagOverride(flagKey, value, 'set');
 
@@ -199,19 +201,52 @@ function FlagSdkOverrideTabContentInner(props: FlagSdkOverrideTabContentInnerPro
   };
 
   const handleShareUrl = useCallback(() => {
-    const currentOverrides = flagOverridePlugin.getAllOverrides();
-    const shareUrl = serializeUrlOverrides(currentOverrides);
+    try {
+      // Gather all toolbar state
+      const state = {
+        version: SHARED_STATE_VERSION,
+        overrides: flagOverridePlugin.getAllOverrides(),
+        contexts: loadContexts(),
+        activeContext: loadActiveContext(),
+        settings: loadAllSettings(),
+        starredFlags: Array.from(loadStarredFlags()),
+      };
 
-    // Copy to clipboard
-    navigator.clipboard
-      .writeText(shareUrl)
-      .then(() => {
-        console.log('Share URL copied to clipboard:', shareUrl);
-        analytics.trackFlagOverride('*', { count: Object.keys(currentOverrides).length }, 'share_url');
-      })
-      .catch((error) => {
-        console.error('Failed to copy share URL:', error);
-      });
+      // Serialize the state
+      const result = serializeToolbarState(state);
+
+      // Check size limits
+      if (result.exceedsLimit) {
+        console.error(
+          `Shared state is too large (${result.size} chars, limit: ${MAX_STATE_SIZE_LIMIT}). Cannot create shareable link.`,
+        );
+        alert(
+          `The toolbar state is too large to share (${result.size} characters). Try reducing the number of overrides, contexts, or starred flags.`,
+        );
+        return;
+      }
+
+      if (result.exceedsWarning) {
+        console.warn(
+          `Shared state is large (${result.size} chars). Some browsers may have issues with URLs this long.`,
+        );
+      }
+
+      // Copy to clipboard
+      navigator.clipboard
+        .writeText(result.url)
+        .then(() => {
+          console.log('Share URL copied to clipboard:', result.url);
+          analytics.trackFlagOverride('*', { count: Object.keys(state.overrides).length }, 'share_url');
+        })
+        .catch((error) => {
+          console.error('Failed to copy share URL:', error);
+          alert('Failed to copy URL to clipboard. Please copy it manually from the console.');
+        });
+    } catch (error) {
+      console.error('Failed to create share URL:', error);
+      alert('Failed to create shareable link. Check console for details.');
+    }
   }, [flagOverridePlugin, analytics]);
 
   const renderFlagControl = (flag: LocalFlag) => {

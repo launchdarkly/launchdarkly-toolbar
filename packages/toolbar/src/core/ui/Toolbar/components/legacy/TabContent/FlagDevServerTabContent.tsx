@@ -15,7 +15,8 @@ import { VIRTUALIZATION } from '../../../constants';
 import { LocalObjectFlagControlListItem } from '../LocalObjectFlagControlListItem';
 import * as styles from './FlagDevServerTabContent.css';
 import { CopyableText } from '../../CopyableText';
-import { serializeUrlOverrides } from '../../../../../utils/urlOverrides';
+import { serializeToolbarState, SHARED_STATE_VERSION, MAX_STATE_SIZE_LIMIT } from '../../../../../utils/urlOverrides';
+import { loadContexts, loadActiveContext, loadAllSettings, loadStarredFlags } from '../../../utils/localStorage';
 
 interface FlagDevServerTabContentProps {
   reloadOnFlagChangeIsEnabled: boolean;
@@ -178,26 +179,59 @@ export function FlagDevServerTabContent(props: FlagDevServerTabContentProps) {
   );
 
   const handleShareUrl = useCallback(() => {
-    // Get all overridden flags
-    const overrides: Record<string, any> = {};
-    Object.entries(flags).forEach(([flagKey, flag]) => {
-      if (flag.isOverridden) {
-        overrides[flagKey] = flag.currentValue;
-      }
-    });
-
-    const shareUrl = serializeUrlOverrides(overrides);
-
-    // Copy to clipboard
-    navigator.clipboard
-      .writeText(shareUrl)
-      .then(() => {
-        console.log('Share URL copied to clipboard:', shareUrl);
-        analytics.trackFlagOverride('*', { count: Object.keys(overrides).length }, 'share_url');
-      })
-      .catch((error) => {
-        console.error('Failed to copy share URL:', error);
+    try {
+      // Get all overridden flags from dev server
+      const overrides: Record<string, any> = {};
+      Object.entries(flags).forEach(([flagKey, flag]) => {
+        if (flag.isOverridden) {
+          overrides[flagKey] = flag.currentValue;
+        }
       });
+
+      // Gather all toolbar state
+      const toolbarState = {
+        version: SHARED_STATE_VERSION,
+        overrides,
+        contexts: loadContexts(),
+        activeContext: loadActiveContext(),
+        settings: loadAllSettings(),
+        starredFlags: Array.from(loadStarredFlags()),
+      };
+
+      // Serialize the state
+      const result = serializeToolbarState(toolbarState);
+
+      // Check size limits
+      if (result.exceedsLimit) {
+        console.error(
+          `Shared state is too large (${result.size} chars, limit: ${MAX_STATE_SIZE_LIMIT}). Cannot create shareable link.`,
+        );
+        alert(
+          `The toolbar state is too large to share (${result.size} characters). Try reducing the number of overrides, contexts, or starred flags.`,
+        );
+        return;
+      }
+
+      if (result.exceedsWarning) {
+        console.warn(
+          `Shared state is large (${result.size} chars). Some browsers may have issues with URLs this long.`,
+        );
+      }
+
+      navigator.clipboard
+        .writeText(result.url)
+        .then(() => {
+          console.log('Share URL copied to clipboard:', result.url);
+          analytics.trackFlagOverride('*', { count: Object.keys(overrides).length }, 'share_url');
+        })
+        .catch((error) => {
+          console.error('Failed to copy share URL:', error);
+          alert('Failed to copy URL to clipboard. Please copy it manually from the console.');
+        });
+    } catch (error) {
+      console.error('Failed to create share URL:', error);
+      alert('Failed to create shareable link. Check console for details.');
+    }
   }, [flags, analytics]);
 
   const handleHeightChange = useCallback(

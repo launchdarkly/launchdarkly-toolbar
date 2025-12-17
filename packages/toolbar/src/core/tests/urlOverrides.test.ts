@@ -1,12 +1,23 @@
-import { describe, test, expect, beforeEach, afterEach } from 'vitest';
-import { parseUrlOverrides, serializeUrlOverrides, hasUrlOverrides } from '../utils/urlOverrides';
+import { describe, test, expect, beforeEach, afterEach, vi } from 'vitest';
+import {
+  serializeToolbarState,
+  parseToolbarState,
+  hasToolbarState,
+  clearToolbarStateFromUrl,
+  loadSharedStateFromUrl,
+  SHARED_STATE_VERSION,
+  MAX_STATE_SIZE_WARNING,
+  MAX_STATE_SIZE_LIMIT,
+  type SharedToolbarState,
+} from '../utils/urlOverrides';
 
-describe('URL Overrides', () => {
+describe('Toolbar State Sharing', () => {
   let originalLocation: any;
+  let originalLocalStorage: any;
 
   beforeEach(() => {
+    // Mock window.location
     originalLocation = window.location;
-    // Mock window.location for testing
     delete (window as any).location;
     window.location = {
       href: 'https://example.com',
@@ -14,405 +25,568 @@ describe('URL Overrides', () => {
       pathname: '/',
       search: '',
     } as any;
+
+    // Mock localStorage
+    originalLocalStorage = window.localStorage;
+    const storage: Record<string, string> = {};
+    window.localStorage = {
+      getItem: (key: string) => storage[key] || null,
+      setItem: (key: string, value: string) => {
+        storage[key] = value;
+      },
+      removeItem: (key: string) => {
+        delete storage[key];
+      },
+      clear: () => {
+        Object.keys(storage).forEach((key) => delete storage[key]);
+      },
+      get length() {
+        return Object.keys(storage).length;
+      },
+      key: (index: number) => Object.keys(storage)[index] || null,
+    } as Storage;
+
+    // Mock history.replaceState
+    window.history.replaceState = vi.fn();
   });
 
   afterEach(() => {
     window.location = originalLocation;
+    window.localStorage = originalLocalStorage;
+    vi.restoreAllMocks();
   });
 
-  describe('parseUrlOverrides', () => {
-    test('parses boolean values correctly', () => {
-      const overrides = parseUrlOverrides('https://example.com?ldo_flag1=true&ldo_flag2=false');
+  describe('serializeToolbarState', () => {
+    test('serializes complete state correctly', () => {
+      const state: SharedToolbarState = {
+        version: SHARED_STATE_VERSION,
+        overrides: { flag1: true, flag2: 'control' },
+        contexts: [{ id: 'user1', kind: 'user' }],
+        activeContext: { id: 'user2', kind: 'user' },
+        settings: { position: 'bottom-right', reloadOnFlagChange: true },
+        starredFlags: ['flag1', 'flag2'],
+      };
 
-      expect(overrides).toEqual({
-        flag1: true,
-        flag2: false,
-      });
-      expect(typeof overrides.flag1).toBe('boolean');
-      expect(typeof overrides.flag2).toBe('boolean');
+      const result = serializeToolbarState(state);
+
+      expect(result.url).toContain('ldToolbarState=');
+      expect(result.size).toBeGreaterThan(0);
+      expect(typeof result.exceedsWarning).toBe('boolean');
+      expect(typeof result.exceedsLimit).toBe('boolean');
     });
 
-    test('parses number values correctly', () => {
-      const overrides = parseUrlOverrides('https://example.com?ldo_count=42&ldo_price=99.99');
+    test('serialized state can be parsed back', () => {
+      const state: SharedToolbarState = {
+        version: SHARED_STATE_VERSION,
+        overrides: { flag1: true, flag2: 42, flag3: { nested: 'value' } },
+        contexts: [{ id: 'user1', kind: 'user' }],
+        activeContext: { id: 'user2', kind: 'user' },
+        settings: { position: 'bottom-right' },
+        starredFlags: ['flag1'],
+      };
 
-      expect(overrides).toEqual({
-        count: 42,
-        price: 99.99,
-      });
-      expect(typeof overrides.count).toBe('number');
-      expect(typeof overrides.price).toBe('number');
+      const serialized = serializeToolbarState(state);
+      const parsed = parseToolbarState(serialized.url);
+
+      expect(parsed.found).toBe(true);
+      expect(parsed.state).toEqual(state);
+      expect(parsed.error).toBeNull();
     });
 
-    test('parses string values correctly', () => {
-      const overrides = parseUrlOverrides('https://example.com?ldo_variant=control&ldo_name=alice');
+    test('detects when size exceeds warning threshold', () => {
+      // Create a large state
+      const largeOverrides: Record<string, any> = {};
+      for (let i = 0; i < 100; i++) {
+        largeOverrides[`flag${i}`] = `value${i}`;
+      }
 
-      expect(overrides).toEqual({
-        variant: 'control',
-        name: 'alice',
-      });
-      expect(typeof overrides.variant).toBe('string');
-      expect(typeof overrides.name).toBe('string');
+      const state: SharedToolbarState = {
+        version: SHARED_STATE_VERSION,
+        overrides: largeOverrides,
+        contexts: [],
+        activeContext: null,
+        settings: {},
+        starredFlags: [],
+      };
+
+      const result = serializeToolbarState(state);
+
+      if (result.size > MAX_STATE_SIZE_WARNING) {
+        expect(result.exceedsWarning).toBe(true);
+      }
     });
 
-    test('parses JSON object values correctly', () => {
-      const overrides = parseUrlOverrides(
-        'https://example.com?ldo_config=' + encodeURIComponent('{"key":"value","nested":{"a":1}}'),
-      );
+    test('detects when size exceeds limit', () => {
+      // Create a very large state
+      const veryLargeOverrides: Record<string, any> = {};
+      for (let i = 0; i < 500; i++) {
+        veryLargeOverrides[`flag${i}`] = { data: 'x'.repeat(50) };
+      }
 
-      expect(overrides).toEqual({
-        config: { key: 'value', nested: { a: 1 } },
-      });
-      expect(typeof overrides.config).toBe('object');
+      const state: SharedToolbarState = {
+        version: SHARED_STATE_VERSION,
+        overrides: veryLargeOverrides,
+        contexts: [],
+        activeContext: null,
+        settings: {},
+        starredFlags: [],
+      };
+
+      const result = serializeToolbarState(state);
+
+      if (result.size > MAX_STATE_SIZE_LIMIT) {
+        expect(result.exceedsLimit).toBe(true);
+      }
     });
 
-    test('parses JSON array values correctly', () => {
-      const overrides = parseUrlOverrides('https://example.com?ldo_items=' + encodeURIComponent('[1,2,3]'));
-
-      expect(overrides).toEqual({
-        items: [1, 2, 3],
-      });
-      expect(Array.isArray(overrides.items)).toBe(true);
-    });
-
-    test('parses null values correctly', () => {
-      const overrides = parseUrlOverrides('https://example.com?ldo_value=null');
-
-      expect(overrides).toEqual({
-        value: null,
-      });
-      expect(overrides.value).toBeNull();
-    });
-
-    test('ignores parameters without ldo_ prefix', () => {
-      const overrides = parseUrlOverrides('https://example.com?ldo_flag=true&other=value&regular=param');
-
-      expect(overrides).toEqual({
-        flag: true,
-      });
-      expect(overrides).not.toHaveProperty('other');
-      expect(overrides).not.toHaveProperty('regular');
-    });
-
-    test('handles mixed parameter types', () => {
-      const overrides = parseUrlOverrides('https://example.com?ldo_bool=true&ldo_str=hello&ldo_num=123&other=ignored');
-
-      expect(overrides).toEqual({
-        bool: true,
-        str: 'hello',
-        num: 123,
-      });
-    });
-
-    test('handles empty parameter values', () => {
-      const overrides = parseUrlOverrides('https://example.com?ldo_empty=');
-
-      expect(overrides).toEqual({
-        empty: '',
-      });
-      expect(overrides.empty).toBe('');
-    });
-
-    test('handles URL encoded spaces and special characters', () => {
-      const overrides = parseUrlOverrides('https://example.com?ldo_message=hello%20world&ldo_special=test%26value');
-
-      expect(overrides).toEqual({
-        message: 'hello world',
-        special: 'test&value',
-      });
-    });
-
-    test('handles quoted string values that would parse as other types', () => {
-      const overrides = parseUrlOverrides('https://example.com?ldo_strTrue="true"&ldo_strNum="123"');
-
-      expect(overrides).toEqual({
-        strTrue: 'true',
-        strNum: '123',
-      });
-      expect(typeof overrides.strTrue).toBe('string');
-      expect(typeof overrides.strNum).toBe('string');
-    });
-
-    test('returns empty object when no ldo_ parameters exist', () => {
-      const overrides = parseUrlOverrides('https://example.com?other=value&regular=param');
-
-      expect(overrides).toEqual({});
-    });
-
-    test('returns empty object for URL with no parameters', () => {
-      const overrides = parseUrlOverrides('https://example.com');
-
-      expect(overrides).toEqual({});
-    });
-
-    test('uses current window.location.href when no URL provided', () => {
-      window.location.href = 'https://example.com?ldo_test=true';
-
-      const overrides = parseUrlOverrides();
-
-      expect(overrides).toEqual({
-        test: true,
-      });
-    });
-
-    test('handles invalid URLs gracefully', () => {
-      const overrides = parseUrlOverrides('not-a-valid-url');
-
-      expect(overrides).toEqual({});
-    });
-
-    test('handles flag keys with hyphens and underscores', () => {
-      const overrides = parseUrlOverrides('https://example.com?ldo_my-flag=true&ldo_another_flag=false');
-
-      expect(overrides).toEqual({
-        'my-flag': true,
-        another_flag: false,
-      });
-    });
-
-    test('handles multiple flags with same prefix correctly', () => {
-      const overrides = parseUrlOverrides('https://example.com?ldo_flag1=a&ldo_flag2=b&ldo_flag3=c');
-
-      expect(overrides).toEqual({
-        flag1: 'a',
-        flag2: 'b',
-        flag3: 'c',
-      });
-    });
-  });
-
-  describe('serializeUrlOverrides', () => {
-    test('serializes boolean values without quotes', () => {
-      const url = serializeUrlOverrides({ flag1: true, flag2: false });
-
-      expect(url).toContain('ldo_flag1=true');
-      expect(url).toContain('ldo_flag2=false');
-    });
-
-    test('serializes number values without quotes', () => {
-      const url = serializeUrlOverrides({ count: 42, price: 99.99 });
-
-      expect(url).toContain('ldo_count=42');
-      expect(url).toContain('ldo_price=99.99');
-    });
-
-    test('serializes simple string values without quotes', () => {
-      const url = serializeUrlOverrides({ variant: 'control', name: 'alice' });
-
-      expect(url).toContain('ldo_variant=control');
-      expect(url).toContain('ldo_name=alice');
-    });
-
-    test('serializes string values that would parse as booleans with quotes', () => {
-      const url = serializeUrlOverrides({ strTrue: 'true', strFalse: 'false' });
-
-      expect(url).toContain('ldo_strTrue=%22true%22'); // "true" URL encoded
-      expect(url).toContain('ldo_strFalse=%22false%22'); // "false" URL encoded
-    });
-
-    test('serializes string values that would parse as numbers with quotes', () => {
-      const url = serializeUrlOverrides({ strNum: '123', strFloat: '99.99' });
-
-      expect(url).toContain('ldo_strNum=%22123%22'); // "123" URL encoded
-      expect(url).toContain('ldo_strFloat=%22' + encodeURIComponent('99.99') + '%22');
-    });
-
-    test('serializes object values as JSON', () => {
-      const url = serializeUrlOverrides({ config: { key: 'value', nested: { a: 1 } } });
-
-      const urlObj = new URL(url);
-      const configValue = urlObj.searchParams.get('ldo_config');
-      expect(JSON.parse(configValue!)).toEqual({ key: 'value', nested: { a: 1 } });
-    });
-
-    test('serializes array values as JSON', () => {
-      const url = serializeUrlOverrides({ items: [1, 2, 3] });
-
-      const urlObj = new URL(url);
-      const itemsValue = urlObj.searchParams.get('ldo_items');
-      expect(JSON.parse(itemsValue!)).toEqual([1, 2, 3]);
-    });
-
-    test('serializes null values as JSON', () => {
-      const url = serializeUrlOverrides({ value: null });
-
-      expect(url).toContain('ldo_value=null');
-    });
-
-    test('preserves existing non-override query parameters', () => {
+    test('preserves existing query parameters', () => {
       window.location.search = '?existing=value&another=param';
 
-      const url = serializeUrlOverrides({ flag: true });
+      const state: SharedToolbarState = {
+        version: SHARED_STATE_VERSION,
+        overrides: {},
+        contexts: [],
+        activeContext: null,
+        settings: {},
+        starredFlags: [],
+      };
 
-      expect(url).toContain('existing=value');
-      expect(url).toContain('another=param');
-      expect(url).toContain('ldo_flag=true');
-    });
+      const result = serializeToolbarState(state);
 
-    test('replaces existing override parameters with new values', () => {
-      window.location.search = '?ldo_flag=false';
-
-      const url = serializeUrlOverrides({ flag: true });
-
-      const urlObj = new URL(url);
-      expect(urlObj.searchParams.get('ldo_flag')).toBe('true');
-      expect(urlObj.searchParams.getAll('ldo_flag')).toHaveLength(1);
+      expect(result.url).toContain('existing=value');
+      expect(result.url).toContain('another=param');
+      expect(result.url).toContain('ldToolbarState=');
     });
 
     test('uses custom base URL when provided', () => {
-      const url = serializeUrlOverrides({ flag: true }, 'https://custom.com/path');
-
-      expect(url).toContain('https://custom.com/path');
-      expect(url).toContain('ldo_flag=true');
-    });
-
-    test('handles empty overrides object', () => {
-      const url = serializeUrlOverrides({});
-
-      const urlObj = new URL(url);
-      const ldoParams = Array.from(urlObj.searchParams.keys()).filter((k) => k.startsWith('ldo_'));
-      expect(ldoParams).toHaveLength(0);
-    });
-
-    test('handles flag keys with hyphens and underscores', () => {
-      const url = serializeUrlOverrides({ 'my-flag': true, another_flag: false });
-
-      expect(url).toContain('ldo_my-flag=true');
-      expect(url).toContain('ldo_another_flag=false');
-    });
-
-    test('URL encodes special characters in string values', () => {
-      const url = serializeUrlOverrides({ message: 'hello world', special: 'test&value' });
-
-      const urlObj = new URL(url);
-      expect(urlObj.searchParams.get('ldo_message')).toBe('hello world');
-      expect(urlObj.searchParams.get('ldo_special')).toBe('test&value');
-    });
-
-    test('round-trips correctly with parseUrlOverrides for various types', () => {
-      const originalOverrides = {
-        bool: true,
-        num: 42,
-        str: 'hello',
-        strTrue: 'true', // Should be quoted
-        strNum: '123', // Should be quoted
-        obj: { key: 'value' },
-        arr: [1, 2, 3],
-        nullVal: null,
+      const state: SharedToolbarState = {
+        version: SHARED_STATE_VERSION,
+        overrides: {},
+        contexts: [],
+        activeContext: null,
+        settings: {},
+        starredFlags: [],
       };
 
-      const url = serializeUrlOverrides(originalOverrides);
-      const parsedOverrides = parseUrlOverrides(url);
+      const result = serializeToolbarState(state, 'https://custom.com/path');
 
-      expect(parsedOverrides).toEqual(originalOverrides);
+      expect(result.url).toContain('https://custom.com/path');
+    });
+
+    test('uses custom param name when provided', () => {
+      const state: SharedToolbarState = {
+        version: SHARED_STATE_VERSION,
+        overrides: {},
+        contexts: [],
+        activeContext: null,
+        settings: {},
+        starredFlags: [],
+      };
+
+      const result = serializeToolbarState(state, undefined, 'customParam');
+
+      expect(result.url).toContain('customParam=');
+      expect(result.url).not.toContain('ldToolbarState=');
+    });
+
+    test('handles empty state', () => {
+      const state: SharedToolbarState = {
+        version: SHARED_STATE_VERSION,
+        overrides: {},
+        contexts: [],
+        activeContext: null,
+        settings: {},
+        starredFlags: [],
+      };
+
+      const result = serializeToolbarState(state);
+
+      expect(result.url).toContain('ldToolbarState=');
+      const parsed = parseToolbarState(result.url);
+      expect(parsed.state).toEqual(state);
     });
   });
 
-  describe('hasUrlOverrides', () => {
-    test('returns true when URL contains ldo_ parameters', () => {
-      const result = hasUrlOverrides('https://example.com?ldo_flag=true');
+  describe('parseToolbarState', () => {
+    test('returns not found when parameter is missing', () => {
+      const result = parseToolbarState('https://example.com');
+
+      expect(result.found).toBe(false);
+      expect(result.state).toBeNull();
+      expect(result.error).toBeNull();
+    });
+
+    test('parses valid state correctly', () => {
+      const state: SharedToolbarState = {
+        version: SHARED_STATE_VERSION,
+        overrides: { flag1: true },
+        contexts: [{ id: 'user1', kind: 'user' }],
+        activeContext: null,
+        settings: { position: 'top-left' },
+        starredFlags: ['flag1'],
+      };
+
+      const serialized = serializeToolbarState(state);
+      const parsed = parseToolbarState(serialized.url);
+
+      expect(parsed.found).toBe(true);
+      expect(parsed.state).toEqual(state);
+      expect(parsed.error).toBeNull();
+    });
+
+    test('handles invalid base64', () => {
+      const result = parseToolbarState('https://example.com?ldToolbarState=invalid!!!base64');
+
+      expect(result.found).toBe(true);
+      expect(result.state).toBeNull();
+      expect(result.error).toContain('Failed to decode state');
+    });
+
+    test('handles invalid JSON', () => {
+      // Create invalid base64-encoded content (not valid JSON)
+      const invalidJson = btoa('not valid json');
+      const result = parseToolbarState(`https://example.com?ldToolbarState=${invalidJson}`);
+
+      expect(result.found).toBe(true);
+      expect(result.state).toBeNull();
+      expect(result.error).toContain('Failed to decode state');
+    });
+
+    test('validates state structure - missing version', () => {
+      const invalidState = {
+        overrides: {},
+        contexts: [],
+        activeContext: null,
+        settings: {},
+        starredFlags: [],
+      };
+      const encoded = btoa(JSON.stringify(invalidState));
+      const result = parseToolbarState(`https://example.com?ldToolbarState=${encoded}`);
+
+      expect(result.found).toBe(true);
+      expect(result.state).toBeNull();
+      expect(result.error).toContain('version');
+    });
+
+    test('validates state structure - invalid overrides type', () => {
+      const invalidState = {
+        version: SHARED_STATE_VERSION,
+        overrides: 'not an object',
+        contexts: [],
+        activeContext: null,
+        settings: {},
+        starredFlags: [],
+      };
+      const encoded = btoa(JSON.stringify(invalidState));
+      const result = parseToolbarState(`https://example.com?ldToolbarState=${encoded}`);
+
+      expect(result.found).toBe(true);
+      expect(result.state).toBeNull();
+      expect(result.error).toContain('overrides');
+    });
+
+    test('validates state structure - invalid contexts type', () => {
+      const invalidState = {
+        version: SHARED_STATE_VERSION,
+        overrides: {},
+        contexts: 'not an array',
+        activeContext: null,
+        settings: {},
+        starredFlags: [],
+      };
+      const encoded = btoa(JSON.stringify(invalidState));
+      const result = parseToolbarState(`https://example.com?ldToolbarState=${encoded}`);
+
+      expect(result.found).toBe(true);
+      expect(result.state).toBeNull();
+      expect(result.error).toContain('contexts');
+    });
+
+    test('allows missing optional fields for backwards compatibility', () => {
+      const minimalState = {
+        version: SHARED_STATE_VERSION,
+      };
+      const encoded = btoa(JSON.stringify(minimalState));
+      const result = parseToolbarState(`https://example.com?ldToolbarState=${encoded}`);
+
+      expect(result.found).toBe(true);
+      expect(result.state).toBeTruthy();
+      expect(result.error).toBeNull();
+    });
+
+    test('uses custom param name when provided', () => {
+      const state: SharedToolbarState = {
+        version: SHARED_STATE_VERSION,
+        overrides: {},
+        contexts: [],
+        activeContext: null,
+        settings: {},
+        starredFlags: [],
+      };
+
+      const serialized = serializeToolbarState(state, undefined, 'customParam');
+      const parsed = parseToolbarState(serialized.url, 'customParam');
+
+      expect(parsed.found).toBe(true);
+      expect(parsed.state).toEqual(state);
+    });
+  });
+
+  describe('hasToolbarState', () => {
+    test('returns true when parameter exists', () => {
+      const result = hasToolbarState('https://example.com?ldToolbarState=abc123');
 
       expect(result).toBe(true);
     });
 
-    test('returns true when URL contains multiple ldo_ parameters', () => {
-      const result = hasUrlOverrides('https://example.com?ldo_flag1=true&ldo_flag2=false');
-
-      expect(result).toBe(true);
-    });
-
-    test('returns false when URL contains no ldo_ parameters', () => {
-      const result = hasUrlOverrides('https://example.com?other=value');
+    test('returns false when parameter does not exist', () => {
+      const result = hasToolbarState('https://example.com?other=value');
 
       expect(result).toBe(false);
     });
 
-    test('returns false when URL has no query parameters', () => {
-      const result = hasUrlOverrides('https://example.com');
-
-      expect(result).toBe(false);
-    });
-
-    test('returns false when URL has only non-override parameters', () => {
-      const result = hasUrlOverrides('https://example.com?foo=bar&baz=qux');
+    test('returns false for URL with no parameters', () => {
+      const result = hasToolbarState('https://example.com');
 
       expect(result).toBe(false);
     });
 
     test('uses current window.location.href when no URL provided', () => {
-      window.location.href = 'https://example.com?ldo_test=true';
+      window.location.href = 'https://example.com?ldToolbarState=test';
 
-      const result = hasUrlOverrides();
+      const result = hasToolbarState();
 
       expect(result).toBe(true);
     });
 
-    test('handles invalid URLs gracefully', () => {
-      const result = hasUrlOverrides('not-a-valid-url');
-
-      expect(result).toBe(false);
-    });
-
-    test('returns true even if ldo_ parameter has empty value', () => {
-      const result = hasUrlOverrides('https://example.com?ldo_flag=');
+    test('uses custom param name when provided', () => {
+      const result = hasToolbarState('https://example.com?customParam=test', 'customParam');
 
       expect(result).toBe(true);
     });
   });
 
-  describe('edge cases and error handling', () => {
-    test('parseUrlOverrides handles malformed JSON gracefully', () => {
-      const overrides = parseUrlOverrides('https://example.com?ldo_bad={invalid json}');
+  describe('clearToolbarStateFromUrl', () => {
+    test('removes parameter from URL', () => {
+      window.location.href = 'https://example.com?ldToolbarState=test&other=value';
 
-      // Should treat as string since JSON.parse fails
-      expect(overrides).toEqual({
-        bad: '{invalid json}',
-      });
+      clearToolbarStateFromUrl();
+
+      expect(window.history.replaceState).toHaveBeenCalled();
+      const call = (window.history.replaceState as any).mock.calls[0];
+      expect(call[2]).not.toContain('ldToolbarState');
+      expect(call[2]).toContain('other=value');
     });
 
-    test('serializeUrlOverrides handles undefined values', () => {
-      const url = serializeUrlOverrides({ flag: undefined } as any);
+    test('does nothing if parameter does not exist', () => {
+      window.location.href = 'https://example.com?other=value';
 
-      const urlObj = new URL(url);
-      expect(urlObj.searchParams.get('ldo_flag')).toBeTruthy();
+      clearToolbarStateFromUrl();
+
+      expect(window.history.replaceState).not.toHaveBeenCalled();
     });
 
-    test('parseUrlOverrides handles hash fragments correctly', () => {
-      const overrides = parseUrlOverrides('https://example.com?ldo_flag=true#hash');
+    test('uses custom param name when provided', () => {
+      window.location.href = 'https://example.com?customParam=test';
 
-      expect(overrides).toEqual({
-        flag: true,
-      });
+      clearToolbarStateFromUrl('customParam');
+
+      expect(window.history.replaceState).toHaveBeenCalled();
+      const call = (window.history.replaceState as any).mock.calls[0];
+      expect(call[2]).not.toContain('customParam');
+    });
+  });
+
+  describe('loadSharedStateFromUrl', () => {
+    test('loads and applies complete state to localStorage', () => {
+      const state: SharedToolbarState = {
+        version: SHARED_STATE_VERSION,
+        overrides: { flag1: true, flag2: 'control' },
+        contexts: [{ id: 'user1', kind: 'user' }],
+        activeContext: { id: 'user2', kind: 'user' },
+        settings: { position: 'bottom-right' },
+        starredFlags: ['flag1', 'flag2'],
+      };
+
+      const serialized = serializeToolbarState(state);
+      window.location.href = serialized.url;
+
+      const result = loadSharedStateFromUrl();
+
+      expect(result.loaded).toBe(true);
+      expect(result.error).toBeNull();
+
+      // Verify overrides were saved
+      expect(window.localStorage.getItem('ld-flag-override:flag1')).toBe('true');
+      expect(window.localStorage.getItem('ld-flag-override:flag2')).toBe('"control"');
+
+      // Verify contexts were saved
+      expect(window.localStorage.getItem('ld-toolbar-contexts')).toBe(JSON.stringify(state.contexts));
+
+      // Verify active context was saved
+      expect(window.localStorage.getItem('ld-toolbar-active-context')).toBe(JSON.stringify(state.activeContext));
+
+      // Verify settings were saved
+      expect(window.localStorage.getItem('ld-toolbar-settings')).toBe(JSON.stringify(state.settings));
+
+      // Verify starred flags were saved
+      expect(window.localStorage.getItem('ld-toolbar-starred-flags')).toBe(JSON.stringify(state.starredFlags));
+
+      // Verify URL was cleared
+      expect(window.history.replaceState).toHaveBeenCalled();
     });
 
-    test('serializeUrlOverrides preserves hash fragments', () => {
-      window.location.href = 'https://example.com#hash';
-      const url = serializeUrlOverrides({ flag: true });
+    test('returns not loaded when no parameter exists', () => {
+      window.location.href = 'https://example.com';
 
-      // Note: URL constructor doesn't preserve hash from window.location
-      // but our implementation should work with the provided baseUrl
-      expect(url).toContain('ldo_flag=true');
+      const result = loadSharedStateFromUrl();
+
+      expect(result.loaded).toBe(false);
+      expect(result.error).toBeNull();
     });
 
-    test('handles very long string values', () => {
-      const longString = 'a'.repeat(1000);
-      const overrides = { longValue: longString };
+    test('returns error when state is invalid', () => {
+      window.location.href = 'https://example.com?ldToolbarState=invalid';
 
-      const url = serializeUrlOverrides(overrides);
-      const parsed = parseUrlOverrides(url);
+      const result = loadSharedStateFromUrl();
 
-      expect(parsed.longValue).toBe(longString);
+      expect(result.loaded).toBe(false);
+      expect(result.error).toBeTruthy();
     });
 
-    test('handles many override parameters', () => {
-      const manyOverrides: Record<string, any> = {};
-      for (let i = 0; i < 50; i++) {
-        manyOverrides[`flag${i}`] = i % 2 === 0;
-      }
+    test('uses custom flag override namespace', () => {
+      const state: SharedToolbarState = {
+        version: SHARED_STATE_VERSION,
+        overrides: { flag1: true },
+        contexts: [],
+        activeContext: null,
+        settings: {},
+        starredFlags: [],
+      };
 
-      const url = serializeUrlOverrides(manyOverrides);
-      const parsed = parseUrlOverrides(url);
+      const serialized = serializeToolbarState(state);
+      window.location.href = serialized.url;
 
-      expect(parsed).toEqual(manyOverrides);
+      loadSharedStateFromUrl(undefined, 'custom-namespace');
+
+      expect(window.localStorage.getItem('custom-namespace:flag1')).toBe('true');
+    });
+
+    test('handles missing optional state fields gracefully', () => {
+      const minimalState = {
+        version: SHARED_STATE_VERSION,
+        overrides: { flag1: true },
+      };
+
+      const encoded = btoa(JSON.stringify(minimalState));
+      window.location.href = `https://example.com?ldToolbarState=${encoded}`;
+
+      const result = loadSharedStateFromUrl();
+
+      expect(result.loaded).toBe(true);
+      expect(window.localStorage.getItem('ld-flag-override:flag1')).toBe('true');
+    });
+
+    test('clears URL parameter after loading', () => {
+      const state: SharedToolbarState = {
+        version: SHARED_STATE_VERSION,
+        overrides: {},
+        contexts: [],
+        activeContext: null,
+        settings: {},
+        starredFlags: [],
+      };
+
+      const serialized = serializeToolbarState(state);
+      window.location.href = serialized.url;
+
+      loadSharedStateFromUrl();
+
+      expect(window.history.replaceState).toHaveBeenCalled();
+    });
+
+    test('applies overrides directly to plugin when provided', () => {
+      const state: SharedToolbarState = {
+        version: SHARED_STATE_VERSION,
+        overrides: { flag1: true, flag2: 'control', flag3: 42 },
+        contexts: [],
+        activeContext: null,
+        settings: {},
+        starredFlags: [],
+      };
+
+      const serialized = serializeToolbarState(state);
+      window.location.href = serialized.url;
+
+      // Mock plugin
+      const mockPlugin = {
+        setOverride: vi.fn(),
+      };
+
+      const result = loadSharedStateFromUrl(undefined, undefined, mockPlugin);
+
+      expect(result.loaded).toBe(true);
+      expect(mockPlugin.setOverride).toHaveBeenCalledTimes(3);
+      expect(mockPlugin.setOverride).toHaveBeenCalledWith('flag1', true);
+      expect(mockPlugin.setOverride).toHaveBeenCalledWith('flag2', 'control');
+      expect(mockPlugin.setOverride).toHaveBeenCalledWith('flag3', 42);
+    });
+
+    test('does not crash if plugin is provided but lacks setOverride method', () => {
+      const state: SharedToolbarState = {
+        version: SHARED_STATE_VERSION,
+        overrides: { flag1: true },
+        contexts: [],
+        activeContext: null,
+        settings: {},
+        starredFlags: [],
+      };
+
+      const serialized = serializeToolbarState(state);
+      window.location.href = serialized.url;
+
+      const mockPlugin = {}; // Missing setOverride method
+
+      const result = loadSharedStateFromUrl(undefined, undefined, mockPlugin);
+
+      expect(result.loaded).toBe(true);
+      // Should still save to localStorage even if plugin doesn't support setOverride
+      expect(window.localStorage.getItem('ld-flag-override:flag1')).toBe('true');
+    });
+  });
+
+  describe('round-trip tests', () => {
+    test('complete state survives serialization and parsing', () => {
+      const originalState: SharedToolbarState = {
+        version: SHARED_STATE_VERSION,
+        overrides: {
+          boolFlag: true,
+          numberFlag: 42,
+          stringFlag: 'control',
+          objectFlag: { nested: { value: 'test' } },
+          arrayFlag: [1, 2, 3],
+          nullFlag: null,
+        },
+        contexts: [
+          { id: 'user1', kind: 'user', name: 'Alice' },
+          { id: 'org1', kind: 'organization', key: 'acme' },
+        ],
+        activeContext: { id: 'user2', kind: 'user' },
+        settings: {
+          position: 'bottom-right',
+          reloadOnFlagChange: true,
+          autoCollapse: false,
+          preferredIde: 'cursor',
+        },
+        starredFlags: ['flag1', 'flag2', 'flag3'],
+      };
+
+      const serialized = serializeToolbarState(originalState);
+      const parsed = parseToolbarState(serialized.url);
+
+      expect(parsed.found).toBe(true);
+      expect(parsed.state).toEqual(originalState);
+      expect(parsed.error).toBeNull();
     });
   });
 });
