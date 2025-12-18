@@ -138,8 +138,6 @@ describe('EnvironmentProvider', () => {
     });
   });
 
-;
-
   describe('Environment Selection Workflow', () => {
     test('allows changing environment after initial selection', async () => {
       // GIVEN: User has an environment selected
@@ -247,6 +245,5 @@ describe('EnvironmentProvider', () => {
         expect(screen.getByTestId('environment')).toHaveTextContent('staging');
       });
     });
-
   });
 });

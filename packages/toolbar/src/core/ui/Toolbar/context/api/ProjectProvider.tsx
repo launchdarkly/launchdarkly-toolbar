@@ -28,7 +28,6 @@ export const ProjectProvider = ({ children, clientSideId, providedProjectKey }: 
   const [loading, setLoading] = useState(false);
   const [environments, setEnvironments] = useState<ApiEnvironment[]>([]);
 
-
   const getProjects = useCallback(async () => {
     if (!apiReady || !authenticated) {
       return { items: [] };
