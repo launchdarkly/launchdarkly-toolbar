@@ -15,6 +15,7 @@ import { CancelCircleIcon, DeleteIcon, SearchIcon, SyncIcon, AddIcon } from '../
 import { SearchSection } from './SearchSection';
 import { FilterButton } from './FilterOverlay';
 import { IconButton } from '../../../Buttons/IconButton';
+import { Tooltip } from './Tooltip';
 import { SubTab } from './types';
 import * as styles from './ContentActions.module.css';
 
@@ -51,7 +52,7 @@ export function ContentActions() {
   const showFilter =
     (activeTab === 'flags' && activeSubtab === 'flags') || (activeTab === 'monitoring' && activeSubtab === 'events');
 
-  const showSearch = activeTab !== 'interactive'; // Hide search for interactive tab
+  const showSearch = activeTab !== 'interactive' && activeSubtab !== undefined; // Hide search for interactive tab
 
   const showClearEvents = activeTab === 'monitoring' && activeSubtab === 'events';
   const showSync = mode === 'dev-server' && activeTab === 'flags' && activeSubtab === 'flags';
@@ -90,14 +91,11 @@ export function ContentActions() {
   return (
     <div className={styles.container}>
       {showClearSelection && (
-        <button
-          className={styles.clearButton}
-          onClick={clearSelection}
-          aria-label="Clear selection"
-          title="Clear selection"
-        >
-          <CancelCircleIcon className={styles.icon} />
-        </button>
+        <Tooltip content="Clear selection" offsetTop={-4} offsetLeft={2}>
+          <button className={styles.clearButton} onClick={clearSelection} aria-label="Clear selection">
+            <CancelCircleIcon className={styles.icon} />
+          </button>
+        </Tooltip>
       )}
       {showSearch && (
         <>
@@ -110,30 +108,43 @@ export function ContentActions() {
             />
           )}
           {!searchIsExpanded && (
-            <IconButton icon={<SearchIcon />} label="Search" onClick={() => setSearchIsExpanded(true)} />
+            <Tooltip content="Search" offsetTop={-4} offsetLeft={1}>
+              <IconButton icon={<SearchIcon />} label="Search" onClick={() => setSearchIsExpanded(true)} />
+            </Tooltip>
           )}
         </>
       )}
       {showAddContext && setIsAddFormOpen && (
-        <IconButton icon={<AddIcon />} label="Add context" onClick={() => setIsAddFormOpen(true)} />
+        <Tooltip content="Add context" offsetTop={-4} offsetLeft={2}>
+          <IconButton icon={<AddIcon />} label="Add context" onClick={() => setIsAddFormOpen(true)} />
+        </Tooltip>
       )}
-      {showFilter && <FilterButton />}
+      {showFilter && (
+        <Tooltip content={`Filter ${activeSubtab.charAt(0).toUpperCase() + activeSubtab.slice(1)}`} offsetTop={-4}>
+          <FilterButton />
+        </Tooltip>
+      )}
       {showSync && (
-        <IconButton icon={<SyncIcon />} label="Sync flags" onClick={handleSync} disabled={state.isLoading} />
+        <Tooltip content="Sync flags" offsetTop={-4} offsetLeft={2}>
+          <IconButton icon={<SyncIcon />} label="Sync flags" onClick={handleSync} disabled={state.isLoading} />
+        </Tooltip>
       )}
       {showRefreshFlags && (
-        <IconButton icon={<SyncIcon />} label="Refresh flags" onClick={handleRefreshFlags} disabled={flagsLoading} />
+        <Tooltip content="Refresh flags" offsetTop={-4}>
+          <IconButton icon={<SyncIcon />} label="Refresh flags" onClick={handleRefreshFlags} disabled={flagsLoading} />
+        </Tooltip>
       )}
       {showClearEvents && (
-        <button
-          className={styles.actionButton}
-          onClick={handleClearEvents}
-          disabled={events.length === 0}
-          aria-label="Clear all events"
-          title={`Clear all events (${events.length})`}
-        >
-          <DeleteIcon className={styles.icon} />
-        </button>
+        <Tooltip content="Clear all events" offsetTop={-4}>
+          <button
+            className={styles.actionButton}
+            onClick={handleClearEvents}
+            disabled={events.length === 0}
+            aria-label="Clear all events"
+          >
+            <DeleteIcon className={styles.icon} />
+          </button>
+        </Tooltip>
       )}
     </div>
   );

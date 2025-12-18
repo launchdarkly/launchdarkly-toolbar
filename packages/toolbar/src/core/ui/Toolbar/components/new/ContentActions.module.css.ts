@@ -10,9 +10,9 @@ export const actionButton = style({
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'center',
-  width: '32px',
-  height: '32px',
-  padding: '4px',
+  width: '40px',
+  height: '40px',
+  padding: '8px',
   backgroundColor: 'transparent',
   border: 'none',
   borderRadius: '6px',
@@ -69,6 +69,6 @@ export const clearButton = style({
 });
 
 export const icon = style({
-  width: '20px',
-  height: '20px',
+  width: '24px',
+  height: '24px',
 });
