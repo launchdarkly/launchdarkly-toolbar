@@ -1,8 +1,9 @@
-import { createContext, useCallback, useContext, useEffect, useState } from 'react';
+import { createContext, useCallback, useContext, useEffect, useRef, useState } from 'react';
 import { useApi } from './ApiProvider';
 import { TOOLBAR_STORAGE_KEYS } from '../../utils/localStorage';
 import { ApiProject, ProjectsResponse, ApiEnvironment } from '../../types/ldApi';
 import { useAuthContext } from './AuthProvider';
+import { useLocalStorage } from '../../hooks/useLocalStorage';
 
 const STORAGE_KEY = TOOLBAR_STORAGE_KEYS.PROJECT;
 
@@ -27,15 +28,13 @@ export const ProjectProvider = ({ children, clientSideId, providedProjectKey }: 
   const { authenticated } = useAuthContext();
   const { getProjects: getApiProjects, apiReady } = useApi();
   const [projects, setProjects] = useState<ApiProject[]>([]);
-  const [projectKey, setProjectKeyState] = useState<string>('');
+  const [projectKey, setProjectKey] = useLocalStorage(STORAGE_KEY, '', {
+    serialize: (v) => v,
+    deserialize: (v) => v,
+  });
   const [loading, setLoading] = useState(false);
   const [environments, setEnvironments] = useState<ApiEnvironment[]>([]);
-
-  // Wrapper function to update project and save to localStorage
-  const setProjectKey = useCallback((key: string) => {
-    setProjectKeyState(key);
-    localStorage.setItem(STORAGE_KEY, key);
-  }, []);
+  const hasInitialized = useRef(false);
 
   const getProjects = useCallback(async () => {
     if (!apiReady || !authenticated) {
@@ -50,9 +49,9 @@ export const ProjectProvider = ({ children, clientSideId, providedProjectKey }: 
       return;
     }
 
-    const environments = projects.find((project) => project.key === projectKey)?.environments;
-    if (environments) {
-      setEnvironments(environments);
+    const envs = projects.find((project) => project.key === projectKey)?.environments;
+    if (envs) {
+      setEnvironments(envs);
     }
   }, [projects, projectKey]);
 
@@ -75,13 +74,17 @@ export const ProjectProvider = ({ children, clientSideId, providedProjectKey }: 
   }, [apiReady, getProjects]);
 
   useEffect(() => {
-    const savedProjectKey = localStorage.getItem(STORAGE_KEY);
+    if (hasInitialized.current) return;
 
-    if (savedProjectKey) {
-      // Load from localStorage without triggering a save
-      setProjectKeyState(savedProjectKey);
+    const hasSavedProjectKey =
+      typeof window !== 'undefined' && localStorage.getItem(STORAGE_KEY) !== null && projectKey !== '';
+
+    if (hasSavedProjectKey) {
+      // Already loaded from localStorage via hook
+      hasInitialized.current = true;
     } else if (providedProjectKey) {
-      // Use provided project key and save it
+      // Use provided project key
+      hasInitialized.current = true;
       setProjectKey(providedProjectKey);
     } else if (apiReady) {
       setLoading(true);
@@ -92,29 +95,29 @@ export const ProjectProvider = ({ children, clientSideId, providedProjectKey }: 
             throw new Error('No projects found');
           }
 
-          let project = projects.items[0];
-          let environments: ApiEnvironment[] = [];
+          let project: ApiProject | undefined = projects.items[0];
+          let envs: ApiEnvironment[] = [];
 
           if (clientSideId) {
-            project = projects.items.find((project) =>
-              project.environments.some((environment) => environment._id === clientSideId),
+            project = projects.items.find((proj) =>
+              proj.environments.some((environment) => environment._id === clientSideId),
             );
 
             if (!project) {
               throw new Error(`No project found for clientSideId: ${clientSideId}`);
             }
 
-            environments = project.environments;
+            envs = project.environments;
           }
 
           if (!project) {
             throw new Error('No project found');
           }
 
+          hasInitialized.current = true;
           setProjectKey(project.key);
-          setEnvironments(environments);
+          setEnvironments(envs);
           setLoading(false);
-          localStorage.setItem(STORAGE_KEY, project.key);
         })
         .catch((error) => {
           console.error('Error loading project:', error);
@@ -124,7 +127,7 @@ export const ProjectProvider = ({ children, clientSideId, providedProjectKey }: 
     } else {
       setLoading(false);
     }
-  }, [providedProjectKey, clientSideId, getProjects, apiReady, setProjectKey]);
+  }, [providedProjectKey, clientSideId, getProjects, apiReady, setProjectKey, projectKey]);
 
   return (
     <ProjectContext.Provider value={{ projectKey, setProjectKey, getProjects, projects, environments, loading }}>

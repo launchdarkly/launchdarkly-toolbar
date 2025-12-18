@@ -1,5 +1,6 @@
-import React, { createContext, useCallback, useContext, useState } from 'react';
-import { loadStarredFlags, saveStarredFlags } from '../utils/localStorage';
+import React, { createContext, useCallback, useContext, useMemo } from 'react';
+import { TOOLBAR_STORAGE_KEYS } from '../utils/localStorage';
+import { useLocalStorage } from '../hooks/useLocalStorage';
 
 type StarredFlagsContextType = {
   toggleStarred: (flagKey: string) => void;
@@ -11,20 +12,22 @@ type StarredFlagsContextType = {
 const StarredFlagsContext = createContext<StarredFlagsContextType | null>(null);
 
 export function StarredFlagsProvider({ children }: { children: React.ReactNode }) {
-  const [starredFlags, setStarredFlags] = useState<Set<string>>(loadStarredFlags);
+  const [starredArray, setStarredArray] = useLocalStorage<string[]>(TOOLBAR_STORAGE_KEYS.STARRED_FLAGS, []);
 
-  const toggleStarred = useCallback((flagKey: string) => {
-    setStarredFlags((prev) => {
-      const next = new Set(prev);
-      if (next.has(flagKey)) {
-        next.delete(flagKey);
-      } else {
-        next.add(flagKey);
-      }
-      saveStarredFlags(next);
-      return next;
-    });
-  }, []);
+  const starredFlags = useMemo(() => new Set(starredArray), [starredArray]);
+
+  const toggleStarred = useCallback(
+    (flagKey: string) => {
+      setStarredArray((prev) => {
+        if (prev.includes(flagKey)) {
+          return prev.filter((key) => key !== flagKey);
+        } else {
+          return [...prev, flagKey];
+        }
+      });
+    },
+    [setStarredArray],
+  );
 
   const isStarred = useCallback(
     (flagKey: string) => {
@@ -34,10 +37,8 @@ export function StarredFlagsProvider({ children }: { children: React.ReactNode }
   );
 
   const clearAllStarred = useCallback(() => {
-    const emptySet = new Set<string>();
-    setStarredFlags(emptySet);
-    saveStarredFlags(emptySet);
-  }, []);
+    setStarredArray([]);
+  }, [setStarredArray]);
 
   const starredCount = starredFlags.size;
 
