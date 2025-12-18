@@ -6,6 +6,7 @@ import {
   usePlugins,
   useToolbarState,
   useFlagsContext,
+  useAnalytics,
 } from '../../context';
 import { useActiveSubtabContext, useTabSearchContext } from './context';
 import { useContextsContext } from '../../context/api/ContextsProvider';
@@ -26,6 +27,7 @@ export function ContentActions() {
   const { events } = useEvents(eventInterceptionPlugin, searchTerm);
   const { setSearchTerm } = useTabSearchContext();
   const [searchIsExpanded, setSearchIsExpanded] = useState(false);
+  const analytics = useAnalytics();
 
   // Update search expansion when subtab changes
   // Expand if the new subtab has a search term, collapse if it doesn't
@@ -63,12 +65,14 @@ export function ContentActions() {
   const handleClearEvents = useCallback(() => {
     if (eventInterceptionPlugin) {
       eventInterceptionPlugin.clearEvents();
+      analytics.trackClearEvents();
     }
-  }, [eventInterceptionPlugin]);
+  }, [eventInterceptionPlugin, analytics]);
 
   const handleSync = useCallback(() => {
     refresh();
-  }, [refresh]);
+    analytics.trackRefresh();
+  }, [refresh, analytics]);
 
   const handleRefreshFlags = useCallback(() => {
     refreshFlags();
@@ -78,8 +82,9 @@ export function ContentActions() {
     (input: string) => {
       if (!activeSubtab) return;
       setSearchTerm(activeSubtab as SubTab, input);
+      analytics.trackSearch(input);
     },
-    [activeSubtab, setSearchTerm],
+    [activeSubtab, setSearchTerm, analytics],
   );
 
   return (
