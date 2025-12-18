@@ -15,7 +15,7 @@ export const searchDropdown = style({
   position: 'absolute',
   top: '100%',
   right: '-100px',
-  marginTop: '6px',
+  marginTop: '5px',
   minWidth: '220px',
   padding: '8px 12px',
   borderRadius: '8px',

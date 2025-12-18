@@ -57,10 +57,11 @@ export function ContentActions() {
   const showClearEvents = activeTab === 'monitoring' && activeSubtab === 'events';
   const showSync = mode === 'dev-server' && activeTab === 'flags' && activeSubtab === 'flags';
   const showAddContext = activeTab === 'flags' && activeSubtab === 'contexts';
+  const showClearContexts = activeTab === 'flags' && activeSubtab === 'contexts';
 
   // Get context form state for contexts tab
   // ContextsProvider is always available in the component tree
-  const { setIsAddFormOpen } = useContextsContext();
+  const { setIsAddFormOpen, clearContexts } = useContextsContext();
   const showRefreshFlags = mode === 'sdk' && activeTab === 'flags' && activeSubtab === 'flags';
 
   const handleClearEvents = useCallback(() => {
@@ -87,6 +88,10 @@ export function ContentActions() {
     },
     [activeSubtab, setSearchTerm, analytics],
   );
+
+  const handleClearContexts = useCallback(() => {
+    clearContexts();
+  }, []);
 
   return (
     <div className={styles.container}>
@@ -142,6 +147,13 @@ export function ContentActions() {
             disabled={events.length === 0}
             aria-label="Clear all events"
           >
+            <DeleteIcon className={styles.icon} />
+          </button>
+        </Tooltip>
+      )}
+      {showClearContexts && (
+        <Tooltip content="Clear contexts" offsetTop={-4}>
+          <button className={styles.actionButton} onClick={handleClearContexts} aria-label="Clear contexts">
             <DeleteIcon className={styles.icon} />
           </button>
         </Tooltip>

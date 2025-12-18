@@ -1,4 +1,5 @@
 import { style } from '@vanilla-extract/css';
+import { Z_INDEX } from '../../../../constants/zIndex';
 
 export const overlay = style({
   position: 'absolute',
@@ -10,7 +11,7 @@ export const overlay = style({
   border: '1px solid var(--lp-color-gray-700)',
   borderRadius: '8px',
   boxShadow: '0 4px 16px rgba(0, 0, 0, 0.3)',
-  zIndex: 100,
+  zIndex: Z_INDEX.POPOVER,
   overflow: 'hidden',
 });
 
@@ -124,7 +125,7 @@ export const filterDescription = style({
 export const backdrop = style({
   position: 'fixed',
   inset: 0,
-  zIndex: 99,
+  zIndex: Z_INDEX.POPOVER - 1,
 });
 
 export const container = style({
