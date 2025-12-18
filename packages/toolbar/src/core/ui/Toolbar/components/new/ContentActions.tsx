@@ -98,21 +98,21 @@ export function ContentActions() {
         </Tooltip>
       )}
       {showSearch && (
-        <>
+        <div className={styles.searchContainer}>
+          <Tooltip content="Search" offsetTop={-4} offsetLeft={1}>
+            <IconButton icon={<SearchIcon />} label="Search" onClick={() => setSearchIsExpanded(!searchIsExpanded)} />
+          </Tooltip>
           {searchIsExpanded && (
-            <SearchSection
-              key={activeSubtab} // Force remount when subtab changes to ensure correct value
-              searchTerm={searchTerm}
-              onSearch={handleSearch}
-              setSearchIsExpanded={setSearchIsExpanded}
-            />
+            <div className={activeTab === 'settings' ? styles.searchDropdownLeft : styles.searchDropdown}>
+              <SearchSection
+                key={activeSubtab} // Force remount when subtab changes to ensure correct value
+                searchTerm={searchTerm}
+                onSearch={handleSearch}
+                setSearchIsExpanded={setSearchIsExpanded}
+              />
+            </div>
           )}
-          {!searchIsExpanded && (
-            <Tooltip content="Search" offsetTop={-4} offsetLeft={1}>
-              <IconButton icon={<SearchIcon />} label="Search" onClick={() => setSearchIsExpanded(true)} />
-            </Tooltip>
-          )}
-        </>
+        </div>
       )}
       {showAddContext && setIsAddFormOpen && (
         <Tooltip content="Add context" offsetTop={-4} offsetLeft={2}>

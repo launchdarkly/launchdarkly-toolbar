@@ -1,9 +1,36 @@
 import { style } from '@vanilla-extract/css';
+import { Z_INDEX } from '../../../constants/zIndex';
 
 export const container = style({
   display: 'flex',
   gap: '4px',
   alignItems: 'center',
+});
+
+export const searchContainer = style({
+  position: 'relative',
+});
+
+export const searchDropdown = style({
+  position: 'absolute',
+  top: '100%',
+  right: '-100px',
+  marginTop: '6px',
+  minWidth: '220px',
+  padding: '8px 12px',
+  borderRadius: '8px',
+  zIndex: Z_INDEX.POPOVER,
+});
+
+export const searchDropdownLeft = style({
+  position: 'absolute',
+  top: '-10px',
+  right: '85%',
+  marginTop: '6px',
+  minWidth: '220px',
+  padding: '8px 12px',
+  borderRadius: '8px',
+  zIndex: Z_INDEX.POPOVER,
 });
 
 export const actionButton = style({
