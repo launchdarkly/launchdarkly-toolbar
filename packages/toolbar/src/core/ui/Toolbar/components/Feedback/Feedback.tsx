@@ -108,6 +108,12 @@ export function Feedback(props: FeedbackProps) {
                 placeholder="Optional feedback..."
                 value={comment}
                 onChange={(e) => setComment(e.target.value)}
+                onKeyDown={(e) => {
+                  // Stop propagation to prevent parent app keyboard shortcuts from interfering
+                  e.stopPropagation();
+                }}
+                onKeyUp={(e) => e.stopPropagation()}
+                onKeyPress={(e) => e.stopPropagation()}
                 rows={3}
               />
             </TextField>

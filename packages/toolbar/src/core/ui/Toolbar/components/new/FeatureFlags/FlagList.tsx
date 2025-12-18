@@ -9,6 +9,7 @@ import {
   usePlugins,
   useToolbarState,
   useStarredFlags,
+  useAnalytics,
 } from '../../../context';
 import { useTabSearchContext, useSubtabFilters } from '../context';
 import { FlagItem } from './FlagItem';
@@ -25,6 +26,7 @@ function DevServerFlagList() {
   const searchTerm = useMemo(() => searchTerms['flags'] || '', [searchTerms]);
   const { activeFilters } = useSubtabFilters('flags');
   const { isStarred } = useStarredFlags();
+  const analytics = useAnalytics();
 
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const getScrollElement = useCallback(() => scrollContainerRef.current, []);
@@ -96,15 +98,17 @@ function DevServerFlagList() {
   const handleOverride = useCallback(
     async (flagKey: string, value: any) => {
       await setOverride(flagKey, value);
+      analytics.trackFlagOverride(flagKey, value, 'set');
     },
-    [setOverride],
+    [setOverride, analytics],
   );
 
   const handleClearOverride = useCallback(
     async (flagKey: string) => {
       await clearOverride(flagKey);
+      analytics.trackFlagOverride(flagKey, null, 'remove');
     },
-    [clearOverride],
+    [clearOverride, analytics],
   );
 
   // Calculate stats
@@ -190,6 +194,7 @@ function SdkFlagList() {
   const searchTerm = useMemo(() => searchTerms['flags'] || '', [searchTerms]);
   const { activeFilters } = useSubtabFilters('flags');
   const { isStarred } = useStarredFlags();
+  const analytics = useAnalytics();
 
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const getScrollElement = useCallback(() => scrollContainerRef.current, []);
@@ -248,15 +253,17 @@ function SdkFlagList() {
   const handleOverride = useCallback(
     (flagKey: string, value: any) => {
       setOverride(flagKey, value);
+      analytics.trackFlagOverride(flagKey, value, 'set');
     },
-    [setOverride],
+    [setOverride, analytics],
   );
 
   const handleClearOverride = useCallback(
     (flagKey: string) => {
       removeOverride(flagKey);
+      analytics.trackFlagOverride(flagKey, null, 'remove');
     },
-    [removeOverride],
+    [removeOverride, analytics],
   );
 
   const handleHeightChange = useCallback(
