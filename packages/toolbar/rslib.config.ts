@@ -9,6 +9,9 @@ export default defineConfig({
   source: {
     entry: {
       index: './src/index.ts',
+      plugins: './src/plugins.ts',
+      react: './src/react.ts',
+      'types-entry': './src/types-entry.ts',
     },
     include: ['./src/**/*.ts', './src/**/*.tsx'],
     exclude: ['./src/**/*.test.*', './src/**/*.stories.*'],
@@ -27,7 +30,7 @@ export default defineConfig({
           js: 'js',
         },
         filename: {
-          js: 'index.js',
+          js: '[name].js',
         },
       },
     },
@@ -42,7 +45,7 @@ export default defineConfig({
           js: '.',
         },
         filename: {
-          js: 'index.cjs',
+          js: '[name].cjs',
         },
       },
     },
