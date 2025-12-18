@@ -1,10 +1,10 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { expect, test, describe, vi, beforeEach } from 'vitest';
+import type { LDContext } from 'launchdarkly-js-client-sdk';
 import { ContextItem } from '../ui/Toolbar/components/new/Contexts/ContextItem';
 import { ContextsProvider } from '../ui/Toolbar/context/api/ContextsProvider';
 import '@testing-library/jest-dom/vitest';
 import React from 'react';
-import { Context } from '../ui/Toolbar/types/ldApi';
 import { loadContexts, saveContexts } from '../ui/Toolbar/utils/localStorage';
 
 // Mock localStorage utilities
@@ -63,8 +63,7 @@ vi.mock('motion/react', () => ({
 }));
 
 describe('ContextItem', () => {
-  const mockContext: Context = {
-    id: 'test-context-id-123',
+  const mockContext: LDContext = {
     kind: 'user',
     key: 'test-user-123',
     name: 'Test User',
@@ -124,7 +123,7 @@ describe('ContextItem', () => {
 
   describe('Delete Functionality', () => {
     test('deletes context when delete button is clicked', async () => {
-      const storedContexts: Context[] = [mockContext];
+      const storedContexts: LDContext[] = [mockContext];
       (loadContexts as any).mockReturnValue(storedContexts);
 
       render(
@@ -160,7 +159,7 @@ describe('ContextItem', () => {
     });
 
     test('prevents deletion when context is active (button not rendered)', async () => {
-      const storedContexts: Context[] = [mockContext];
+      const storedContexts: LDContext[] = [mockContext];
       (loadContexts as any).mockReturnValue(storedContexts);
 
       render(

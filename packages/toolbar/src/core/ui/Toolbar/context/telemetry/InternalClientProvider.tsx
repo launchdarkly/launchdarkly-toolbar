@@ -143,7 +143,7 @@ export function InternalClientProvider({
         const ldClient = initialize(clientSideId, context, options);
         clientToCleanup = ldClient;
 
-        await ldClient.waitForInitialization();
+        await ldClient.waitForInitialization(5);
 
         if (mounted) {
           setClient(ldClient);

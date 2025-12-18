@@ -1,20 +1,25 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
-import { loadContexts, saveContexts, loadActiveContext, saveActiveContext } from '../../utils/localStorage';
-import { Context } from '../../types/ldApi';
-import { usePlugins } from '../state/PluginsProvider';
-import { extractContextInfo, generateContextId } from '../../utils/context';
-import { useAnalytics } from '../telemetry/AnalyticsProvider';
 import type { LDContext } from 'launchdarkly-js-client-sdk';
+import { loadContexts, saveContexts, loadActiveContext, saveActiveContext } from '../../utils/localStorage';
+import { usePlugins } from '../state/PluginsProvider';
+import {
+  areContextsEqual,
+  generateContextId,
+  getContextDisplayName,
+  getContextKey,
+  getContextKind,
+} from '../../utils/context';
+import { useAnalytics } from '../telemetry/AnalyticsProvider';
 
 interface ContextsContextType {
-  contexts: Context[];
+  contexts: LDContext[];
   filter: string;
   setFilter: (filter: string) => void;
-  addContext: (context: Context) => void;
-  removeContext: (id: string) => void;
-  updateContext: (id: string, newContext: Context) => void;
-  setContext: (context: Context) => Promise<void>;
-  activeContext: Context | null;
+  addContext: (context: LDContext) => void;
+  removeContext: (contextId: string) => void;
+  updateContext: (contextId: string, newContext: LDContext) => void;
+  setContext: (context: LDContext) => Promise<void>;
+  activeContext: LDContext | null;
   isAddFormOpen: boolean;
   setIsAddFormOpen: (isOpen: boolean) => void;
 }
@@ -24,35 +29,37 @@ const ContextsContext = createContext<ContextsContextType | undefined>(undefined
 export const ContextsProvider = ({ children }: { children: React.ReactNode }) => {
   const { flagOverridePlugin, eventInterceptionPlugin } = usePlugins();
   const analytics = useAnalytics();
-  const [storedContexts, setStoredContexts] = useState<Context[]>(loadContexts);
-  const [activeContext, setActiveContext] = useState<Context | null>(loadActiveContext());
+  const [storedContexts, setStoredContexts] = useState<LDContext[]>(loadContexts);
+  const [activeContext, setActiveContext] = useState<LDContext | null>(loadActiveContext());
   const [filter, setFilter] = useState('');
   const [isAddFormOpen, setIsAddFormOpen] = useState(false);
   const lastAddedContextRef = useRef<string | null>(null);
   const hasRestoredContextRef = useRef(false);
+  // Track when we're setting context ourselves to avoid the change handler overriding our selection
+  const isSettingContextRef = useRef(false);
 
   // Get the LD client from plugins
   const ldClient = flagOverridePlugin?.getClient() ?? eventInterceptionPlugin?.getClient() ?? null;
 
   // Add a new context to the list
   const addContext = useCallback(
-    (context: Context) => {
+    (context: LDContext) => {
       setStoredContexts((prev) => {
-        // Ensure context has an id
-        const contextWithId = context.id ? context : { ...context, id: generateContextId() };
+        const contextId = generateContextId(context);
 
-        // Check if context already exists (by id)
-        const exists = prev.some((c) => c.id === contextWithId.id);
+        // Check if context already exists using hash comparison
+        const exists = prev.some((c) => generateContextId(c) === contextId);
         if (exists) {
           return prev; // Don't add duplicates
         }
-        const updated = [...prev, contextWithId];
+        const updated = [...prev, context];
         saveContexts(updated);
 
         // Track analytics
-        const isMultiKind = contextWithId.kind === 'multi';
-        const contextKey = isMultiKind ? contextWithId.name || 'multi-kind' : contextWithId.key || '';
-        analytics.trackContextAdded(contextWithId.kind, contextKey, isMultiKind);
+        const kind = getContextKind(context);
+        const isMultiKind = kind === 'multi';
+        const contextKey = getContextKey(context) || getContextDisplayName(context);
+        analytics.trackContextAdded(kind, contextKey, isMultiKind);
 
         return updated;
       });
@@ -60,23 +67,26 @@ export const ContextsProvider = ({ children }: { children: React.ReactNode }) =>
     [analytics],
   );
 
-  // Remove a context from the list
+  // Remove a context from the list (contextId is the hash from generateContextId)
   const removeContext = useCallback(
-    (id: string) => {
+    (contextId: string) => {
       // Prevent deletion of active context
-      if (activeContext?.id === id) {
+      const activeContextId = generateContextId(activeContext);
+      if (activeContext && activeContextId === contextId) {
         console.warn('Cannot delete active context');
         return;
       }
 
       setStoredContexts((prev) => {
-        const contextToRemove = prev.find((c) => c.id === id);
-        const updated = prev.filter((c) => c.id !== id);
+        const contextToRemove = prev.find((c) => generateContextId(c) === contextId);
+        const updated = prev.filter((c) => generateContextId(c) !== contextId);
         saveContexts(updated);
 
         // Track analytics
         if (contextToRemove) {
-          analytics.trackContextRemoved(contextToRemove.kind, contextToRemove.key ?? '');
+          const kind = getContextKind(contextToRemove);
+          const key = getContextKey(contextToRemove);
+          analytics.trackContextRemoved(kind, key);
         }
 
         return updated;
@@ -85,32 +95,33 @@ export const ContextsProvider = ({ children }: { children: React.ReactNode }) =>
     [activeContext, analytics],
   );
 
-  // Update a context in the list
+  // Update a context in the list (contextId is the hash from generateContextId)
   const updateContext = useCallback(
-    (id: string, newContext: Context) => {
+    (contextId: string, newContext: LDContext) => {
       setStoredContexts((prev) => {
-        const oldContext = prev.find((c) => c.id === id);
+        const oldContext = prev.find((c) => generateContextId(c) === contextId);
         const updated = prev.map((c) => {
-          if (c.id === id) {
-            // Preserve the id when updating
-            return { ...newContext, id };
+          if (generateContextId(c) === contextId) {
+            return newContext;
           }
           return c;
         });
         saveContexts(updated);
 
         // If the updated context is the active context, update it
-        if (activeContext?.id === id) {
-          const updatedActiveContext = { ...newContext, id };
-          setActiveContext(updatedActiveContext);
-          saveActiveContext(updatedActiveContext);
+        const activeContextId = generateContextId(activeContext);
+        if (activeContext && activeContextId === contextId) {
+          setActiveContext(newContext);
+          saveActiveContext(newContext);
         }
 
         // Track analytics
         if (oldContext) {
-          const oldKey = oldContext.key || oldContext.name || '';
-          const newKey = newContext.key || newContext.name || '';
-          analytics.trackContextUpdated(oldContext.kind, oldKey, newContext.kind, newKey);
+          const oldKind = getContextKind(oldContext);
+          const newKind = getContextKind(newContext);
+          const oldKey = getContextKey(oldContext) || getContextDisplayName(oldContext);
+          const newKey = getContextKey(newContext) || getContextDisplayName(newContext);
+          analytics.trackContextUpdated(oldKind, oldKey, newKind, newKey);
         }
 
         return updated;
@@ -121,39 +132,42 @@ export const ContextsProvider = ({ children }: { children: React.ReactNode }) =>
 
   // Set the current context and update the host application's LD Client via identify
   const setContext = useCallback(
-    async (context: Context) => {
+    async (context: LDContext) => {
       if (!ldClient) {
         console.warn('LD Client not available. Cannot set context.');
         return;
       }
 
       try {
-        // Convert Context to LDContext format for identify
-        // If it's already a multi-kind context, use it as-is
-        // Otherwise, construct a single-kind context
-        const ldContext: LDContext =
-          context.kind === 'multi'
-            ? (context as any) // Multi-kind contexts are already in the correct format
-            : {
-                kind: context.kind,
-                key: context.key || context.name,
-                ...(context.name && context.name !== (context.key || context.name) && { name: context.name }),
-                ...(context.anonymous !== undefined && { anonymous: context.anonymous }),
-              };
+        // Mark that we're setting context ourselves so the change handler doesn't interfere
+        isSettingContextRef.current = true;
+
+        // Skip if the context is already active (using hash comparison)
+        if (areContextsEqual(activeContext, context)) {
+          isSettingContextRef.current = false;
+          return;
+        }
+
+        await ldClient.identify(context);
 
         setActiveContext(context);
         saveActiveContext(context);
-        await ldClient.identify(ldContext);
 
         // Track analytics
-        const contextKey = context.kind === 'multi' ? context.name || 'multi-kind' : context.key || '';
-        analytics.trackContextSelected(context.kind, contextKey);
+        const kind = getContextKind(context);
+        const contextKey = getContextKey(context) || getContextDisplayName(context);
+        analytics.trackContextSelected(kind, contextKey);
       } catch (error) {
         console.error('Failed to identify context:', error);
         throw error;
+      } finally {
+        // Clear the flag after a short delay to let the change event settle
+        setTimeout(() => {
+          isSettingContextRef.current = false;
+        }, 100);
       }
     },
-    [ldClient, analytics],
+    [ldClient, analytics, activeContext],
   );
 
   // Restore saved active context on mount when LD client is available
@@ -162,52 +176,71 @@ export const ContextsProvider = ({ children }: { children: React.ReactNode }) =>
       return;
     }
 
+    hasRestoredContextRef.current = true;
+
     const savedActiveContext = loadActiveContext();
     if (savedActiveContext) {
-      // Verify the saved context still exists in the stored contexts
-      const contextExists = storedContexts.some((c) => c.id === savedActiveContext.id);
+      // Verify the saved context still exists in the stored contexts using hash comparison
+      const savedContextId = generateContextId(savedActiveContext);
+      const contextExists = storedContexts.some((c) => generateContextId(c) === savedContextId);
 
       if (contextExists) {
-        // Set the context asynchronously to avoid blocking render
-        setContext(savedActiveContext).catch((error) => {
-          console.error('Failed to restore saved active context:', error);
-          // Clear invalid saved context
-          setActiveContext(null);
-          saveActiveContext(null);
-        });
-        hasRestoredContextRef.current = true;
+        // Restore the context by directly calling identify
+        // We bypass setContext because the state is already initialized from localStorage
+        // and setContext would skip the identify call due to equality check
+        isSettingContextRef.current = true;
+        ldClient
+          .identify(savedActiveContext)
+          .then(() => {
+            // Ensure state is in sync (it should already be from useState initialization)
+            setActiveContext(savedActiveContext);
+          })
+          .catch((error) => {
+            console.error('Failed to restore saved active context:', error);
+            // Clear invalid saved context
+            setActiveContext(null);
+            saveActiveContext(null);
+          })
+          .finally(() => {
+            setTimeout(() => {
+              isSettingContextRef.current = false;
+            }, 100);
+          });
       } else {
         // Saved context no longer exists, clear it
         setActiveContext(null);
         saveActiveContext(null);
-        hasRestoredContextRef.current = true;
       }
-    } else {
-      hasRestoredContextRef.current = true;
     }
-  }, [ldClient, storedContexts, setContext]);
+  }, [ldClient, storedContexts]);
 
   // Listen to LD client context changes and sync active context
+  // This handles external context changes (e.g., from the host application)
   useEffect(() => {
     if (!ldClient) {
       return;
     }
 
     const handleContextChange = () => {
+      // Skip if we're in the middle of setting context ourselves
+      // This prevents the change handler from overriding our selection
+      if (isSettingContextRef.current) {
+        return;
+      }
+
       try {
         const currentLdContext = ldClient.getContext();
-        const currentContext = extractContextInfo(currentLdContext);
 
-        if (currentContext) {
-          // Find matching context in stored contexts by kind and key
-          // (since currentContext from SDK doesn't have our id)
-          const matchingContext = storedContexts.find(
-            (c) => c.kind === currentContext.kind && c.key === currentContext.key,
-          );
+        if (currentLdContext) {
+          const currentContextId = generateContextId(currentLdContext);
+
+          // Find matching context in stored contexts using hash comparison
+          const matchingContext = storedContexts.find((c) => generateContextId(c) === currentContextId);
 
           if (matchingContext) {
             // Update active context if it's different
-            const isDifferent = !activeContext || activeContext.id !== matchingContext.id;
+            const activeContextId = generateContextId(activeContext);
+            const isDifferent = !activeContext || activeContextId !== currentContextId;
 
             if (isDifferent) {
               setActiveContext(matchingContext);
@@ -246,14 +279,12 @@ export const ContextsProvider = ({ children }: { children: React.ReactNode }) =>
 
     const context = ldClient.getContext();
 
-    const currentSdkContext = extractContextInfo(context);
-
-    if (!currentSdkContext) {
+    if (!context) {
       return;
     }
 
     // Create a unique identifier for this context
-    const contextId = `${currentSdkContext.kind}:${currentSdkContext.key}`;
+    const contextId = generateContextId(context);
 
     // Skip if we've already processed this context
     if (lastAddedContextRef.current === contextId) {
@@ -262,8 +293,8 @@ export const ContextsProvider = ({ children }: { children: React.ReactNode }) =>
 
     // Use functional update to check current state and add if needed
     setStoredContexts((prev) => {
-      // Check if context already exists in stored contexts
-      const exists = prev.some((c) => c.kind === currentSdkContext.kind && c.key === currentSdkContext.key);
+      // Check if context already exists in stored contexts using hash comparison
+      const exists = prev.some((c) => generateContextId(c) === contextId);
 
       if (exists) {
         // Track that we've seen this context (even if it already existed)
@@ -271,17 +302,8 @@ export const ContextsProvider = ({ children }: { children: React.ReactNode }) =>
         return prev;
       }
 
-      // Convert CurrentContextInfo to ApiContext format
-      // Use key for name if name is not present
-      const apiContext: Context = {
-        id: generateContextId(),
-        kind: currentSdkContext.kind,
-        key: currentSdkContext.key,
-        name: currentSdkContext.name,
-        anonymous: currentSdkContext.anonymous,
-      };
-
-      const updated = [...prev, apiContext];
+      // Add the LDContext directly
+      const updated = [...prev, context];
       saveContexts(updated);
       // Track that we've added this context
       lastAddedContextRef.current = contextId;
@@ -296,17 +318,21 @@ export const ContextsProvider = ({ children }: { children: React.ReactNode }) =>
     if (filter.trim()) {
       const filterLower = filter.toLowerCase();
       filtered = storedContexts.filter((ctx) => {
-        const matchesKey = ctx.key?.toLowerCase().includes(filterLower);
-        const matchesKind = ctx.kind.toLowerCase().includes(filterLower);
-        const matchesName = ctx.name?.toLowerCase().includes(filterLower);
+        const key = getContextKey(ctx);
+        const kind = getContextKind(ctx);
+        const displayName = getContextDisplayName(ctx);
+        const matchesKey = key.toLowerCase().includes(filterLower);
+        const matchesKind = kind.toLowerCase().includes(filterLower);
+        const matchesName = displayName.toLowerCase().includes(filterLower);
         return matchesKey || matchesKind || matchesName;
       });
     }
 
     // Sort to put active context first
+    const activeContextId = generateContextId(activeContext);
     return filtered.sort((a, b) => {
-      const aIsActive = activeContext?.id === a.id;
-      const bIsActive = activeContext?.id === b.id;
+      const aIsActive = activeContext && generateContextId(a) === activeContextId;
+      const bIsActive = activeContext && generateContextId(b) === activeContextId;
       if (aIsActive && !bIsActive) return -1;
       if (!aIsActive && bIsActive) return 1;
       return 0;
