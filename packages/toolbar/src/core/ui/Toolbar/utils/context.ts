@@ -1,4 +1,4 @@
-import type { LDContext, LDMultiKindContext, LDSingleKindContext } from 'launchdarkly-js-client-sdk';
+import type { LDContext, LDMultiKindContext, LDSingleKindContext } from '@launchdarkly/js-client-sdk';
 
 /**
  * Simple hash function (djb2 algorithm) for generating deterministic IDs

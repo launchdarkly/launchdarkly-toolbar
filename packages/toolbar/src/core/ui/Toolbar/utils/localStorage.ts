@@ -1,4 +1,4 @@
-import type { LDContext } from 'launchdarkly-js-client-sdk';
+import type { LDContext } from '@launchdarkly/js-client-sdk';
 import { ToolbarPosition, TOOLBAR_POSITIONS } from '../types/toolbar';
 
 export const TOOLBAR_STORAGE_KEYS = {

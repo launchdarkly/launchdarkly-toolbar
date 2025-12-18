@@ -35,6 +35,9 @@ importers:
 
   packages/demo:
     dependencies:
+      '@launchdarkly/js-client-sdk':
+        specifier: ^0.11.0
+        version: 0.11.0
       '@launchdarkly/toolbar':
         specifier: workspace:*
         version: link:../toolbar
@@ -126,6 +129,9 @@ importers:
       '@codemirror/view':
         specifier: ^6.39.6
         version: 6.39.6
+      '@launchdarkly/js-client-sdk':
+        specifier: ^0.11.0
+        version: 0.11.0
       '@launchdarkly/observability':
         specifier: ^0.5.0
         version: 0.5.0
@@ -219,9 +225,6 @@ importers:
       jsdom:
         specifier: ^27.3.0
         version: 27.3.0(postcss@8.5.6)
-      launchdarkly-js-client-sdk:
-        specifier: ^3.9.0
-        version: 3.9.0
       motion:
         specifier: ^12.23.26
         version: 12.23.26(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
@@ -996,11 +999,20 @@ packages:
   '@launchdarkly/js-client-sdk-common@1.13.0':
     resolution: {integrity: sha512-3u3nWLKfu7ADbrBlbYq1rDROXG1WcRGRGhHFyAjtDPCCh783sPIb1frC1n4tj6b64bustVrZvLR9dGrQlp6tJQ==}
 
+  '@launchdarkly/js-client-sdk-common@1.16.0':
+    resolution: {integrity: sha512-W6yVVlIV/BqCLR1je3uReVfJcTNK9mznp1PWpEEBRRrapjMnLYUcCJat6yj3dyyn3VKyawXy1MkSn34gEEicjg==}
+
+  '@launchdarkly/js-client-sdk@0.11.0':
+    resolution: {integrity: sha512-PRmSsPsOi3NXjXpG4D4MoyImBibNoh9wOoWFbIMXHA26h5cMNBQjTFI6gqe8kyf2rDwqHerhrj5f734Zqwl33Q==}
+
   '@launchdarkly/js-client-sdk@0.6.0':
     resolution: {integrity: sha512-9aBgpGKXxaiPudNuQ9MoS8wFSIR1h0P2EFDP2veNJG7tBuxzDKfH3hzjW01C4/WyWN6bk7P7XKwisxw775klBQ==}
 
   '@launchdarkly/js-sdk-common@2.17.0':
     resolution: {integrity: sha512-HYQNc4xbE58hBOO1yZsqE+BHOC36AYrHPZ5hwvlHoZRSsaoYCPM+Q/n+O+N3JhWXTqGsu6SwUzqUzTyxg8prGg==}
+
+  '@launchdarkly/js-sdk-common@2.20.0':
+    resolution: {integrity: sha512-g1Lyi5xL7AXAP6BP8BzRcqVqIhqOSVpA5Bx8Vvj8A/4A6sIHVz2vIZluykD/bJiKg1+G9ojm+OCfdL/c0ebi0A==}
 
   '@launchdarkly/observability@0.5.0':
     resolution: {integrity: sha512-4niW0kFE47NOeN93de6AxTcjrX6c5WTdvtboXCQ/a18F0UdToZKCm3/bcpk2xGGp2cTCQew+1Ld/lmPmjtppSA==}
@@ -5494,11 +5506,21 @@ snapshots:
     dependencies:
       '@launchdarkly/js-sdk-common': 2.17.0
 
+  '@launchdarkly/js-client-sdk-common@1.16.0':
+    dependencies:
+      '@launchdarkly/js-sdk-common': 2.20.0
+
+  '@launchdarkly/js-client-sdk@0.11.0':
+    dependencies:
+      '@launchdarkly/js-client-sdk-common': 1.16.0
+
   '@launchdarkly/js-client-sdk@0.6.0':
     dependencies:
       '@launchdarkly/js-client-sdk-common': 1.13.0
 
   '@launchdarkly/js-sdk-common@2.17.0': {}
+
+  '@launchdarkly/js-sdk-common@2.20.0': {}
 
   '@launchdarkly/observability@0.5.0':
     dependencies:

@@ -111,6 +111,7 @@
     "@launchdarkly/observability": "^0.5.0",
     "@launchdarkly/session-replay": "^0.5.0",
     "@launchpad-ui/components": "^0.17.8",
+    "@launchdarkly/js-client-sdk": "^0.11.0",
     "@launchpad-ui/tokens": "^0.15.1",
     "@lezer/highlight": "^1.2.3",
     "@react-aria/focus": "^3.21.2",
@@ -139,7 +140,6 @@
     "@vitest/coverage-v8": "4.0.15",
     "css-loader": "^7.1.2",
     "jsdom": "^27.3.0",
-    "launchdarkly-js-client-sdk": "^3.9.0",
     "motion": "^12.23.26",
     "oxlint": "^1.33.0",
     "react": "^19.2.3",
@@ -151,7 +151,7 @@
     "vitest": "^4.0.15"
   },
   "peerDependencies": {
-    "launchdarkly-js-client-sdk": ">=3.9.0 <4.0.0",
+    "@launchdarkly/js-client-sdk": "^0.11.0",
     "react": "^18.0.0 || ^19.0.0",
     "react-dom": "^18.0.0 || ^19.0.0"
   },
