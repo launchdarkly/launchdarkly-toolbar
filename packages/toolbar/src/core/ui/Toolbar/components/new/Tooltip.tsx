@@ -38,6 +38,12 @@ export function Tooltip({ content, children, offsetTop = 0, offsetLeft = 0 }: To
     setIsPositioned(false);
   };
 
+  const handleClick = () => {
+    // Hide tooltip when clicking (e.g., when opening a dropdown/overlay)
+    setIsVisible(false);
+    setIsPositioned(false);
+  };
+
   useEffect(() => {
     if (isVisible && !isPositioned) {
       // Use requestAnimationFrame to ensure tooltip is rendered before measuring
@@ -53,6 +59,7 @@ export function Tooltip({ content, children, offsetTop = 0, offsetLeft = 0 }: To
       className={styles.container}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
+      onClick={handleClick}
     >
       {children}
       <AnimatePresence>
