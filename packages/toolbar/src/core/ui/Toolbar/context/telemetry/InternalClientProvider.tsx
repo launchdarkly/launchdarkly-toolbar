@@ -1,6 +1,6 @@
 import { createContext, useCallback, useContext, useEffect, useState, type ReactNode } from 'react';
-import { initialize } from 'launchdarkly-js-client-sdk';
-import type { LDClient, LDContext } from 'launchdarkly-js-client-sdk';
+import { createClient } from '@launchdarkly/js-client-sdk';
+import type { LDClient, LDContext } from '@launchdarkly/js-client-sdk';
 import Observability from '@launchdarkly/observability';
 import SessionReplay from '@launchdarkly/session-replay';
 import { setToolbarFlagClient } from '../../../../../flags';
@@ -143,16 +143,17 @@ export function InternalClientProvider({
         });
 
         const options = {
-          ...(baseUrl && { baseUrl }),
-          ...(streamUrl && { streamUrl }),
-          ...(eventsUrl && { eventsUrl }),
+          ...(baseUrl && { baseUri: baseUrl }),
+          ...(streamUrl && { streamUri: streamUrl }),
+          ...(eventsUrl && { eventsUri: eventsUrl }),
           plugins: [observabilityPlugin, sessionReplayPlugin],
         };
 
-        const ldClient = initialize(clientSideId, context, options);
+        const ldClient = createClient(clientSideId, context, options);
+        ldClient.start();
         clientToCleanup = ldClient;
 
-        await ldClient.waitForInitialization(5);
+        await ldClient.waitForInitialization({ timeout: 5 });
 
         if (mounted) {
           setClient(ldClient);
@@ -191,27 +192,18 @@ export function InternalClientProvider({
 
       // Wrap identify in a Promise that resolves when the onDone callback fires
       // This ensures flags have been re-evaluated before we return
-      return new Promise<void>((resolve) => {
-        client.identify(
-          {
-            kind: 'multi',
-            account: {
-              key: accountId,
-            },
-            user: {
-              key: memberId,
-            },
+      return client.identify({
+          kind: 'multi',
+          account: {
+            key: accountId,
           },
-          undefined,
-          (err) => {
-            if (err) {
-              console.error('[InternalClientProvider] Failed to update context:', err);
-              resolve();
-            } else {
-              resolve();
-            }
+          user: {
+            key: memberId,
           },
-        );
+        }
+      ).then(() => {})
+      .catch((err) => {
+        console.error('[InternalClientProvider] Failed to update context:', err);
       });
     },
     [client],

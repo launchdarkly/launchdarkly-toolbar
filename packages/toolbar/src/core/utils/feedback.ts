@@ -1,5 +1,5 @@
 import { LDRecord } from '@launchdarkly/session-replay';
-import type { LDClient } from 'launchdarkly-js-client-sdk';
+import type { LDClient } from '@launchdarkly/js-client-sdk';
 
 export type LDFeedbackSentiment = 'positive' | 'neutral' | 'negative';
 

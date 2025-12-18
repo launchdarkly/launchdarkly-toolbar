@@ -47,12 +47,12 @@ importers:
 
   packages/demo:
     dependencies:
+      '@launchdarkly/js-client-sdk':
+        specifier: ^0.11.0
+        version: 0.11.0
       '@launchdarkly/toolbar':
         specifier: workspace:*
         version: link:../toolbar
-      launchdarkly-js-client-sdk:
-        specifier: ^3.9.0
-        version: 3.9.0
       launchdarkly-react-client-sdk:
         specifier: ^3.9.0
         version: 3.9.0(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
@@ -138,6 +138,9 @@ importers:
       '@codemirror/view':
         specifier: ^6.39.11
         version: 6.39.11
+      '@launchdarkly/js-client-sdk':
+        specifier: ^0.11.0
+        version: 0.11.0
       '@launchdarkly/observability':
         specifier: ^1.0.0
         version: 1.0.0
