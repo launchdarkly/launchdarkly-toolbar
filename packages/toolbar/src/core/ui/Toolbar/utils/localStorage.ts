@@ -1,4 +1,4 @@
-import { Context } from '../types/ldApi';
+import type { LDContext } from 'launchdarkly-js-client-sdk';
 import { ToolbarPosition, TOOLBAR_POSITIONS } from '../types/toolbar';
 
 export const TOOLBAR_STORAGE_KEYS = {
@@ -183,7 +183,7 @@ export function loadMCPAlertDismissed(): boolean {
   }
 }
 
-export function loadContexts(): Array<Context> {
+export function loadContexts(): Array<LDContext> {
   try {
     const stored = localStorage.getItem(TOOLBAR_STORAGE_KEYS.CONTEXTS);
     if (stored) {
@@ -196,7 +196,7 @@ export function loadContexts(): Array<Context> {
   return [];
 }
 
-export function saveContexts(contexts: Array<Context>): void {
+export function saveContexts(contexts: Array<LDContext>): void {
   try {
     const value = JSON.stringify(contexts);
     localStorage.setItem(TOOLBAR_STORAGE_KEYS.CONTEXTS, value);
@@ -205,14 +205,14 @@ export function saveContexts(contexts: Array<Context>): void {
   }
 }
 
-export function loadActiveContext(): Context | null {
+export function loadActiveContext(): LDContext | null {
   try {
     const stored = localStorage.getItem(TOOLBAR_STORAGE_KEYS.ACTIVE_CONTEXT);
     if (stored) {
       const parsed = JSON.parse(stored);
-      // Validate that it's a valid Context object
+      // Validate that it's a valid LDContext object
       if (parsed && typeof parsed === 'object' && parsed.kind) {
-        return parsed as Context;
+        return parsed as LDContext;
       }
     }
   } catch (error) {
@@ -221,7 +221,7 @@ export function loadActiveContext(): Context | null {
   return null;
 }
 
-export function saveActiveContext(context: Context | null): void {
+export function saveActiveContext(context: LDContext | null): void {
   try {
     if (context) {
       const value = JSON.stringify(context);

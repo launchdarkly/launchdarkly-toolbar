@@ -1,7 +1,7 @@
 import { useState, useCallback, useMemo, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
+import type { LDContext } from 'launchdarkly-js-client-sdk';
 import * as styles from './ContextItem.module.css';
-import { Context } from '../../../types/ldApi';
 import { CopyableText } from '../../CopyableText';
 import { EditIcon, DeleteIcon, CheckIcon, CancelIcon } from '../../icons';
 import { useContextsContext } from '../../../context/api/ContextsProvider';
@@ -9,9 +9,10 @@ import { JsonEditor } from '../../../../JsonEditor/JsonEditor';
 import { VIRTUALIZATION, EASING } from '../../../constants';
 import { IconButton } from '../../../../Buttons/IconButton';
 import { useAnalytics } from '../../../context/telemetry/AnalyticsProvider';
+import { generateContextId, getContextDisplayName, getContextKey, getContextKind } from '../../../utils/context';
 
 interface ContextItemProps {
-  context: Context;
+  context: LDContext;
   isActiveContext: boolean;
   handleHeightChange?: (index: number, height: number) => void;
   index?: number;
@@ -25,7 +26,10 @@ export function ContextItem({ context, isActiveContext, handleHeightChange, inde
   const hasResetOnMountRef = useRef(false);
   const { removeContext, updateContext, setContext } = useContextsContext();
   const analytics = useAnalytics();
-  const displayName = context.name || context.key;
+  const contextId = generateContextId(context);
+  const contextKey = getContextKey(context);
+  const contextKind = getContextKind(context);
+  const displayName = getContextDisplayName(context);
   const isClickable = !isActiveContext && !isSelecting && !isEditing;
 
   const containerClassName = isActiveContext
@@ -44,9 +48,9 @@ export function ContextItem({ context, isActiveContext, handleHeightChange, inde
     setHasLintErrors(false);
 
     // Track analytics
-    const contextKey = context.kind === 'multi' ? context.name || 'multi-kind' : context.key || '';
-    analytics.trackContextEditStarted(context.kind, contextKey);
-  }, [contextJson, context, analytics]);
+    const trackKey = contextKind === 'multi' ? displayName : contextKey;
+    analytics.trackContextEditStarted(contextKind, trackKey);
+  }, [contextJson, contextKind, contextKey, displayName, analytics]);
 
   const handleSave = useCallback(() => {
     if (hasLintErrors) {
@@ -65,8 +69,8 @@ export function ContextItem({ context, isActiveContext, handleHeightChange, inde
         return;
       }
 
-      // Update the context
-      updateContext(context.id, parsed as Context);
+      // Update the context using the hash-based contextId
+      updateContext(contextId, parsed as LDContext);
       setIsEditing(false);
 
       // Reset height when collapsing
@@ -76,7 +80,7 @@ export function ContextItem({ context, isActiveContext, handleHeightChange, inde
     } catch (error) {
       console.error('Failed to parse JSON:', error);
     }
-  }, [editedJson, hasLintErrors, context, updateContext, handleHeightChange, index]);
+  }, [editedJson, hasLintErrors, contextId, updateContext, handleHeightChange, index]);
 
   const handleCancel = useCallback(() => {
     setIsEditing(false);
@@ -84,14 +88,14 @@ export function ContextItem({ context, isActiveContext, handleHeightChange, inde
     setHasLintErrors(false);
 
     // Track analytics
-    const contextKey = context.kind === 'multi' ? context.name || 'multi-kind' : context.key || '';
-    analytics.trackContextEditCancelled(context.kind, contextKey);
+    const trackKey = contextKind === 'multi' ? displayName : contextKey;
+    analytics.trackContextEditCancelled(contextKind, trackKey);
 
     // Reset height when collapsing
     if (handleHeightChange && index !== undefined) {
       handleHeightChange(index, VIRTUALIZATION.ITEM_HEIGHT + VIRTUALIZATION.GAP);
     }
-  }, [handleHeightChange, index, context, analytics]);
+  }, [handleHeightChange, index, contextKind, contextKey, displayName, analytics]);
 
   const handleJsonChange = useCallback((value: string) => {
     setEditedJson(value);
@@ -118,9 +122,9 @@ export function ContextItem({ context, isActiveContext, handleHeightChange, inde
         return;
       }
       // Note: Analytics tracking happens in removeContext in ContextsProvider
-      removeContext(context.id);
+      removeContext(contextId);
     },
-    [removeContext, context.kind, context.key, context.name, isActiveContext],
+    [removeContext, contextId, isActiveContext],
   );
 
   const handleSelect = useCallback(async () => {
@@ -185,16 +189,15 @@ export function ContextItem({ context, isActiveContext, handleHeightChange, inde
           </div>
           <div className={styles.keyRow} onClick={(e) => e.stopPropagation()}>
             <CopyableText
-              text={context.name || context.key || ''}
+              text={displayName}
               onCopy={() => {
-                const contextKey = context.name || context.key || '';
-                analytics.trackContextKeyCopy(contextKey);
+                analytics.trackContextKeyCopy(displayName);
               }}
             />
           </div>
         </div>
         <div className={styles.actions} onClick={(e) => e.stopPropagation()}>
-          <span className={styles.kindBadge}>{context.kind}</span>
+          <span className={styles.kindBadge}>{contextKind}</span>
           {!isEditing ? (
             <>
               <IconButton icon={<EditIcon />} onClick={handleEdit} label="Edit context" title="Edit context" />
@@ -202,9 +205,7 @@ export function ContextItem({ context, isActiveContext, handleHeightChange, inde
                 icon={<DeleteIcon />}
                 onClick={handleDelete}
                 disabled={isActiveContext}
-                label={
-                  isActiveContext ? `Cannot delete active context ${context.key}` : `Delete context ${context.key}`
-                }
+                label={isActiveContext ? `Cannot delete active context ${contextKey}` : `Delete context ${contextKey}`}
                 title={isActiveContext ? 'Cannot delete active context' : 'Delete context'}
               />
             </>
@@ -216,14 +217,14 @@ export function ContextItem({ context, isActiveContext, handleHeightChange, inde
                 disabled={hasLintErrors}
                 label="Save context"
                 title="Save context"
-                data-testid={`save-context-${context.id}`}
+                data-testid={`save-context-${contextId}`}
               />
               <IconButton
                 icon={<CancelIcon />}
                 onClick={handleCancel}
                 label="Cancel editing"
                 title="Cancel editing"
-                data-testid={`cancel-context-${context.id}`}
+                data-testid={`cancel-context-${contextId}`}
               />
             </>
           )}
@@ -232,8 +233,8 @@ export function ContextItem({ context, isActiveContext, handleHeightChange, inde
       <AnimatePresence mode="wait">
         {isEditing && (
           <motion.div
-            key={`json-editor-${context.id}`}
-            data-testid={`json-editor-${context.id}`}
+            key={`json-editor-${contextId}`}
+            data-testid={`json-editor-${contextId}`}
             onClick={(e) => e.stopPropagation()}
             initial={{
               opacity: 0,
@@ -266,8 +267,8 @@ export function ContextItem({ context, isActiveContext, handleHeightChange, inde
               docString={editedJson}
               onChange={handleJsonChange}
               onLintErrors={handleLintErrors}
-              data-testid={`context-json-${context.id}`}
-              editorId={`json-editor-${context.id}`}
+              data-testid={`context-json-${contextId}`}
+              editorId={`json-editor-${contextId}`}
               onEditorHeightChange={handleEditorHeightChange}
               initialState={{
                 startCursorAtLine: 0,

@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { AppWrapper } from '../AppWrapper';
-import type { ToolbarPosition } from '@launchdarkly/toolbar';
-import { useLaunchDarklyToolbar } from '@launchdarkly/toolbar';
+import type { ToolbarPosition } from '@launchdarkly/toolbar/types';
+import { useLaunchDarklyToolbar } from '@launchdarkly/toolbar/react';
 import { eventInterceptionPlugin } from '../plugins';
 import { useLaunchDarklyProvider } from '../hooks/useLaunchDarklyProvider';
 import { LoadingScreen } from '../components/LoadingScreen';
