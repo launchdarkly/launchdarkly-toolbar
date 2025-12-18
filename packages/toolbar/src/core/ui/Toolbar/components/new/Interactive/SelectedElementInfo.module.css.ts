@@ -1,28 +1,27 @@
 import { style } from '@vanilla-extract/css';
+import { flexColumn, flexRow, flexCenter, textEllipsis, buttonReset } from '../../../../styles/mixins.css';
+import { codeRules, codeEllipsisRules } from '../../../../styles/typography.css';
+import { fieldGroupRules, labelRules } from '../../../../styles/form.css';
+import { badgeRules } from '../../../../styles/card.css';
 
 export const container = style({
-  display: 'flex',
-  flexDirection: 'column',
+  ...flexColumn,
   gap: '20px',
   padding: '12px',
 });
 
 export const elementDetails = style({
-  display: 'flex',
-  flexDirection: 'column',
+  ...flexColumn,
   backgroundColor: 'var(--lp-color-gray-900)',
   borderRadius: '8px',
   overflow: 'hidden',
 });
 
 export const detailsHeader = style({
-  display: 'flex',
-  alignItems: 'center',
+  ...buttonReset,
+  ...flexRow,
   justifyContent: 'space-between',
   padding: '12px 14px',
-  backgroundColor: 'transparent',
-  border: 'none',
-  cursor: 'pointer',
   color: 'var(--lp-color-gray-200)',
   transition: 'background-color 0.15s',
 
@@ -34,19 +33,15 @@ export const detailsHeader = style({
 });
 
 export const primaryIdentifier = style({
+  ...textEllipsis,
   fontSize: '14px',
   fontFamily: 'var(--lp-font-family-monospace)',
   color: 'var(--lp-color-green-400)',
   fontWeight: 500,
-  overflow: 'hidden',
-  textOverflow: 'ellipsis',
-  whiteSpace: 'nowrap',
 });
 
 export const chevron = style({
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center',
+  ...flexCenter,
   color: 'var(--lp-color-gray-500)',
   transition: 'transform 0.2s',
 });
@@ -56,16 +51,13 @@ export const chevronExpanded = style({
 });
 
 export const detailsContent = style({
-  display: 'flex',
-  flexDirection: 'column',
+  ...flexColumn,
   gap: '12px',
   padding: '0 14px 14px',
 });
 
 export const detailRow = style({
-  display: 'flex',
-  flexDirection: 'column',
-  gap: '4px',
+  ...fieldGroupRules,
 });
 
 export const label = style({
@@ -77,36 +69,32 @@ export const label = style({
 });
 
 export const value = style({
-  fontSize: '12px',
-  fontFamily: 'var(--lp-font-family-monospace)',
-  color: 'var(--lp-color-gray-300)',
+  ...codeRules,
   wordBreak: 'break-all',
   lineHeight: 1.4,
 });
 
 export const classesList = style({
-  display: 'flex',
+  ...flexRow,
   flexWrap: 'wrap',
   gap: '4px',
 });
 
 export const classTag = style({
-  padding: '2px 6px',
-  backgroundColor: 'var(--lp-color-gray-800)',
-  borderRadius: '4px',
+  ...badgeRules,
   fontSize: '11px',
   fontFamily: 'var(--lp-font-family-monospace)',
+  backgroundColor: 'var(--lp-color-gray-800)',
   color: 'var(--lp-color-gray-300)',
 });
 
 export const attributesList = style({
-  display: 'flex',
-  flexDirection: 'column',
+  ...flexColumn,
   gap: '4px',
 });
 
 export const attributeRow = style({
-  display: 'flex',
+  ...flexRow,
   alignItems: 'baseline',
   gap: '8px',
 });
@@ -120,12 +108,8 @@ export const attributeName = style({
 });
 
 export const attributeValue = style({
+  ...codeEllipsisRules,
   fontSize: '11px',
-  fontFamily: 'var(--lp-font-family-monospace)',
-  color: 'var(--lp-color-gray-300)',
-  overflow: 'hidden',
-  textOverflow: 'ellipsis',
-  whiteSpace: 'nowrap',
 });
 
 export const textPreview = style({
@@ -140,8 +124,7 @@ export const textPreview = style({
 });
 
 export const dimensionsRow = style({
-  display: 'flex',
-  alignItems: 'center',
+  ...flexRow,
   gap: '8px',
   fontSize: '11px',
   color: 'var(--lp-color-gray-500)',
@@ -154,14 +137,13 @@ export const dimValue = style({
 
 // Workflows container
 export const workflowsContainer = style({
-  display: 'flex',
-  flexDirection: 'column',
+  ...flexColumn,
   gap: '20px',
 });
 
 export const title = style({
+  ...labelRules,
   fontSize: '11px',
-  fontWeight: 600,
   color: 'var(--lp-color-gray-500)',
   textTransform: 'uppercase',
   letterSpacing: '0.5px',

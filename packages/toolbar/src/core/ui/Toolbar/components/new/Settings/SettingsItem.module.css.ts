@@ -1,37 +1,31 @@
 import { style } from '@vanilla-extract/css';
+import { flexBetween, flexRow, transitionDefault } from '../../../../styles/mixins.css';
+import { cardInfoRules } from '../../../../styles/card.css';
+import { titleSmallRules, descriptionSmallRules } from '../../../../styles/typography.css';
 
 export const item = style({
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'space-between',
+  ...flexBetween,
+  ...transitionDefault,
   backgroundColor: 'var(--lp-color-gray-850)',
-  transition: 'all 0.2s ease',
   gap: '16px',
 });
 
 export const info = style({
-  display: 'flex',
-  flexDirection: 'column',
-  gap: '4px',
-  flex: 1,
-  minWidth: 0,
+  ...cardInfoRules,
 });
 
 export const label = style({
-  fontSize: '14px',
+  ...titleSmallRules,
   fontWeight: 500,
-  color: 'var(--lp-color-gray-100)',
 });
 
 export const description = style({
-  fontSize: '12px',
-  color: 'var(--lp-color-gray-400)',
+  ...descriptionSmallRules,
   lineHeight: '1.4',
 });
 
 export const control = style({
-  display: 'flex',
-  alignItems: 'center',
+  ...flexRow,
   flexShrink: 0,
 });
 

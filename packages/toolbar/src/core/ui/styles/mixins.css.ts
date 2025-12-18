@@ -292,4 +292,3 @@ export const iconXSmall: StyleRule = {
 export const iconNoShrink: StyleRule = {
   flexShrink: 0,
 };
-

@@ -1,4 +1,5 @@
 import { style, keyframes } from '@vanilla-extract/css';
+import { flexColumn, flexRow, flexCenter, buttonReset, transitionDefault } from '../../../styles/mixins.css';
 
 const spin = keyframes({
   '0%': { transform: 'rotate(0deg)' },
@@ -6,8 +7,7 @@ const spin = keyframes({
 });
 
 export const loginContainer = style({
-  display: 'flex',
-  flexDirection: 'column',
+  ...flexColumn,
   backgroundColor: 'var(--lp-color-gray-950)',
   border: '1px solid var(--lp-color-gray-700)',
   borderRadius: '12px',
@@ -17,8 +17,7 @@ export const loginContainer = style({
 });
 
 export const loginHeader = style({
-  display: 'flex',
-  alignItems: 'center',
+  ...flexRow,
   justifyContent: 'space-between',
   padding: '0 8px 0 16px',
   backgroundColor: 'var(--lp-color-gray-950)',
@@ -34,28 +33,21 @@ export const headerLogo = style({
 });
 
 export const loginMainContent = style({
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center',
+  ...flexCenter,
   padding: '2rem',
   flex: 1,
 });
 
 export const closeButtonArea = style({
-  display: 'flex',
-  alignItems: 'center',
+  ...flexRow,
 });
 
 export const actionButton = style({
-  display: 'inline-flex',
-  alignItems: 'center',
-  justifyContent: 'center',
-  backgroundColor: 'transparent',
-  border: 'none',
-  cursor: 'pointer',
+  ...buttonReset,
+  ...flexCenter,
+  ...transitionDefault,
   padding: '8px',
   borderRadius: '4px',
-  transition: 'background-color 0.2s ease',
   color: 'var(--lp-color-gray-400)',
   width: '36px',
   height: '36px',
@@ -81,8 +73,7 @@ export const actionButton = style({
 });
 
 export const loginContent = style({
-  display: 'flex',
-  flexDirection: 'column',
+  ...flexColumn,
   alignItems: 'center',
   textAlign: 'center',
   width: '100%',
@@ -117,9 +108,7 @@ export const errorMessage = style({
 });
 
 export const loginButton = style({
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center',
+  ...flexCenter,
   gap: '0.5rem',
   backgroundColor: 'var(--lp-color-gray-800)',
   color: 'white',

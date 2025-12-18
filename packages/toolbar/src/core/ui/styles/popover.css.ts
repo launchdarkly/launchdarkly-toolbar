@@ -191,4 +191,3 @@ export const positionBottomCenter = style({
   left: '50%',
   transform: 'translateX(-50%)',
 });
-

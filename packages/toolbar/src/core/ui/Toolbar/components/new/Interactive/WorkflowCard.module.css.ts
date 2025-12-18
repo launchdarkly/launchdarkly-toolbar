@@ -1,14 +1,17 @@
 import { style } from '@vanilla-extract/css';
+import { flexColumn, flexRow, flexCenter, transitionDefault } from '../../../../styles/mixins.css';
+import { titleRules, descriptionRules } from '../../../../styles/typography.css';
+import { fieldGroupRules, labelRules, inputMonospaceRules } from '../../../../styles/form.css';
+import { badgeRules } from '../../../../styles/card.css';
 
 export const card = style({
-  display: 'flex',
-  flexDirection: 'column',
+  ...flexColumn,
+  ...transitionDefault,
   gap: '12px',
   padding: '16px',
   backgroundColor: 'var(--lp-color-gray-900)',
   borderRadius: '8px',
   border: '1px solid var(--lp-color-gray-800)',
-  transition: 'border-color 0.2s',
 
   selectors: {
     '&:hover:not([data-disabled="true"])': {
@@ -21,15 +24,13 @@ export const card = style({
 });
 
 export const cardHeader = style({
-  display: 'flex',
+  ...flexRow,
   alignItems: 'flex-start',
   gap: '12px',
 });
 
 export const iconContainer = style({
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center',
+  ...flexCenter,
   width: '40px',
   height: '40px',
   backgroundColor: 'var(--lp-color-gray-800)',
@@ -39,72 +40,33 @@ export const iconContainer = style({
 });
 
 export const cardContent = style({
-  display: 'flex',
-  flexDirection: 'column',
+  ...flexColumn,
   gap: '4px',
   flex: 1,
   minWidth: 0,
 });
 
-export const title = style({
-  fontSize: '14px',
-  fontWeight: 600,
-  color: 'var(--lp-color-gray-100)',
-  margin: 0,
-});
+export const title = style(titleRules);
 
-export const description = style({
-  fontSize: '13px',
-  color: 'var(--lp-color-gray-400)',
-  margin: 0,
-  lineHeight: 1.4,
-});
+export const description = style(descriptionRules);
 
 export const comingSoonBadge = style({
-  display: 'inline-flex',
-  alignItems: 'center',
-  padding: '2px 8px',
-  backgroundColor: 'var(--lp-color-gray-800)',
-  borderRadius: '4px',
-  fontSize: '11px',
-  fontWeight: 500,
+  ...badgeRules,
   color: 'var(--lp-color-gray-500)',
-  textTransform: 'uppercase',
-  letterSpacing: '0.5px',
   marginLeft: '8px',
 });
 
-export const inputGroup = style({
-  display: 'flex',
-  flexDirection: 'column',
-  gap: '6px',
-});
+export const inputGroup = style(fieldGroupRules);
 
-export const inputLabel = style({
-  fontSize: '12px',
-  fontWeight: 500,
-  color: 'var(--lp-color-gray-400)',
-});
+export const inputLabel = style(labelRules);
 
 export const input = style({
+  ...inputMonospaceRules,
   padding: '10px 12px',
   backgroundColor: 'var(--lp-color-gray-800)',
-  border: '1px solid var(--lp-color-gray-700)',
-  borderRadius: '6px',
-  fontSize: '13px',
-  fontFamily: 'var(--lp-font-family-monospace)',
-  color: 'var(--lp-color-gray-100)',
-  outline: 'none',
-  transition: 'border-color 0.15s, box-shadow 0.15s',
-
-  selectors: {
-    '&::placeholder': {
-      color: 'var(--lp-color-gray-500)',
-    },
-    '&:focus': {
-      borderColor: 'var(--lp-color-blue-500)',
-      boxShadow: '0 0 0 2px rgba(64, 91, 255, 0.2)',
-    },
+  ':focus': {
+    borderColor: 'var(--lp-color-blue-500)',
+    boxShadow: '0 0 0 2px rgba(64, 91, 255, 0.2)',
   },
 });
 

@@ -1,15 +1,12 @@
 import { style } from '@vanilla-extract/css';
+import { flexColumn, flexCenter, iconSmall } from '../../../../styles/mixins.css';
+import { bodyRules } from '../../../../styles/typography.css';
 
-export const container = style({
-  display: 'flex',
-  flexDirection: 'column',
-});
+export const container = style(flexColumn);
 
 export const emptyState = style({
-  display: 'flex',
-  flexDirection: 'column',
-  alignItems: 'center',
-  justifyContent: 'center',
+  ...flexColumn,
+  ...flexCenter,
   gap: '8px',
   padding: '60px 20px',
   color: 'var(--lp-color-gray-400)',
@@ -17,18 +14,16 @@ export const emptyState = style({
 });
 
 export const message = style({
+  ...bodyRules,
   margin: 0,
-  fontSize: '14px',
   color: 'var(--lp-color-gray-400)',
   maxWidth: '280px',
-  lineHeight: 1.5,
 });
 
 export const inlineIcon = style({
+  ...iconSmall,
   display: 'inline-flex',
   verticalAlign: 'middle',
-  width: '16px',
-  height: '16px',
   marginRight: '2px',
   marginLeft: '2px',
 });

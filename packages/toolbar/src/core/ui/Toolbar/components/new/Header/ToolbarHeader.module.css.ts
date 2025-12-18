@@ -1,5 +1,12 @@
 import { style } from '@vanilla-extract/css';
-import { flexBetween, flexRow, buttonReset, flexCenter, transitionDefault, iconDefault } from '../../../../styles/mixins.css';
+import {
+  flexBetween,
+  flexRow,
+  buttonReset,
+  flexCenter,
+  transitionDefault,
+  iconDefault,
+} from '../../../../styles/mixins.css';
 
 export const header = style({
   ...flexBetween,

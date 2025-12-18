@@ -233,13 +233,13 @@ export const statusDotActive = style(statusDotActiveRules);
 export const statusDotOverride = style(statusDotOverrideRules);
 
 // =============================================================================
-// BADGE STYLES
+// BADGE STYLE RULES
 // =============================================================================
 
 /**
- * Base badge styling.
+ * Base badge styling rules.
  */
-export const badge = style({
+export const badgeRules: StyleRule = {
   display: 'inline-flex',
   alignItems: 'center',
   padding: '2px 8px',
@@ -251,21 +251,28 @@ export const badge = style({
   backgroundColor: 'var(--lp-color-gray-800)',
   color: 'var(--lp-color-gray-300)',
   flexShrink: 0,
-});
+};
 
 /**
- * Warning badge (yellow).
+ * Warning badge rules (yellow).
  */
-export const badgeWarning = style({
+export const badgeWarningRules: StyleRule = {
   backgroundColor: 'rgba(from var(--lp-color-yellow-500) r g b / 0.15)',
   color: 'var(--lp-color-yellow-400)',
-});
+};
 
 /**
- * Muted badge for secondary information.
+ * Muted badge rules for secondary information.
  */
-export const badgeMuted = style({
+export const badgeMutedRules: StyleRule = {
   fontWeight: 500,
   color: 'var(--lp-color-gray-500)',
-});
+};
 
+// =============================================================================
+// BADGE STYLES (ready-to-use)
+// =============================================================================
+
+export const badge = style(badgeRules);
+export const badgeWarning = style(badgeWarningRules);
+export const badgeMuted = style(badgeMutedRules);

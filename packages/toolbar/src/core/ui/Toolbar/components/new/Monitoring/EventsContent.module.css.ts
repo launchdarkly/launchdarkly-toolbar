@@ -1,12 +1,6 @@
 import { style, keyframes } from '@vanilla-extract/css';
 import { cardBaseRules, cardInfoRules, statusDotRules } from '../../../../styles/card.css';
-import {
-  flexColumn,
-  flexRow,
-  flexCenter,
-  textEllipsis,
-  customScrollbarWide,
-} from '../../../../styles/mixins.css';
+import { flexColumn, flexRow, flexCenter, textEllipsis, customScrollbarWide } from '../../../../styles/mixins.css';
 
 export const container = style({
   ...flexColumn,

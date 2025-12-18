@@ -1,4 +1,5 @@
 import { style, keyframes } from '@vanilla-extract/css';
+import { flexColumn, flexRow, flexCenter } from '../../../styles/mixins.css';
 
 const spin = keyframes({
   '0%': { transform: 'rotate(0deg)' },
@@ -6,8 +7,7 @@ const spin = keyframes({
 });
 
 export const loadingContainer = style({
-  display: 'flex',
-  flexDirection: 'column',
+  ...flexColumn,
   backgroundColor: 'var(--lp-color-gray-950)',
   border: '1px solid var(--lp-color-gray-700)',
   width: '100%',
@@ -16,8 +16,7 @@ export const loadingContainer = style({
 });
 
 export const loadingHeader = style({
-  display: 'flex',
-  alignItems: 'center',
+  ...flexRow,
   padding: '0 16px',
   backgroundColor: 'var(--lp-color-gray-950)',
   borderBottom: '1px solid var(--lp-color-gray-700)',
@@ -32,15 +31,12 @@ export const headerLogo = style({
 });
 
 export const loadingMainContent = style({
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center',
+  ...flexCenter,
   flex: 1,
 });
 
 export const loadingContent = style({
-  display: 'flex',
-  flexDirection: 'column',
+  ...flexColumn,
   alignItems: 'center',
   gap: '1rem',
 });

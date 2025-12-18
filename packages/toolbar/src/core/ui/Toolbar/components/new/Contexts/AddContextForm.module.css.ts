@@ -1,6 +1,13 @@
 import { style } from '@vanilla-extract/css';
 import { cardBaseWithMarginRules } from '../../../../styles/card.css';
 import {
+  inputBaseRules,
+  fieldGroupSpacedRules,
+  labelLargeRules,
+  requiredIndicatorRules,
+  errorTextRules,
+} from '../../../../styles/form.css';
+import {
   flexBetween,
   flexColumn,
   flexRow,
@@ -47,39 +54,17 @@ export const form = style({
 });
 
 export const field = style({
-  ...flexColumn,
-  gap: '8px',
+  ...fieldGroupSpacedRules,
 });
 
 export const label = style({
-  fontSize: '14px',
-  fontWeight: 500,
+  ...labelLargeRules,
   color: 'var(--lp-color-gray-300)',
 });
 
-export const required = style({
-  color: 'var(--lp-color-red-400)',
-});
+export const required = style(requiredIndicatorRules);
 
-export const input = style({
-  ...transitionDefault,
-  padding: '8px 12px',
-  fontSize: '14px',
-  backgroundColor: 'var(--lp-color-gray-850)',
-  border: '1px solid var(--lp-color-gray-700)',
-  borderRadius: '6px',
-  color: 'var(--lp-color-gray-100)',
-
-  ':focus': {
-    outline: 'none',
-    borderColor: 'var(--lp-color-brand-cyan-base)',
-    boxShadow: '0 0 0 3px rgba(from var(--lp-color-brand-cyan-base) r g b / 0.1)',
-  },
-
-  '::placeholder': {
-    color: 'var(--lp-color-gray-500)',
-  },
-});
+export const input = style(inputBaseRules);
 
 export const jsonEditorContainer = style({
   border: '1px solid var(--lp-color-gray-700)',
@@ -90,8 +75,7 @@ export const jsonEditorContainer = style({
 });
 
 export const errorText = style({
-  fontSize: '12px',
-  color: 'var(--lp-color-red-400)',
+  ...errorTextRules,
   marginTop: '8px',
 });
 

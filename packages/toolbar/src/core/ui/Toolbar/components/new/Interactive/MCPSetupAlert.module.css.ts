@@ -1,62 +1,55 @@
 import { style } from '@vanilla-extract/css';
+import { flexRow, flexColumn, flexCenter, iconNoShrink, transitionFast } from '../../../../styles/mixins.css';
+import { titleSmallRules, descriptionSmallRules } from '../../../../styles/typography.css';
+import { cardInfoRules } from '../../../../styles/card.css';
 
 export const alertContainer = style({
   // marginBottom: '8px',
 });
 
 export const alertContentWithIcon = style({
-  display: 'flex',
+  ...flexRow,
   alignItems: 'flex-start',
   gap: '12px',
 });
 
 export const infoIcon = style({
+  ...iconNoShrink,
   width: '20px',
   height: '20px',
-  flexShrink: 0,
   marginTop: '2px',
   color: 'var(--lp-color-blue-400)',
 });
 
 export const alertContent = style({
-  display: 'flex',
-  flexDirection: 'column',
+  ...cardInfoRules,
   gap: '10px',
-  flex: 1,
-  minWidth: 0,
 });
 
 export const textContent = style({
-  display: 'flex',
-  flexDirection: 'column',
+  ...flexColumn,
   gap: '2px',
 });
 
 export const title = style({
-  fontSize: '13px',
-  fontWeight: 600,
-  color: 'var(--lp-color-gray-100)',
-  margin: 0,
+  ...titleSmallRules,
 });
 
 export const description = style({
-  fontSize: '12px',
+  ...descriptionSmallRules,
   color: 'var(--lp-color-gray-300)',
-  margin: 0,
   lineHeight: 1.4,
 });
 
 export const actions = style({
-  display: 'flex',
-  alignItems: 'center',
+  ...flexRow,
   gap: '8px',
   flexWrap: 'wrap',
 });
 
 export const actionButton = style({
-  display: 'inline-flex',
-  alignItems: 'center',
-  justifyContent: 'center',
+  ...flexCenter,
+  ...transitionFast,
   gap: '6px',
   padding: '6px 10px',
   height: '28px',
@@ -69,7 +62,6 @@ export const actionButton = style({
   lineHeight: 1,
   color: 'var(--lp-color-gray-200)',
   cursor: 'pointer',
-  transition: 'all 0.15s',
   textDecoration: 'none',
   whiteSpace: 'nowrap',
   fontFamily: 'inherit',
@@ -106,7 +98,7 @@ export const doneButton = style({
 });
 
 export const cursorIcon = style({
+  ...iconNoShrink,
   width: '14px',
   height: '14px',
-  flexShrink: 0,
 });
