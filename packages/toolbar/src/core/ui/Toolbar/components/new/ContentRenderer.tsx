@@ -1,10 +1,11 @@
 import { useActiveTabContext } from '../../context';
 import { useActiveSubtabContext } from './context/ActiveSubtabProvider';
-import { SettingsContent } from './Settings/SettingsContent';
 import { FlagListContent } from './FeatureFlags/FlagListContent';
 import { ContextListContent } from './Contexts/ContextListContent';
 import { EventsContent } from './Monitoring/EventsContent';
 import { InteractiveContent } from './Interactive';
+import { PrivacySettings } from './Settings/Privacy/PrivacySettings';
+import { GeneralSettings } from './Settings/GeneralSettings';
 
 export function ContentRenderer() {
   const { activeTab } = useActiveTabContext();
@@ -32,7 +33,14 @@ export function ContentRenderer() {
   }
 
   if (activeTab === 'settings') {
-    return <SettingsContent />;
+    switch (activeSubtab) {
+      case 'general':
+        return <GeneralSettings />;
+      case 'privacy':
+        return <PrivacySettings />;
+      default:
+        return <GeneralSettings />;
+    }
   }
 
   if (activeTab === 'interactive') {

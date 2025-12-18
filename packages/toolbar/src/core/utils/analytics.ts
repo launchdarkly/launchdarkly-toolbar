@@ -44,12 +44,14 @@ const EVENTS = {
 export class ToolbarAnalytics {
   private ldClient: LDClient | null = null;
   private mode: ToolbarMode | null = null;
+  private isOptedInToAnalytics: boolean = false;
   // Timer id for debouncing search tracking
   private searchDebounceTimer: ReturnType<typeof setTimeout> | null = null;
 
-  constructor(ldClient?: LDClient | null, mode?: ToolbarMode) {
+  constructor(ldClient?: LDClient | null, mode?: ToolbarMode, isOptedInToAnalytics?: boolean) {
     this.ldClient = ldClient || null;
     this.mode = mode || null;
+    this.isOptedInToAnalytics = isOptedInToAnalytics || false;
   }
 
   /**
@@ -63,7 +65,7 @@ export class ToolbarAnalytics {
       return;
     }
 
-    if (isDoNotTrackEnabled()) {
+    if (isDoNotTrackEnabled() || !this.isOptedInToAnalytics) {
       return;
     }
 

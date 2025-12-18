@@ -4,6 +4,32 @@ import { expect, test, describe, vi, beforeEach } from 'vitest';
 import { LaunchDarklyToolbar } from '../ui/Toolbar/LaunchDarklyToolbar';
 import '@testing-library/jest-dom/vitest';
 
+// Control session replay opt-in state for tests
+const {
+  getMockIsOptedInToSessionReplay,
+  setMockIsOptedInToSessionReplay,
+  getMockEnableSessionReplay,
+  setMockEnableSessionReplay,
+} = vi.hoisted(() => {
+  let sessionReplayOptIn = false;
+  let sessionReplayEnabled = false;
+
+  return {
+    getMockIsOptedInToSessionReplay: () => sessionReplayOptIn,
+    setMockIsOptedInToSessionReplay: (v: boolean) => {
+      sessionReplayOptIn = v;
+    },
+    getMockEnableSessionReplay: () => sessionReplayEnabled,
+    setMockEnableSessionReplay: (v: boolean) => {
+      sessionReplayEnabled = v;
+    },
+  };
+});
+
+// Import LDObserve and LDRecord after mocking to get the mocked versions
+import { LDObserve } from '@launchdarkly/observability';
+import { LDRecord } from '@launchdarkly/session-replay';
+
 // Mock observability and session replay
 vi.mock('@launchdarkly/observability', () => ({
   LDObserve: {
@@ -18,6 +44,23 @@ vi.mock('@launchdarkly/session-replay', () => ({
     stop: vi.fn(),
   },
 }));
+
+// Mock the toolbar flags module
+vi.mock('../../flags/toolbarFlags', () => ({
+  enableSessionReplay: () => getMockEnableSessionReplay(),
+  useNewToolbarDesign: () => false,
+  enableAiIcon: () => false,
+  enableInteractiveIcon: () => false,
+  enableOptimizeIcon: () => false,
+}));
+
+// Override the global AnalyticsPreferencesProvider mock with dynamic control for session replay
+vi.mock('../ui/Toolbar/context/telemetry/AnalyticsPreferencesProvider', async () => {
+  const { createDynamicAnalyticsPreferencesProviderMock } = await import('./mocks/providers');
+  return createDynamicAnalyticsPreferencesProviderMock({
+    getIsOptedInToSessionReplay: getMockIsOptedInToSessionReplay,
+  });
+});
 
 // Mock the DevServerClient to avoid actual network calls in tests
 vi.mock('../services/DevServerClient', () => {
@@ -110,6 +153,9 @@ vi.mock('../ui/Toolbar/context/api/IFrameProvider', () => ({
 describe('LaunchDarklyToolbar - User Flows', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    // Reset session replay mocks to default (disabled) state
+    setMockIsOptedInToSessionReplay(false);
+    setMockEnableSessionReplay(false);
   });
 
   describe('Dev Server Mode - Developer Flag Management Flow', () => {
@@ -363,6 +409,112 @@ describe('LaunchDarklyToolbar - User Flows', () => {
       // AND: Only has one tab total (settings only - typical SDK mode without plugin)
       const tabs = screen.getAllByRole('tab');
       expect(tabs).toHaveLength(1);
+    });
+  });
+
+  describe('Session Replay - User Privacy Flow', () => {
+    test('session replay starts when toolbar is expanded and user has opted in', async () => {
+      // GIVEN: Session replay feature flag is enabled AND user has opted in
+      setMockEnableSessionReplay(true);
+      setMockIsOptedInToSessionReplay(true);
+
+      render(<LaunchDarklyToolbar domId="ld-toolbar" />);
+
+      // WHEN: User expands the toolbar
+      const logo = screen.getByRole('img', { name: /launchdarkly/i });
+      fireEvent.click(logo);
+
+      // Wait for toolbar to expand
+      await waitFor(() => {
+        const settingsTab = screen.queryByRole('tab', { name: /settings/i });
+        return settingsTab;
+      });
+
+      // THEN: Session replay should start
+      await waitFor(() => {
+        expect(LDObserve.start).toHaveBeenCalled();
+        expect(LDRecord.start).toHaveBeenCalledWith({ forceNew: false, silent: false });
+      });
+    });
+
+    test('session replay does NOT start when user has NOT opted in', async () => {
+      // GIVEN: Session replay feature flag is enabled BUT user has NOT opted in
+      setMockEnableSessionReplay(true);
+      setMockIsOptedInToSessionReplay(false);
+
+      render(<LaunchDarklyToolbar domId="ld-toolbar" />);
+
+      // WHEN: User expands the toolbar
+      const logo = screen.getByRole('img', { name: /launchdarkly/i });
+      fireEvent.click(logo);
+
+      // Wait for toolbar to expand
+      await waitFor(() => {
+        const settingsTab = screen.queryByRole('tab', { name: /settings/i });
+        return settingsTab;
+      });
+
+      // Wait a bit to ensure no async calls happen
+      await new Promise((resolve) => setTimeout(resolve, 100));
+
+      // THEN: Session replay should NOT start (respecting user privacy preference)
+      expect(LDObserve.start).not.toHaveBeenCalled();
+      expect(LDRecord.start).not.toHaveBeenCalled();
+    });
+
+    test('session replay does NOT start when feature flag is disabled', async () => {
+      // GIVEN: Session replay feature flag is DISABLED but user would opt in
+      setMockEnableSessionReplay(false);
+      setMockIsOptedInToSessionReplay(true);
+
+      render(<LaunchDarklyToolbar domId="ld-toolbar" />);
+
+      // WHEN: User expands the toolbar
+      const logo = screen.getByRole('img', { name: /launchdarkly/i });
+      fireEvent.click(logo);
+
+      // Wait for toolbar to expand
+      await waitFor(() => {
+        const settingsTab = screen.queryByRole('tab', { name: /settings/i });
+        return settingsTab;
+      });
+
+      // Wait a bit to ensure no async calls happen
+      await new Promise((resolve) => setTimeout(resolve, 100));
+
+      // THEN: Session replay should NOT start (feature is disabled)
+      expect(LDObserve.start).not.toHaveBeenCalled();
+      expect(LDRecord.start).not.toHaveBeenCalled();
+    });
+
+    test('session replay stops when toolbar is collapsed', async () => {
+      // GIVEN: Session replay is running (toolbar expanded, user opted in, flag enabled)
+      setMockEnableSessionReplay(true);
+      setMockIsOptedInToSessionReplay(true);
+
+      render(<LaunchDarklyToolbar domId="ld-toolbar" />);
+
+      // Expand the toolbar to start session replay
+      const logo = screen.getByRole('img', { name: /launchdarkly/i });
+      fireEvent.click(logo);
+
+      // Wait for toolbar to expand and session replay to start
+      await waitFor(() => {
+        expect(LDObserve.start).toHaveBeenCalled();
+      });
+
+      // Clear mocks to track new calls
+      vi.clearAllMocks();
+
+      // WHEN: User collapses the toolbar by clicking the close button
+      const closeButton = screen.getByRole('button', { name: /close/i });
+      fireEvent.click(closeButton);
+
+      // THEN: Session replay should stop
+      await waitFor(() => {
+        expect(LDObserve.stop).toHaveBeenCalled();
+        expect(LDRecord.stop).toHaveBeenCalled();
+      });
     });
   });
 });

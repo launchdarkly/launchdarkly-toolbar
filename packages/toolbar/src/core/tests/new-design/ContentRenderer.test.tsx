@@ -22,6 +22,16 @@ vi.mock('../../ui/Toolbar/context', () => ({
     activeTab: mockActiveTab,
     setActiveTab: vi.fn(),
   }),
+  useDevServerContext: () => ({
+    state: {
+      sourceEnvironmentKey: 'production',
+      connectionStatus: 'connected',
+      flags: {},
+      lastSyncTime: Date.now(),
+      isLoading: false,
+      error: null,
+    },
+  }),
 }));
 
 vi.mock('../../ui/Toolbar/components/new/context/ActiveSubtabProvider', () => ({
@@ -32,8 +42,12 @@ vi.mock('../../ui/Toolbar/components/new/context/ActiveSubtabProvider', () => ({
 }));
 
 // Mock the content components
-vi.mock('../../ui/Toolbar/components/new/Settings/SettingsContent', () => ({
-  SettingsContent: () => <div data-testid="settings-content">Settings Content</div>,
+vi.mock('../../ui/Toolbar/components/new/Settings/GeneralSettings', () => ({
+  GeneralSettings: () => <div data-testid="settings-content">Settings Content</div>,
+}));
+
+vi.mock('../../ui/Toolbar/components/new/Settings/Privacy/PrivacySettings', () => ({
+  PrivacySettings: () => <div data-testid="privacy-settings-content">Privacy Settings Content</div>,
 }));
 
 vi.mock('../../ui/Toolbar/components/new/FeatureFlags/FlagListContent', () => ({
