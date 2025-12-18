@@ -1,10 +1,10 @@
 import { style } from '@vanilla-extract/css';
 import { Z_INDEX } from '../../../constants/zIndex';
+import { flexRow, flexCenter, buttonReset, transitionDefault, iconDefault } from '../../../styles/mixins.css';
 
 export const container = style({
-  display: 'flex',
+  ...flexRow,
   gap: '4px',
-  alignItems: 'center',
 });
 
 export const searchContainer = style({
@@ -45,18 +45,14 @@ export const searchDropdownLeft = style({
 });
 
 export const actionButton = style({
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center',
+  ...buttonReset,
+  ...flexCenter,
+  ...transitionDefault,
   width: '40px',
   height: '40px',
   padding: '8px',
-  backgroundColor: 'transparent',
-  border: 'none',
   borderRadius: '6px',
-  cursor: 'pointer',
   color: 'var(--lp-color-gray-400)',
-  transition: 'all 0.2s ease',
 
   selectors: {
     '&:hover:not(:disabled)': {
@@ -78,18 +74,14 @@ export const actionButton = style({
 });
 
 export const clearButton = style({
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center',
+  ...buttonReset,
+  ...flexCenter,
+  ...transitionDefault,
   width: '32px',
   height: '32px',
   padding: '6px',
-  backgroundColor: 'transparent',
-  border: 'none',
   borderRadius: '6px',
-  cursor: 'pointer',
   color: 'var(--lp-color-gray-400)',
-  transition: 'all 0.2s ease',
 
   selectors: {
     '&:hover': {
@@ -106,7 +98,4 @@ export const clearButton = style({
   },
 });
 
-export const icon = style({
-  width: '24px',
-  height: '24px',
-});
+export const icon = style(iconDefault);

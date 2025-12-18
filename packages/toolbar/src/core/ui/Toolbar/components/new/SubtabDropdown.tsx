@@ -1,9 +1,10 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useCallback } from 'react';
 import { AnimatePresence, motion } from 'motion/react';
 import { ChevronDownIcon } from '../icons/ChevronDownIcon';
 import { SubTab, TabConfig } from './types';
 import { useAnalytics } from '../../context';
-import * as styles from './SubtabDropdown.module.css.ts';
+import { usePopoverDismiss } from '../../../hooks';
+import * as styles from './SubtabDropdown.module.css';
 
 interface SubtabDropdownProps {
   subtabs: TabConfig[];
@@ -19,19 +20,9 @@ export function SubtabDropdown({ subtabs, activeSubtab, onSelectSubtab }: Subtab
   const activeTab = subtabs.find((tab) => tab.id === activeSubtab);
   const activeLabel = activeTab?.label || 'Select';
 
-  // Close dropdown when clicking outside
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
-        setIsOpen(false);
-      }
-    };
-
-    if (isOpen) {
-      document.addEventListener('click', handleClickOutside);
-      return () => document.removeEventListener('click', handleClickOutside);
-    }
-  }, [isOpen]);
+  // Close dropdown when clicking outside or pressing Escape
+  const handleClose = useCallback(() => setIsOpen(false), []);
+  usePopoverDismiss(dropdownRef, handleClose, isOpen);
 
   const handleSelect = (event: React.MouseEvent, subtab: SubTab) => {
     event.stopPropagation();
@@ -53,9 +44,8 @@ export function SubtabDropdown({ subtabs, activeSubtab, onSelectSubtab }: Subtab
     if (event.key === 'Enter' || event.key === ' ') {
       event.preventDefault();
       setIsOpen(!isOpen);
-    } else if (event.key === 'Escape') {
-      setIsOpen(false);
     }
+    // Escape key is handled by usePopoverDismiss hook
   };
 
   return (

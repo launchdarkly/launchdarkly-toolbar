@@ -1,8 +1,15 @@
 import { style, keyframes } from '@vanilla-extract/css';
+import { cardBaseRules, cardInfoRules, statusDotRules } from '../../../../styles/card.css';
+import {
+  flexColumn,
+  flexRow,
+  flexCenter,
+  textEllipsis,
+  customScrollbarWide,
+} from '../../../../styles/mixins.css';
 
 export const container = style({
-  display: 'flex',
-  flexDirection: 'column',
+  ...flexColumn,
   height: '100%',
 });
 
@@ -20,22 +27,16 @@ export const statsText = style({
 });
 
 export const eventInfo = style({
-  flex: 1,
-  display: 'flex',
-  flexDirection: 'column',
-  gap: '4px',
-  minWidth: 0,
+  ...cardInfoRules,
   overflow: 'hidden',
   marginRight: '16px',
 });
 
 export const eventName = style({
+  ...textEllipsis,
   fontSize: '14px',
   fontWeight: 400,
   color: 'var(--lp-color-gray-200)',
-  overflow: 'hidden',
-  textOverflow: 'ellipsis',
-  whiteSpace: 'nowrap',
   minWidth: 0,
 });
 
@@ -62,9 +63,8 @@ export const eventBadgeFeature = style([
 ]);
 
 export const addButtonContainer = style({
+  ...flexRow,
   marginLeft: '8px',
-  display: 'flex',
-  alignItems: 'center',
 });
 
 export const addButton = style({
@@ -126,34 +126,11 @@ export const eventBadgeDefault = style([
 ]);
 
 export const virtualContainer = style({
+  ...customScrollbarWide,
   flex: 1,
   overflow: 'auto',
   padding: '8px 12px',
   paddingBottom: '20px',
-  scrollbarColor: 'var(--lp-color-gray-800) transparent',
-  scrollbarWidth: 'thin',
-
-  ':hover': {
-    scrollbarColor: 'var(--lp-color-gray-700) transparent',
-  },
-
-  selectors: {
-    '&::-webkit-scrollbar': {
-      width: '8px',
-      background: 'transparent',
-    },
-    '&::-webkit-scrollbar-thumb': {
-      background: 'var(--lp-color-gray-800)',
-      borderRadius: '4px',
-    },
-    '&:hover::-webkit-scrollbar-thumb': {
-      background: 'var(--lp-color-gray-700)',
-      borderRadius: '4px',
-    },
-    '&::-webkit-scrollbar-track': {
-      background: 'transparent',
-    },
-  },
 });
 
 export const virtualInner = style({
@@ -171,18 +148,15 @@ export const virtualItem = style({
 });
 
 export const liveTailContainer = style({
-  display: 'flex',
-  flexDirection: 'column',
-  alignItems: 'center',
-  justifyContent: 'center',
+  ...flexColumn,
+  ...flexCenter,
   flex: 1,
   gap: '12px',
   color: 'var(--lp-color-gray-400)',
 });
 
 export const liveTailIndicator = style({
-  display: 'flex',
-  alignItems: 'center',
+  ...flexRow,
   gap: '12px',
 });
 
@@ -202,9 +176,7 @@ const pulseAnimation = keyframes({
 });
 
 export const liveTailDot = style({
-  width: '8px',
-  height: '8px',
-  borderRadius: '50%',
+  ...statusDotRules,
   backgroundColor: '#10b981', // Green color
   animation: `${pulseAnimation} 1.5s ease-in-out infinite`,
 });
@@ -222,16 +194,7 @@ export const liveTailSubtext = style({
 });
 
 export const eventListItem = style({
-  // Card styling for new design
-  backgroundColor: 'var(--lp-color-gray-850)',
-  border: '1px solid var(--lp-color-gray-700)',
-  borderRadius: '8px',
-  padding: '16px',
+  ...cardBaseRules,
   paddingLeft: '12px',
   cursor: 'pointer',
-
-  ':hover': {
-    backgroundColor: 'var(--lp-color-gray-800)',
-    borderColor: 'var(--lp-color-gray-600)',
-  },
 });

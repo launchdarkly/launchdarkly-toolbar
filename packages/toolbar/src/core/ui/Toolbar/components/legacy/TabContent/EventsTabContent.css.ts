@@ -1,4 +1,5 @@
 import { style, keyframes } from '@vanilla-extract/css';
+import { flexColumn, flexRow, textEllipsis, customScrollbarWide } from '../../../../styles/mixins.css';
 
 export const statsHeader = style({
   padding: '8px 20px',
@@ -13,9 +14,8 @@ export const statsText = style({
 });
 
 export const eventInfo = style({
+  ...flexColumn,
   flex: 1,
-  display: 'flex',
-  flexDirection: 'column',
   gap: '4px',
   minWidth: 0,
   overflow: 'hidden',
@@ -23,12 +23,10 @@ export const eventInfo = style({
 });
 
 export const eventName = style({
+  ...textEllipsis,
   fontSize: '14px',
   fontWeight: 400,
   color: 'var(--lp-color-gray-200)',
-  overflow: 'hidden',
-  textOverflow: 'ellipsis',
-  whiteSpace: 'nowrap',
   minWidth: 0,
 });
 
@@ -55,9 +53,8 @@ export const eventBadgeFeature = style([
 ]);
 
 export const addButtonContainer = style({
+  ...flexRow,
   marginLeft: '8px',
-  display: 'flex',
-  alignItems: 'center',
 });
 
 export const addButton = style({
@@ -119,32 +116,9 @@ export const eventBadgeDefault = style([
 ]);
 
 export const virtualContainer = style({
+  ...customScrollbarWide,
   height: '350px',
   overflow: 'auto',
-  scrollbarColor: 'var(--lp-color-gray-800) transparent',
-  scrollbarWidth: 'thin',
-
-  ':hover': {
-    scrollbarColor: 'var(--lp-color-gray-700) transparent',
-  },
-
-  selectors: {
-    '&::-webkit-scrollbar': {
-      width: '8px',
-      background: 'transparent',
-    },
-    '&::-webkit-scrollbar-thumb': {
-      background: 'var(--lp-color-gray-800)',
-      borderRadius: '4px',
-    },
-    '&:hover::-webkit-scrollbar-thumb': {
-      background: 'var(--lp-color-gray-700)',
-      borderRadius: '4px',
-    },
-    '&::-webkit-scrollbar-track': {
-      background: 'transparent',
-    },
-  },
 });
 
 export const virtualInner = style({

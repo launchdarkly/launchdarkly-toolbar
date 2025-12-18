@@ -1,24 +1,28 @@
 import { style } from '@vanilla-extract/css';
+import {
+  cardRowCompact,
+  cardBaseWithMarginRules,
+  cardHeader,
+  cardInfoRules,
+  cardNameRow,
+  statusDotOverrideRules,
+} from '../../../../styles/card.css';
+import {
+  textEllipsis,
+  textEllipsisInFlex,
+  flexRow,
+  flexColumn,
+  flexCenter,
+  focusVisible,
+  transitionFast,
+  iconNoShrink,
+} from '../../../../styles/mixins.css';
 
-export const container = style({
-  backgroundColor: 'var(--lp-color-gray-850)',
-  border: '1px solid var(--lp-color-gray-700)',
-  margin: '12px',
-  borderRadius: '8px',
-  padding: '16px',
-  paddingLeft: '8px',
-  display: 'flex',
-  alignItems: 'center',
-  gap: '4px',
-  transition: 'all 0.2s ease',
-  justifyContent: 'space-between',
+// Base container styles
+export const container = cardRowCompact;
 
-  ':hover': {
-    backgroundColor: 'var(--lp-color-gray-800)',
-    borderColor: 'var(--lp-color-gray-600)',
-  },
-});
-
+// Overridden container - explicit styling to ensure override specificity
+// Note: This is applied as an additional class, so it must override :hover explicitly
 export const containerOverridden = style({
   backgroundColor: 'rgba(from var(--lp-color-brand-cyan-base) r g b / 0.08)',
   border: '1px solid rgba(from var(--lp-color-brand-cyan-base) r g b / 0.2)',
@@ -30,23 +34,13 @@ export const containerOverridden = style({
 });
 
 export const containerBlock = style({
-  backgroundColor: 'var(--lp-color-gray-850)',
-  border: '1px solid var(--lp-color-gray-700)',
-  margin: '12px',
-  borderRadius: '8px',
-  padding: '16px',
+  ...cardBaseWithMarginRules,
+  ...flexColumn,
   paddingLeft: '8px',
-  display: 'flex',
-  flexDirection: 'column',
   gap: '16px',
-  transition: 'all 0.2s ease',
-
-  ':hover': {
-    backgroundColor: 'var(--lp-color-gray-800)',
-    borderColor: 'var(--lp-color-gray-600)',
-  },
 });
 
+// Overridden block container - explicit styling to ensure override specificity
 export const containerBlockOverridden = style({
   backgroundColor: 'rgba(from var(--lp-color-brand-cyan-base) r g b / 0.08)',
   border: '1px solid rgba(from var(--lp-color-brand-cyan-base) r g b / 0.2)',
@@ -57,49 +51,31 @@ export const containerBlockOverridden = style({
   },
 });
 
-export const header = style({
-  display: 'flex',
-  alignItems: 'center',
-  gap: '16px',
-  justifyContent: 'space-between',
-});
+export const header = cardHeader;
 
 export const flagInfo = style({
-  display: 'flex',
-  alignItems: 'center',
+  ...flexRow,
   gap: '4px',
   flex: 1,
   minWidth: 0, // Allow flex item to shrink
 });
 
 export const info = style({
-  display: 'flex',
-  flexDirection: 'column',
-  gap: '4px',
-  flex: 1,
-  minWidth: 0, // Allow flex item to shrink
+  ...cardInfoRules,
   maxWidth: '200px',
 });
 
-export const nameRow = style({
-  display: 'flex',
-  alignItems: 'center',
-  gap: '8px',
-  minWidth: 0,
-});
+export const nameRow = cardNameRow;
 
 export const name = style({
+  ...textEllipsisInFlex,
   fontSize: '14px',
   fontWeight: 500,
   color: 'var(--lp-color-gray-200)',
-  overflow: 'hidden',
-  textOverflow: 'ellipsis',
-  whiteSpace: 'nowrap',
-  minWidth: 0,
-  flex: 1,
 });
 
 export const nameLink = style({
+  ...focusVisible,
   display: 'inline-flex',
   alignItems: 'center',
   gap: '4px',
@@ -115,10 +91,6 @@ export const nameLink = style({
     color: 'var(--lp-color-gray-100)',
   },
 
-  ':focus': {
-    outline: 'none',
-  },
-
   ':focus-visible': {
     outline: '2px solid var(--lp-color-shadow-interactive-focus)',
     outlineOffset: '2px',
@@ -127,12 +99,10 @@ export const nameLink = style({
 });
 
 export const nameLinkText = style({
+  ...textEllipsis,
   textDecoration: 'underline',
   textDecorationColor: 'var(--lp-color-gray-500)',
   textUnderlineOffset: '2px',
-  overflow: 'hidden',
-  textOverflow: 'ellipsis',
-  whiteSpace: 'nowrap',
 
   selectors: {
     [`${nameLink}:hover &`]: {
@@ -142,9 +112,9 @@ export const nameLinkText = style({
 });
 
 export const externalLinkIcon = style({
-  flexShrink: 0,
+  ...iconNoShrink,
+  ...transitionFast,
   opacity: 0.6,
-  transition: 'opacity 0.15s ease',
 
   selectors: {
     [`${nameLink}:hover &`]: {
@@ -154,9 +124,7 @@ export const externalLinkIcon = style({
 });
 
 export const overrideDot = style({
-  display: 'inline-flex',
-  alignItems: 'center',
-  justifyContent: 'center',
+  ...flexCenter,
   width: '8px',
   height: '8px',
   flexShrink: 0,
@@ -164,22 +132,16 @@ export const overrideDot = style({
 });
 
 export const overrideDotInner = style({
-  width: '8px',
-  height: '8px',
-  backgroundColor: 'var(--lp-color-brand-cyan-base)',
-  borderRadius: '50%',
-  transition: 'background-color 0.2s ease',
+  ...statusDotOverrideRules,
 });
 
 export const control = style({
-  display: 'flex',
-  alignItems: 'center',
+  ...flexRow,
   flexShrink: 0, // Don't shrink the control
 });
 
 export const readOnlyValue = style({
-  display: 'flex',
-  flexDirection: 'column',
+  ...flexColumn,
   gap: '4px',
   fontSize: '12px',
 });
@@ -193,11 +155,9 @@ export const objectLabel = style({
 });
 
 export const objectValue = style({
+  ...textEllipsis,
   color: 'var(--lp-color-gray-300)',
   fontFamily: 'monospace',
   fontSize: '11px',
-  overflow: 'hidden',
-  textOverflow: 'ellipsis',
-  whiteSpace: 'nowrap',
   maxWidth: '250px',
 });

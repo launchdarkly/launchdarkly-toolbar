@@ -1,19 +1,22 @@
 import { style } from '@vanilla-extract/css';
+import { cardBaseWithMarginRules } from '../../../../styles/card.css';
+import {
+  flexBetween,
+  flexColumn,
+  flexRow,
+  flexCenter,
+  buttonReset,
+  transitionDefault,
+} from '../../../../styles/mixins.css';
 
 export const container = style({
-  backgroundColor: 'var(--lp-color-gray-850)',
-  border: '1px solid var(--lp-color-gray-700)',
-  margin: '12px',
-  borderRadius: '8px',
-  padding: '16px',
+  ...cardBaseWithMarginRules,
   overflow: 'auto',
   maxHeight: '60vh',
 });
 
 export const header = style({
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'space-between',
+  ...flexBetween,
   marginBottom: '20px',
 });
 
@@ -25,16 +28,12 @@ export const title = style({
 });
 
 export const closeButton = style({
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center',
-  background: 'none',
-  border: 'none',
-  cursor: 'pointer',
+  ...buttonReset,
+  ...flexCenter,
+  ...transitionDefault,
   padding: '4px',
   borderRadius: '4px',
   color: 'var(--lp-color-gray-400)',
-  transition: 'all 0.2s ease',
 
   ':hover': {
     backgroundColor: 'var(--lp-color-gray-800)',
@@ -43,14 +42,12 @@ export const closeButton = style({
 });
 
 export const form = style({
-  display: 'flex',
-  flexDirection: 'column',
+  ...flexColumn,
   gap: '16px',
 });
 
 export const field = style({
-  display: 'flex',
-  flexDirection: 'column',
+  ...flexColumn,
   gap: '8px',
 });
 
@@ -65,13 +62,13 @@ export const required = style({
 });
 
 export const input = style({
+  ...transitionDefault,
   padding: '8px 12px',
   fontSize: '14px',
   backgroundColor: 'var(--lp-color-gray-850)',
   border: '1px solid var(--lp-color-gray-700)',
   borderRadius: '6px',
   color: 'var(--lp-color-gray-100)',
-  transition: 'all 0.2s ease',
 
   ':focus': {
     outline: 'none',
@@ -99,14 +96,14 @@ export const errorText = style({
 });
 
 export const actions = style({
-  display: 'flex',
-  alignItems: 'center',
+  ...flexRow,
   justifyContent: 'flex-end',
   gap: '12px',
   marginTop: '8px',
 });
 
 export const cancelButton = style({
+  ...transitionDefault,
   padding: '8px 16px',
   fontSize: '14px',
   fontWeight: 500,
@@ -115,7 +112,6 @@ export const cancelButton = style({
   borderRadius: '6px',
   color: 'var(--lp-color-gray-300)',
   cursor: 'pointer',
-  transition: 'all 0.2s ease',
 
   ':hover': {
     backgroundColor: 'var(--lp-color-gray-750)',
@@ -124,8 +120,8 @@ export const cancelButton = style({
 });
 
 export const submitButton = style({
-  display: 'flex',
-  alignItems: 'center',
+  ...flexRow,
+  ...transitionDefault,
   gap: '8px',
   padding: '8px 16px',
   fontSize: '14px',
@@ -135,7 +131,6 @@ export const submitButton = style({
   borderRadius: '6px',
   color: 'var(--lp-color-gray-300)',
   cursor: 'pointer',
-  transition: 'all 0.2s ease',
 
   ':hover': {
     backgroundColor: 'var(--lp-color-gray-750)',

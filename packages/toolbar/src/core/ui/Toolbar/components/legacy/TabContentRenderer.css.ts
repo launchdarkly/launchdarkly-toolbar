@@ -1,8 +1,8 @@
 import { style } from '@vanilla-extract/css';
+import { customScrollbar } from '../../../styles/mixins.css';
 
 export const tabContent = style({
+  ...customScrollbar,
   height: '450px',
   overflowY: 'auto',
-  scrollbarColor: 'var(--lp-color-gray-800) transparent',
-  scrollbarWidth: 'thin',
 });

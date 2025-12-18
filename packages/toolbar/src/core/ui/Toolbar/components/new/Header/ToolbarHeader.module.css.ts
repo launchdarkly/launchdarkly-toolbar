@@ -1,15 +1,13 @@
 import { style } from '@vanilla-extract/css';
+import { flexBetween, flexRow, buttonReset, flexCenter, transitionDefault, iconDefault } from '../../../../styles/mixins.css';
 
 export const header = style({
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'space-between',
+  ...flexBetween,
   padding: '8px 12px 0 12px',
 });
 
 export const leftSection = style({
-  display: 'flex',
-  alignItems: 'center',
+  ...flexRow,
   gap: '8px',
   cursor: 'grab',
   userSelect: 'none',
@@ -24,8 +22,7 @@ export const leftSection = style({
 });
 
 export const logo = style({
-  width: '24px',
-  height: '24px',
+  ...iconDefault,
   color: 'var(--lp-color-gray-200)',
 });
 
@@ -36,24 +33,19 @@ export const title = style({
 });
 
 export const rightSection = style({
-  display: 'flex',
-  alignItems: 'center',
+  ...flexRow,
   gap: '4px',
 });
 
 export const iconButton = style({
-  backgroundColor: 'transparent',
-  border: 'none',
+  ...buttonReset,
+  ...flexCenter,
+  ...transitionDefault,
   color: 'var(--lp-color-gray-400)',
-  cursor: 'pointer',
   padding: '6px',
   borderRadius: '4px',
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center',
   width: '32px',
   height: '32px',
-  transition: 'all 0.2s ease',
 
   ':hover': {
     backgroundColor: 'var(--lp-color-gray-800)',

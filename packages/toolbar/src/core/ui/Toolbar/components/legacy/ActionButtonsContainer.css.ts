@@ -1,29 +1,15 @@
 import { style } from '@vanilla-extract/css';
+import { flexRow, customScrollbarHorizontal } from '../../../styles/mixins.css';
 
 export const container = style({
+  ...flexRow,
+  ...customScrollbarHorizontal,
   padding: '10px 0',
   borderBottom: '1px solid var(--lp-color-gray-600);',
   overflowX: 'auto',
-  display: 'flex',
   gap: '8px',
   paddingLeft: '20px',
   paddingRight: '20px',
-  scrollbarColor: 'var(--lp-color-gray-700) transparent',
-  scrollbarWidth: 'thin',
-
-  selectors: {
-    '&::-webkit-scrollbar': {
-      height: '4px',
-      background: 'transparent',
-    },
-    '&::-webkit-scrollbar-thumb': {
-      background: 'var(--lp-color-gray-700)',
-      borderRadius: '2px',
-    },
-    '&::-webkit-scrollbar-track': {
-      background: 'transparent',
-    },
-  },
 });
 
 export const actionButton = style({

@@ -1,8 +1,8 @@
 import { style } from '@vanilla-extract/css';
+import { flexRow, flexCenter, buttonReset, transitionDefault, iconDefault } from '../../../../styles/mixins.css';
 
 export const container = style({
-  display: 'flex',
-  alignItems: 'center',
+  ...flexRow,
   justifyContent: 'space-around',
   padding: '6px',
   borderBottom: '1px solid var(--lp-color-gray-700)',
@@ -10,18 +10,14 @@ export const container = style({
 });
 
 export const iconButton = style({
-  backgroundColor: 'transparent',
-  border: 'none',
+  ...buttonReset,
+  ...flexCenter,
+  ...transitionDefault,
   color: 'var(--lp-color-gray-400)',
-  cursor: 'pointer',
   padding: '8px',
   borderRadius: '8px',
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center',
   width: '44px',
   height: '44px',
-  transition: 'all 0.2s ease',
   position: 'relative',
 
   ':hover': {
@@ -54,10 +50,7 @@ export const disabled = style({
   },
 });
 
-export const icon = style({
-  width: '24px',
-  height: '24px',
-});
+export const icon = style(iconDefault);
 
 // Special hover state for interactive icon when in interactive mode
 export const selectMode = style({
