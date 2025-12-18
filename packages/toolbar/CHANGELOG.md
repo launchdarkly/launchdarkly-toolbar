@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.6.1-beta.1](https://github.com/launchdarkly/launchdarkly-toolbar/compare/2.6.0-beta.1...2.6.1-beta.1) (2025-12-18)
+
+
+### Bug Fixes
+
+* [REL-11345] update project + environment selector logic ([#452](https://github.com/launchdarkly/launchdarkly-toolbar/issues/452)) ([8da239a](https://github.com/launchdarkly/launchdarkly-toolbar/commit/8da239a9360467e1a6659577d16264730c4d9900))
+
 ## [2.6.0-beta.1](https://github.com/launchdarkly/launchdarkly-toolbar/compare/2.5.4-beta.1...2.6.0-beta.1) (2025-12-18)
 
 
