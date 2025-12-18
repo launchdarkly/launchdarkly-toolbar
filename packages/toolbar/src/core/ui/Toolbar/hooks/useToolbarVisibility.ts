@@ -1,5 +1,6 @@
-import { useState, useEffect } from 'react';
+import { useEffect } from 'react';
 import { TOOLBAR_STORAGE_KEYS } from '../utils/localStorage';
+import { useLocalStorage } from './useLocalStorage';
 
 const STORAGE_KEY = TOOLBAR_STORAGE_KEYS.DISABLED;
 
@@ -8,9 +9,10 @@ const STORAGE_KEY = TOOLBAR_STORAGE_KEYS.DISABLED;
  * Sets up window.ldToolbar API for easy developer control
  */
 export function useToolbarVisibility() {
-  const [isDisabled, setIsDisabled] = useState(() => {
-    if (typeof window === 'undefined') return true;
-    return localStorage.getItem(STORAGE_KEY) === 'true';
+  const [isDisabled, setIsDisabled, removeDisabled] = useLocalStorage(STORAGE_KEY, false, {
+    syncTabs: true,
+    serialize: String,
+    deserialize: (v) => v === 'true',
   });
 
   // Set up window API for developer convenience
@@ -19,23 +21,19 @@ export function useToolbarVisibility() {
 
     const api = {
       disable: () => {
-        localStorage.setItem(STORAGE_KEY, 'true');
         setIsDisabled(true);
         console.log('✅ LaunchDarkly toolbar disabled.');
       },
       enable: () => {
-        localStorage.removeItem(STORAGE_KEY);
-        setIsDisabled(false);
+        removeDisabled();
         console.log('✅ LaunchDarkly toolbar enabled.');
       },
       status: () => {
-        const disabled = localStorage.getItem(STORAGE_KEY) === 'true';
-        console.log(`LaunchDarkly toolbar is currently: ${disabled ? '❌ DISABLED' : '✅ ENABLED'}`);
-        return !disabled;
+        console.log(`LaunchDarkly toolbar is currently: ${isDisabled ? '❌ DISABLED' : '✅ ENABLED'}`);
+        return !isDisabled;
       },
       toggle: () => {
-        const currentlyDisabled = localStorage.getItem(STORAGE_KEY) === 'true';
-        if (currentlyDisabled) {
+        if (isDisabled) {
           api.enable();
         } else {
           api.disable();
@@ -57,21 +55,7 @@ export function useToolbarVisibility() {
     return () => {
       delete window.ldToolbar;
     };
-  }, []);
-
-  // Listen for localStorage changes from other tabs
-  useEffect(() => {
-    if (typeof window === 'undefined') return;
-
-    const handleStorageChange = (event: StorageEvent) => {
-      if (event.key === STORAGE_KEY) {
-        setIsDisabled(event.newValue === 'true');
-      }
-    };
-
-    window.addEventListener('storage', handleStorageChange);
-    return () => window.removeEventListener('storage', handleStorageChange);
-  }, []);
+  }, [isDisabled, setIsDisabled, removeDisabled]);
 
   return !isDisabled;
 }
