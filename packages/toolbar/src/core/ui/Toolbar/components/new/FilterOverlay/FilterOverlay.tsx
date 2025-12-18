@@ -100,7 +100,7 @@ const FilterOverlayContent = memo(function FilterOverlayContent({ subtab, onClos
 
       <div
         ref={overlayRef}
-        className={styles.overlay}
+        className={subtab === 'flags' ? styles.overlayFlags : styles.overlay}
         role="dialog"
         aria-label="Filter options"
         style={{ pointerEvents: 'auto' }}

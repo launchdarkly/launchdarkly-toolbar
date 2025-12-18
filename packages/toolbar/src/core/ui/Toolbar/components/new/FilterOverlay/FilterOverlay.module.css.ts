@@ -4,7 +4,21 @@ import { Z_INDEX } from '../../../../constants/zIndex';
 export const overlay = style({
   position: 'absolute',
   top: '100%',
-  right: 0,
+  right: '-50px',
+  marginTop: '8px',
+  minWidth: '220px',
+  backgroundColor: 'var(--lp-color-gray-900)',
+  border: '1px solid var(--lp-color-gray-700)',
+  borderRadius: '8px',
+  boxShadow: '0 4px 16px rgba(0, 0, 0, 0.3)',
+  zIndex: Z_INDEX.POPOVER,
+  overflow: 'hidden',
+});
+
+export const overlayFlags = style({
+  position: 'absolute',
+  top: '100%',
+  right: '-95px',
   marginTop: '8px',
   minWidth: '220px',
   backgroundColor: 'var(--lp-color-gray-900)',

@@ -1016,6 +1016,173 @@ describe('ContextsProvider', () => {
     });
   });
 
+  describe('Clearing Contexts', () => {
+    test('clearContexts removes all contexts except the active one', async () => {
+      const user1 = createTestContext({ kind: 'user', key: 'user-1', name: 'User One' });
+      const user2 = createTestContext({ kind: 'user', key: 'user-2', name: 'User Two' });
+      const user3 = createTestContext({ kind: 'user', key: 'user-3', name: 'User Three' });
+      // Clone array to avoid mutation issues from sort()
+      (loadContexts as any).mockReturnValue([user1, user2, user3]);
+
+      const TestClearContexts = () => {
+        const { contexts, clearContexts, setContext, activeContext } = useContextsContext();
+        const [hasSetContext, setHasSetContext] = React.useState(false);
+
+        React.useEffect(() => {
+          if (!hasSetContext) {
+            // Set user-2 as active
+            setContext(user2).then(() => setHasSetContext(true));
+          }
+        }, [setContext, hasSetContext]);
+
+        return (
+          <div>
+            <div data-testid="contexts-count">{contexts.length}</div>
+            <div data-testid="active-key">{activeContext ? getContextKey(activeContext) : 'none'}</div>
+            <div data-testid="has-set-context">{hasSetContext ? 'yes' : 'no'}</div>
+            <button data-testid="clear-contexts" onClick={clearContexts}>
+              Clear
+            </button>
+          </div>
+        );
+      };
+
+      render(
+        <ContextsProvider>
+          <TestClearContexts />
+        </ContextsProvider>,
+      );
+
+      // Wait for context to be fully set
+      await waitFor(() => {
+        expect(screen.getByTestId('has-set-context')).toHaveTextContent('yes');
+      });
+
+      await waitFor(() => {
+        expect(screen.getByTestId('active-key')).toHaveTextContent('user-2');
+      });
+
+      expect(screen.getByTestId('contexts-count')).toHaveTextContent('3');
+
+      // Clear mocks to isolate clearContexts call
+      vi.clearAllMocks();
+
+      // Clear contexts
+      await act(async () => {
+        screen.getByTestId('clear-contexts').click();
+      });
+
+      await waitFor(() => {
+        expect(screen.getByTestId('contexts-count')).toHaveTextContent('1');
+      });
+
+      // Verify the active context (user-2) was saved
+      expect(saveContexts).toHaveBeenCalledTimes(1);
+      const savedContexts = (saveContexts as any).mock.calls[0][0];
+      expect(savedContexts).toHaveLength(1);
+      expect(getContextKey(savedContexts[0])).toBe('user-2');
+    });
+
+    test('clearContexts does nothing when there is no active context', async () => {
+      const user1 = createTestContext({ kind: 'user', key: 'user-1', name: 'User One' });
+      const user2 = createTestContext({ kind: 'user', key: 'user-2', name: 'User Two' });
+      (loadContexts as any).mockReturnValue([user1, user2]);
+
+      const TestClearWithoutActive = () => {
+        const { contexts, clearContexts, activeContext } = useContextsContext();
+
+        return (
+          <div>
+            <div data-testid="contexts-count">{contexts.length}</div>
+            <div data-testid="has-active">{activeContext ? 'yes' : 'no'}</div>
+            <button data-testid="clear-contexts" onClick={clearContexts}>
+              Clear
+            </button>
+          </div>
+        );
+      };
+
+      render(
+        <ContextsProvider>
+          <TestClearWithoutActive />
+        </ContextsProvider>,
+      );
+
+      expect(screen.getByTestId('contexts-count')).toHaveTextContent('2');
+      expect(screen.getByTestId('has-active')).toHaveTextContent('no');
+
+      // Try to clear contexts without an active context
+      await act(async () => {
+        screen.getByTestId('clear-contexts').click();
+      });
+
+      // Should not change anything
+      expect(screen.getByTestId('contexts-count')).toHaveTextContent('2');
+      expect(saveContexts).not.toHaveBeenCalled();
+    });
+
+    test('clearContexts saves only the active context to localStorage', async () => {
+      const user1 = createTestContext({ kind: 'user', key: 'user-1', name: 'User One' });
+      const org1 = createTestContext({ kind: 'organization', key: 'org-1', name: 'Org One' });
+      (loadContexts as any).mockReturnValue([user1, org1]);
+
+      const TestClearSaves = () => {
+        const { contexts, clearContexts, setContext, activeContext } = useContextsContext();
+        const [hasSetContext, setHasSetContext] = React.useState(false);
+
+        React.useEffect(() => {
+          if (!hasSetContext) {
+            // Set org-1 as active
+            setContext(org1).then(() => setHasSetContext(true));
+          }
+        }, [setContext, hasSetContext]);
+
+        return (
+          <div>
+            <div data-testid="contexts-count">{contexts.length}</div>
+            <div data-testid="active-key">{activeContext ? getContextKey(activeContext) : 'none'}</div>
+            <div data-testid="has-set-context">{hasSetContext ? 'yes' : 'no'}</div>
+            <button data-testid="clear-contexts" onClick={clearContexts}>
+              Clear
+            </button>
+          </div>
+        );
+      };
+
+      render(
+        <ContextsProvider>
+          <TestClearSaves />
+        </ContextsProvider>,
+      );
+
+      // Wait for context to be fully set
+      await waitFor(() => {
+        expect(screen.getByTestId('has-set-context')).toHaveTextContent('yes');
+      });
+
+      await waitFor(() => {
+        expect(screen.getByTestId('active-key')).toHaveTextContent('org-1');
+      });
+
+      // Clear mocks to isolate the clearContexts call
+      vi.clearAllMocks();
+
+      await act(async () => {
+        screen.getByTestId('clear-contexts').click();
+      });
+
+      await waitFor(() => {
+        expect(screen.getByTestId('contexts-count')).toHaveTextContent('1');
+      });
+
+      // Verify saveContexts was called with only the active context (org-1)
+      expect(saveContexts).toHaveBeenCalledTimes(1);
+      const savedContexts = (saveContexts as any).mock.calls[0][0];
+      expect(savedContexts).toHaveLength(1);
+      expect(getContextKey(savedContexts[0])).toBe('org-1');
+    });
+  });
+
   describe('External Context Change Handling', () => {
     test('syncs active context when LD client context changes externally', async () => {
       const storedContexts = [

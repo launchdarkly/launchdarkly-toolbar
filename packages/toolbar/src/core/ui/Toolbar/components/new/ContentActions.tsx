@@ -48,6 +48,9 @@ export function ContentActions() {
   const { mode } = useToolbarState();
   const { refresh, state } = useDevServerContext();
   const { refreshFlags, loading: flagsLoading } = useFlagsContext();
+  const { setIsAddFormOpen, clearContexts, contexts } = useContextsContext();
+  const { flagOverridePlugin } = usePlugins();
+  const { clearAllOverrides } = useDevServerContext();
 
   const showFilter =
     (activeTab === 'flags' && activeSubtab === 'flags') || (activeTab === 'monitoring' && activeSubtab === 'events');
@@ -58,11 +61,16 @@ export function ContentActions() {
   const showSync = mode === 'dev-server' && activeTab === 'flags' && activeSubtab === 'flags';
   const showAddContext = activeTab === 'flags' && activeSubtab === 'contexts';
   const showClearContexts = activeTab === 'flags' && activeSubtab === 'contexts';
+  const showClearOverrides = activeTab === 'flags' && activeSubtab === 'flags';
 
-  // Get context form state for contexts tab
-  // ContextsProvider is always available in the component tree
-  const { setIsAddFormOpen, clearContexts } = useContextsContext();
   const showRefreshFlags = mode === 'sdk' && activeTab === 'flags' && activeSubtab === 'flags';
+
+  // Determine search dropdown position based on active tab/subtab
+  const getSearchDropdownClass = () => {
+    if (activeTab === 'settings') return styles.searchDropdownLeft;
+    if (activeTab === 'flags' && activeSubtab === 'flags') return styles.searchDropdownFlags;
+    return styles.searchDropdown;
+  };
 
   const handleClearEvents = useCallback(() => {
     if (eventInterceptionPlugin) {
@@ -93,6 +101,14 @@ export function ContentActions() {
     clearContexts();
   }, []);
 
+  const handleClearOverrides = useCallback(() => {
+    if (mode === 'dev-server') {
+      clearAllOverrides();
+    } else {
+      flagOverridePlugin?.clearAllOverrides();
+    }
+  }, [flagOverridePlugin]);
+
   return (
     <div className={styles.container}>
       {showClearSelection && (
@@ -108,7 +124,7 @@ export function ContentActions() {
             <IconButton icon={<SearchIcon />} label="Search" onClick={() => setSearchIsExpanded(!searchIsExpanded)} />
           </Tooltip>
           {searchIsExpanded && (
-            <div className={activeTab === 'settings' ? styles.searchDropdownLeft : styles.searchDropdown}>
+            <div className={getSearchDropdownClass()}>
               <SearchSection
                 key={activeSubtab} // Force remount when subtab changes to ensure correct value
                 searchTerm={searchTerm}
@@ -153,7 +169,19 @@ export function ContentActions() {
       )}
       {showClearContexts && (
         <Tooltip content="Clear contexts" offsetTop={-4}>
-          <button className={styles.actionButton} onClick={handleClearContexts} aria-label="Clear contexts">
+          <button
+            disabled={contexts.length === 1}
+            className={styles.actionButton}
+            onClick={handleClearContexts}
+            aria-label="Clear contexts"
+          >
+            <DeleteIcon className={styles.icon} />
+          </button>
+        </Tooltip>
+      )}
+      {showClearOverrides && (
+        <Tooltip content="Clear overrides" offsetTop={-4}>
+          <button className={styles.actionButton} onClick={handleClearOverrides} aria-label="Clear overrides">
             <DeleteIcon className={styles.icon} />
           </button>
         </Tooltip>

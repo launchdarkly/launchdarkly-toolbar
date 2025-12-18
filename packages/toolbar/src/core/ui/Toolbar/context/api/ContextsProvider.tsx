@@ -347,7 +347,7 @@ export const ContextsProvider = ({ children }: { children: React.ReactNode }) =>
 
     setStoredContexts([activeContext]);
     saveContexts([activeContext]);
-  }, []);
+  }, [activeContext]);
 
   return (
     <ContextsContext.Provider

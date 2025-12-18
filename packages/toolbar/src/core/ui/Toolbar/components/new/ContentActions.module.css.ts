@@ -22,6 +22,17 @@ export const searchDropdown = style({
   zIndex: Z_INDEX.POPOVER,
 });
 
+export const searchDropdownFlags = style({
+  position: 'absolute',
+  top: '100%',
+  right: '-150px',
+  marginTop: '5px',
+  minWidth: '220px',
+  padding: '8px 12px',
+  borderRadius: '8px',
+  zIndex: Z_INDEX.POPOVER,
+});
+
 export const searchDropdownLeft = style({
   position: 'absolute',
   top: '-10px',
