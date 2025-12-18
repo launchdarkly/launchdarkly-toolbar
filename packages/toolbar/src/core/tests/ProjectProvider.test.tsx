@@ -34,16 +34,11 @@ describe('ProjectProvider', () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
-    localStorage.clear();
 
     (useApi as any).mockReturnValue({
       getProjects: mockGetApiProjects,
       apiReady: true,
     });
-  });
-
-  afterEach(() => {
-    localStorage.clear();
   });
 
   describe('Project Auto-Detection - First Time User', () => {
@@ -75,9 +70,6 @@ describe('ProjectProvider', () => {
       await waitFor(() => {
         expect(screen.getByTestId('project-key')).toHaveTextContent('mobile-app');
       });
-
-      // AND: Saves it to localStorage for next time
-      expect(localStorage.getItem('ld-toolbar-project')).toBe('mobile-app');
     });
 
     test('selects project matching provided clientSideId', async () => {
@@ -113,47 +105,12 @@ describe('ProjectProvider', () => {
     });
   });
 
-  describe('Project Persistence - Returning User', () => {
-    test('restores previously selected project from localStorage', async () => {
-      // GIVEN: Developer has used toolbar before and selected a project
-      localStorage.setItem('ld-toolbar-project', 'my-favorite-project');
-
-      mockGetApiProjects.mockResolvedValue({
-        items: [
-          {
-            key: 'my-favorite-project',
-            name: 'My Favorite Project',
-            environments: [],
-          },
-          {
-            key: 'other-project',
-            name: 'Other Project',
-            environments: [],
-          },
-        ],
-      });
-
-      // WHEN: They open toolbar again
-      render(
-        <ProjectProvider>
-          <TestConsumer />
-        </ProjectProvider>,
-      );
-
-      // THEN: Their previous project selection is restored
-      await waitFor(() => {
-        expect(screen.getByTestId('project-key')).toHaveTextContent('my-favorite-project');
-      });
-    });
-
-    test('uses provided projectKey over localStorage', async () => {
-      // GIVEN: localStorage has one project, but code provides a different one
-      localStorage.setItem('ld-toolbar-project', 'old-project');
-
+  describe('Project Selection - Provided Project Key', () => {
+    test('uses provided projectKey when specified', async () => {
       mockGetApiProjects.mockResolvedValue({
         items: [
           { key: 'explicit-project', name: 'Explicit Project', environments: [] },
-          { key: 'old-project', name: 'Old Project', environments: [] },
+          { key: 'other-project', name: 'Other Project', environments: [] },
         ],
       });
 
@@ -164,12 +121,9 @@ describe('ProjectProvider', () => {
         </ProjectProvider>,
       );
 
-      // THEN: Eventually the provided project is used (may start with localStorage initially)
-      // The implementation checks localStorage first, then providedProjectKey, so we need to wait
+      // THEN: The provided project is used
       await waitFor(() => {
-        const projectKeyEl = screen.getByTestId('project-key');
-        // Either starts with provided or reaches it eventually
-        expect(projectKeyEl).toBeInTheDocument();
+        expect(screen.getByTestId('project-key')).toHaveTextContent('explicit-project');
       });
     });
   });
@@ -373,29 +327,29 @@ describe('ProjectProvider', () => {
   });
 
   describe('Integration - Multiple Initialization Methods', () => {
-    test('initialization order: localStorage is checked first, then providedProjectKey', async () => {
-      // This test documents the initialization order for project selection
-      // Based on the actual implementation in ProjectProvider
-
-      // Case: With localStorage only
-      localStorage.setItem('ld-toolbar-project', 'saved-project');
-
+    test('providedProjectKey takes priority over clientSideId matching', async () => {
+      // GIVEN: Both providedProjectKey and clientSideId are available
       mockGetApiProjects.mockResolvedValue({
         items: [
-          { key: 'saved-project', name: 'Saved', environments: [] },
-          { key: 'other-project', name: 'Other', environments: [] },
+          { key: 'provided-project', name: 'Provided', environments: [] },
+          {
+            key: 'matched-project',
+            name: 'Matched',
+            environments: [{ _id: 'sdk-key', key: 'production' }],
+          },
         ],
       });
 
+      // WHEN: Both are provided
       render(
-        <ProjectProvider>
+        <ProjectProvider providedProjectKey="provided-project" clientSideId="sdk-key">
           <TestConsumer />
         </ProjectProvider>,
       );
 
-      // Saved project from localStorage is used
+      // THEN: providedProjectKey is used
       await waitFor(() => {
-        expect(screen.getByTestId('project-key')).toHaveTextContent('saved-project');
+        expect(screen.getByTestId('project-key')).toHaveTextContent('provided-project');
       });
     });
   });

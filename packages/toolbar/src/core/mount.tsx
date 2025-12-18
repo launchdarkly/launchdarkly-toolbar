@@ -41,6 +41,7 @@ export default function mount(rootNode: HTMLElement, config: InitializationConfi
               eventInterceptionPlugin={config.eventInterceptionPlugin}
               pollIntervalInMs={config.pollIntervalInMs}
               position={config.position}
+              clientSideId={config.clientSideId}
             />
           </ReactMountContext.Provider>
         </StrictMode>,
