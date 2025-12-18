@@ -11,6 +11,13 @@ vi.mock('../../ui/Toolbar/components/new/ContentActions', () => ({
   ContentActions: () => <div data-testid="content-actions">Content Actions</div>,
 }));
 
+// Mock analytics
+vi.mock('../../ui/Toolbar/context/telemetry/AnalyticsProvider', () => ({
+  useAnalytics: vi.fn().mockReturnValue({
+    trackSubtabChange: vi.fn(),
+  }),
+}));
+
 // Test wrapper that sets an active tab
 const TestWrapperWithTab = ({ tab }: { tab: 'flags' | 'monitoring' | 'settings' | 'interactive' }) => {
   const { setActiveTab } = useActiveTabContext();

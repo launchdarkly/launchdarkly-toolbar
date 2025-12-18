@@ -312,6 +312,12 @@ export function WorkflowCard({ workflow, disabled = false }: WorkflowCardProps) 
           placeholder={config.inputPlaceholder}
           value={inputValue}
           onChange={(e) => setInputValue(e.target.value)}
+          onKeyDown={(e) => {
+            // Stop propagation to prevent parent app keyboard shortcuts from interfering
+            e.stopPropagation();
+          }}
+          onKeyUp={(e) => e.stopPropagation()}
+          onKeyPress={(e) => e.stopPropagation()}
         />
       </div>
 

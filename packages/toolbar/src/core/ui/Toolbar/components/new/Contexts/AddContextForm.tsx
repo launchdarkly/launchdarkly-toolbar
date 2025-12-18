@@ -1,12 +1,12 @@
 import { useState, useCallback, useMemo } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
+import type { LDContext } from 'launchdarkly-js-client-sdk';
 import { useContextsContext } from '../../../context/api/ContextsProvider';
 import { CancelIcon } from '../../icons';
 import { EASING } from '../../../constants';
 import { JsonEditor } from '../../../../JsonEditor/JsonEditor';
 import type { Diagnostic } from '@codemirror/lint';
 import * as styles from './AddContextForm.module.css';
-import { Context } from '../../../types/ldApi';
 
 interface AddContextFormProps {
   isOpen: boolean;
@@ -132,12 +132,12 @@ export function AddContextForm({ isOpen, onClose }: AddContextFormProps) {
           return;
         }
 
-        const context: Context = {
-          id: parsed.id?.toString() ?? '',
+        // Create an LDContext from the parsed JSON
+        const context: LDContext = {
           kind: parsed.kind.trim(),
           key: parsed.key.trim(),
-          name: parsed.name?.trim() || undefined,
-          anonymous: parsed.anonymous === true,
+          ...(parsed.name?.trim() && { name: parsed.name.trim() }),
+          ...(parsed.anonymous === true && { anonymous: true }),
         };
 
         addContext(context);
