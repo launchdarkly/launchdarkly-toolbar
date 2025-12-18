@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
-import { asyncWithLDProvider, type LDPlugin } from 'launchdarkly-react-client-sdk';
+import { asyncWithLDProvider} from 'launchdarkly-react-client-sdk';
+import type { LDPlugin } from '@launchdarkly/js-client-sdk';
 import { DEMO_CONFIG, demoLog } from '../config/demo';
 import { startMockWorker, stopMockWorker } from '../mocks';
 
@@ -37,12 +38,16 @@ export function useLaunchDarklyProvider(props: UseLaunchDarklyProviderProps): Us
         }
 
         // Initialize LaunchDarkly provider
+        // launchdarkly-react-client-sdk@3.9.0 still uses old types from launchdarkly-js-sdk-common,
+        // but our plugins implement the new @launchdarkly/js-client-sdk types
         const Provider = await asyncWithLDProvider({
           clientSideID,
           options: {
             baseUrl,
             streamUrl,
             eventsUrl,
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-ignore - Type mismatch: launchdarkly-react-client-sdk@3.9.0 uses old types from launchdarkly-js-sdk-common
             plugins,
           },
         });

@@ -87,6 +87,7 @@ export default defineConfig({
       '@angular/common': '@angular/common',
       rxjs: 'rxjs',
       'launchdarkly-js-client-sdk': 'launchdarkly-js-client-sdk',
+      '@launchdarkly/js-client-sdk': '@launchdarkly/js-client-sdk',
     },
   },
   plugins: [pluginReact()],
