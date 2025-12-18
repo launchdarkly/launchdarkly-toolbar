@@ -7,10 +7,12 @@ export function EnvironmentSelector() {
   const { environments, loading } = useProjectContext();
 
   const environmentOptions = useMemo(() => {
-    return environments.map((env) => ({
-      id: env.key,
-      label: env.name,
-    }));
+    return environments
+      .map((env) => ({
+        id: env.key,
+        label: env.name,
+      }))
+      .sort((a, b) => a.label.localeCompare(b.label));
   }, [environments]);
 
   const handleEnvironmentSelect = (key: string | null) => {
