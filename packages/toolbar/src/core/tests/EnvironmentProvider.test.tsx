@@ -42,16 +42,11 @@ function TestConsumerWithSetter() {
 describe('EnvironmentProvider', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    localStorage.clear();
 
     // Default mock - no environments
     (useProjectContext as any).mockReturnValue({
       environments: [],
     });
-  });
-
-  afterEach(() => {
-    localStorage.clear();
   });
 
   describe('Environment Auto-Detection - First Time User', () => {
@@ -94,9 +89,6 @@ describe('EnvironmentProvider', () => {
       await waitFor(() => {
         expect(screen.getByTestId('environment')).toHaveTextContent('staging');
       });
-
-      // AND: Saves it to localStorage for next time
-      expect(localStorage.getItem('ld-toolbar-environment')).toBe('staging');
     });
 
     test('selects environment matching provided clientSideId', async () => {
@@ -146,55 +138,7 @@ describe('EnvironmentProvider', () => {
     });
   });
 
-  describe('Environment Persistence - Returning User', () => {
-    test('restores previously selected environment from localStorage', async () => {
-      // GIVEN: Developer has used toolbar before and selected an environment
-      localStorage.setItem('ld-toolbar-environment', 'qa');
-
-      (useProjectContext as any).mockReturnValue({
-        environments: [
-          { _id: 'env-1', key: 'production', name: 'Production' },
-          { _id: 'env-2', key: 'qa', name: 'QA' },
-        ],
-      });
-
-      // WHEN: They open toolbar again
-      render(
-        <EnvironmentProvider>
-          <TestConsumer />
-        </EnvironmentProvider>,
-      );
-
-      // THEN: Their previous environment selection is restored
-      await waitFor(() => {
-        expect(screen.getByTestId('environment')).toHaveTextContent('qa');
-      });
-    });
-
-    test('localStorage takes precedence over clientSideId', async () => {
-      // GIVEN: localStorage has one environment, but clientSideId points to another
-      localStorage.setItem('ld-toolbar-environment', 'staging');
-
-      (useProjectContext as any).mockReturnValue({
-        environments: [
-          { _id: 'sdk-key-production', key: 'production', name: 'Production' },
-          { _id: 'sdk-key-staging', key: 'staging', name: 'Staging' },
-        ],
-      });
-
-      // WHEN: Developer opens toolbar with a clientSideId
-      render(
-        <EnvironmentProvider clientSideId="sdk-key-production">
-          <TestConsumer />
-        </EnvironmentProvider>,
-      );
-
-      // THEN: Saved environment from localStorage is used (not the one from clientSideId)
-      await waitFor(() => {
-        expect(screen.getByTestId('environment')).toHaveTextContent('staging');
-      });
-    });
-  });
+;
 
   describe('Environment Selection Workflow', () => {
     test('allows changing environment after initial selection', async () => {
@@ -227,42 +171,6 @@ describe('EnvironmentProvider', () => {
       await waitFor(() => {
         expect(screen.getByTestId('environment')).toHaveTextContent('staging');
       });
-
-      // AND: Change is persisted to localStorage
-      expect(localStorage.getItem('ld-toolbar-environment')).toBe('staging');
-    });
-
-    test('persists environment changes to localStorage', async () => {
-      // GIVEN: User is using the toolbar
-      (useProjectContext as any).mockReturnValue({
-        environments: [{ _id: 'env-1', key: 'production', name: 'Production' }],
-      });
-
-      render(
-        <EnvironmentProvider>
-          <TestConsumerWithSetter />
-        </EnvironmentProvider>,
-      );
-
-      await waitFor(() => {
-        expect(screen.getByTestId('environment')).toHaveTextContent('production');
-      });
-
-      // WHEN: User changes environment multiple times
-      const stagingButton = screen.getByTestId('set-staging');
-      act(() => {
-        stagingButton.click();
-      });
-
-      // THEN: Each change is persisted
-      expect(localStorage.getItem('ld-toolbar-environment')).toBe('staging');
-
-      const productionButton = screen.getByTestId('set-production');
-      act(() => {
-        productionButton.click();
-      });
-
-      expect(localStorage.getItem('ld-toolbar-environment')).toBe('production');
     });
   });
 
@@ -340,37 +248,5 @@ describe('EnvironmentProvider', () => {
       });
     });
 
-    test('does not overwrite localStorage when restoring saved value', async () => {
-      // GIVEN: A saved environment in localStorage
-      localStorage.setItem('ld-toolbar-environment', 'qa');
-
-      (useProjectContext as any).mockReturnValue({
-        environments: [
-          { _id: 'env-1', key: 'production', name: 'Production' },
-          { _id: 'env-2', key: 'qa', name: 'QA' },
-        ],
-      });
-
-      // Spy on localStorage.setItem
-      const setItemSpy = vi.spyOn(Storage.prototype, 'setItem');
-
-      // WHEN: Provider initializes
-      render(
-        <EnvironmentProvider>
-          <TestConsumer />
-        </EnvironmentProvider>,
-      );
-
-      await waitFor(() => {
-        expect(screen.getByTestId('environment')).toHaveTextContent('qa');
-      });
-
-      // THEN: localStorage.setItem was not called (value was restored, not set)
-      // Note: setItem might be called 0 times if restoring from localStorage
-      const environmentSetCalls = setItemSpy.mock.calls.filter((call) => call[0] === 'ld-toolbar-environment');
-      expect(environmentSetCalls.length).toBe(0);
-
-      setItemSpy.mockRestore();
-    });
   });
 });

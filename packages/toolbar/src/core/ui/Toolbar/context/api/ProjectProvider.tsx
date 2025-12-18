@@ -1,10 +1,7 @@
 import { createContext, useCallback, useContext, useEffect, useState } from 'react';
 import { useApi } from './ApiProvider';
-import { TOOLBAR_STORAGE_KEYS } from '../../utils/localStorage';
 import { ApiProject, ProjectsResponse, ApiEnvironment } from '../../types/ldApi';
 import { useAuthContext } from './AuthProvider';
-
-const STORAGE_KEY = TOOLBAR_STORAGE_KEYS.PROJECT;
 
 interface ProjectContextType {
   projectKey: string;
@@ -27,15 +24,10 @@ export const ProjectProvider = ({ children, clientSideId, providedProjectKey }: 
   const { authenticated } = useAuthContext();
   const { getProjects: getApiProjects, apiReady } = useApi();
   const [projects, setProjects] = useState<ApiProject[]>([]);
-  const [projectKey, setProjectKeyState] = useState<string>('');
+  const [projectKey, setProjectKey] = useState<string>('');
   const [loading, setLoading] = useState(false);
   const [environments, setEnvironments] = useState<ApiEnvironment[]>([]);
 
-  // Wrapper function to update project and save to localStorage
-  const setProjectKey = useCallback((key: string) => {
-    setProjectKeyState(key);
-    localStorage.setItem(STORAGE_KEY, key);
-  }, []);
 
   const getProjects = useCallback(async () => {
     if (!apiReady || !authenticated) {
@@ -75,13 +67,8 @@ export const ProjectProvider = ({ children, clientSideId, providedProjectKey }: 
   }, [apiReady, getProjects]);
 
   useEffect(() => {
-    const savedProjectKey = localStorage.getItem(STORAGE_KEY);
-
-    if (savedProjectKey) {
-      // Load from localStorage without triggering a save
-      setProjectKeyState(savedProjectKey);
-    } else if (providedProjectKey) {
-      // Use provided project key and save it
+    if (providedProjectKey) {
+      // Use provided project key
       setProjectKey(providedProjectKey);
     } else if (apiReady) {
       setLoading(true);
@@ -114,7 +101,6 @@ export const ProjectProvider = ({ children, clientSideId, providedProjectKey }: 
           setProjectKey(project.key);
           setEnvironments(environments);
           setLoading(false);
-          localStorage.setItem(STORAGE_KEY, project.key);
         })
         .catch((error) => {
           console.error('Error loading project:', error);
