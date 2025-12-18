@@ -101,7 +101,7 @@ Works with any JavaScript framework (Vue, Angular, Svelte, vanilla JS, etc.). Ad
 In your corresponding code, wherever you instantiate your LaunchDarkly JS client, be sure to pass in the following plugins:
 
 ```typescript
-import * as LDClient from 'launchdarkly-js-client-sdk';
+import * as LDClient from '@launchdarkly/js-client-sdk';
 import { FlagOverridePlugin, EventInterceptionPlugin } from '@launchdarkly/toolbar';
 
 const flagOverridePlugin = new FlagOverridePlugin();
@@ -112,13 +112,15 @@ const context: LDClient.LDContext = {
   key: 'context-key-123abc',
 };
 
-const client = LDClient.initialize('client-side-id-123abc', context, {
+const client = LDClient.createClient('client-side-id-123abc', context, {
   plugins: [
     // any other plugins you might want
     flagOverridePlugin,
     eventInterceptionPlugin,
   ],
 });
+
+client.start();
 
 try {
   await client.waitForInitialization(5);
