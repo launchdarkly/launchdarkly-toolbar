@@ -1,5 +1,13 @@
 # Changelog
 
+## [2.5.4-beta.1](https://github.com/launchdarkly/launchdarkly-toolbar/compare/2.5.3-beta.1...2.5.4-beta.1) (2025-12-18)
+
+
+### Bug Fixes
+
+* [REL-11310] standardize context management ([#440](https://github.com/launchdarkly/launchdarkly-toolbar/issues/440)) ([43a1198](https://github.com/launchdarkly/launchdarkly-toolbar/commit/43a11986b0bc0d5bbc3a794f0cac06d35b87f866))
+* add missing tracking events ([#435](https://github.com/launchdarkly/launchdarkly-toolbar/issues/435)) ([e21ea61](https://github.com/launchdarkly/launchdarkly-toolbar/commit/e21ea61316ca65a37b5d6570600100fe5859f500))
+
 ## [2.5.3-beta.1](https://github.com/launchdarkly/launchdarkly-toolbar/compare/2.5.2-beta.1...2.5.3-beta.1) (2025-12-17)
 
 
