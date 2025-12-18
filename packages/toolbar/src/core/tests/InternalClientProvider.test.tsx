@@ -3,6 +3,7 @@ import { expect, test, describe, vi, beforeEach, afterEach } from 'vitest';
 
 // Create mocks in hoisted scope
 const mockLDClient = {
+  start: vi.fn(),
   waitForInitialization: vi.fn(),
   variation: vi.fn(),
   identify: vi.fn(),
@@ -12,9 +13,9 @@ const mockLDClient = {
   track: vi.fn(),
 };
 
-vi.mock('launchdarkly-js-client-sdk', () => {
+vi.mock('@launchdarkly/js-client-sdk', () => {
   return {
-    initialize: vi.fn(),
+    createClient: vi.fn(),
   };
 });
 
@@ -65,6 +66,7 @@ vi.mock('@launchdarkly/session-replay', () => {
   };
 });
 
+import React from 'react';
 import {
   InternalClientProvider,
   useInternalClient,
@@ -72,11 +74,11 @@ import {
 } from '../ui/Toolbar/context/telemetry/InternalClientProvider';
 import { setToolbarFlagClient } from '../../flags/createToolbarFlagFunction';
 import * as toolbarFlagClient from '../../flags/createToolbarFlagFunction';
-import { initialize } from 'launchdarkly-js-client-sdk';
+import { createClient } from '@launchdarkly/js-client-sdk';
 import { LDObserve } from '@launchdarkly/observability';
 import { LDRecord } from '@launchdarkly/session-replay';
 
-const mockInitialize = vi.mocked(initialize);
+const mockCreateClient = vi.mocked(createClient);
 const mockLDObserveMethods = vi.mocked(LDObserve);
 const mockLDRecordMethods = vi.mocked(LDRecord);
 
@@ -108,6 +110,7 @@ describe('InternalClientProvider', () => {
   beforeEach(() => {
     vi.clearAllMocks();
 
+    mockLDClient.start.mockResolvedValue(undefined);
     mockLDClient.waitForInitialization.mockResolvedValue(undefined);
     mockLDClient.identify.mockResolvedValue(undefined);
     // Return false for session replay flag by default to prevent it from starting
@@ -117,7 +120,7 @@ describe('InternalClientProvider', () => {
     mockLDClient.off.mockImplementation(() => {});
     mockLDClient.track.mockImplementation(() => {});
 
-    mockInitialize.mockReturnValue(mockLDClient);
+    mockCreateClient.mockReturnValue(mockLDClient as any);
 
     mockLDObserveMethods.start.mockClear();
     mockLDObserveMethods.stop.mockClear();
@@ -173,7 +176,7 @@ describe('InternalClientProvider', () => {
       );
 
       await waitFor(() => {
-        expect(mockInitialize).toHaveBeenCalledWith(
+        expect(mockCreateClient).toHaveBeenCalledWith(
           'test-client-id-123',
           {
             kind: 'user',
@@ -201,7 +204,7 @@ describe('InternalClientProvider', () => {
       );
 
       await waitFor(() => {
-        expect(mockInitialize).toHaveBeenCalledWith(
+        expect(mockCreateClient).toHaveBeenCalledWith(
           'test-client-id-123',
           customContext,
           expect.objectContaining({
@@ -261,7 +264,7 @@ describe('InternalClientProvider', () => {
       );
 
       await waitFor(() => {
-        expect(mockInitialize).toHaveBeenCalledWith(
+        expect(mockCreateClient).toHaveBeenCalledWith(
           'test-client-id-123',
           expect.objectContaining({
             kind: 'user',
@@ -269,7 +272,7 @@ describe('InternalClientProvider', () => {
             anonymous: true,
           }),
           expect.objectContaining({
-            baseUrl: 'https://app.ld.catamorphic.com',
+            baseUri: 'https://app.ld.catamorphic.com',
             plugins: expect.any(Array),
           }),
         );
@@ -284,7 +287,7 @@ describe('InternalClientProvider', () => {
       );
 
       await waitFor(() => {
-        expect(mockInitialize).toHaveBeenCalledWith(
+        expect(mockCreateClient).toHaveBeenCalledWith(
           'test-client-id-123',
           expect.any(Object),
           expect.objectContaining({
