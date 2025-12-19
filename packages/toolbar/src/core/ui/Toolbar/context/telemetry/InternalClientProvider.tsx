@@ -192,7 +192,8 @@ export function InternalClientProvider({
 
       // Wrap identify in a Promise that resolves when the onDone callback fires
       // This ensures flags have been re-evaluated before we return
-      return client.identify({
+      return client
+        .identify({
           kind: 'multi',
           account: {
             key: accountId,
@@ -200,11 +201,11 @@ export function InternalClientProvider({
           user: {
             key: memberId,
           },
-        }
-      ).then(() => {})
-      .catch((err) => {
-        console.error('[InternalClientProvider] Failed to update context:', err);
-      });
+        })
+        .then(() => {})
+        .catch((err) => {
+          console.error('[InternalClientProvider] Failed to update context:', err);
+        });
     },
     [client],
   );

@@ -1,4 +1,10 @@
-import type { Hook, HookMetadata, EvaluationSeriesData, LDEvaluationDetail, EvaluationSeriesContext } from '@launchdarkly/js-client-sdk';
+import type {
+  Hook,
+  HookMetadata,
+  EvaluationSeriesData,
+  LDEvaluationDetail,
+  EvaluationSeriesContext,
+} from '@launchdarkly/js-client-sdk';
 import type { EventFilter, ProcessedEvent, SyntheticEventContext } from '../events';
 
 export type AfterEvaluationHookConfig = {
