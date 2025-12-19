@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.7.0-beta.1](https://github.com/launchdarkly/launchdarkly-toolbar/compare/2.6.1-beta.1...2.7.0-beta.1) (2025-12-19)
+
+
+### Features
+
+* [REL-11347] action tooltips + UX updates ([#454](https://github.com/launchdarkly/launchdarkly-toolbar/issues/454)) ([850eb06](https://github.com/launchdarkly/launchdarkly-toolbar/commit/850eb063ce27189f55879c220fa268f6a6a4149e))
+
 ## [2.6.1-beta.1](https://github.com/launchdarkly/launchdarkly-toolbar/compare/2.6.0-beta.1...2.6.1-beta.1) (2025-12-18)
 
 
