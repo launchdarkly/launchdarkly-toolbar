@@ -103,11 +103,7 @@ export function ShareStatePopover(props: ShareStatePopoverProps) {
               </div>
 
               <div className={styles.option}>
-                <Checkbox
-                  isSelected={includeContexts}
-                  onChange={setIncludeContexts}
-                  aria-label="Include contexts"
-                >
+                <Checkbox isSelected={includeContexts} onChange={setIncludeContexts} aria-label="Include contexts">
                   <span className={styles.optionLabel}>
                     Contexts
                     {contextCount > 0 && <span className={styles.count}>({contextCount})</span>}
