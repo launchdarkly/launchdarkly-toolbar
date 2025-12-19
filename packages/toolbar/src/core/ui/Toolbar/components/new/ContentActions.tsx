@@ -35,8 +35,6 @@ export function ContentActions() {
   useEffect(() => {
     if (searchTerm.trim()) {
       setSearchIsExpanded(true);
-    } else {
-      setSearchIsExpanded(false);
     }
   }, [activeSubtab, searchTerm]);
 
