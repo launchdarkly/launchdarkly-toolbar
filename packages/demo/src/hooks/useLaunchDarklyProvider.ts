@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { asyncWithLDProvider} from 'launchdarkly-react-client-sdk';
+import { asyncWithLDProvider } from 'launchdarkly-react-client-sdk';
 import type { LDPlugin } from '@launchdarkly/js-client-sdk';
 import { DEMO_CONFIG, demoLog } from '../config/demo';
 import { startMockWorker, stopMockWorker } from '../mocks';
