@@ -1,5 +1,5 @@
 import { describe, test, expect, vi, beforeEach } from 'vitest';
-import type { LDClient } from 'launchdarkly-js-client-sdk';
+import type { LDClient } from '@launchdarkly/js-client-sdk';
 import {
   createToolbarFlagFunction,
   setToolbarFlagClient,
