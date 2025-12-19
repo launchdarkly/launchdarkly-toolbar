@@ -5,7 +5,7 @@
  * The state includes: flag overrides, contexts, settings, starred flags, etc.
  */
 
-import { Context } from '../ui/Toolbar/types/ldApi';
+import { LDContext } from 'launchdarkly-js-client-sdk';
 import { ToolbarSettings } from '../ui/Toolbar/utils/localStorage';
 
 /** Current version of the shared state format */
@@ -29,9 +29,9 @@ export interface SharedToolbarState {
   /** Flag overrides (flag key -> value) */
   overrides: Record<string, any>;
   /** Saved contexts */
-  contexts: Context[];
+  contexts: LDContext[];
   /** Currently active context */
-  activeContext: Context | null;
+  activeContext: LDContext | null;
   /** Toolbar settings */
   settings: Partial<ToolbarSettings>;
   /** Starred flag keys */
@@ -133,18 +133,6 @@ function validateState(state: any): { valid: boolean; error: string | null } {
  * @param paramName - The query parameter name (defaults to 'ldToolbarState')
  * @returns Result containing the URL and size information
  *
- * @example
- * const result = serializeToolbarState({
- *   version: 1,
- *   overrides: { myFlag: true },
- *   contexts: [],
- *   activeContext: null,
- *   settings: {},
- *   starredFlags: []
- * });
- * if (result.exceedsLimit) {
- *   console.error('State is too large to share');
- * }
  */
 export function serializeToolbarState(
   state: SharedToolbarState,
@@ -183,13 +171,6 @@ export function serializeToolbarState(
  * @param paramName - The query parameter name (defaults to 'ldToolbarState')
  * @returns Result containing whether state was found, the parsed state, and any error
  *
- * @example
- * const result = parseToolbarState();
- * if (result.found && result.state) {
- *   // Apply state to toolbar
- * } else if (result.error) {
- *   console.error('Failed to parse state:', result.error);
- * }
  */
 export function parseToolbarState(
   url: string = window.location.href,
@@ -246,10 +227,7 @@ export function parseToolbarState(
  * @param paramName - The query parameter name (defaults to 'ldToolbarState')
  * @returns True if the URL contains a state parameter
  */
-export function hasToolbarState(
-  url: string = window.location.href,
-  paramName: string = DEFAULT_STATE_PARAM,
-): boolean {
+export function hasToolbarState(url: string = window.location.href, paramName: string = DEFAULT_STATE_PARAM): boolean {
   try {
     const urlObj = new URL(url);
     return urlObj.searchParams.has(paramName);
@@ -286,11 +264,6 @@ export function clearToolbarStateFromUrl(paramName: string = DEFAULT_STATE_PARAM
  * @param flagOverridePlugin - Optional flag override plugin to apply overrides to directly
  * @returns Object indicating whether state was loaded and if there were any errors
  *
- * @example
- * const result = loadSharedStateFromUrl();
- * if (result.loaded) {
- *   console.log('Loaded shared state from URL');
- * }
  */
 export function loadSharedStateFromUrl(
   paramName: string = DEFAULT_STATE_PARAM,

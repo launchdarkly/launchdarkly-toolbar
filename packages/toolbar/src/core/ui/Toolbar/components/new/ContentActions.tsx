@@ -241,7 +241,6 @@ export function ContentActions() {
           <FilterButton />
         </Tooltip>
       )}
-      {showFilter && <FilterButton />}
       {showShare && (
         <div style={{ position: 'relative' }}>
           <IconButton icon={<ShareIcon />} label="Share state" onClick={handleShareClick} />
