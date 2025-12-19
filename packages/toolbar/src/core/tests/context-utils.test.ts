@@ -1,5 +1,5 @@
 import { expect, test, describe } from 'vitest';
-import type { LDContext, LDMultiKindContext, LDSingleKindContext } from 'launchdarkly-js-client-sdk';
+import type { LDContext, LDMultiKindContext, LDSingleKindContext } from '@launchdarkly/js-client-sdk';
 import {
   areContextsEqual,
   getContextKind,
