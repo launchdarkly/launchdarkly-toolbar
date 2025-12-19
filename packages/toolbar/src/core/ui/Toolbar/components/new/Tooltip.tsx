@@ -5,9 +5,11 @@ import * as styles from './Tooltip.module.css';
 interface TooltipProps {
   content: string;
   children: React.ReactNode;
+  offsetTop?: number;
+  offsetLeft?: number;
 }
 
-export function Tooltip({ content, children }: TooltipProps) {
+export function Tooltip({ content, children, offsetTop = 0, offsetLeft = 0 }: TooltipProps) {
   const [isVisible, setIsVisible] = React.useState(false);
   const [isPositioned, setIsPositioned] = React.useState(false);
   const [position, setPosition] = React.useState({ top: 0, left: 0 });
@@ -19,12 +21,12 @@ export function Tooltip({ content, children }: TooltipProps) {
       const rect = containerRef.current.getBoundingClientRect();
       const tooltipRect = tooltipRef.current.getBoundingClientRect();
       setPosition({
-        top: rect.top - rect.height / 2 - 16,
-        left: rect.left + rect.width / 2 - tooltipRect.width / 2 - 4,
+        top: rect.top - rect.height / 2 - 16 + offsetTop,
+        left: rect.left + rect.width / 2 - tooltipRect.width / 2 - 4 + offsetLeft,
       });
       setIsPositioned(true);
     }
-  }, []);
+  }, [offsetTop, offsetLeft]);
 
   const handleMouseEnter = () => {
     setIsVisible(true);
@@ -32,6 +34,12 @@ export function Tooltip({ content, children }: TooltipProps) {
   };
 
   const handleMouseLeave = () => {
+    setIsVisible(false);
+    setIsPositioned(false);
+  };
+
+  const handleClick = () => {
+    // Hide tooltip when clicking (e.g., when opening a dropdown/overlay)
     setIsVisible(false);
     setIsPositioned(false);
   };
@@ -51,6 +59,7 @@ export function Tooltip({ content, children }: TooltipProps) {
       className={styles.container}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
+      onClick={handleClick}
     >
       {children}
       <AnimatePresence>

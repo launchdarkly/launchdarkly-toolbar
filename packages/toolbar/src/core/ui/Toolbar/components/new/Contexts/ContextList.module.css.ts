@@ -11,10 +11,6 @@ export const statsHeader = style({
   borderBottom: '1px solid var(--lp-color-gray-700)',
   backgroundColor: 'var(--lp-color-gray-900)',
   flexShrink: 0,
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'space-between',
-  gap: '12px',
 });
 
 export const statsText = style({

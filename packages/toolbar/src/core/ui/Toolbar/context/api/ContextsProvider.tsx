@@ -22,6 +22,7 @@ interface ContextsContextType {
   activeContext: LDContext | null;
   isAddFormOpen: boolean;
   setIsAddFormOpen: (isOpen: boolean) => void;
+  clearContexts: () => void;
 }
 
 const ContextsContext = createContext<ContextsContextType | undefined>(undefined);
@@ -339,6 +340,15 @@ export const ContextsProvider = ({ children }: { children: React.ReactNode }) =>
     });
   }, [storedContexts, filter, activeContext]);
 
+  const clearContexts = useCallback(() => {
+    if (!activeContext) {
+      return;
+    }
+
+    setStoredContexts([activeContext]);
+    saveContexts([activeContext]);
+  }, [activeContext]);
+
   return (
     <ContextsContext.Provider
       value={{
@@ -352,6 +362,7 @@ export const ContextsProvider = ({ children }: { children: React.ReactNode }) =>
         activeContext,
         isAddFormOpen,
         setIsAddFormOpen,
+        clearContexts,
       }}
     >
       {children}

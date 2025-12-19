@@ -1,4 +1,5 @@
 import { style } from '@vanilla-extract/css';
+import { Z_INDEX } from '../../../constants/zIndex';
 
 export const container = style({
   display: 'flex',
@@ -6,13 +7,50 @@ export const container = style({
   alignItems: 'center',
 });
 
+export const searchContainer = style({
+  position: 'relative',
+});
+
+export const searchDropdown = style({
+  position: 'absolute',
+  top: '100%',
+  right: '-100px',
+  marginTop: '5px',
+  minWidth: '220px',
+  padding: '8px 12px',
+  borderRadius: '8px',
+  zIndex: Z_INDEX.POPOVER,
+});
+
+export const searchDropdownFlags = style({
+  position: 'absolute',
+  top: '100%',
+  right: '-150px',
+  marginTop: '5px',
+  minWidth: '220px',
+  padding: '8px 12px',
+  borderRadius: '8px',
+  zIndex: Z_INDEX.POPOVER,
+});
+
+export const searchDropdownLeft = style({
+  position: 'absolute',
+  top: '-10px',
+  right: '85%',
+  marginTop: '6px',
+  minWidth: '220px',
+  padding: '8px 12px',
+  borderRadius: '8px',
+  zIndex: Z_INDEX.POPOVER,
+});
+
 export const actionButton = style({
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'center',
-  width: '32px',
-  height: '32px',
-  padding: '4px',
+  width: '40px',
+  height: '40px',
+  padding: '8px',
   backgroundColor: 'transparent',
   border: 'none',
   borderRadius: '6px',
@@ -69,6 +107,6 @@ export const clearButton = style({
 });
 
 export const icon = style({
-  width: '20px',
-  height: '20px',
+  width: '24px',
+  height: '24px',
 });
