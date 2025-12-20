@@ -25,6 +25,24 @@ export function ShareStatePopover(props: ShareStatePopoverProps) {
   const [includeFlagOverrides, setIncludeFlagOverrides] = useState(true);
   const [includeContexts, setIncludeContexts] = useState(true);
   const [includeSettings, setIncludeSettings] = useState(true);
+  const [isCopied, setIsCopied] = useState(false);
+  const copiedTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  // Scroll popover into view when it opens
+  useEffect(() => {
+    if (isOpen && popoverRef.current) {
+      const scrollTimeout = setTimeout(() => {
+        if (popoverRef.current && typeof popoverRef.current.scrollIntoView === 'function') {
+          popoverRef.current.scrollIntoView({
+            behavior: 'smooth',
+            block: 'center',
+          });
+        }
+      }, 100);
+
+      return () => clearTimeout(scrollTimeout);
+    }
+  }, [isOpen]);
 
   // Close when clicking outside
   useEffect(() => {
@@ -54,17 +72,38 @@ export function ShareStatePopover(props: ShareStatePopoverProps) {
     }
   }, [isOpen, onClose]);
 
+  useEffect(() => {
+    return () => {
+      if (copiedTimeoutRef.current) {
+        clearTimeout(copiedTimeoutRef.current);
+      }
+    };
+  }, []);
+
   const handleShare = useCallback(() => {
     onShare({
       includeFlagOverrides,
       includeContexts,
       includeSettings,
     });
-    onClose();
-    // Reset to defaults after sharing
-    setIncludeFlagOverrides(true);
-    setIncludeContexts(true);
-    setIncludeSettings(true);
+
+    // Show copied feedback
+    setIsCopied(true);
+
+    // Clear any existing timeout
+    if (copiedTimeoutRef.current) {
+      clearTimeout(copiedTimeoutRef.current);
+    }
+
+    // Reset after 2 seconds and close the popover
+    copiedTimeoutRef.current = setTimeout(() => {
+      setIsCopied(false);
+      onClose();
+      setIncludeFlagOverrides(true);
+      setIncludeContexts(true);
+      setIncludeSettings(true);
+      copiedTimeoutRef.current = null;
+    }, 1000);
   }, [includeFlagOverrides, includeContexts, includeSettings, onShare, onClose]);
 
   const hasAnySelection = includeFlagOverrides || includeContexts || includeSettings;
@@ -120,11 +159,11 @@ export function ShareStatePopover(props: ShareStatePopoverProps) {
           </div>
 
           <div className={styles.actions}>
-            <Button onPress={onClose} variant="default" size="small">
+            <Button onPress={onClose} variant="default" size="small" isDisabled={isCopied}>
               Cancel
             </Button>
-            <Button onPress={handleShare} variant="primary" size="small" isDisabled={!hasAnySelection}>
-              Copy Link
+            <Button onPress={handleShare} variant="primary" size="small" isDisabled={!hasAnySelection || isCopied}>
+              {isCopied ? 'Copied!' : 'Copy Link'}
             </Button>
           </div>
         </motion.div>

@@ -11,15 +11,12 @@ import { useActiveSubtabContext, useTabSearchContext } from './context';
 import { useContextsContext } from '../../context/api/ContextsProvider';
 import { useEvents } from '../../hooks';
 import { useAnalytics } from '../../context/telemetry/AnalyticsProvider';
-import { CancelCircleIcon, DeleteIcon, SearchIcon, SyncIcon, AddIcon, ShareIcon } from '../icons';
+import { CancelCircleIcon, DeleteIcon, SearchIcon, SyncIcon, AddIcon } from '../icons';
 import { SearchSection } from './SearchSection';
 import { FilterButton } from './FilterOverlay';
 import { IconButton } from '../../../Buttons/IconButton';
 import { Tooltip } from './Tooltip';
-import { ShareStatePopover, type ShareStateOptions } from '../ShareStatePopover';
 import { SubTab } from './types';
-import { serializeToolbarState, SHARED_STATE_VERSION, MAX_STATE_SIZE_LIMIT } from '../../../../utils/urlOverrides';
-import { loadContexts, loadActiveContext, loadAllSettings, loadStarredFlags } from '../../utils/localStorage';
 import * as styles from './ContentActions.module.css';
 
 export function ContentActions() {
@@ -32,7 +29,6 @@ export function ContentActions() {
   const { setSearchTerm } = useTabSearchContext();
   const [searchIsExpanded, setSearchIsExpanded] = useState(false);
   const analytics = useAnalytics();
-  const [isSharePopoverOpen, setIsSharePopoverOpen] = useState(false);
 
   // Update search expansion when subtab changes
   // Expand if the new subtab has a search term, collapse if it doesn't
@@ -64,7 +60,6 @@ export function ContentActions() {
   const showAddContext = activeTab === 'flags' && activeSubtab === 'contexts';
   const showClearContexts = activeTab === 'flags' && activeSubtab === 'contexts';
   const showClearOverrides = activeTab === 'flags' && activeSubtab === 'flags';
-  const showShare = activeTab === 'flags' && activeSubtab === 'flags';
 
   const showRefreshFlags = mode === 'sdk' && activeTab === 'flags' && activeSubtab === 'flags';
 
@@ -112,99 +107,6 @@ export function ContentActions() {
     }
   }, [flagOverridePlugin]);
 
-  const handleShareClick = useCallback((e: React.MouseEvent) => {
-    e.stopPropagation();
-    setIsSharePopoverOpen((prev) => !prev);
-  }, []);
-
-  const handleShare = useCallback(
-    (options: ShareStateOptions) => {
-      try {
-        // Gather overrides based on mode
-        let overrides: Record<string, any> = {};
-
-        if (options.includeFlagOverrides) {
-          if (mode === 'sdk' && flagOverridePlugin) {
-            // SDK mode: get overrides from plugin
-            overrides = flagOverridePlugin.getAllOverrides();
-          } else if (mode === 'dev-server') {
-            // Dev server mode: get overridden flags from dev server state
-            Object.entries(state.flags).forEach(([flagKey, flag]) => {
-              if (flag.isOverridden) {
-                overrides[flagKey] = flag.currentValue;
-              }
-            });
-          }
-        }
-
-        // Gather all toolbar state based on selected options
-        const toolbarState = {
-          version: SHARED_STATE_VERSION,
-          overrides: options.includeFlagOverrides ? overrides : {},
-          contexts: options.includeContexts ? loadContexts() : [],
-          activeContext: options.includeContexts ? loadActiveContext() : null,
-          settings: options.includeSettings ? loadAllSettings() : {},
-          starredFlags: options.includeFlagOverrides ? Array.from(loadStarredFlags()) : [],
-        };
-
-        // Serialize the state
-        const result = serializeToolbarState(toolbarState);
-
-        // Check size limits
-        if (result.exceedsLimit) {
-          console.error(
-            `Shared state is too large (${result.size} chars, limit: ${MAX_STATE_SIZE_LIMIT}). Cannot create shareable link.`,
-          );
-          alert(
-            `The toolbar state is too large to share (${result.size} characters). Try reducing the number of overrides, contexts, or starred flags.`,
-          );
-          return;
-        }
-
-        if (result.exceedsWarning) {
-          console.warn(
-            `Shared state is large (${result.size} chars). Some browsers may have issues with URLs this long.`,
-          );
-        }
-
-        // Copy to clipboard
-        navigator.clipboard
-          .writeText(result.url)
-          .then(() => {
-            console.log('Share URL copied to clipboard:', result.url);
-            analytics.trackShareState({
-              includeSettings: options.includeSettings,
-              overrideCount: Object.keys(overrides).length,
-              contextCount: toolbarState.contexts.length,
-              starredFlagCount: toolbarState.starredFlags.length,
-            });
-          })
-          .catch((error) => {
-            console.error('Failed to copy share URL:', error);
-            alert('Failed to copy URL to clipboard. Please copy it manually from the console.');
-          });
-      } catch (error) {
-        console.error('Failed to create share URL:', error);
-        alert('Failed to create shareable link. Check console for details.');
-      }
-    },
-    [mode, flagOverridePlugin, state.flags, analytics],
-  );
-
-  // Calculate counts for the dialog
-  const overrideCount = useMemo(() => {
-    if (mode === 'sdk' && flagOverridePlugin) {
-      return Object.keys(flagOverridePlugin.getAllOverrides()).length;
-    } else if (mode === 'dev-server') {
-      return Object.values(state.flags).filter((flag) => flag.isOverridden).length;
-    }
-    return 0;
-  }, [mode, flagOverridePlugin, state.flags]);
-
-  const contextCount = useMemo(() => {
-    return loadContexts().length;
-  }, []);
-
   return (
     <div className={styles.container}>
       {showClearSelection && (
@@ -240,18 +142,6 @@ export function ContentActions() {
         <Tooltip content={`Filter ${activeSubtab.charAt(0).toUpperCase() + activeSubtab.slice(1)}`} offsetTop={-4}>
           <FilterButton />
         </Tooltip>
-      )}
-      {showShare && (
-        <div style={{ position: 'relative' }}>
-          <IconButton icon={<ShareIcon />} label="Share state" onClick={handleShareClick} />
-          <ShareStatePopover
-            isOpen={isSharePopoverOpen}
-            onClose={() => setIsSharePopoverOpen(false)}
-            onShare={handleShare}
-            overrideCount={overrideCount}
-            contextCount={contextCount}
-          />
-        </div>
       )}
       {showSync && (
         <Tooltip content="Sync flags" offsetTop={-4} offsetLeft={2}>
