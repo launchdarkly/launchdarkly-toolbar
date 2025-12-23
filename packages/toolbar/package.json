@@ -109,7 +109,7 @@
     "@codemirror/state": "^6.5.2",
     "@codemirror/view": "^6.38.8",
     "@launchdarkly/observability": "^0.4.9",
-    "@launchdarkly/session-replay": "^0.4.9",
+    "@launchdarkly/session-replay": "^0.5.0",
     "@launchpad-ui/components": "^0.17.8",
     "@launchpad-ui/tokens": "^0.15.1",
     "@lezer/highlight": "^1.2.3",
