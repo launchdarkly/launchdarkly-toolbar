@@ -67,7 +67,7 @@ export const WORKFLOW_CONFIGS: Record<WorkflowType, WorkflowConfig> = {
   },
   clickTracking: {
     icon: <ClickIcon />,
-    title: 'Track Element Click',
+    title: 'Track element click',
     description: 'Track clicks as a LaunchDarkly custom event',
     inputLabel: 'Event name',
     inputPlaceholder: 'e.g., checkout-button-clicked',

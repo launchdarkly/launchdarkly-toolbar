@@ -91,7 +91,7 @@ export function IconBar({ defaultActiveTab }: IconBarProps) {
   // Get dynamic tooltip for interactive icon
   const getTooltip = (icon: Icon): string => {
     if (icon.id === 'interactive' && activeTab === 'interactive' && !icon.disabled) {
-      return 'Select Element';
+      return 'Select element';
     }
     return icon.tooltip;
   };
