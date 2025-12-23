@@ -1,10 +1,12 @@
-import { createContext, useContext, useState, useEffect, useMemo, useCallback } from 'react';
+import { createContext, useContext, useState, useEffect, useMemo, useCallback, useRef } from 'react';
 import type { FC, ReactNode } from 'react';
 import { DevServerClient } from '../../../services/DevServerClient';
 import { FlagStateManager } from '../../../services/FlagStateManager';
 import { LdToolbarConfig, ToolbarState } from '../../../types/devServer';
 import { useFlagsContext } from './api/FlagsProvider';
 import { useApi, useProjectContext } from './api';
+import { useDevServerSync } from './DevServerSyncContext';
+import { areContextsEqual } from '../utils/context';
 
 interface DevServerContextValue {
   state: ToolbarState;
@@ -12,6 +14,8 @@ interface DevServerContextValue {
   clearOverride: (flagKey: string) => Promise<void>;
   clearAllOverrides: () => Promise<void>;
   refresh: () => Promise<void>;
+  devServerClient: DevServerClient | null;
+  updateContext: (context: any) => Promise<void>;
 }
 
 const DevServerContext = createContext<DevServerContextValue | null>(null);
@@ -33,6 +37,7 @@ export const DevServerProvider: FC<DevServerProviderProps> = ({ children, config
   const { getProjectFlags } = useFlagsContext();
   const { projectKey, getProjects } = useProjectContext();
   const { apiReady } = useApi();
+  const { setOnContextChange, onDevServerContextChange } = useDevServerSync();
 
   const [toolbarState, setToolbarState] = useState<ToolbarState>(() => {
     return {
@@ -47,6 +52,9 @@ export const DevServerProvider: FC<DevServerProviderProps> = ({ children, config
 
   // Track the last sync timestamp from dev server to detect changes
   const [lastDevServerSync, setLastDevServerSync] = useState<number>(0);
+
+  // Track the last known dev server context
+  const lastDevServerContextRef = useRef<any>(null);
 
   const devServerClient = useMemo(() => {
     // Only create devServerClient if devServerUrl is provided (dev-server mode)
@@ -93,6 +101,34 @@ export const DevServerProvider: FC<DevServerProviderProps> = ({ children, config
     return true;
   }, [flagStateManager, handleError]);
 
+  // Register callback to handle context changes from toolbar -> dev server
+  useEffect(() => {
+    if (!devServerClient || !projectKey) {
+      return;
+    }
+
+    // Set the callback to update dev server when toolbar context changes
+    setOnContextChange(async (context: any) => {
+      try {
+        // Skip update if context is the same as what dev server already has
+        if (areContextsEqual(lastDevServerContextRef.current, context)) {
+          return;
+        }
+
+        await devServerClient.updateProjectContext(context);
+        // Update our local reference
+        lastDevServerContextRef.current = context;
+      } catch (error) {
+        console.error('Failed to update dev server context:', error);
+        // Don't call handleError here as this is a background sync
+      }
+    });
+
+    return () => {
+      setOnContextChange(null);
+    };
+  }, [devServerClient, projectKey, setOnContextChange]);
+
   // Helper: Load and sync flags from dev server and API
   // Only fetches from API if dev server data has changed (based on _lastSyncedFromSource timestamp)
   // Set forceApiRefresh=true to always fetch from API (useful for manual refresh)
@@ -113,6 +149,19 @@ export const DevServerProvider: FC<DevServerProviderProps> = ({ children, config
 
       // Check if dev server data has changed since last sync
       const devServerDataChanged = projectData._lastSyncedFromSource !== lastDevServerSync;
+
+      // Check if dev server context has changed and notify toolbar
+      if (projectData.context && onDevServerContextChange) {
+        const contextChanged = !areContextsEqual(lastDevServerContextRef.current, projectData.context);
+        if (contextChanged) {
+          lastDevServerContextRef.current = projectData.context;
+          try {
+            await onDevServerContextChange(projectData.context);
+          } catch (error) {
+            console.error('Failed to update toolbar context from dev server:', error);
+          }
+        }
+      }
 
       // Only fetch API flags if:
       // 1. This is the first sync (lastDevServerSync === 0), OR
@@ -137,7 +186,15 @@ export const DevServerProvider: FC<DevServerProviderProps> = ({ children, config
         isLoading: false,
       }));
     },
-    [devServerClient, flagStateManager, projectKey, getProjectFlags, lastDevServerSync, apiReady],
+    [
+      devServerClient,
+      flagStateManager,
+      projectKey,
+      getProjectFlags,
+      lastDevServerSync,
+      apiReady,
+      onDevServerContextChange,
+    ],
   );
 
   const initializeProjectSelection = useCallback(async () => {
@@ -148,7 +205,7 @@ export const DevServerProvider: FC<DevServerProviderProps> = ({ children, config
 
     // Get available projects
     await getProjects();
-  }, [devServerClient, projectKey, getProjects]);
+  }, [devServerClient, getProjects]);
 
   useEffect(() => {
     const setupProjectConnection = async () => {
@@ -337,6 +394,29 @@ export const DevServerProvider: FC<DevServerProviderProps> = ({ children, config
     }
   }, [projectKey, toolbarState.connectionStatus, devServerClient, flagStateManager, syncFlags, handleError]);
 
+  const updateContext = useCallback(
+    async (context: any) => {
+      if (!devServerClient) {
+        return;
+      }
+
+      try {
+        // Skip update if context is the same as what dev server already has
+        if (areContextsEqual(lastDevServerContextRef.current, context)) {
+          return;
+        }
+
+        await devServerClient.updateProjectContext(context);
+        // Update our local reference
+        lastDevServerContextRef.current = context;
+      } catch (error) {
+        console.error('Failed to update dev server context:', error);
+        throw error;
+      }
+    },
+    [devServerClient],
+  );
+
   const value = useMemo(
     () => ({
       state: toolbarState,
@@ -344,8 +424,10 @@ export const DevServerProvider: FC<DevServerProviderProps> = ({ children, config
       clearOverride,
       clearAllOverrides,
       refresh,
+      devServerClient,
+      updateContext,
     }),
-    [toolbarState, setOverride, clearOverride, clearAllOverrides, refresh],
+    [toolbarState, setOverride, clearOverride, clearAllOverrides, refresh, devServerClient, updateContext],
   );
 
   return <DevServerContext.Provider value={value}>{children}</DevServerContext.Provider>;

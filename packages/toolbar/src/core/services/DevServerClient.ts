@@ -6,6 +6,7 @@ export interface DevServerProjectResponse {
   flagsState: Record<string, FlagState>;
   overrides: Record<string, Override>;
   sourceEnvironmentKey: string;
+  context?: any;
 }
 
 export interface FlagState {
@@ -82,6 +83,31 @@ export class DevServerClient {
       if (!response.ok) {
         throw new Error(`Failed to clear override: ${response.status} ${response.statusText}`);
       }
+    } catch (error) {
+      if (error instanceof TypeError) {
+        throw new Error(`Failed to connect to dev server at ${this.baseUrl}`);
+      }
+      throw error;
+    }
+  }
+
+  async updateProjectContext(context: any): Promise<DevServerProjectResponse> {
+    const url = `${this.baseUrl}/dev/projects/${this.projectKey}`;
+
+    try {
+      const response = await fetch(url, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ context }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`Failed to update project context: ${response.status} ${response.statusText}`);
+      }
+
+      return await response.json();
     } catch (error) {
       if (error instanceof TypeError) {
         throw new Error(`Failed to connect to dev server at ${this.baseUrl}`);

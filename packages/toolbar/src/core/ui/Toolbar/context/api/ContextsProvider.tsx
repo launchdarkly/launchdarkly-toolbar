@@ -10,6 +10,7 @@ import {
   getContextKind,
 } from '../../utils/context';
 import { useAnalytics } from '../telemetry/AnalyticsProvider';
+import { useDevServerSync } from '../DevServerSyncContext';
 
 interface ContextsContextType {
   contexts: LDContext[];
@@ -30,6 +31,7 @@ const ContextsContext = createContext<ContextsContextType | undefined>(undefined
 export const ContextsProvider = ({ children }: { children: React.ReactNode }) => {
   const { flagOverridePlugin, eventInterceptionPlugin } = usePlugins();
   const analytics = useAnalytics();
+  const { onContextChange, setOnDevServerContextChange } = useDevServerSync();
   const [storedContexts, setStoredContexts] = useState<LDContext[]>(loadContexts);
   const [activeContext, setActiveContext] = useState<LDContext | null>(loadActiveContext());
   const [filter, setFilter] = useState('');
@@ -96,41 +98,6 @@ export const ContextsProvider = ({ children }: { children: React.ReactNode }) =>
     [activeContext, analytics],
   );
 
-  // Update a context in the list (contextId is the hash from generateContextId)
-  const updateContext = useCallback(
-    (contextId: string, newContext: LDContext) => {
-      setStoredContexts((prev) => {
-        const oldContext = prev.find((c) => generateContextId(c) === contextId);
-        const updated = prev.map((c) => {
-          if (generateContextId(c) === contextId) {
-            return newContext;
-          }
-          return c;
-        });
-        saveContexts(updated);
-
-        // If the updated context is the active context, update it
-        const activeContextId = generateContextId(activeContext);
-        if (activeContext && activeContextId === contextId) {
-          setActiveContext(newContext);
-          saveActiveContext(newContext);
-        }
-
-        // Track analytics
-        if (oldContext) {
-          const oldKind = getContextKind(oldContext);
-          const newKind = getContextKind(newContext);
-          const oldKey = getContextKey(oldContext) || getContextDisplayName(oldContext);
-          const newKey = getContextKey(newContext) || getContextDisplayName(newContext);
-          analytics.trackContextUpdated(oldKind, oldKey, newKind, newKey);
-        }
-
-        return updated;
-      });
-    },
-    [activeContext, analytics],
-  );
-
   // Set the current context and update the host application's LD Client via identify
   const setContext = useCallback(
     async (context: LDContext) => {
@@ -154,6 +121,13 @@ export const ContextsProvider = ({ children }: { children: React.ReactNode }) =>
         setActiveContext(context);
         saveActiveContext(context);
 
+        // Notify listener of context change (e.g., for dev server sync)
+        if (onContextChange) {
+          onContextChange(context).catch((error) => {
+            console.error('Failed to sync context change:', error);
+          });
+        }
+
         // Track analytics
         const kind = getContextKind(context);
         const contextKey = getContextKey(context) || getContextDisplayName(context);
@@ -168,7 +142,44 @@ export const ContextsProvider = ({ children }: { children: React.ReactNode }) =>
         }, 100);
       }
     },
-    [ldClient, analytics, activeContext],
+    [ldClient, analytics, activeContext, onContextChange],
+  );
+
+  // Update a context in the list (contextId is the hash from generateContextId)
+  const updateContext = useCallback(
+    (contextId: string, newContext: LDContext) => {
+      setStoredContexts((prev) => {
+        const oldContext = prev.find((c) => generateContextId(c) === contextId);
+        const updated = prev.map((c) => {
+          if (generateContextId(c) === contextId) {
+            return newContext;
+          }
+          return c;
+        });
+        saveContexts(updated);
+
+        // If the updated context is the active context, update it
+        const activeContextId = generateContextId(activeContext);
+        if (activeContext && activeContextId === contextId) {
+          // Use setContext to properly update the LD client and sync with dev server
+          setContext(newContext).catch((error) => {
+            console.error('Failed to update active context:', error);
+          });
+        }
+
+        // Track analytics
+        if (oldContext) {
+          const oldKind = getContextKind(oldContext);
+          const newKind = getContextKind(newContext);
+          const oldKey = getContextKey(oldContext) || getContextDisplayName(oldContext);
+          const newKey = getContextKey(newContext) || getContextDisplayName(newContext);
+          analytics.trackContextUpdated(oldKind, oldKey, newKind, newKey);
+        }
+
+        return updated;
+      });
+    },
+    [activeContext, analytics, setContext],
   );
 
   // Restore saved active context on mount when LD client is available
@@ -348,6 +359,36 @@ export const ContextsProvider = ({ children }: { children: React.ReactNode }) =>
     setStoredContexts([activeContext]);
     saveContexts([activeContext]);
   }, [activeContext]);
+
+  // Provide callback for dev server to update context
+  useEffect(() => {
+    setOnDevServerContextChange(async (context: LDContext) => {
+      // Check if context already exists in the list
+      const contextId = generateContextId(context);
+      const exists = storedContexts.some((c) => generateContextId(c) === contextId);
+
+      // Add to list if it doesn't exist (before setContext to avoid race with auto-add)
+      if (!exists) {
+        setStoredContexts((prev) => {
+          // Double-check it doesn't exist (in case of concurrent updates)
+          const stillDoesNotExist = !prev.some((c) => generateContextId(c) === contextId);
+          if (stillDoesNotExist) {
+            const updated = [...prev, context];
+            saveContexts(updated);
+            return updated;
+          }
+          return prev;
+        });
+      }
+
+      // Set as active context
+      await setContext(context);
+    });
+
+    return () => {
+      setOnDevServerContextChange(null);
+    };
+  }, [setContext, setOnDevServerContextChange, storedContexts]);
 
   return (
     <ContextsContext.Provider
