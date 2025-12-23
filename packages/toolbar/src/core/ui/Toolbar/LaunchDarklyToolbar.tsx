@@ -18,7 +18,6 @@ import {
   useToolbarState,
   useToolbarUIContext,
 } from './context';
-import { DevServerSyncProvider } from './context/DevServerSyncContext';
 import { CircleLogo } from './components';
 import { LoadingScreen } from './components/LoadingScreen';
 import { ExpandedToolbarContentLegacy } from './components/legacy';
@@ -309,28 +308,26 @@ export function LaunchDarklyToolbar(props: LaunchDarklyToolbarProps) {
         flagOverridePlugin={flagOverridePlugin}
         eventInterceptionPlugin={eventInterceptionPlugin}
       >
-        <DevServerSyncProvider>
-          <ApiBundleProvider authUrl={authUrl} clientSideId={clientSideId} providedProjectKey={projectKey}>
-            <DevServerProvider
-              config={{
-                projectKey,
-                devServerUrl,
-                pollIntervalInMs,
-              }}
-            >
-              <StarredFlagsProvider>
-                <InteractiveWrapper>
-                  <LdToolbar
-                    mode={mode}
-                    baseUrl={baseUrl}
-                    flagOverridePlugin={flagOverridePlugin}
-                    eventInterceptionPlugin={eventInterceptionPlugin}
-                  />
-                </InteractiveWrapper>
-              </StarredFlagsProvider>
-            </DevServerProvider>
-          </ApiBundleProvider>
-        </DevServerSyncProvider>
+        <ApiBundleProvider authUrl={authUrl} clientSideId={clientSideId} providedProjectKey={projectKey}>
+          <DevServerProvider
+            config={{
+              projectKey,
+              devServerUrl,
+              pollIntervalInMs,
+            }}
+          >
+            <StarredFlagsProvider>
+              <InteractiveWrapper>
+                <LdToolbar
+                  mode={mode}
+                  baseUrl={baseUrl}
+                  flagOverridePlugin={flagOverridePlugin}
+                  eventInterceptionPlugin={eventInterceptionPlugin}
+                />
+              </InteractiveWrapper>
+            </StarredFlagsProvider>
+          </DevServerProvider>
+        </ApiBundleProvider>
       </ToolbarStateBundleProvider>
     </TelemetryBundleProvider>
   );

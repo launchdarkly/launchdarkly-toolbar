@@ -5,8 +5,8 @@ import { FlagStateManager } from '../../../services/FlagStateManager';
 import { LdToolbarConfig, ToolbarState } from '../../../types/devServer';
 import { useFlagsContext } from './api/FlagsProvider';
 import { useApi, useProjectContext } from './api';
-import { useDevServerSync } from './DevServerSyncContext';
-import { areContextsEqual } from '../utils/context';
+import { useContextsContext } from './api/ContextsProvider';
+import { areContextsEqual, generateContextId, getContextKey, getContextKind } from '../utils/context';
 
 interface DevServerContextValue {
   state: ToolbarState;
@@ -15,7 +15,6 @@ interface DevServerContextValue {
   clearAllOverrides: () => Promise<void>;
   refresh: () => Promise<void>;
   devServerClient: DevServerClient | null;
-  updateContext: (context: any) => Promise<void>;
 }
 
 const DevServerContext = createContext<DevServerContextValue | null>(null);
@@ -37,7 +36,8 @@ export const DevServerProvider: FC<DevServerProviderProps> = ({ children, config
   const { getProjectFlags } = useFlagsContext();
   const { projectKey, getProjects } = useProjectContext();
   const { apiReady } = useApi();
-  const { setOnContextChange, onDevServerContextChange } = useDevServerSync();
+  const contextsApi = useContextsContext();
+  const { setContext, activeContext, updateContext: updateStoredContext, addContext } = contextsApi;
 
   const [toolbarState, setToolbarState] = useState<ToolbarState>(() => {
     return {
@@ -55,6 +55,9 @@ export const DevServerProvider: FC<DevServerProviderProps> = ({ children, config
 
   // Track the last known dev server context
   const lastDevServerContextRef = useRef<any>(null);
+
+  // Track when we're updating from dev server to prevent sync loops
+  const isUpdatingFromDevServerRef = useRef(false);
 
   const devServerClient = useMemo(() => {
     // Only create devServerClient if devServerUrl is provided (dev-server mode)
@@ -101,33 +104,58 @@ export const DevServerProvider: FC<DevServerProviderProps> = ({ children, config
     return true;
   }, [flagStateManager, handleError]);
 
-  // Register callback to handle context changes from toolbar -> dev server
+  // Helper: Add or update context in stored contexts (compared by kind+key)
+  const addOrUpdateStoredContext = useCallback(
+    (context: any) => {
+      const contextKind = getContextKind(context);
+      const contextKey = getContextKey(context);
+      const contexts = contextsApi.contexts;
+
+      const existingContextIndex = contexts.findIndex((c) => {
+        return getContextKind(c) === contextKind && getContextKey(c) === contextKey;
+      });
+
+      if (existingContextIndex >= 0) {
+        // Update existing context
+        const existingContextId = generateContextId(contexts[existingContextIndex]);
+        updateStoredContext(existingContextId, context);
+      } else {
+        // Add new context
+        addContext(context);
+      }
+    },
+    [contextsApi.contexts, updateStoredContext, addContext],
+  );
+
+  // Watch for context changes in toolbar and sync to dev server
   useEffect(() => {
-    if (!devServerClient || !projectKey) {
+    if (!devServerClient || !projectKey || !activeContext) {
       return;
     }
 
-    // Set the callback to update dev server when toolbar context changes
-    setOnContextChange(async (context: any) => {
+    // Skip if we're currently updating from dev server (prevents loop)
+    if (isUpdatingFromDevServerRef.current) {
+      return;
+    }
+
+    // Skip if context hasn't changed from what dev server already has
+    if (areContextsEqual(lastDevServerContextRef.current, activeContext)) {
+      return;
+    }
+
+    // Update dev server with new context
+    const syncToDevServer = async () => {
       try {
-        // Skip update if context is the same as what dev server already has
-        if (areContextsEqual(lastDevServerContextRef.current, context)) {
-          return;
-        }
-
-        await devServerClient.updateProjectContext(context);
+        await devServerClient.updateProjectContext(activeContext);
         // Update our local reference
-        lastDevServerContextRef.current = context;
+        lastDevServerContextRef.current = activeContext;
       } catch (error) {
-        console.error('Failed to update dev server context:', error);
-        // Don't call handleError here as this is a background sync
+        console.error('Failed to sync context to dev server:', error);
       }
-    });
-
-    return () => {
-      setOnContextChange(null);
     };
-  }, [devServerClient, projectKey, setOnContextChange]);
+
+    syncToDevServer();
+  }, [activeContext, devServerClient, projectKey]);
 
   // Helper: Load and sync flags from dev server and API
   // Only fetches from API if dev server data has changed (based on _lastSyncedFromSource timestamp)
@@ -150,15 +178,25 @@ export const DevServerProvider: FC<DevServerProviderProps> = ({ children, config
       // Check if dev server data has changed since last sync
       const devServerDataChanged = projectData._lastSyncedFromSource !== lastDevServerSync;
 
-      // Check if dev server context has changed and notify toolbar
-      if (projectData.context && onDevServerContextChange) {
+      // Check if dev server context has changed and update toolbar
+      if (projectData.context) {
         const contextChanged = !areContextsEqual(lastDevServerContextRef.current, projectData.context);
         if (contextChanged) {
+          isUpdatingFromDevServerRef.current = true;
           lastDevServerContextRef.current = projectData.context;
+
+          // Add or update context in stored contexts before activating it
+          addOrUpdateStoredContext(projectData.context);
+
           try {
-            await onDevServerContextChange(projectData.context);
+            await setContext(projectData.context);
           } catch (error) {
             console.error('Failed to update toolbar context from dev server:', error);
+          } finally {
+            // Reset flag after a short delay to ensure state updates settle
+            setTimeout(() => {
+              isUpdatingFromDevServerRef.current = false;
+            }, 100);
           }
         }
       }
@@ -193,7 +231,8 @@ export const DevServerProvider: FC<DevServerProviderProps> = ({ children, config
       getProjectFlags,
       lastDevServerSync,
       apiReady,
-      onDevServerContextChange,
+      setContext,
+      addOrUpdateStoredContext,
     ],
   );
 
@@ -394,29 +433,6 @@ export const DevServerProvider: FC<DevServerProviderProps> = ({ children, config
     }
   }, [projectKey, toolbarState.connectionStatus, devServerClient, flagStateManager, syncFlags, handleError]);
 
-  const updateContext = useCallback(
-    async (context: any) => {
-      if (!devServerClient) {
-        return;
-      }
-
-      try {
-        // Skip update if context is the same as what dev server already has
-        if (areContextsEqual(lastDevServerContextRef.current, context)) {
-          return;
-        }
-
-        await devServerClient.updateProjectContext(context);
-        // Update our local reference
-        lastDevServerContextRef.current = context;
-      } catch (error) {
-        console.error('Failed to update dev server context:', error);
-        throw error;
-      }
-    },
-    [devServerClient],
-  );
-
   const value = useMemo(
     () => ({
       state: toolbarState,
@@ -425,9 +441,8 @@ export const DevServerProvider: FC<DevServerProviderProps> = ({ children, config
       clearAllOverrides,
       refresh,
       devServerClient,
-      updateContext,
     }),
-    [toolbarState, setOverride, clearOverride, clearAllOverrides, refresh, devServerClient, updateContext],
+    [toolbarState, setOverride, clearOverride, clearAllOverrides, refresh, devServerClient],
   );
 
   return <DevServerContext.Provider value={value}>{children}</DevServerContext.Provider>;

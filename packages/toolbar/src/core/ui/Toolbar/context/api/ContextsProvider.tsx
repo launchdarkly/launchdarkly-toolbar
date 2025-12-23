@@ -10,7 +10,6 @@ import {
   getContextKind,
 } from '../../utils/context';
 import { useAnalytics } from '../telemetry/AnalyticsProvider';
-import { useDevServerSync } from '../DevServerSyncContext';
 
 interface ContextsContextType {
   contexts: LDContext[];
@@ -31,7 +30,6 @@ const ContextsContext = createContext<ContextsContextType | undefined>(undefined
 export const ContextsProvider = ({ children }: { children: React.ReactNode }) => {
   const { flagOverridePlugin, eventInterceptionPlugin } = usePlugins();
   const analytics = useAnalytics();
-  const { onContextChange, setOnDevServerContextChange } = useDevServerSync();
   const [storedContexts, setStoredContexts] = useState<LDContext[]>(loadContexts);
   const [activeContext, setActiveContext] = useState<LDContext | null>(loadActiveContext());
   const [filter, setFilter] = useState('');
@@ -121,13 +119,6 @@ export const ContextsProvider = ({ children }: { children: React.ReactNode }) =>
         setActiveContext(context);
         saveActiveContext(context);
 
-        // Notify listener of context change (e.g., for dev server sync)
-        if (onContextChange) {
-          onContextChange(context).catch((error) => {
-            console.error('Failed to sync context change:', error);
-          });
-        }
-
         // Track analytics
         const kind = getContextKind(context);
         const contextKey = getContextKey(context) || getContextDisplayName(context);
@@ -142,7 +133,7 @@ export const ContextsProvider = ({ children }: { children: React.ReactNode }) =>
         }, 100);
       }
     },
-    [ldClient, analytics, activeContext, onContextChange],
+    [ldClient, analytics, activeContext],
   );
 
   // Update a context in the list (contextId is the hash from generateContextId)
@@ -359,57 +350,6 @@ export const ContextsProvider = ({ children }: { children: React.ReactNode }) =>
     setStoredContexts([activeContext]);
     saveContexts([activeContext]);
   }, [activeContext]);
-
-  // Provide callback for dev server to update context
-  useEffect(() => {
-    setOnDevServerContextChange(async (context: LDContext) => {
-      const newContextId = generateContextId(context);
-      const newContextKind = getContextKind(context);
-      const newContextKey = getContextKey(context);
-
-      // Check if a context with the same kind and key already exists
-      const existingContextIndex = storedContexts.findIndex((c) => {
-        return getContextKind(c) === newContextKind && getContextKey(c) === newContextKey;
-      });
-
-      if (existingContextIndex >= 0) {
-        // Update existing context if the content has changed
-        const existingContext = storedContexts[existingContextIndex];
-        const existingContextId = generateContextId(existingContext);
-
-        if (existingContextId !== newContextId) {
-          // Content changed, update the existing context
-          setStoredContexts((prev) => {
-            const updated = [...prev];
-            updated[existingContextIndex] = context;
-            saveContexts(updated);
-            return updated;
-          });
-        }
-      } else {
-        // Add new context if it doesn't exist
-        setStoredContexts((prev) => {
-          // Double-check it doesn't exist by kind+key (in case of concurrent updates)
-          const stillDoesNotExist = !prev.some(
-            (c) => getContextKind(c) === newContextKind && getContextKey(c) === newContextKey,
-          );
-          if (stillDoesNotExist) {
-            const updated = [...prev, context];
-            saveContexts(updated);
-            return updated;
-          }
-          return prev;
-        });
-      }
-
-      // Set as active context
-      await setContext(context);
-    });
-
-    return () => {
-      setOnDevServerContextChange(null);
-    };
-  }, [setContext, setOnDevServerContextChange, storedContexts]);
 
   return (
     <ContextsContext.Provider
