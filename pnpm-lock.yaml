@@ -133,8 +133,8 @@ importers:
         specifier: ^0.4.9
         version: 0.4.9
       '@launchpad-ui/components':
-        specifier: ^0.17.7
-        version: 0.17.7(@react-aria/focus@3.21.2(react-dom@19.2.3(react@19.2.3))(react@19.2.3))(@react-aria/interactions@3.26.0(react-dom@19.2.3(react@19.2.3))(react@19.2.3))(@react-aria/utils@3.32.0(react-dom@19.2.3(react@19.2.3))(react@19.2.3))(@react-stately/utils@3.11.0(react@19.2.3))(@react-types/shared@3.32.1(react@19.2.3))(react-aria-components@1.13.0(react-dom@19.2.3(react@19.2.3))(react@19.2.3))(react-aria@3.44.0(react-dom@19.2.3(react@19.2.3))(react@19.2.3))(react-dom@19.2.3(react@19.2.3))(react-hook-form@7.65.0(react@19.2.3))(react-router@7.10.1(react-dom@19.2.3(react@19.2.3))(react@19.2.3))(react-stately@3.42.0(react@19.2.3))(react@19.2.3)
+        specifier: ^0.17.8
+        version: 0.17.8(@react-aria/focus@3.21.2(react-dom@19.2.3(react@19.2.3))(react@19.2.3))(@react-aria/interactions@3.26.0(react-dom@19.2.3(react@19.2.3))(react@19.2.3))(@react-aria/utils@3.32.0(react-dom@19.2.3(react@19.2.3))(react@19.2.3))(@react-stately/utils@3.11.0(react@19.2.3))(@react-types/shared@3.32.1(react@19.2.3))(react-aria-components@1.13.0(react-dom@19.2.3(react@19.2.3))(react@19.2.3))(react-aria@3.44.0(react-dom@19.2.3(react@19.2.3))(react@19.2.3))(react-dom@19.2.3(react@19.2.3))(react-hook-form@7.65.0(react@19.2.3))(react-router@7.10.1(react-dom@19.2.3(react@19.2.3))(react@19.2.3))(react-stately@3.42.0(react@19.2.3))(react@19.2.3)
       '@launchpad-ui/tokens':
         specifier: ^0.15.1
         version: 0.15.1
@@ -1008,8 +1008,8 @@ packages:
   '@launchdarkly/session-replay@0.4.9':
     resolution: {integrity: sha512-Cur9amHWpblQb9weCyjX/Z0uU+AkxpuRsXUC3J3IzYS3VeJf2WPWw7d07X8pFoun5AGHzNEZtQQJP84B9RLyCA==}
 
-  '@launchpad-ui/components@0.17.7':
-    resolution: {integrity: sha512-p5GWGeGtZzYdLqBosCijS6yRrwbHziQF9ZGoYLb0sHx9lbUyvf/5e8eDHkx+CiIGfL8ZhBtcmRAk5oJUJ4m63w==}
+  '@launchpad-ui/components@0.17.8':
+    resolution: {integrity: sha512-Nuq5WvWoonM4VdIJ/QJ9K2rHJogj87iPOYkmssj9cWaXejtHh7wNmyBRE+Z0NeU8tqQbm3UVQ/ki0SviKk4a0g==}
     peerDependencies:
       '@react-aria/focus': 3.21.2
       '@react-aria/interactions': 3.25.6
@@ -5494,7 +5494,7 @@ snapshots:
     dependencies:
       highlight.run: 9.23.0
 
-  '@launchpad-ui/components@0.17.7(@react-aria/focus@3.21.2(react-dom@19.2.3(react@19.2.3))(react@19.2.3))(@react-aria/interactions@3.26.0(react-dom@19.2.3(react@19.2.3))(react@19.2.3))(@react-aria/utils@3.32.0(react-dom@19.2.3(react@19.2.3))(react@19.2.3))(@react-stately/utils@3.11.0(react@19.2.3))(@react-types/shared@3.32.1(react@19.2.3))(react-aria-components@1.13.0(react-dom@19.2.3(react@19.2.3))(react@19.2.3))(react-aria@3.44.0(react-dom@19.2.3(react@19.2.3))(react@19.2.3))(react-dom@19.2.3(react@19.2.3))(react-hook-form@7.65.0(react@19.2.3))(react-router@7.10.1(react-dom@19.2.3(react@19.2.3))(react@19.2.3))(react-stately@3.42.0(react@19.2.3))(react@19.2.3)':
+  '@launchpad-ui/components@0.17.8(@react-aria/focus@3.21.2(react-dom@19.2.3(react@19.2.3))(react@19.2.3))(@react-aria/interactions@3.26.0(react-dom@19.2.3(react@19.2.3))(react@19.2.3))(@react-aria/utils@3.32.0(react-dom@19.2.3(react@19.2.3))(react@19.2.3))(@react-stately/utils@3.11.0(react@19.2.3))(@react-types/shared@3.32.1(react@19.2.3))(react-aria-components@1.13.0(react-dom@19.2.3(react@19.2.3))(react@19.2.3))(react-aria@3.44.0(react-dom@19.2.3(react@19.2.3))(react@19.2.3))(react-dom@19.2.3(react@19.2.3))(react-hook-form@7.65.0(react@19.2.3))(react-router@7.10.1(react-dom@19.2.3(react@19.2.3))(react@19.2.3))(react-stately@3.42.0(react@19.2.3))(react@19.2.3)':
     dependencies:
       '@internationalized/date': 3.10.0
       '@launchpad-ui/icons': 0.24.8(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
