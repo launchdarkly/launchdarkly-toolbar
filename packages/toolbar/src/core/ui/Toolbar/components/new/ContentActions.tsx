@@ -139,7 +139,7 @@ export function ContentActions() {
         </Tooltip>
       )}
       {showFilter && (
-        <Tooltip content={`Filter ${activeSubtab.charAt(0).toUpperCase() + activeSubtab.slice(1)}`} offsetTop={-4}>
+        <Tooltip content={`Filter ${activeSubtab}`} offsetTop={-4}>
           <FilterButton />
         </Tooltip>
       )}
