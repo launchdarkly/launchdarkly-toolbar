@@ -100,7 +100,7 @@ const FilterOverlayContent = memo(function FilterOverlayContent({ subtab, onClos
 
       <div
         ref={overlayRef}
-        className={styles.overlay}
+        className={subtab === 'flags' ? styles.overlayFlags : styles.overlay}
         role="dialog"
         aria-label="Filter options"
         style={{ pointerEvents: 'auto' }}
@@ -161,14 +161,7 @@ export function FilterButton({ className }: FilterButtonProps) {
 
   return (
     <div className={styles.container}>
-      <IconButton
-        icon={<FilterTuneIcon />}
-        label="Filter"
-        onClick={toggleFilterOverlay}
-        className={className}
-        aria-expanded={isFilterOverlayOpen}
-        aria-haspopup="dialog"
-      />
+      <IconButton icon={<FilterTuneIcon />} label="Filter" onClick={toggleFilterOverlay} className={className} />
       {hasActiveFilters && filterCount > 0 && (
         <div className={styles.filterCount} aria-label={`${filterCount} filters active`}>
           {filterCount}

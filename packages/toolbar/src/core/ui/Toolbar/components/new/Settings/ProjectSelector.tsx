@@ -14,10 +14,12 @@ export function ProjectSelector() {
   }, [projects, getProjects]);
 
   const projectOptions = useMemo(() => {
-    return projects.map((project) => ({
-      id: project.key,
-      label: project.name,
-    }));
+    return projects
+      .map((project) => ({
+        id: project.key,
+        label: project.name,
+      }))
+      .sort((a, b) => a.label.localeCompare(b.label));
   }, [projects]);
 
   const handleProjectSelect = (key: string | null) => {

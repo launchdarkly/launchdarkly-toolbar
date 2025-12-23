@@ -1,5 +1,26 @@
 # Changelog
 
+## [2.7.0-beta.1](https://github.com/launchdarkly/launchdarkly-toolbar/compare/2.6.1-beta.1...2.7.0-beta.1) (2025-12-19)
+
+
+### Features
+
+* [REL-11347] action tooltips + UX updates ([#454](https://github.com/launchdarkly/launchdarkly-toolbar/issues/454)) ([850eb06](https://github.com/launchdarkly/launchdarkly-toolbar/commit/850eb063ce27189f55879c220fa268f6a6a4149e))
+
+## [2.6.1-beta.1](https://github.com/launchdarkly/launchdarkly-toolbar/compare/2.6.0-beta.1...2.6.1-beta.1) (2025-12-18)
+
+
+### Bug Fixes
+
+* [REL-11345] update project + environment selector logic ([#452](https://github.com/launchdarkly/launchdarkly-toolbar/issues/452)) ([8da239a](https://github.com/launchdarkly/launchdarkly-toolbar/commit/8da239a9360467e1a6659577d16264730c4d9900))
+
+## [2.6.0-beta.1](https://github.com/launchdarkly/launchdarkly-toolbar/compare/2.5.4-beta.1...2.6.0-beta.1) (2025-12-18)
+
+
+### Features
+
+* [REL-11323] Allow users to easily opt-out of tracking ([#448](https://github.com/launchdarkly/launchdarkly-toolbar/issues/448)) ([a35b3d0](https://github.com/launchdarkly/launchdarkly-toolbar/commit/a35b3d014ac734e09def0bec6216994c83619dc1))
+
 ## [2.5.4-beta.1](https://github.com/launchdarkly/launchdarkly-toolbar/compare/2.5.3-beta.1...2.5.4-beta.1) (2025-12-18)
 
 
