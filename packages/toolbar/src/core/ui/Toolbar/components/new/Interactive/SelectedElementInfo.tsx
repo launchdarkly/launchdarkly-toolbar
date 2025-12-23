@@ -106,11 +106,11 @@ export function SelectedElementInfo() {
 
       <div className={styles.workflowsContainer}>
         <MCPSetupAlert />
-        <WorkflowSection title="Feature Flags">
+        <WorkflowSection title="Feature flags">
           <WorkflowCard workflow="featureFlag" />
         </WorkflowSection>
 
-        <WorkflowSection title="Events & Analytics">
+        <WorkflowSection title="Events & analytics">
           <WorkflowCard workflow="clickTracking" disabled />
         </WorkflowSection>
       </div>
