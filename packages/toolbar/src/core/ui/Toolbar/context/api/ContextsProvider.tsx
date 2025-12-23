@@ -363,15 +363,36 @@ export const ContextsProvider = ({ children }: { children: React.ReactNode }) =>
   // Provide callback for dev server to update context
   useEffect(() => {
     setOnDevServerContextChange(async (context: LDContext) => {
-      // Check if context already exists in the list
-      const contextId = generateContextId(context);
-      const exists = storedContexts.some((c) => generateContextId(c) === contextId);
+      const newContextId = generateContextId(context);
+      const newContextKind = getContextKind(context);
+      const newContextKey = getContextKey(context);
 
-      // Add to list if it doesn't exist (before setContext to avoid race with auto-add)
-      if (!exists) {
+      // Check if a context with the same kind and key already exists
+      const existingContextIndex = storedContexts.findIndex((c) => {
+        return getContextKind(c) === newContextKind && getContextKey(c) === newContextKey;
+      });
+
+      if (existingContextIndex >= 0) {
+        // Update existing context if the content has changed
+        const existingContext = storedContexts[existingContextIndex];
+        const existingContextId = generateContextId(existingContext);
+
+        if (existingContextId !== newContextId) {
+          // Content changed, update the existing context
+          setStoredContexts((prev) => {
+            const updated = [...prev];
+            updated[existingContextIndex] = context;
+            saveContexts(updated);
+            return updated;
+          });
+        }
+      } else {
+        // Add new context if it doesn't exist
         setStoredContexts((prev) => {
-          // Double-check it doesn't exist (in case of concurrent updates)
-          const stillDoesNotExist = !prev.some((c) => generateContextId(c) === contextId);
+          // Double-check it doesn't exist by kind+key (in case of concurrent updates)
+          const stillDoesNotExist = !prev.some(
+            (c) => getContextKind(c) === newContextKind && getContextKey(c) === newContextKey,
+          );
           if (stillDoesNotExist) {
             const updated = [...prev, context];
             saveContexts(updated);
