@@ -5,7 +5,7 @@
  * The state includes: flag overrides, contexts, settings, starred flags, etc.
  */
 
-import { LDContext } from 'launchdarkly-js-client-sdk';
+import { LDContext } from '@launchdarkly/js-client-sdk';
 import { ToolbarSettings } from '../ui/Toolbar/utils/localStorage';
 
 /** Current version of the shared state format */
