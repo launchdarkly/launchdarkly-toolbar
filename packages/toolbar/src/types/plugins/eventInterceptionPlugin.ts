@@ -1,5 +1,7 @@
-import type { Hook, LDClient, LDPluginEnvironmentMetadata, LDPluginMetadata } from '@launchdarkly/js-client-sdk';
+import type { LDPluginEnvironmentMetadata, LDPluginMetadata } from '@launchdarkly/js-client-sdk';
 import { AfterTrackHook, AfterIdentifyHook, AfterEvaluationHook, EventStore } from '../hooks';
+import type { LDClient } from '../compat/LDClient';
+import type { Hook } from '../compat/Hook';
 import type { EventFilter, ProcessedEvent } from '../events';
 import type { IEventInterceptionPlugin } from './plugins';
 import { ANALYTICS_EVENT_PREFIX } from '../analytics';
