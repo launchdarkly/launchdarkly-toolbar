@@ -191,7 +191,7 @@ export const ContextsProvider = ({ children }: { children: React.ReactNode }) =>
         // and setContext would skip the identify call due to equality check
         isSettingContextRef.current = true;
         ldClient
-          .identify(savedActiveContext)
+          .identify(savedActiveContext)!
           .then(() => {
             // Ensure state is in sync (it should already be from useState initialization)
             setActiveContext(savedActiveContext);
