@@ -1,11 +1,12 @@
-import type { Hook } from 'launchdarkly-js-client-sdk';
 import type {
+  Hook,
   HookMetadata,
   IdentifySeriesContext,
   IdentifySeriesData,
   IdentifySeriesResult,
   LDContext,
-} from 'launchdarkly-js-sdk-common';
+} from '@launchdarkly/js-client-sdk';
+
 import type { EventFilter, ProcessedEvent, SyntheticEventContext } from '../events';
 
 export type AfterIdentifyHookConfig = {

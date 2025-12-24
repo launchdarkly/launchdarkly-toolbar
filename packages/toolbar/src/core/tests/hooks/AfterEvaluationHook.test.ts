@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { AfterEvaluationHook, type AfterEvaluationHookConfig } from '../../../types/hooks/AfterEvaluationHook';
-import type { EvaluationSeriesData, EvaluationSeriesContext, LDEvaluationDetail } from 'launchdarkly-js-sdk-common';
+import type { EvaluationSeriesData, EvaluationSeriesContext, LDEvaluationDetail } from '@launchdarkly/js-client-sdk';
 import { EventFilter, ProcessedEvent } from '../../../types';
 
 // Mock console methods to avoid noise in test output

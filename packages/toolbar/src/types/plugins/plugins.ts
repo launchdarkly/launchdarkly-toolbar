@@ -1,4 +1,6 @@
-import type { LDClient, LDDebugOverride, LDFlagSet, LDFlagValue, LDPlugin } from 'launchdarkly-js-client-sdk';
+import type { LDFlagSet, LDFlagValue, LDDebugOverride } from '@launchdarkly/js-client-sdk';
+import type { LDPlugin } from '../compat/LDPlugin';
+import type { LDClient } from '../compat/LDClient';
 import type { ProcessedEvent } from '../events';
 
 export interface IFlagOverridePlugin extends LDPlugin, LDDebugOverride {
