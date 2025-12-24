@@ -18,6 +18,13 @@ const mockDevServerClientInstance = {
   }),
   setOverride: vi.fn(),
   clearOverride: vi.fn(),
+  updateProjectContext: vi.fn().mockResolvedValue({
+    sourceEnvironmentKey: 'test-environment',
+    flagsState: {},
+    overrides: {},
+    availableVariations: {},
+    _lastSyncedFromSource: Date.now(),
+  }),
 };
 
 const mockFlagStateManagerInstance = {
@@ -55,6 +62,13 @@ vi.mock('../services/FlagStateManager', () => {
 const mockGetProjects = vi.fn().mockResolvedValue([{ key: 'test-project', name: 'Test Project' }]);
 const mockProjectKey = { current: 'test-project' };
 const mockGetProjectFlags = vi.fn().mockResolvedValue({ items: [] });
+
+// Mock context management functions with stable references
+const mockContextsArray: any[] = []; // Stable reference to avoid triggering useCallback changes
+const mockSetContext = vi.fn().mockResolvedValue(undefined);
+const mockAddContext = vi.fn();
+const mockUpdateContext = vi.fn();
+const mockActiveContext = { current: null as any };
 
 // Mock the api module which exports all API-related context
 vi.mock('../ui/Toolbar/context/api', () => ({
@@ -109,6 +123,23 @@ vi.mock('../ui/Toolbar/context/api/ApiProvider', () => ({
   }),
 }));
 
+vi.mock('../ui/Toolbar/context/api/ContextsProvider', () => ({
+  ContextsProvider: ({ children }: { children: React.ReactNode }) => <>{children}</>,
+  useContextsContext: () => ({
+    contexts: mockContextsArray, // Use stable reference
+    filter: '',
+    setFilter: vi.fn(),
+    addContext: mockAddContext,
+    removeContext: vi.fn(),
+    updateContext: mockUpdateContext,
+    setContext: mockSetContext,
+    activeContext: mockActiveContext.current,
+    isAddFormOpen: false,
+    setIsAddFormOpen: vi.fn(),
+    clearContexts: vi.fn(),
+  }),
+}));
+
 // Test component that consumes the context
 function TestConsumer() {
   const { state, refresh } = useDevServerContext();
@@ -146,9 +177,22 @@ describe('DevServerProvider - Integration Flows', () => {
       availableVariations: {},
       _lastSyncedFromSource: Date.now(),
     });
+    mockDevServerClientInstance.updateProjectContext.mockResolvedValue({
+      sourceEnvironmentKey: 'test-environment',
+      flagsState: {},
+      overrides: {},
+      availableVariations: {},
+      _lastSyncedFromSource: Date.now(),
+    });
 
     mockFlagStateManagerInstance.getEnhancedFlags.mockResolvedValue({});
     mockFlagStateManagerInstance.subscribe.mockReturnValue(() => {});
+
+    // Reset context mocks
+    mockSetContext.mockResolvedValue(undefined);
+    mockAddContext.mockClear();
+    mockUpdateContext.mockClear();
+    mockActiveContext.current = null;
   });
 
   afterEach(() => {
