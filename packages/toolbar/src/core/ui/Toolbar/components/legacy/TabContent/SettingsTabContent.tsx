@@ -235,7 +235,7 @@ export function SettingsTabContent(props: SettingsTabContentProps) {
     if (mode === 'dev-server') {
       return [
         {
-          title: 'Dev Server Configuration',
+          title: 'Dev server configuration',
           items: [
             {
               id: 'project',
@@ -258,7 +258,7 @@ export function SettingsTabContent(props: SettingsTabContentProps) {
           ],
         },
         {
-          title: 'Toolbar Settings',
+          title: 'Toolbar settings',
           items: [
             {
               id: 'position',
@@ -298,7 +298,7 @@ export function SettingsTabContent(props: SettingsTabContentProps) {
       // SDK Mode
       return [
         {
-          title: 'Toolbar Settings',
+          title: 'Toolbar settings',
           items: [
             {
               id: 'project',

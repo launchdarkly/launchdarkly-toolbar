@@ -9,14 +9,14 @@ describe('Tabs', () => {
   test('renders children correctly', () => {
     render(
       <Tabs>
-        <TabButton id="flag-sdk" label="SDK Flags" />
-        <TabButton id="flag-dev-server" label="Dev Server Flags" />
+        <TabButton id="flag-sdk" label="SDK flags" />
+        <TabButton id="flag-dev-server" label="Dev server flags" />
         <TabButton id="settings" label="Settings" />
       </Tabs>,
     );
 
-    expect(screen.getByText('SDK Flags')).toBeInTheDocument();
-    expect(screen.getByText('Dev Server Flags')).toBeInTheDocument();
+    expect(screen.getByText('SDK flags')).toBeInTheDocument();
+    expect(screen.getByText('Dev server flags')).toBeInTheDocument();
     expect(screen.getByText('Settings')).toBeInTheDocument();
   });
 
@@ -24,26 +24,26 @@ describe('Tabs', () => {
     const onTabChange = vi.fn();
     render(
       <Tabs onTabChange={onTabChange}>
-        <TabButton id="flag-sdk" label="SDK Flags" />
-        <TabButton id="flag-dev-server" label="Dev Server Flags" />
+        <TabButton id="flag-sdk" label="SDK flags" />
+        <TabButton id="flag-dev-server" label="Dev server flags" />
         <TabButton id="settings" label="Settings" />
       </Tabs>,
     );
 
-    fireEvent.click(screen.getByText('Dev Server Flags'));
+    fireEvent.click(screen.getByText('Dev server flags'));
     expect(onTabChange).toHaveBeenCalledWith('flag-dev-server');
   });
 
   test('handles disabled tabs', () => {
     render(
       <Tabs>
-        <TabButton id="flag-sdk" label="SDK Flags" />
-        <TabButton id="flag-dev-server" label="Dev Server Flags" disabled />
+        <TabButton id="flag-sdk" label="SDK flags" />
+        <TabButton id="flag-dev-server" label="Dev server flags" disabled />
         <TabButton id="settings" label="Settings" />
       </Tabs>,
     );
 
-    const disabledTab = screen.getByText('Dev Server Flags');
+    const disabledTab = screen.getByText('Dev server flags');
     expect(disabledTab).toBeDisabled();
   });
 

@@ -67,7 +67,7 @@ describe('IconBar', () => {
 
       // Verify all icons are present in order: interactive, flags, optimize, ai, monitoring, settings
       expect(buttons).toHaveLength(6);
-      expect(buttons[0]).toHaveAttribute('aria-label', 'Interactive Mode');
+      expect(buttons[0]).toHaveAttribute('aria-label', 'Interactive mode');
       expect(buttons[1].getAttribute('aria-label')).toContain('Flags');
       expect(buttons[2]).toHaveAttribute('aria-label', 'Optimize');
       expect(buttons[3]).toHaveAttribute('aria-label', 'AI');
@@ -84,7 +84,7 @@ describe('IconBar', () => {
       const buttons = screen.getAllByRole('button');
 
       // All icons should still be present
-      expect(screen.getByLabelText('Interactive Mode')).toBeInTheDocument();
+      expect(screen.getByLabelText('Interactive mode')).toBeInTheDocument();
       expect(buttons.find((btn) => btn.getAttribute('aria-label')?.includes('Flags'))).toBeInTheDocument();
       expect(screen.getByLabelText('Optimize')).toBeInTheDocument();
       expect(screen.getByLabelText('AI')).toBeInTheDocument();
@@ -98,7 +98,7 @@ describe('IconBar', () => {
       mockEnableInteractiveIcon.mockReturnValue(false);
       renderIconBar();
 
-      const interactiveButton = screen.getByLabelText('Interactive Mode');
+      const interactiveButton = screen.getByLabelText('Interactive mode');
       expect(interactiveButton).toBeDisabled();
       expect(interactiveButton.className).toContain('disabled');
     });
@@ -107,7 +107,7 @@ describe('IconBar', () => {
       mockEnableInteractiveIcon.mockReturnValue(true);
       renderIconBar();
 
-      const interactiveButton = screen.getByLabelText('Interactive Mode');
+      const interactiveButton = screen.getByLabelText('Interactive mode');
       expect(interactiveButton).not.toBeDisabled();
       expect(interactiveButton.className).not.toContain('disabled');
     });
@@ -171,7 +171,7 @@ describe('IconBar', () => {
       const analyticsButton = screen.getByLabelText('Analytics');
       const settingsButton = screen.getByLabelText('Settings');
 
-      expect(flagsButton?.parentElement).toHaveAttribute('title', 'Feature Flags');
+      expect(flagsButton?.parentElement).toHaveAttribute('title', 'Feature flags');
       expect(analyticsButton.parentElement).toHaveAttribute('title', 'Monitoring');
       expect(settingsButton.parentElement).toHaveAttribute('title', 'Settings');
     });
@@ -180,16 +180,16 @@ describe('IconBar', () => {
       mockEnableInteractiveIcon.mockReturnValue(false);
       renderIconBar();
 
-      const interactiveButton = screen.getByLabelText('Interactive Mode');
-      expect(interactiveButton.parentElement).toHaveAttribute('title', 'Interactive Mode (Coming Soon)');
+      const interactiveButton = screen.getByLabelText('Interactive mode');
+      expect(interactiveButton.parentElement).toHaveAttribute('title', 'Interactive mode (coming soon)');
     });
 
     it('should show regular tooltip for enabled interactive icon', () => {
       mockEnableInteractiveIcon.mockReturnValue(true);
       renderIconBar();
 
-      const interactiveButton = screen.getByLabelText('Interactive Mode');
-      expect(interactiveButton.parentElement).toHaveAttribute('title', 'Interactive Mode');
+      const interactiveButton = screen.getByLabelText('Interactive mode');
+      expect(interactiveButton.parentElement).toHaveAttribute('title', 'Interactive mode');
     });
 
     it('should show "Coming Soon" tooltip for disabled AI icon', () => {
@@ -197,7 +197,7 @@ describe('IconBar', () => {
       renderIconBar();
 
       const aiButton = screen.getByLabelText('AI');
-      expect(aiButton.parentElement).toHaveAttribute('title', 'AI (Coming Soon)');
+      expect(aiButton.parentElement).toHaveAttribute('title', 'AI (coming soon)');
     });
 
     it('should show regular tooltip for enabled AI icon', () => {
@@ -213,7 +213,7 @@ describe('IconBar', () => {
       renderIconBar();
 
       const optimizeButton = screen.getByLabelText('Optimize');
-      expect(optimizeButton.parentElement).toHaveAttribute('title', 'Optimization (Coming Soon)');
+      expect(optimizeButton.parentElement).toHaveAttribute('title', 'Optimization (coming soon)');
     });
 
     it('should show regular tooltip for enabled Optimize icon', () => {
@@ -262,7 +262,7 @@ describe('IconBar', () => {
 
       const buttons = screen.getAllByRole('button');
       const flagsButton = buttons.find((btn) => btn.getAttribute('aria-label')?.includes('Flags'));
-      const interactiveButton = screen.getByLabelText('Interactive Mode');
+      const interactiveButton = screen.getByLabelText('Interactive mode');
 
       // Flags should be active initially
       expect(flagsButton?.className).toContain('active');
@@ -303,7 +303,7 @@ describe('IconBar', () => {
 
       renderIconBar();
 
-      const interactiveButton = screen.getByLabelText('Interactive Mode');
+      const interactiveButton = screen.getByLabelText('Interactive mode');
       const aiButton = screen.getByLabelText('AI');
       const optimizeButton = screen.getByLabelText('Optimize');
 
@@ -328,7 +328,7 @@ describe('IconBar', () => {
 
       renderIconBar();
 
-      expect(screen.getByLabelText('Interactive Mode')).not.toBeDisabled();
+      expect(screen.getByLabelText('Interactive mode')).not.toBeDisabled();
       expect(screen.getByLabelText('AI')).not.toBeDisabled();
       expect(screen.getByLabelText('Optimize')).not.toBeDisabled();
     });
@@ -340,7 +340,7 @@ describe('IconBar', () => {
 
       renderIconBar();
 
-      expect(screen.getByLabelText('Interactive Mode')).toBeDisabled();
+      expect(screen.getByLabelText('Interactive mode')).toBeDisabled();
       expect(screen.getByLabelText('AI')).toBeDisabled();
       expect(screen.getByLabelText('Optimize')).toBeDisabled();
     });
@@ -352,7 +352,7 @@ describe('IconBar', () => {
 
       renderIconBar();
 
-      expect(screen.getByLabelText('Interactive Mode')).not.toBeDisabled();
+      expect(screen.getByLabelText('Interactive mode')).not.toBeDisabled();
       expect(screen.getByLabelText('AI')).toBeDisabled();
       expect(screen.getByLabelText('Optimize')).not.toBeDisabled();
     });

@@ -46,9 +46,9 @@ export interface WorkflowConfig {
 export const WORKFLOW_CONFIGS: Record<WorkflowType, WorkflowConfig> = {
   featureFlag: {
     icon: <ToggleOffIcon />,
-    title: 'Wrap in Feature Flag',
+    title: 'Wrap in feature flag',
     description: 'Let an AI agent automatically wrap this element in a new or existing LaunchDarkly feature flag',
-    inputLabel: 'Flag Key',
+    inputLabel: 'Flag key',
     inputPlaceholder: 'e.g., new-checkout-flow',
     buildPrompt: (elementInfo, projectKey, inputValue) =>
       buildFeatureFlagAgentPrompt({
@@ -67,9 +67,9 @@ export const WORKFLOW_CONFIGS: Record<WorkflowType, WorkflowConfig> = {
   },
   clickTracking: {
     icon: <ClickIcon />,
-    title: 'Track Element Click',
+    title: 'Track element click',
     description: 'Track clicks as a LaunchDarkly custom event',
-    inputLabel: 'Event Name',
+    inputLabel: 'Event name',
     inputPlaceholder: 'e.g., checkout-button-clicked',
     buildPrompt: (elementInfo, _projectKey, inputValue) => buildClickTrackingPrompt(elementInfo, inputValue),
   },
