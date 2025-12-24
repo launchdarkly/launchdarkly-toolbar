@@ -127,8 +127,8 @@ importers:
         specifier: ^6.39.6
         version: 6.39.6
       '@launchdarkly/observability':
-        specifier: ^0.4.9
-        version: 0.4.9
+        specifier: ^0.5.0
+        version: 0.5.0
       '@launchdarkly/session-replay':
         specifier: ^0.5.0
         version: 0.5.0
@@ -1002,8 +1002,8 @@ packages:
   '@launchdarkly/js-sdk-common@2.17.0':
     resolution: {integrity: sha512-HYQNc4xbE58hBOO1yZsqE+BHOC36AYrHPZ5hwvlHoZRSsaoYCPM+Q/n+O+N3JhWXTqGsu6SwUzqUzTyxg8prGg==}
 
-  '@launchdarkly/observability@0.4.9':
-    resolution: {integrity: sha512-v9RlKyKXjJo1RP+P7OQ9lYCNL7rMdteTllKzCONFkKFglNzxwlFAJaKADGuo/EJto245tUEoBUEwLmvuHf+nbA==}
+  '@launchdarkly/observability@0.5.0':
+    resolution: {integrity: sha512-4niW0kFE47NOeN93de6AxTcjrX6c5WTdvtboXCQ/a18F0UdToZKCm3/bcpk2xGGp2cTCQew+1Ld/lmPmjtppSA==}
 
   '@launchdarkly/session-replay@0.5.0':
     resolution: {integrity: sha512-SW3QCGt2E9Ri72DAf44TD/92OgI31MYx3BRlcqvpxq81W6cNU6VWbt3Rej8CZSpmziXH3ldCCJKOHo0bMbmfNg==}
@@ -3303,9 +3303,6 @@ packages:
   hermes-parser@0.25.1:
     resolution: {integrity: sha512-6pEjquH3rqaI6cYAXYPcz9MS4rY6R4ngRgrgfDshRptUZIc3lw0MCIJIGDj9++mfySOuPTHB4nrSW99BCvOPIA==}
 
-  highlight.run@9.23.0:
-    resolution: {integrity: sha512-Wc6gA27IvYPFTyXIZ3dy2J073fGiXpWKypMUNBbPFbJ8gnT1h4lYZQRRCE6O6rSzXiG2VNsDv6lUYxULjbWNUw==}
-
   highlight.run@9.25.0:
     resolution: {integrity: sha512-E2ofYAyn1l6Zqa5/CyS4dAlZbFpLBCzLAPNtLx1MDeB2DrSVstFTcrkTSVw23hdL/jDvpim05QpQUelr8bFWdw==}
 
@@ -5503,9 +5500,9 @@ snapshots:
 
   '@launchdarkly/js-sdk-common@2.17.0': {}
 
-  '@launchdarkly/observability@0.4.9':
+  '@launchdarkly/observability@0.5.0':
     dependencies:
-      highlight.run: 9.23.0
+      highlight.run: 9.25.0
 
   '@launchdarkly/session-replay@0.5.0':
     dependencies:
@@ -8544,11 +8541,6 @@ snapshots:
   hermes-parser@0.25.1:
     dependencies:
       hermes-estree: 0.25.1
-
-  highlight.run@9.23.0:
-    dependencies:
-      '@launchdarkly/js-client-sdk': 0.6.0
-      imurmurhash: 0.1.4
 
   highlight.run@9.25.0:
     dependencies:
