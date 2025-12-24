@@ -28,7 +28,6 @@ export class FlagStateManager {
       const override = devServerData.overrides[flagKey];
       const variations = devServerData.availableVariations[flagKey] || [];
 
-      // Current value is override if exists, otherwise original value
       const currentValue = override ? override.value : flagState.value;
 
       enhancedFlags[flagKey] = {

@@ -24,3 +24,4 @@ export { ExternalLinkIcon } from './ExternalLinkIcon';
 export { CursorIcon } from './CursorIcon';
 export { InfoIcon } from './InfoIcon';
 export { AddIcon } from './AddIcon';
+export { ShareIcon } from './ShareIcon';

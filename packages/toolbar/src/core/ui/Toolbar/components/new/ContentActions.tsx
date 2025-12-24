@@ -6,11 +6,11 @@ import {
   usePlugins,
   useToolbarState,
   useFlagsContext,
-  useAnalytics,
 } from '../../context';
 import { useActiveSubtabContext, useTabSearchContext } from './context';
 import { useContextsContext } from '../../context/api/ContextsProvider';
 import { useEvents } from '../../hooks';
+import { useAnalytics } from '../../context/telemetry/AnalyticsProvider';
 import { CancelCircleIcon, DeleteIcon, SearchIcon, SyncIcon, AddIcon } from '../icons';
 import { SearchSection } from './SearchSection';
 import { FilterButton } from './FilterOverlay';

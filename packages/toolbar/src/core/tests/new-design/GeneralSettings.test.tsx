@@ -51,6 +51,14 @@ vi.mock('../../ui/Toolbar/context/state/ToolbarUIProvider', () => ({
   }),
 }));
 
+// Mock the PluginsProvider
+vi.mock('../../ui/Toolbar/context/state/PluginsProvider', () => ({
+  usePlugins: () => ({
+    flagOverridePlugin: null,
+    eventInterceptionPlugin: null,
+  }),
+}));
+
 // Mock child components
 vi.mock('../../ui/Toolbar/components/new/Settings/ProjectSelector', () => ({
   ProjectSelector: () => <div data-testid="project-selector">Project Selector</div>,
@@ -112,6 +120,7 @@ describe('GeneralSettings - Search Filtering', () => {
       expect(screen.getByText('Position')).toBeInTheDocument();
       expect(screen.getByText('Auto-collapse')).toBeInTheDocument();
       expect(screen.getByText('Reload on flag change')).toBeInTheDocument();
+      expect(screen.getByText('Share toolbar state')).toBeInTheDocument();
 
       // Account section
       expect(screen.getByText('Account')).toBeInTheDocument();
