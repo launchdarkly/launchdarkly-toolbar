@@ -191,7 +191,7 @@ export function EventsContent() {
                           data-testid="add-flag-button"
                           key={`add-flag-${event.context.key}`}
                           icon={<AddIcon />}
-                          label="Add Feature Flag"
+                          label="Add feature flag"
                           href={createFlagDeeplinkUrl(event.context.key || '')}
                           size="medium"
                           onClick={() => handleAddFeatureFlag(event.context.key || '')}

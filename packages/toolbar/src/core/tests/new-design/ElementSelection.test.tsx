@@ -124,7 +124,7 @@ describe('Element Selection Integration', () => {
         </>,
       );
 
-      const interactiveButton = screen.getByLabelText('Interactive Mode');
+      const interactiveButton = screen.getByLabelText('Interactive mode');
       fireEvent.click(interactiveButton);
 
       const overlay = screen.getByTestId('selection-overlay');
@@ -140,7 +140,7 @@ describe('Element Selection Integration', () => {
         </>,
       );
 
-      const interactiveButton = screen.getByLabelText('Interactive Mode');
+      const interactiveButton = screen.getByLabelText('Interactive mode');
 
       // First click switches to interactive tab
       fireEvent.click(interactiveButton);
@@ -169,7 +169,7 @@ describe('Element Selection Integration', () => {
         </>,
       );
 
-      const interactiveButton = screen.getByLabelText('Interactive Mode');
+      const interactiveButton = screen.getByLabelText('Interactive mode');
       fireEvent.click(interactiveButton);
 
       // Simulate clicking on the test element
@@ -224,7 +224,7 @@ describe('Element Selection Integration', () => {
       );
 
       // Start in interactive tab
-      const interactiveButton = screen.getByLabelText('Interactive Mode');
+      const interactiveButton = screen.getByLabelText('Interactive mode');
       fireEvent.click(interactiveButton);
 
       // Simulate selection (simplified for test)

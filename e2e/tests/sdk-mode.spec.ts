@@ -230,7 +230,7 @@ test.describe('LaunchDarkly Toolbar - SDK Mode', () => {
   });
 
   test.describe('Event Interception and Management Workflow', () => {
-    test('should render Add Feature Flag button for unknown flags', async ({ page }: { page: Page }) => {
+    test('should render Add feature flag button for unknown flags', async ({ page }: { page: Page }) => {
       await page.getByRole('img', { name: 'LaunchDarkly' }).click();
       await page.getByRole('tab', { name: 'Events' }).click();
 
@@ -246,8 +246,8 @@ test.describe('LaunchDarkly Toolbar - SDK Mode', () => {
       await expect(firstEvent).toBeVisible();
       await expect(firstEvent.getByText('test-not-found-flag')).toBeVisible();
 
-      // Verify the event appears in the Events tab with an "Add Feature Flag" button
-      const addFlagButton = firstEvent.getByLabel('Add Feature Flag');
+      // Verify the event appears in the Events tab with an "Add feature flag" button
+      const addFlagButton = firstEvent.getByLabel('Add feature flag');
       await expect(addFlagButton).toBeVisible();
     });
   });

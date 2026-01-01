@@ -193,7 +193,7 @@ describe('Tooltip', () => {
   it('should hide tooltip when clicking button that opens overlay', async () => {
     // This simulates the filter button scenario where clicking opens an overlay
     render(
-      <Tooltip content="Filter Events">
+      <Tooltip content="Filter events">
         <button>Filter</button>
       </Tooltip>,
     );
@@ -204,14 +204,14 @@ describe('Tooltip', () => {
     // Show tooltip
     fireEvent.mouseEnter(container);
     await waitFor(() => {
-      expect(screen.getByText('Filter Events')).toBeInTheDocument();
+      expect(screen.getByText('Filter events')).toBeInTheDocument();
     });
 
     // Click to "open overlay" - tooltip should hide
     // This is the key behavior we're testing: clicking hides the tooltip
     fireEvent.click(container);
     await waitFor(() => {
-      expect(screen.queryByText('Filter Events')).not.toBeInTheDocument();
+      expect(screen.queryByText('Filter events')).not.toBeInTheDocument();
     });
   });
 });
