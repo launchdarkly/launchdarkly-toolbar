@@ -1,5 +1,13 @@
 # Changelog
 
+## [2.8.0-beta.1](https://github.com/launchdarkly/launchdarkly-toolbar/compare/2.7.0-beta.1...2.8.0-beta.1) (2026-01-02)
+
+
+### Features
+
+* [REL-10723] implement a way to share overrides with others using urls ([#371](https://github.com/launchdarkly/launchdarkly-toolbar/issues/371)) ([642e962](https://github.com/launchdarkly/launchdarkly-toolbar/commit/642e962d540fccb15cca8d53edd1564934e63ab4))
+* REL-11387 dev server context management ([#461](https://github.com/launchdarkly/launchdarkly-toolbar/issues/461)) ([37b328d](https://github.com/launchdarkly/launchdarkly-toolbar/commit/37b328d19cb0658b075a89793348c0423b0dc7e0))
+
 ## [2.7.0-beta.1](https://github.com/launchdarkly/launchdarkly-toolbar/compare/2.6.1-beta.1...2.7.0-beta.1) (2025-12-19)
 
 
