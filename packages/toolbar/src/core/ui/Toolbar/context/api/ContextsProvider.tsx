@@ -96,41 +96,6 @@ export const ContextsProvider = ({ children }: { children: React.ReactNode }) =>
     [activeContext, analytics],
   );
 
-  // Update a context in the list (contextId is the hash from generateContextId)
-  const updateContext = useCallback(
-    (contextId: string, newContext: LDContext) => {
-      setStoredContexts((prev) => {
-        const oldContext = prev.find((c) => generateContextId(c) === contextId);
-        const updated = prev.map((c) => {
-          if (generateContextId(c) === contextId) {
-            return newContext;
-          }
-          return c;
-        });
-        saveContexts(updated);
-
-        // If the updated context is the active context, update it
-        const activeContextId = generateContextId(activeContext);
-        if (activeContext && activeContextId === contextId) {
-          setActiveContext(newContext);
-          saveActiveContext(newContext);
-        }
-
-        // Track analytics
-        if (oldContext) {
-          const oldKind = getContextKind(oldContext);
-          const newKind = getContextKind(newContext);
-          const oldKey = getContextKey(oldContext) || getContextDisplayName(oldContext);
-          const newKey = getContextKey(newContext) || getContextDisplayName(newContext);
-          analytics.trackContextUpdated(oldKind, oldKey, newKind, newKey);
-        }
-
-        return updated;
-      });
-    },
-    [activeContext, analytics],
-  );
-
   // Set the current context and update the host application's LD Client via identify
   const setContext = useCallback(
     async (context: LDContext) => {
@@ -169,6 +134,43 @@ export const ContextsProvider = ({ children }: { children: React.ReactNode }) =>
       }
     },
     [ldClient, analytics, activeContext],
+  );
+
+  // Update a context in the list (contextId is the hash from generateContextId)
+  const updateContext = useCallback(
+    (contextId: string, newContext: LDContext) => {
+      setStoredContexts((prev) => {
+        const oldContext = prev.find((c) => generateContextId(c) === contextId);
+        const updated = prev.map((c) => {
+          if (generateContextId(c) === contextId) {
+            return newContext;
+          }
+          return c;
+        });
+        saveContexts(updated);
+
+        // If the updated context is the active context, update it
+        const activeContextId = generateContextId(activeContext);
+        if (activeContext && activeContextId === contextId) {
+          // Use setContext to properly update the LD client and sync with dev server
+          setContext(newContext).catch((error) => {
+            console.error('Failed to update active context:', error);
+          });
+        }
+
+        // Track analytics
+        if (oldContext) {
+          const oldKind = getContextKind(oldContext);
+          const newKind = getContextKind(newContext);
+          const oldKey = getContextKey(oldContext) || getContextDisplayName(oldContext);
+          const newKey = getContextKey(newContext) || getContextDisplayName(newContext);
+          analytics.trackContextUpdated(oldKind, oldKey, newKind, newKey);
+        }
+
+        return updated;
+      });
+    },
+    [activeContext, analytics, setContext],
   );
 
   // Restore saved active context on mount when LD client is available
