@@ -36,6 +36,7 @@ const EVENTS = {
   CONTEXT_EDIT_STARTED: 'context.edit.started',
   CONTEXT_EDIT_CANCELLED: 'context.edit.cancelled',
   CONTEXT_KEY_COPIED: 'context.key.copied',
+  SHARE_STATE: 'share.state',
 } as const;
 
 /**
@@ -367,6 +368,23 @@ export class ToolbarAnalytics {
   trackContextKeyCopy(contextKey: string): void {
     this.track(EVENTS.CONTEXT_KEY_COPIED, {
       contextKey,
+    });
+  }
+
+  /**
+   * Track state sharing via URL
+   */
+  trackShareState(options: {
+    includeSettings: boolean;
+    overrideCount: number;
+    contextCount: number;
+    starredFlagCount: number;
+  }): void {
+    this.track(EVENTS.SHARE_STATE, {
+      includeSettings: options.includeSettings,
+      overrideCount: options.overrideCount,
+      contextCount: options.contextCount,
+      starredFlagCount: options.starredFlagCount,
     });
   }
 }

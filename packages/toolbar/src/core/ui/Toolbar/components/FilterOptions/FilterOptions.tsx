@@ -1,6 +1,7 @@
 import { ButtonGroup, Button } from '@launchpad-ui/components';
 import { useFlagFilterOptions, type FlagFilterMode, FILTER_MODES } from './useFlagFilterOptions';
 import { ClearButton } from './ClearButton';
+import { ShareUrlButton } from './ShareUrlButton';
 import * as styles from './FilterOptions.css';
 
 const FILTER_OPTIONS = [
@@ -16,12 +17,21 @@ export interface FilterOptionsProps {
   starredCount: number;
   onClearOverrides?: () => void;
   onClearStarred?: () => void;
+  onShareUrl?: () => void;
   isLoading?: boolean;
 }
 
 export function FilterOptions(props: FilterOptionsProps) {
-  const { totalFlags, filteredFlags, totalOverriddenFlags, starredCount, onClearOverrides, onClearStarred, isLoading } =
-    props;
+  const {
+    totalFlags,
+    filteredFlags,
+    totalOverriddenFlags,
+    starredCount,
+    onClearOverrides,
+    onClearStarred,
+    onShareUrl,
+    isLoading,
+  } = props;
   const { activeFilters, onFilterToggle } = useFlagFilterOptions();
 
   const isAllActive = activeFilters.has(FILTER_MODES.ALL);
@@ -54,17 +64,20 @@ export function FilterOptions(props: FilterOptionsProps) {
             ? `Showing all ${totalFlags} flags`
             : `Showing ${filteredFlags} of ${totalFlags} flags`}
         </div>
-        {!hasMultipleFilters && isOverridesActive && totalOverriddenFlags > 0 && onClearOverrides && (
-          <ClearButton
-            label="Overrides"
-            count={totalOverriddenFlags}
-            onClick={onClearOverrides}
-            isLoading={isLoading}
-          />
-        )}
-        {!hasMultipleFilters && isStarredActive && starredCount > 0 && onClearStarred && (
-          <ClearButton label="Starred" count={starredCount} onClick={onClearStarred} isLoading={isLoading} />
-        )}
+        <div className={styles.buttonGroup}>
+          {onShareUrl && <ShareUrlButton onClick={onShareUrl} count={totalOverriddenFlags} isLoading={isLoading} />}
+          {!hasMultipleFilters && isOverridesActive && totalOverriddenFlags > 0 && onClearOverrides && (
+            <ClearButton
+              label="Overrides"
+              count={totalOverriddenFlags}
+              onClick={onClearOverrides}
+              isLoading={isLoading}
+            />
+          )}
+          {!hasMultipleFilters && isStarredActive && starredCount > 0 && onClearStarred && (
+            <ClearButton label="Starred" count={starredCount} onClick={onClearStarred} isLoading={isLoading} />
+          )}
+        </div>
       </div>
     </div>
   );

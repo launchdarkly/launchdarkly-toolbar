@@ -315,3 +315,24 @@ export function loadAnalyticsConsentShown(): boolean {
     return false;
   }
 }
+
+export function loadAllSettings(): Partial<ToolbarSettings> {
+  try {
+    const stored = localStorage.getItem(TOOLBAR_STORAGE_KEYS.SETTINGS);
+    if (!stored) {
+      return {};
+    }
+    return JSON.parse(stored) as Partial<ToolbarSettings>;
+  } catch (error) {
+    console.warn('Failed to load all settings from localStorage:', error);
+    return {};
+  }
+}
+
+export function saveAllSettings(settings: Partial<ToolbarSettings>): void {
+  try {
+    localStorage.setItem(TOOLBAR_STORAGE_KEYS.SETTINGS, JSON.stringify(settings));
+  } catch (error) {
+    console.warn('Failed to save all settings to localStorage:', error);
+  }
+}
