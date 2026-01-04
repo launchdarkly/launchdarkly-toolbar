@@ -5,7 +5,7 @@ import { ContextsProvider, useContextsContext } from '../ui/Toolbar/context/api/
 import '@testing-library/jest-dom/vitest';
 import React from 'react';
 import { loadContexts, saveContexts, loadActiveContext, saveActiveContext } from '../ui/Toolbar/utils/localStorage';
-import { generateContextId, getContextKey, getContextDisplayName } from '../ui/Toolbar/utils/context';
+import { getStableContextId, getContextKey, getContextDisplayName } from '../ui/Toolbar/utils/context';
 
 // Helper to create test contexts (LDContext format)
 function createTestContext(overrides: { kind: string; key?: string; name?: string; anonymous?: boolean }): LDContext {
@@ -66,7 +66,7 @@ function TestConsumer() {
 
   const isActive = (contextId: string) => {
     if (!activeContext) return false;
-    return generateContextId(activeContext) === contextId;
+    return getStableContextId(activeContext) === contextId;
   };
 
   return (
@@ -74,7 +74,7 @@ function TestConsumer() {
       <div data-testid="contexts-count">{contexts.length}</div>
       <div data-testid="filter">{filter}</div>
       {contexts.map((context) => {
-        const contextId = generateContextId(context);
+        const contextId = getStableContextId(context);
         const contextKey = getContextKey(context);
         const displayName = getContextDisplayName(context);
         if (!testContextIdRef.current && contextKey === 'test-user') {
@@ -97,7 +97,7 @@ function TestConsumer() {
         onClick={() => {
           const contextToRemove = contexts.find((c) => getContextKey(c) === 'test-user');
           if (contextToRemove) {
-            removeContext(generateContextId(contextToRemove));
+            removeContext(getStableContextId(contextToRemove));
           }
         }}
       >
@@ -137,8 +137,8 @@ describe('ContextsProvider', () => {
       );
 
       expect(screen.getByTestId('contexts-count')).toHaveTextContent('2');
-      expect(screen.getByTestId(`context-${generateContextId(storedContexts[0])}`)).toHaveTextContent('User One');
-      expect(screen.getByTestId(`context-${generateContextId(storedContexts[1])}`)).toHaveTextContent('Org One');
+      expect(screen.getByTestId(`context-${getStableContextId(storedContexts[0])}`)).toHaveTextContent('User One');
+      expect(screen.getByTestId(`context-${getStableContextId(storedContexts[1])}`)).toHaveTextContent('Org One');
     });
 
     test('starts with empty list when localStorage is empty', () => {
@@ -223,7 +223,7 @@ describe('ContextsProvider', () => {
         expect(screen.getByTestId('contexts-count')).toHaveTextContent('1');
       });
 
-      expect(screen.queryByTestId(`context-${generateContextId(storedContexts[1])}`)).not.toBeInTheDocument();
+      expect(screen.queryByTestId(`context-${getStableContextId(storedContexts[1])}`)).not.toBeInTheDocument();
       expect(saveContexts).toHaveBeenCalled();
     });
 
@@ -255,7 +255,7 @@ describe('ContextsProvider', () => {
               onClick={() => {
                 const contextToRemove = contexts.find((c) => getContextKey(c) === 'test-user');
                 if (contextToRemove) {
-                  removeContext(generateContextId(contextToRemove));
+                  removeContext(getStableContextId(contextToRemove));
                 }
               }}
             >
@@ -378,8 +378,8 @@ describe('ContextsProvider', () => {
           setContext(storedContexts[0]);
         }, [setContext]);
 
-        const activeContextId = activeContext ? generateContextId(activeContext) : null;
-        const storedContextId = generateContextId(storedContexts[0]);
+        const activeContextId = activeContext ? getStableContextId(activeContext) : null;
+        const storedContextId = getStableContextId(storedContexts[0]);
 
         return (
           <div>
@@ -593,12 +593,14 @@ describe('ContextsProvider', () => {
       expect(screen.getByTestId('contexts-count')).toHaveTextContent('1');
     });
 
-    test('distinguishes contexts with different attributes', async () => {
+    test('updates context when adding with same kind+key but different attributes', async () => {
       const TestDistinctContexts = () => {
         const { contexts, addContext } = useContextsContext();
+        const displayName = contexts[0] ? getContextDisplayName(contexts[0]) : 'none';
         return (
           <div>
             <div data-testid="contexts-count">{contexts.length}</div>
+            <div data-testid="context-name">{displayName}</div>
             <button
               data-testid="add-context-with-name"
               onClick={() => addContext({ kind: 'user', key: 'user-123', name: 'With Name' })}
@@ -625,12 +627,14 @@ describe('ContextsProvider', () => {
       screen.getByTestId('add-context-with-name').click();
       await waitFor(() => {
         expect(screen.getByTestId('contexts-count')).toHaveTextContent('1');
+        expect(screen.getByTestId('context-name')).toHaveTextContent('With Name');
       });
 
-      // Add context without name - should be treated as different (different hash)
+      // Add context without name but same kind+key - should update the existing context
       screen.getByTestId('add-context-without-name').click();
       await waitFor(() => {
-        expect(screen.getByTestId('contexts-count')).toHaveTextContent('2');
+        expect(screen.getByTestId('contexts-count')).toHaveTextContent('1'); // Still 1, not 2
+        expect(screen.getByTestId('context-name')).toHaveTextContent('user-123'); // Name is removed, key is shown
       });
     });
 
@@ -649,7 +653,11 @@ describe('ContextsProvider', () => {
               data-testid="update-context"
               onClick={() => {
                 if (firstContext) {
-                  updateContext(generateContextId(firstContext), { kind: 'user', key: 'user-1', name: 'Updated Name' });
+                  updateContext(getStableContextId(firstContext), {
+                    kind: 'user',
+                    key: 'user-1',
+                    name: 'Updated Name',
+                  });
                 }
               }}
             >
@@ -779,8 +787,8 @@ describe('ContextsProvider', () => {
 
       const TestRestoreContext = () => {
         const { activeContext } = useContextsContext();
-        const activeContextId = activeContext ? generateContextId(activeContext) : null;
-        const savedContextId = generateContextId(savedContext);
+        const activeContextId = activeContext ? getStableContextId(activeContext) : null;
+        const savedContextId = getStableContextId(savedContext);
 
         return (
           <div>
