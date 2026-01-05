@@ -129,8 +129,6 @@ export function ToolbarStateProvider({ children, domId, devServerUrl }: ToolbarS
     analytics.trackToolbarToggle('collapse', 'close_button');
 
     setIsExpanded(false);
-    setAutoCollapse(false);
-    saveToolbarAutoCollapse(false);
   }, [analytics]);
 
   const handleSearch = useCallback(
