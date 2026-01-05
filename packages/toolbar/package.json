@@ -104,7 +104,7 @@
   "devDependencies": {
     "@codemirror/commands": "^6.10.1",
     "@codemirror/lang-json": "^6.0.2",
-    "@codemirror/language": "^6.11.3",
+    "@codemirror/language": "^6.12.1",
     "@codemirror/lint": "^6.9.2",
     "@codemirror/state": "^6.5.3",
     "@codemirror/view": "^6.39.7",
