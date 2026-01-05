@@ -158,7 +158,7 @@ export function GeneralSettings() {
     if (mode === 'dev-server') {
       return [
         {
-          title: 'Dev Server Configuration',
+          title: 'Dev server configuration',
           items: [
             {
               id: 'project',
@@ -178,7 +178,7 @@ export function GeneralSettings() {
           ],
         },
         {
-          title: 'Toolbar Settings',
+          title: 'Toolbar settings',
           items: [
             {
               id: 'position',
@@ -224,7 +224,7 @@ export function GeneralSettings() {
       // SDK Mode
       return [
         {
-          title: 'Toolbar Settings',
+          title: 'Toolbar settings',
           items: [
             {
               id: 'project',

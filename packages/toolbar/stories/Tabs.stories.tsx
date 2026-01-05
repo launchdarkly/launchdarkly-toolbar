@@ -40,8 +40,8 @@ export const Default: Story = {
 export const WithActiveTab: Story = {
   render: () => (
     <Tabs activeTab="flag-dev-server">
-      <TabButton id="flag-sdk" label="SDK Flags" icon={ToggleOffIcon} />
-      <TabButton id="flag-dev-server" label="Dev Server Flags" icon={ToggleOffIcon} />
+      <TabButton id="flag-sdk" label="SDK flags" icon={ToggleOffIcon} />
+      <TabButton id="flag-dev-server" label="Dev server flags" icon={ToggleOffIcon} />
       <TabButton id="settings" label="Settings" icon={GearIcon} />
     </Tabs>
   ),
@@ -50,8 +50,8 @@ export const WithActiveTab: Story = {
 export const AllTabs: Story = {
   render: () => (
     <Tabs activeTab="flag-sdk">
-      <TabButton id="flag-sdk" label="SDK Flags" icon={ToggleOffIcon} />
-      <TabButton id="flag-dev-server" label="Dev Server Flags" icon={ToggleOffIcon} />
+      <TabButton id="flag-sdk" label="SDK flags" icon={ToggleOffIcon} />
+      <TabButton id="flag-dev-server" label="Dev server flags" icon={ToggleOffIcon} />
       <TabButton id="settings" label="Settings" icon={GearIcon} />
     </Tabs>
   ),
@@ -69,7 +69,7 @@ export const WithDisabledTab: Story = {
 export const DevServerMode: Story = {
   render: () => (
     <Tabs activeTab="flag-dev-server">
-      <TabButton id="flag-dev-server" label="Dev Server Flags" icon={ToggleOffIcon} />
+      <TabButton id="flag-dev-server" label="Dev server flags" icon={ToggleOffIcon} />
       <TabButton id="settings" label="Settings" icon={GearIcon} />
     </Tabs>
   ),
@@ -86,8 +86,8 @@ export const Interactive: Story = {
     return (
       <div style={{ padding: '20px' }}>
         <Tabs activeTab={activeTab} onTabChange={handleTabChange}>
-          <TabButton id="flag-dev-server" label="Dev Server Flags" icon={ToggleOffIcon} />
-          <TabButton id="flag-sdk" label="SDK Flags" icon={ToggleOffIcon} />
+          <TabButton id="flag-dev-server" label="Dev server flags" icon={ToggleOffIcon} />
+          <TabButton id="flag-sdk" label="SDK flags" icon={ToggleOffIcon} />
           <TabButton id="settings" label="Settings" icon={GearIcon} />
         </Tabs>
         <div
