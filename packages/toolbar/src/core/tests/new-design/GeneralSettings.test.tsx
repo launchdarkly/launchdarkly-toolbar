@@ -109,14 +109,14 @@ describe('GeneralSettings - Search Filtering', () => {
         </TestWrapper>,
       );
 
-      // Dev Server Configuration section
-      expect(screen.getByText('Dev Server Configuration')).toBeInTheDocument();
+      // Dev server configuration section
+      expect(screen.getByText('Dev server configuration')).toBeInTheDocument();
       expect(screen.getByTestId('project-selector')).toBeInTheDocument();
       expect(screen.getByText('Environment')).toBeInTheDocument();
       expect(screen.getByText('Connection status')).toBeInTheDocument();
 
-      // Toolbar Settings section
-      expect(screen.getByText('Toolbar Settings')).toBeInTheDocument();
+      // Toolbar settings section
+      expect(screen.getByText('Toolbar settings')).toBeInTheDocument();
       expect(screen.getByText('Position')).toBeInTheDocument();
       expect(screen.getByText('Auto-collapse')).toBeInTheDocument();
       expect(screen.getByText('Reload on flag change')).toBeInTheDocument();
@@ -137,16 +137,16 @@ describe('GeneralSettings - Search Filtering', () => {
         </TestWrapper>,
       );
 
-      // Should show Dev Server Configuration section with Project
-      expect(screen.getByText('Dev Server Configuration')).toBeInTheDocument();
+      // Should show Dev server configuration section with Project
+      expect(screen.getByText('Dev server configuration')).toBeInTheDocument();
       expect(screen.getByTestId('project-selector')).toBeInTheDocument();
 
       // Should NOT show other Dev Server items
       expect(screen.queryByText('Environment')).not.toBeInTheDocument();
       expect(screen.queryByText('Connection status')).not.toBeInTheDocument();
 
-      // Should NOT show Toolbar Settings or Account
-      expect(screen.queryByText('Toolbar Settings')).not.toBeInTheDocument();
+      // Should NOT show Toolbar settings or Account
+      expect(screen.queryByText('Toolbar settings')).not.toBeInTheDocument();
       expect(screen.queryByText('Account')).not.toBeInTheDocument();
     });
 
@@ -158,14 +158,14 @@ describe('GeneralSettings - Search Filtering', () => {
         </TestWrapper>,
       );
 
-      // Should show Toolbar Settings section with Position only
-      expect(screen.getByText('Toolbar Settings')).toBeInTheDocument();
+      // Should show Toolbar settings section with Position only
+      expect(screen.getByText('Toolbar settings')).toBeInTheDocument();
       expect(screen.getByTestId('position-selector')).toBeInTheDocument();
 
       // Should NOT show other settings
       expect(screen.queryByText('Auto-collapse')).not.toBeInTheDocument();
       expect(screen.queryByText('Reload on flag change')).not.toBeInTheDocument();
-      expect(screen.queryByText('Dev Server Configuration')).not.toBeInTheDocument();
+      expect(screen.queryByText('Dev server configuration')).not.toBeInTheDocument();
     });
 
     it('should show auto-collapse setting when searching "auto"', () => {
@@ -176,7 +176,7 @@ describe('GeneralSettings - Search Filtering', () => {
         </TestWrapper>,
       );
 
-      expect(screen.getByText('Toolbar Settings')).toBeInTheDocument();
+      expect(screen.getByText('Toolbar settings')).toBeInTheDocument();
       expect(screen.getByText('Auto-collapse')).toBeInTheDocument();
 
       // Should NOT show other settings
@@ -192,7 +192,7 @@ describe('GeneralSettings - Search Filtering', () => {
         </TestWrapper>,
       );
 
-      expect(screen.getByText('Toolbar Settings')).toBeInTheDocument();
+      expect(screen.getByText('Toolbar settings')).toBeInTheDocument();
       expect(screen.getByText('Reload on flag change')).toBeInTheDocument();
 
       // Should NOT show other settings
@@ -212,8 +212,8 @@ describe('GeneralSettings - Search Filtering', () => {
       expect(screen.getByTestId('logout-button')).toBeInTheDocument();
 
       // Should NOT show other sections
-      expect(screen.queryByText('Dev Server Configuration')).not.toBeInTheDocument();
-      expect(screen.queryByText('Toolbar Settings')).not.toBeInTheDocument();
+      expect(screen.queryByText('Dev server configuration')).not.toBeInTheDocument();
+      expect(screen.queryByText('Toolbar settings')).not.toBeInTheDocument();
     });
   });
 
@@ -297,8 +297,8 @@ describe('GeneralSettings - Search Filtering', () => {
         </TestWrapper>,
       );
 
-      expect(screen.queryByText('Dev Server Configuration')).not.toBeInTheDocument();
-      expect(screen.queryByText('Toolbar Settings')).not.toBeInTheDocument();
+      expect(screen.queryByText('Dev server configuration')).not.toBeInTheDocument();
+      expect(screen.queryByText('Toolbar settings')).not.toBeInTheDocument();
       expect(screen.queryByText('Account')).not.toBeInTheDocument();
     });
   });
@@ -327,12 +327,12 @@ describe('GeneralSettings - Search Filtering', () => {
         </TestWrapper>,
       );
 
-      // Should show Dev Server Configuration with Environment
-      expect(screen.getByText('Dev Server Configuration')).toBeInTheDocument();
+      // Should show Dev server configuration with Environment
+      expect(screen.getByText('Dev server configuration')).toBeInTheDocument();
       expect(screen.getByText('Environment')).toBeInTheDocument();
 
       // Should NOT show empty sections
-      expect(screen.queryByText('Toolbar Settings')).not.toBeInTheDocument();
+      expect(screen.queryByText('Toolbar settings')).not.toBeInTheDocument();
       expect(screen.queryByText('Account')).not.toBeInTheDocument();
     });
   });
