@@ -1,6 +1,6 @@
 import { createContext, Dispatch, SetStateAction, useCallback, useContext, useEffect, useState } from 'react';
 import { getErrorTopic, getResponseTopic, IFRAME_COMMANDS, IFRAME_EVENTS, useIFrameContext } from './IFrameProvider';
-import { useAnalytics, useInternalClient } from '../telemetry';
+import { useAnalytics, useAnalyticsPreferences, useInternalClient } from '../telemetry';
 
 interface AuthContextType {
   authenticated: boolean;
@@ -19,6 +19,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const { iframeSrc, ref } = useIFrameContext();
   const analytics = useAnalytics();
   const { updateContext } = useInternalClient();
+  const { isOptedInToEnhancedAnalytics } = useAnalyticsPreferences();
 
   const handleMessage = useCallback(
     async (event: MessageEvent) => {
@@ -29,7 +30,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       if (event.data.type === IFRAME_EVENTS.AUTHENTICATED) {
         analytics.trackLoginSuccess();
         if (event.data.accountId && event.data.memberId) {
-          await updateContext(event.data.accountId, event.data.memberId);
+          if (isOptedInToEnhancedAnalytics) {
+            await updateContext(event.data.accountId, event.data.memberId);
+          }
           setAuthenticated(true);
           setLoading(false);
         }
@@ -50,7 +53,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         throw new Error(event.data.error);
       }
     },
-    [updateContext, iframeSrc],
+    [updateContext, iframeSrc, isOptedInToEnhancedAnalytics],
   );
 
   const logout = useCallback(() => {

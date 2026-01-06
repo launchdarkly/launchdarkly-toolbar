@@ -1,7 +1,7 @@
 {
   "private": false,
   "name": "@launchdarkly/toolbar",
-  "version": "2.5.3-beta.1",
+  "version": "2.7.0-beta.1",
   "description": "A framework-agnostic developer toolbar for interacting with LaunchDarkly during development",
   "keywords": [
     "launchdarkly",
@@ -28,6 +28,19 @@
   "module": "./dist/js/index.js",
   "types": "./dist/index.d.ts",
   "typings": "./dist/index.d.ts",
+  "typesVersions": {
+    "*": {
+      "plugins": [
+        "./dist/plugins.d.ts"
+      ],
+      "react": [
+        "./dist/react.d.ts"
+      ],
+      "types": [
+        "./dist/types-entry.d.ts"
+      ]
+    }
+  },
   "sideEffects": false,
   "files": [
     "dist",
@@ -45,6 +58,36 @@
         "types": "./dist/index.d.ts",
         "default": "./dist/index.cjs"
       }
+    },
+    "./plugins": {
+      "import": {
+        "types": "./dist/plugins.d.ts",
+        "default": "./dist/js/plugins.js"
+      },
+      "require": {
+        "types": "./dist/plugins.d.ts",
+        "default": "./dist/plugins.cjs"
+      }
+    },
+    "./react": {
+      "import": {
+        "types": "./dist/react.d.ts",
+        "default": "./dist/js/react.js"
+      },
+      "require": {
+        "types": "./dist/react.d.ts",
+        "default": "./dist/react.cjs"
+      }
+    },
+    "./types": {
+      "import": {
+        "types": "./dist/types-entry.d.ts",
+        "default": "./dist/js/types-entry.js"
+      },
+      "require": {
+        "types": "./dist/types-entry.d.ts",
+        "default": "./dist/types-entry.cjs"
+      }
     }
   },
   "scripts": {
@@ -59,53 +102,53 @@
     "build:storybook": "storybook build"
   },
   "devDependencies": {
-    "@codemirror/commands": "^6.10.0",
+    "@codemirror/commands": "^6.10.1",
     "@codemirror/lang-json": "^6.0.2",
     "@codemirror/language": "^6.11.3",
     "@codemirror/lint": "^6.9.2",
-    "@codemirror/state": "^6.5.2",
-    "@codemirror/view": "^6.38.8",
-    "@launchdarkly/observability": "^0.4.9",
-    "@launchdarkly/session-replay": "^0.4.9",
-    "@launchpad-ui/components": "^0.17.7",
+    "@codemirror/state": "^6.5.3",
+    "@codemirror/view": "^6.39.7",
+    "@launchdarkly/observability": "^0.5.0",
+    "@launchdarkly/session-replay": "^0.5.0",
+    "@launchpad-ui/components": "^0.17.8",
     "@launchpad-ui/tokens": "^0.15.1",
     "@lezer/highlight": "^1.2.3",
     "@react-aria/focus": "^3.21.2",
     "@react-stately/flags": "^3.1.2",
-    "@rsbuild/core": "^1.6.14",
+    "@rsbuild/core": "^1.7.1",
     "@rsbuild/plugin-react": "^1.4.2",
     "@rslib/core": "^0.18.4",
-    "@storybook/addon-docs": "^10.1.5",
+    "@storybook/addon-docs": "^10.1.10",
     "@storybook/addon-essentials": "^9.0.0-alpha.12",
     "@storybook/addon-interactions": "^9.0.0-alpha.10",
-    "@storybook/addon-links": "^10.1.7",
-    "@storybook/addon-onboarding": "^10.1.7",
+    "@storybook/addon-links": "^10.1.10",
+    "@storybook/addon-onboarding": "^10.1.10",
     "@storybook/blocks": "^9.0.0-alpha.17",
-    "@storybook/react": "^10.0.8",
-    "@storybook/react-vite": "^10.1.8",
+    "@storybook/react": "^10.1.10",
+    "@storybook/react-vite": "^10.1.10",
     "@storybook/test": "^9.0.0-alpha.2",
     "@tanstack/react-virtual": "^3.13.13",
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.3.0",
-    "@types/node": "^25.0.1",
+    "@types/node": "^25.0.3",
     "@types/react": "19.2.7",
     "@types/react-dom": "19.2.3",
     "@vanilla-extract/css": "^1.17.5",
-    "@vanilla-extract/vite-plugin": "^5.1.3",
-    "@vanilla-extract/webpack-plugin": "^2.3.24",
-    "@vitest/coverage-v8": "4.0.15",
+    "@vanilla-extract/vite-plugin": "^5.1.4",
+    "@vanilla-extract/webpack-plugin": "^2.3.25",
+    "@vitest/coverage-v8": "4.0.16",
     "css-loader": "^7.1.2",
     "jsdom": "^27.3.0",
     "launchdarkly-js-client-sdk": "^3.9.0",
     "motion": "^12.23.26",
-    "oxlint": "^1.32.0",
+    "oxlint": "^1.35.0",
     "react": "^19.2.3",
     "react-dom": "^19.2.3",
-    "storybook": "^10.1.4",
-    "storybook-addon-rslib": "^3.1.0",
+    "storybook": "^10.1.10",
+    "storybook-addon-rslib": "^3.2.0",
     "storybook-react-rsbuild": "^3.1.0",
     "typescript": "^5.9.3",
-    "vitest": "^4.0.15"
+    "vitest": "^4.0.16"
   },
   "peerDependencies": {
     "launchdarkly-js-client-sdk": ">=3.9.0 <4.0.0",

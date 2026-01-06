@@ -42,23 +42,23 @@ export function IconBar({ defaultActiveTab }: IconBarProps) {
     {
       id: 'interactive',
       Icon: ClickIcon,
-      label: 'Interactive Mode',
-      tooltip: interactiveIconEnabled ? 'Interactive Mode' : 'Interactive Mode (Coming Soon)',
+      label: 'Interactive mode',
+      tooltip: interactiveIconEnabled ? 'Interactive mode' : 'Interactive mode (coming soon)',
       disabled: !interactiveIconEnabled,
     },
-    { id: 'flags', Icon: ToggleOffIcon, label: '  Flags', tooltip: 'Feature Flags' },
+    { id: 'flags', Icon: ToggleOffIcon, label: '  Flags', tooltip: 'Feature flags' },
     {
       id: 'optimize',
       Icon: FlaskIcon,
       label: 'Optimize',
-      tooltip: optimizeIconEnabled ? 'Optimization' : 'Optimization (Coming Soon)',
+      tooltip: optimizeIconEnabled ? 'Optimization' : 'Optimization (coming soon)',
       disabled: !optimizeIconEnabled,
     },
     {
       id: 'ai',
       Icon: ChipAiIcon,
       label: 'AI',
-      tooltip: aiIconEnabled ? 'AI' : 'AI (Coming Soon)',
+      tooltip: aiIconEnabled ? 'AI' : 'AI (coming soon)',
       disabled: !aiIconEnabled,
     },
     { id: 'monitoring', Icon: ChartHistogram, label: 'Analytics', tooltip: 'Monitoring' },
@@ -91,7 +91,7 @@ export function IconBar({ defaultActiveTab }: IconBarProps) {
   // Get dynamic tooltip for interactive icon
   const getTooltip = (icon: Icon): string => {
     if (icon.id === 'interactive' && activeTab === 'interactive' && !icon.disabled) {
-      return 'Select Element';
+      return 'Select element';
     }
     return icon.tooltip;
   };

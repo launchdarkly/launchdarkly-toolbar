@@ -36,6 +36,7 @@ const EVENTS = {
   CONTEXT_EDIT_STARTED: 'context.edit.started',
   CONTEXT_EDIT_CANCELLED: 'context.edit.cancelled',
   CONTEXT_KEY_COPIED: 'context.key.copied',
+  SHARE_STATE: 'share.state',
 } as const;
 
 /**
@@ -44,12 +45,14 @@ const EVENTS = {
 export class ToolbarAnalytics {
   private ldClient: LDClient | null = null;
   private mode: ToolbarMode | null = null;
+  private isOptedInToAnalytics: boolean = false;
   // Timer id for debouncing search tracking
   private searchDebounceTimer: ReturnType<typeof setTimeout> | null = null;
 
-  constructor(ldClient?: LDClient | null, mode?: ToolbarMode) {
+  constructor(ldClient?: LDClient | null, mode?: ToolbarMode, isOptedInToAnalytics?: boolean) {
     this.ldClient = ldClient || null;
     this.mode = mode || null;
+    this.isOptedInToAnalytics = isOptedInToAnalytics || false;
   }
 
   /**
@@ -63,7 +66,7 @@ export class ToolbarAnalytics {
       return;
     }
 
-    if (isDoNotTrackEnabled()) {
+    if (isDoNotTrackEnabled() || !this.isOptedInToAnalytics) {
       return;
     }
 
@@ -365,6 +368,23 @@ export class ToolbarAnalytics {
   trackContextKeyCopy(contextKey: string): void {
     this.track(EVENTS.CONTEXT_KEY_COPIED, {
       contextKey,
+    });
+  }
+
+  /**
+   * Track state sharing via URL
+   */
+  trackShareState(options: {
+    includeSettings: boolean;
+    overrideCount: number;
+    contextCount: number;
+    starredFlagCount: number;
+  }): void {
+    this.track(EVENTS.SHARE_STATE, {
+      includeSettings: options.includeSettings,
+      overrideCount: options.overrideCount,
+      contextCount: options.contextCount,
+      starredFlagCount: options.starredFlagCount,
     });
   }
 }

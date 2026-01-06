@@ -14,6 +14,7 @@ import React, {
 import { useSearchContext } from './SearchProvider';
 import { useAnalytics } from '../telemetry/AnalyticsProvider';
 import { useActiveTabContext } from './ActiveTabProvider';
+import { useAnalyticsPreferences } from '../telemetry/AnalyticsPreferencesProvider';
 import { TabId, ActiveTabId, TAB_ORDER, ToolbarMode, getToolbarMode } from '../../types';
 import {
   saveToolbarAutoCollapse,
@@ -33,6 +34,9 @@ export interface ToolbarStateContextValue {
   reloadOnFlagChangeIsEnabled: boolean;
   isAutoCollapseEnabled: boolean;
   mode: ToolbarMode;
+  isOptedInToAnalytics: boolean;
+  isOptedInToEnhancedAnalytics: boolean;
+  isOptedInToSessionReplay: boolean;
 
   // Refs
   toolbarRef: React.RefObject<HTMLDivElement | null>;
@@ -46,6 +50,9 @@ export interface ToolbarStateContextValue {
   handleCircleClick: () => void;
   setIsAnimating: Dispatch<SetStateAction<boolean>>;
   setSearchIsExpanded: Dispatch<SetStateAction<boolean>>;
+  handleToggleAnalyticsOptOut: (enabled: boolean) => void;
+  handleToggleEnhancedAnalyticsOptOut: (enabled: boolean) => void;
+  handleToggleSessionReplayOptOut: (enabled: boolean) => void;
 }
 
 const ToolbarStateContext = createContext<ToolbarStateContextValue | undefined>(undefined);
@@ -60,6 +67,7 @@ export function ToolbarStateProvider({ children, domId, devServerUrl }: ToolbarS
   const { setSearchTerm } = useSearchContext();
   const analytics = useAnalytics();
   const { activeTab, setActiveTab } = useActiveTabContext();
+  const analyticsPreferences = useAnalyticsPreferences();
 
   // State
   const [isExpanded, setIsExpanded] = useState(false);
@@ -198,6 +206,9 @@ export function ToolbarStateProvider({ children, domId, devServerUrl }: ToolbarS
       reloadOnFlagChangeIsEnabled,
       isAutoCollapseEnabled,
       mode,
+      isOptedInToAnalytics: analyticsPreferences.isOptedInToAnalytics,
+      isOptedInToEnhancedAnalytics: analyticsPreferences.isOptedInToEnhancedAnalytics,
+      isOptedInToSessionReplay: analyticsPreferences.isOptedInToSessionReplay,
 
       // Refs
       toolbarRef,
@@ -211,6 +222,9 @@ export function ToolbarStateProvider({ children, domId, devServerUrl }: ToolbarS
       handleCircleClick,
       setIsAnimating,
       setSearchIsExpanded,
+      handleToggleAnalyticsOptOut: analyticsPreferences.handleToggleAnalyticsOptOut,
+      handleToggleEnhancedAnalyticsOptOut: analyticsPreferences.handleToggleEnhancedAnalyticsOptOut,
+      handleToggleSessionReplayOptOut: analyticsPreferences.handleToggleSessionReplayOptOut,
     }),
     [
       isExpanded,
@@ -220,6 +234,8 @@ export function ToolbarStateProvider({ children, domId, devServerUrl }: ToolbarS
       slideDirection,
       reloadOnFlagChangeIsEnabled,
       isAutoCollapseEnabled,
+      mode,
+      analyticsPreferences,
       handleTabChange,
       handleClose,
       handleSearch,

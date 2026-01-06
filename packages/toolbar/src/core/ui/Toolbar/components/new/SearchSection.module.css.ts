@@ -1,13 +1,13 @@
 import { style } from '@vanilla-extract/css';
 
 export const searchFieldWrapper = style({
-  flex: 1,
-  minWidth: '200px',
+  width: '100%',
   color: 'var(--lp-color-gray-400)',
 });
 
 export const searchField = style({
   height: '32px',
+  borderRadius: '8px',
 });
 
 export const searchGroup = style({

@@ -2,6 +2,7 @@ import { createContext, useContext, useEffect, useMemo, useRef } from 'react';
 import { ToolbarAnalytics } from '../../../../utils/analytics';
 import { useInternalClient } from './InternalClientProvider';
 import { ToolbarMode } from '../../types';
+import { useAnalyticsPreferences } from './AnalyticsPreferencesProvider';
 
 interface AnalyticsContextValue {
   analytics: ToolbarAnalytics;
@@ -16,7 +17,11 @@ interface AnalyticsProviderProps {
 
 export function AnalyticsProvider({ children, mode }: AnalyticsProviderProps) {
   const { client: internalClient, loading } = useInternalClient();
-  const analytics = useMemo(() => new ToolbarAnalytics(internalClient, mode), [internalClient, mode]);
+  const { isOptedInToAnalytics } = useAnalyticsPreferences();
+  const analytics = useMemo(
+    () => new ToolbarAnalytics(internalClient, mode, isOptedInToAnalytics),
+    [internalClient, mode, isOptedInToAnalytics],
+  );
   const prevClientRef = useRef<typeof internalClient>(null);
 
   // Track initialization once when the client transitions from null to initialized

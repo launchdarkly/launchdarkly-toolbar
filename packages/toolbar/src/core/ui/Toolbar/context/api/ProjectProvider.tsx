@@ -1,11 +1,9 @@
 import { createContext, useCallback, useContext, useEffect, useRef, useState } from 'react';
 import { useApi } from './ApiProvider';
-import { TOOLBAR_STORAGE_KEYS } from '../../utils/localStorage';
 import { ApiProject, ProjectsResponse, ApiEnvironment } from '../../types/ldApi';
 import { useAuthContext } from './AuthProvider';
 import { useLocalStorage } from '../../hooks/useLocalStorage';
-
-const STORAGE_KEY = TOOLBAR_STORAGE_KEYS.PROJECT;
+import { TOOLBAR_STORAGE_KEYS } from '../../utils/localStorage';
 
 interface ProjectContextType {
   projectKey: string;
@@ -18,6 +16,7 @@ interface ProjectContextType {
 
 const ProjectContext = createContext<ProjectContextType | undefined>(undefined);
 
+const STORAGE_KEY = TOOLBAR_STORAGE_KEYS.PROJECT;
 interface ProjectProviderProps {
   children: React.ReactNode;
   clientSideId?: string; // Optional - either clientSideId or projectKey must be provided to make requests to the LaunchDarkly API
@@ -28,6 +27,7 @@ export const ProjectProvider = ({ children, clientSideId, providedProjectKey }: 
   const { authenticated } = useAuthContext();
   const { getProjects: getApiProjects, apiReady } = useApi();
   const [projects, setProjects] = useState<ApiProject[]>([]);
+
   const [projectKey, setProjectKey] = useLocalStorage(STORAGE_KEY, '', {
     serialize: (v) => v,
     deserialize: (v) => v,

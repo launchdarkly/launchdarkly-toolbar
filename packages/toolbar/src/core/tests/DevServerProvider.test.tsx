@@ -18,6 +18,13 @@ const mockDevServerClientInstance = {
   }),
   setOverride: vi.fn(),
   clearOverride: vi.fn(),
+  updateProjectContext: vi.fn().mockResolvedValue({
+    sourceEnvironmentKey: 'test-environment',
+    flagsState: {},
+    overrides: {},
+    availableVariations: {},
+    _lastSyncedFromSource: Date.now(),
+  }),
 };
 
 const mockFlagStateManagerInstance = {
@@ -55,6 +62,13 @@ vi.mock('../services/FlagStateManager', () => {
 const mockGetProjects = vi.fn().mockResolvedValue([{ key: 'test-project', name: 'Test Project' }]);
 const mockProjectKey = { current: 'test-project' };
 const mockGetProjectFlags = vi.fn().mockResolvedValue({ items: [] });
+
+// Mock context management functions with stable references
+const mockContextsArray: any[] = []; // Stable reference to avoid triggering useCallback changes
+const mockSetContext = vi.fn().mockResolvedValue(undefined);
+const mockAddContext = vi.fn();
+const mockUpdateContext = vi.fn();
+const mockActiveContext = { current: null as any };
 
 // Mock the api module which exports all API-related context
 vi.mock('../ui/Toolbar/context/api', () => ({
@@ -109,6 +123,23 @@ vi.mock('../ui/Toolbar/context/api/ApiProvider', () => ({
   }),
 }));
 
+vi.mock('../ui/Toolbar/context/api/ContextsProvider', () => ({
+  ContextsProvider: ({ children }: { children: React.ReactNode }) => <>{children}</>,
+  useContextsContext: () => ({
+    contexts: mockContextsArray, // Use stable reference
+    filter: '',
+    setFilter: vi.fn(),
+    addContext: mockAddContext,
+    removeContext: vi.fn(),
+    updateContext: mockUpdateContext,
+    setContext: mockSetContext,
+    activeContext: mockActiveContext.current,
+    isAddFormOpen: false,
+    setIsAddFormOpen: vi.fn(),
+    clearContexts: vi.fn(),
+  }),
+}));
+
 // Test component that consumes the context
 function TestConsumer() {
   const { state, refresh } = useDevServerContext();
@@ -146,9 +177,22 @@ describe('DevServerProvider - Integration Flows', () => {
       availableVariations: {},
       _lastSyncedFromSource: Date.now(),
     });
+    mockDevServerClientInstance.updateProjectContext.mockResolvedValue({
+      sourceEnvironmentKey: 'test-environment',
+      flagsState: {},
+      overrides: {},
+      availableVariations: {},
+      _lastSyncedFromSource: Date.now(),
+    });
 
     mockFlagStateManagerInstance.getEnhancedFlags.mockResolvedValue({});
     mockFlagStateManagerInstance.subscribe.mockReturnValue(() => {});
+
+    // Reset context mocks
+    mockSetContext.mockResolvedValue(undefined);
+    mockAddContext.mockClear();
+    mockUpdateContext.mockClear();
+    mockActiveContext.current = null;
   });
 
   afterEach(() => {
@@ -451,6 +495,274 @@ describe('DevServerProvider - Integration Flows', () => {
 
       expect(mockGetProjectFlags.mock.calls.length).toBeGreaterThan(initialApiCalls);
       expect(mockDevServerClientInstance.getProjectData).toHaveBeenCalled();
+    });
+  });
+
+  describe('Context Synchronization - Bidirectional Sync', () => {
+    test('syncs context to dev server when active context changes in toolbar', async () => {
+      // GIVEN: Developer has toolbar connected to dev server
+      const testContext = { kind: 'user', key: 'test-user-123', name: 'Test User' };
+      mockActiveContext.current = null;
+
+      render(
+        <DevServerProvider
+          config={{
+            devServerUrl: 'http://localhost:8765',
+            pollIntervalInMs: 50000, // Long interval to prevent auto-polling
+          }}
+        >
+          <TestConsumer />
+        </DevServerProvider>,
+      );
+
+      // WHEN: Toolbar initializes and connects
+      await waitFor(() => {
+        const connectionStatus = screen.getByTestId('connection-status');
+        return connectionStatus.textContent === 'connected';
+      });
+
+      // Clear any calls from initialization
+      mockDevServerClientInstance.updateProjectContext.mockClear();
+
+      // AND: Active context changes in the toolbar
+      mockActiveContext.current = testContext;
+
+      // Trigger re-render to simulate context change
+      render(
+        <DevServerProvider
+          config={{
+            devServerUrl: 'http://localhost:8765',
+            pollIntervalInMs: 50000,
+          }}
+        >
+          <TestConsumer />
+        </DevServerProvider>,
+      );
+
+      // THEN: Context is synced to dev server via updateProjectContext
+      await waitFor(() => {
+        return mockDevServerClientInstance.updateProjectContext.mock.calls.length > 0;
+      });
+
+      expect(mockDevServerClientInstance.updateProjectContext).toHaveBeenCalledWith(testContext);
+    });
+
+    test('syncs context from dev server to toolbar when dev server context changes', async () => {
+      // GIVEN: Developer has toolbar connected with initial context
+      const initialContext = { kind: 'user', key: 'user-1', name: 'User One' };
+      const updatedContext = { kind: 'user', key: 'user-2', name: 'User Two' };
+
+      let callCount = 0;
+      mockDevServerClientInstance.getProjectData.mockImplementation(async () => {
+        callCount++;
+        return {
+          sourceEnvironmentKey: 'test-environment',
+          flagsState: {},
+          overrides: {},
+          availableVariations: {},
+          _lastSyncedFromSource: Date.now(),
+          context: callCount === 1 ? initialContext : updatedContext,
+        };
+      });
+
+      render(
+        <DevServerProvider
+          config={{
+            devServerUrl: 'http://localhost:8765',
+            pollIntervalInMs: 100, // Short interval for faster test
+          }}
+        >
+          <TestConsumer />
+        </DevServerProvider>,
+      );
+
+      // WHEN: Toolbar connects and gets initial context
+      await waitFor(() => {
+        const connectionStatus = screen.getByTestId('connection-status');
+        return connectionStatus.textContent === 'connected';
+      });
+
+      // Verify initial context was set
+      await waitFor(() => {
+        return mockSetContext.mock.calls.some((call) => call[0].key === 'user-1');
+      });
+
+      const initialSetContextCalls = mockSetContext.mock.calls.length;
+
+      // AND: Dev server context changes on next poll
+      // Wait for next poll cycle
+      await new Promise((resolve) => setTimeout(resolve, 150));
+
+      // THEN: Updated context is synced to toolbar via setContext
+      await waitFor(() => {
+        return mockSetContext.mock.calls.length > initialSetContextCalls;
+      });
+
+      const lastCall = mockSetContext.mock.calls[mockSetContext.mock.calls.length - 1];
+      expect(lastCall[0]).toEqual(updatedContext);
+    });
+
+    test('adds new context when dev server context is not in stored contexts', async () => {
+      // GIVEN: Developer has toolbar connected with no stored contexts
+      const newContext = { kind: 'organization', key: 'org-123', name: 'Test Org' };
+
+      mockDevServerClientInstance.getProjectData.mockResolvedValue({
+        sourceEnvironmentKey: 'test-environment',
+        flagsState: {},
+        overrides: {},
+        availableVariations: {},
+        _lastSyncedFromSource: Date.now(),
+        context: newContext,
+      });
+
+      render(
+        <DevServerProvider
+          config={{
+            devServerUrl: 'http://localhost:8765',
+            pollIntervalInMs: 50000,
+          }}
+        >
+          <TestConsumer />
+        </DevServerProvider>,
+      );
+
+      // WHEN: Toolbar connects and receives context from dev server
+      await waitFor(() => {
+        const connectionStatus = screen.getByTestId('connection-status');
+        return connectionStatus.textContent === 'connected';
+      });
+
+      // THEN: New context is added to stored contexts via addContext
+      await waitFor(() => {
+        return mockAddContext.mock.calls.length > 0;
+      });
+
+      expect(mockAddContext).toHaveBeenCalledWith(newContext);
+    });
+
+    test('updates existing context when dev server context has same kind+key but different properties', async () => {
+      // GIVEN: Developer has existing context in stored contexts
+      const existingContext = { kind: 'user', key: 'user-1', name: 'Old Name', email: 'old@example.com' };
+      const updatedContext = { kind: 'user', key: 'user-1', name: 'New Name', email: 'new@example.com' };
+
+      // Mock that context already exists
+      mockContextsArray.length = 0;
+      mockContextsArray.push(existingContext);
+
+      mockDevServerClientInstance.getProjectData.mockResolvedValue({
+        sourceEnvironmentKey: 'test-environment',
+        flagsState: {},
+        overrides: {},
+        availableVariations: {},
+        _lastSyncedFromSource: Date.now(),
+        context: updatedContext,
+      });
+
+      render(
+        <DevServerProvider
+          config={{
+            devServerUrl: 'http://localhost:8765',
+            pollIntervalInMs: 50000,
+          }}
+        >
+          <TestConsumer />
+        </DevServerProvider>,
+      );
+
+      // WHEN: Toolbar receives updated context from dev server with same kind+key
+      await waitFor(() => {
+        const connectionStatus = screen.getByTestId('connection-status');
+        return connectionStatus.textContent === 'connected';
+      });
+
+      // THEN: Existing context is updated via updateContext (not added as duplicate)
+      await waitFor(() => {
+        return mockUpdateContext.mock.calls.length > 0;
+      });
+
+      expect(mockUpdateContext).toHaveBeenCalled();
+      // Should not add a duplicate
+      expect(mockAddContext).not.toHaveBeenCalled();
+    });
+
+    test('does not sync context to dev server when context has not changed', async () => {
+      // GIVEN: Developer has toolbar connected with active context
+      const unchangedContext = { kind: 'user', key: 'user-1', name: 'User One' };
+      mockActiveContext.current = unchangedContext;
+
+      render(
+        <DevServerProvider
+          config={{
+            devServerUrl: 'http://localhost:8765',
+            pollIntervalInMs: 50000,
+          }}
+        >
+          <TestConsumer />
+        </DevServerProvider>,
+      );
+
+      await waitFor(() => {
+        const connectionStatus = screen.getByTestId('connection-status');
+        return connectionStatus.textContent === 'connected';
+      });
+
+      const initialUpdateCalls = mockDevServerClientInstance.updateProjectContext.mock.calls.length;
+
+      // WHEN: Same context is set again (no actual change)
+      // Wait a bit to ensure no additional calls are made
+      await new Promise((resolve) => setTimeout(resolve, 100));
+
+      // THEN: updateProjectContext is not called again (optimization working)
+      expect(mockDevServerClientInstance.updateProjectContext.mock.calls.length).toBe(initialUpdateCalls);
+    });
+
+    test('prevents infinite sync loop between toolbar and dev server', async () => {
+      // GIVEN: Developer has toolbar connected
+      const testContext = { kind: 'user', key: 'test-user', name: 'Test User' };
+
+      let getProjectDataCallCount = 0;
+      mockDevServerClientInstance.getProjectData.mockImplementation(async () => {
+        getProjectDataCallCount++;
+        return {
+          sourceEnvironmentKey: 'test-environment',
+          flagsState: {},
+          overrides: {},
+          availableVariations: {},
+          _lastSyncedFromSource: Date.now(),
+          context: testContext,
+        };
+      });
+
+      render(
+        <DevServerProvider
+          config={{
+            devServerUrl: 'http://localhost:8765',
+            pollIntervalInMs: 100, // Short interval
+          }}
+        >
+          <TestConsumer />
+        </DevServerProvider>,
+      );
+
+      // WHEN: Context is synced from dev server to toolbar
+      await waitFor(() => {
+        const connectionStatus = screen.getByTestId('connection-status');
+        return connectionStatus.textContent === 'connected';
+      });
+
+      await waitFor(() => {
+        return mockSetContext.mock.calls.length > 0;
+      });
+
+      const updateContextCallsBefore = mockDevServerClientInstance.updateProjectContext.mock.calls.length;
+
+      // Wait for multiple poll cycles
+      await new Promise((resolve) => setTimeout(resolve, 300));
+
+      // THEN: updateProjectContext is not called repeatedly (loop prevention working)
+      // Should not have excessive calls indicating a loop
+      const updateContextCallsAfter = mockDevServerClientInstance.updateProjectContext.mock.calls.length;
+      expect(updateContextCallsAfter - updateContextCallsBefore).toBeLessThan(2);
     });
   });
 });

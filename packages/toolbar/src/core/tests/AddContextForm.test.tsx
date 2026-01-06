@@ -110,8 +110,8 @@ describe('AddContextForm', () => {
         key: 'test-user-123',
         name: 'Test User',
       });
-      // anonymous should be false when not explicitly set
-      expect(savedContexts[0].anonymous).toBe(false);
+      // anonymous should be undefined when not explicitly set (LDContext omits false values)
+      expect(savedContexts[0].anonymous).toBeUndefined();
 
       expect(mockOnClose).toHaveBeenCalled();
     });

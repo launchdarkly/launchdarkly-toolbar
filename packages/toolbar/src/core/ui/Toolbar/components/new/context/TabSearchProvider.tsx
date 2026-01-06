@@ -14,6 +14,7 @@ const defaultSearchTerms: Record<SubTab, string> = {
   events: '',
   general: '',
   workflows: '',
+  privacy: '',
 };
 
 const TabSearchContext = createContext<SubTabSearchContextType>({

@@ -18,6 +18,7 @@ interface EnvironmentProviderProps {
 }
 
 export const EnvironmentProvider: FC<EnvironmentProviderProps> = ({ children, clientSideId }) => {
+
   const [environment, setEnvironment] = useLocalStorage(STORAGE_KEY, 'production', {
     serialize: (v) => v,
     deserialize: (v) => v,
