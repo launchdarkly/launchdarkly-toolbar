@@ -198,6 +198,97 @@ describe('useLocalStorage', () => {
 
       expect(removeEventListenerSpy).toHaveBeenCalledWith('storage', expect.any(Function));
     });
+
+    test('resets to default value when storage event fires with null (item removed)', () => {
+      // Start with a stored value
+      localStorage.setItem('test-key', JSON.stringify('stored-value'));
+      const { result } = renderHook(() => useLocalStorage('test-key', 'default', { syncTabs: true }));
+
+      expect(result.current[0]).toBe('stored-value');
+
+      // Simulate another tab removing the item
+      act(() => {
+        const event = new StorageEvent('storage', {
+          key: 'test-key',
+          newValue: null, // null means the item was removed
+        });
+        window.dispatchEvent(event);
+      });
+
+      expect(result.current[0]).toBe('default');
+    });
+
+    test('does not re-persist default value after cross-tab removal', () => {
+      localStorage.setItem('test-key', JSON.stringify('stored-value'));
+      const { result } = renderHook(() => useLocalStorage('test-key', 'default', { syncTabs: true }));
+
+      // Simulate another tab removing the item
+      // In reality, the other tab's removeItem() would update shared localStorage
+      // AND fire the storage event. We simulate both:
+      act(() => {
+        localStorage.removeItem('test-key'); // Other tab removed it
+        const event = new StorageEvent('storage', {
+          key: 'test-key',
+          newValue: null,
+        });
+        window.dispatchEvent(event);
+      });
+
+      expect(result.current[0]).toBe('default');
+      // The key should remain removed (not re-persisted by this tab)
+      expect(localStorage.getItem('test-key')).toBeNull();
+    });
+
+    test('ignores removal events for different keys', () => {
+      localStorage.setItem('test-key', JSON.stringify('stored-value'));
+      const { result } = renderHook(() => useLocalStorage('test-key', 'default', { syncTabs: true }));
+
+      act(() => {
+        const event = new StorageEvent('storage', {
+          key: 'other-key',
+          newValue: null,
+        });
+        window.dispatchEvent(event);
+      });
+
+      // Should not change since it's a different key
+      expect(result.current[0]).toBe('stored-value');
+    });
+
+    test('handles enable/disable pattern correctly across tabs', () => {
+      // This tests the specific use case: toolbar disable/enable syncing
+      const { result } = renderHook(() =>
+        useLocalStorage('ld-toolbar-disabled', false, {
+          syncTabs: true,
+          serialize: String,
+          deserialize: (v) => v === 'true',
+        }),
+      );
+
+      expect(result.current[0]).toBe(false); // Initially enabled
+
+      // Tab 2 disables the toolbar
+      act(() => {
+        const event = new StorageEvent('storage', {
+          key: 'ld-toolbar-disabled',
+          newValue: 'true',
+        });
+        window.dispatchEvent(event);
+      });
+
+      expect(result.current[0]).toBe(true); // Now disabled
+
+      // Tab 2 enables the toolbar (removes the key)
+      act(() => {
+        const event = new StorageEvent('storage', {
+          key: 'ld-toolbar-disabled',
+          newValue: null,
+        });
+        window.dispatchEvent(event);
+      });
+
+      expect(result.current[0]).toBe(false); // Back to enabled (default)
+    });
   });
 
   describe('Key changes', () => {

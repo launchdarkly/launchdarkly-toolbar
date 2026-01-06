@@ -75,20 +75,28 @@ export function useLocalStorage<T>(
     if (!syncTabs || typeof window === 'undefined') return;
 
     const handleStorage = (e: StorageEvent) => {
-      if (e.key === key && e.newValue !== null) {
-        try {
-          hasBeenSetRef.current = true;
+      if (e.key === key) {
+        if (e.newValue !== null) {
+          // Value was set in another tab
+          try {
+            hasBeenSetRef.current = true;
+            skipPersistRef.current = true;
+            setValue(deserializeRef.current(e.newValue));
+          } catch {
+            /* ignore invalid data */
+          }
+        } else {
+          // Value was removed in another tab - reset to default
+          hasBeenSetRef.current = false;
           skipPersistRef.current = true;
-          setValue(deserializeRef.current(e.newValue));
-        } catch {
-          /* ignore invalid data */
+          setValue(defaultValue);
         }
       }
     };
 
     window.addEventListener('storage', handleStorage);
     return () => window.removeEventListener('storage', handleStorage);
-  }, [key, syncTabs]);
+  }, [key, syncTabs, defaultValue]);
 
   // Remove from storage
   const remove = useCallback(() => {
