@@ -1,9 +1,5 @@
-import { createContext, FC, useContext, useEffect, useRef } from 'react';
+import { createContext, FC, useContext, useEffect, useState } from 'react';
 import { useProjectContext } from './ProjectProvider';
-import { TOOLBAR_STORAGE_KEYS } from '../../utils/localStorage';
-import { useLocalStorage } from '../../hooks/useLocalStorage';
-
-const STORAGE_KEY = TOOLBAR_STORAGE_KEYS.ENVIRONMENT;
 
 interface EnvironmentContextType {
   environment: string;
@@ -18,34 +14,21 @@ interface EnvironmentProviderProps {
 }
 
 export const EnvironmentProvider: FC<EnvironmentProviderProps> = ({ children, clientSideId }) => {
-
-  const [environment, setEnvironment] = useLocalStorage(STORAGE_KEY, 'production', {
-    serialize: (v) => v,
-    deserialize: (v) => v,
-  });
+  const [environment, setEnvironment] = useState<string>('production');
   const { environments } = useProjectContext();
-  // Track if we've done initial selection (not just loaded from storage)
-  const hasSelectedRef = useRef(false);
 
   useEffect(() => {
-    const hasSavedEnvironment = typeof window !== 'undefined' && localStorage.getItem(STORAGE_KEY) !== null;
-
-    // If there's a saved environment, we're done - user's preference takes precedence
-    if (hasSavedEnvironment) {
-      hasSelectedRef.current = true;
-      return;
-    }
-
-    // Only auto-select if we haven't already and environments are available
-    if (!hasSelectedRef.current && environments.length > 0) {
-      hasSelectedRef.current = true;
-      // Try to match clientSideId, otherwise use first environment
+    if (environments.length > 0) {
+      // Determine environment from environments and clientSideId
       const matchedEnvironment = environments.find((env) => env._id === clientSideId);
       if (matchedEnvironment) {
         setEnvironment(matchedEnvironment.key);
       } else {
         setEnvironment(environments[0]?.key ?? 'production');
       }
+    } else {
+      // Default fallback
+      setEnvironment('production');
     }
   }, [environments, clientSideId, setEnvironment]);
 

@@ -2,10 +2,8 @@ import type { LDContext } from 'launchdarkly-js-client-sdk';
 import { ToolbarPosition, TOOLBAR_POSITIONS } from '../types/toolbar';
 
 export const TOOLBAR_STORAGE_KEYS = {
-  ENVIRONMENT: 'ld-toolbar-environment',
   SETTINGS: 'ld-toolbar-settings',
   DISABLED: 'ld-toolbar-disabled',
-  PROJECT: 'ld-toolbar-project',
   STARRED_FLAGS: 'ld-toolbar-starred-flags',
   MCP_ALERT_DISMISSED: 'ld-toolbar-mcp-alert-dismissed',
   ANALYTICS_CONSENT_SHOWN: 'ld-toolbar-analytics-consent-shown',

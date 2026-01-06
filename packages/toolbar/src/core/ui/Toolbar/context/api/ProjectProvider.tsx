@@ -1,9 +1,7 @@
-import { createContext, useCallback, useContext, useEffect, useRef, useState } from 'react';
+import { createContext, useCallback, useContext, useEffect, useState } from 'react';
 import { useApi } from './ApiProvider';
 import { ApiProject, ProjectsResponse, ApiEnvironment } from '../../types/ldApi';
 import { useAuthContext } from './AuthProvider';
-import { useLocalStorage } from '../../hooks/useLocalStorage';
-import { TOOLBAR_STORAGE_KEYS } from '../../utils/localStorage';
 
 interface ProjectContextType {
   projectKey: string;
@@ -16,7 +14,6 @@ interface ProjectContextType {
 
 const ProjectContext = createContext<ProjectContextType | undefined>(undefined);
 
-const STORAGE_KEY = TOOLBAR_STORAGE_KEYS.PROJECT;
 interface ProjectProviderProps {
   children: React.ReactNode;
   clientSideId?: string; // Optional - either clientSideId or projectKey must be provided to make requests to the LaunchDarkly API
@@ -27,14 +24,9 @@ export const ProjectProvider = ({ children, clientSideId, providedProjectKey }: 
   const { authenticated } = useAuthContext();
   const { getProjects: getApiProjects, apiReady } = useApi();
   const [projects, setProjects] = useState<ApiProject[]>([]);
-
-  const [projectKey, setProjectKey] = useLocalStorage(STORAGE_KEY, '', {
-    serialize: (v) => v,
-    deserialize: (v) => v,
-  });
+  const [projectKey, setProjectKey] = useState<string>('');
   const [loading, setLoading] = useState(false);
   const [environments, setEnvironments] = useState<ApiEnvironment[]>([]);
-  const hasInitialized = useRef(false);
 
   const getProjects = useCallback(async () => {
     if (!apiReady || !authenticated) {
@@ -74,17 +66,8 @@ export const ProjectProvider = ({ children, clientSideId, providedProjectKey }: 
   }, [apiReady, getProjects]);
 
   useEffect(() => {
-    if (hasInitialized.current) return;
-
-    const hasSavedProjectKey =
-      typeof window !== 'undefined' && localStorage.getItem(STORAGE_KEY) !== null && projectKey !== '';
-
-    if (hasSavedProjectKey) {
-      // Already loaded from localStorage via hook
-      hasInitialized.current = true;
-    } else if (providedProjectKey) {
+    if (providedProjectKey) {
       // Use provided project key
-      hasInitialized.current = true;
       setProjectKey(providedProjectKey);
     } else if (apiReady) {
       setLoading(true);
@@ -114,7 +97,6 @@ export const ProjectProvider = ({ children, clientSideId, providedProjectKey }: 
             throw new Error('No project found');
           }
 
-          hasInitialized.current = true;
           setProjectKey(project.key);
           setEnvironments(envs);
           setLoading(false);
@@ -127,7 +109,7 @@ export const ProjectProvider = ({ children, clientSideId, providedProjectKey }: 
     } else {
       setLoading(false);
     }
-  }, [providedProjectKey, clientSideId, getProjects, apiReady, setProjectKey, projectKey]);
+  }, [providedProjectKey, clientSideId, getProjects, apiReady, setProjectKey]);
 
   return (
     <ProjectContext.Provider value={{ projectKey, setProjectKey, getProjects, projects, environments, loading }}>
