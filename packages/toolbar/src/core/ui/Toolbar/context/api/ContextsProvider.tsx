@@ -2,13 +2,7 @@ import { createContext, useCallback, useContext, useEffect, useMemo, useRef, use
 import type { LDContext } from 'launchdarkly-js-client-sdk';
 import { loadContexts, saveContexts, loadActiveContext, saveActiveContext } from '../../utils/localStorage';
 import { usePlugins } from '../state/PluginsProvider';
-import {
-  areContextsEqual,
-  generateContextId,
-  getContextDisplayName,
-  getContextKey,
-  getContextKind,
-} from '../../utils/context';
+import { getContextDisplayName, getContextKey, getContextKind, getStableContextId } from '../../utils/context';
 import { useAnalytics } from '../telemetry/AnalyticsProvider';
 
 interface ContextsContextType {
@@ -31,7 +25,10 @@ export const ContextsProvider = ({ children }: { children: React.ReactNode }) =>
   const { flagOverridePlugin, eventInterceptionPlugin } = usePlugins();
   const analytics = useAnalytics();
   const [storedContexts, setStoredContexts] = useState<LDContext[]>(loadContexts);
-  const [activeContext, setActiveContext] = useState<LDContext | null>(loadActiveContext());
+  const [activeContextId, setActiveContextId] = useState<string | null>(() => {
+    const saved = loadActiveContext();
+    return saved ? getStableContextId(saved) : null;
+  });
   const [filter, setFilter] = useState('');
   const [isAddFormOpen, setIsAddFormOpen] = useState(false);
   const lastAddedContextRef = useRef<string | null>(null);
@@ -39,20 +36,33 @@ export const ContextsProvider = ({ children }: { children: React.ReactNode }) =>
   // Track when we're setting context ourselves to avoid the change handler overriding our selection
   const isSettingContextRef = useRef(false);
 
+  // Derive activeContext from storedContexts and activeContextId (using stable ID)
+  const activeContext = useMemo(() => {
+    if (!activeContextId) return null;
+    return storedContexts.find((c) => getStableContextId(c) === activeContextId) ?? null;
+  }, [storedContexts, activeContextId]);
+
   // Get the LD client from plugins
   const ldClient = flagOverridePlugin?.getClient() ?? eventInterceptionPlugin?.getClient() ?? null;
 
-  // Add a new context to the list
-  const addContext = useCallback(
+  // Helper: Add or update context in stored contexts (compared by kind+key)
+  const addOrUpdateContext = useCallback(
     (context: LDContext) => {
       setStoredContexts((prev) => {
-        const contextId = generateContextId(context);
+        const stableId = getStableContextId(context);
 
-        // Check if context already exists using hash comparison
-        const exists = prev.some((c) => generateContextId(c) === contextId);
-        if (exists) {
-          return prev; // Don't add duplicates
+        // Find existing context by stable ID (kind+key)
+        const existingIndex = prev.findIndex((c) => getStableContextId(c) === stableId);
+
+        if (existingIndex >= 0) {
+          // Update existing context
+          const updated = [...prev];
+          updated[existingIndex] = context;
+          saveContexts(updated);
+          return updated;
         }
+
+        // Add new context
         const updated = [...prev, context];
         saveContexts(updated);
 
@@ -68,19 +78,36 @@ export const ContextsProvider = ({ children }: { children: React.ReactNode }) =>
     [analytics],
   );
 
-  // Remove a context from the list (contextId is the hash from generateContextId)
+  // Add a new context to the list
+  const addContext = useCallback(
+    (context: LDContext) => {
+      const stableId = getStableContextId(context);
+
+      // Check if context already exists using stable ID comparison
+      const exists = storedContexts.some((c) => getStableContextId(c) === stableId);
+      if (exists) {
+        // Don't add duplicates, but update if needed
+        addOrUpdateContext(context);
+        return;
+      }
+
+      addOrUpdateContext(context);
+    },
+    [storedContexts, addOrUpdateContext],
+  );
+
+  // Remove a context from the list (contextId is the stable ID based on kind+key)
   const removeContext = useCallback(
     (contextId: string) => {
       // Prevent deletion of active context
-      const activeContextId = generateContextId(activeContext);
-      if (activeContext && activeContextId === contextId) {
+      if (activeContextId === contextId) {
         console.warn('Cannot delete active context');
         return;
       }
 
       setStoredContexts((prev) => {
-        const contextToRemove = prev.find((c) => generateContextId(c) === contextId);
-        const updated = prev.filter((c) => generateContextId(c) !== contextId);
+        const contextToRemove = prev.find((c) => getStableContextId(c) === contextId);
+        const updated = prev.filter((c) => getStableContextId(c) !== contextId);
         saveContexts(updated);
 
         // Track analytics
@@ -93,7 +120,60 @@ export const ContextsProvider = ({ children }: { children: React.ReactNode }) =>
         return updated;
       });
     },
-    [activeContext, analytics],
+    [activeContextId, analytics],
+  );
+
+  // Update a context in the list (contextId is the stable ID based on kind+key)
+  const updateContext = useCallback(
+    (contextId: string, newContext: LDContext) => {
+      // Check if we're updating the active context
+      const isUpdatingActiveContext = activeContextId === contextId;
+
+      setStoredContexts((prev) => {
+        const oldContext = prev.find((c) => getStableContextId(c) === contextId);
+        const updated = prev.map((c) => {
+          if (getStableContextId(c) === contextId) {
+            return newContext;
+          }
+          return c;
+        });
+        saveContexts(updated);
+
+        // Track analytics
+        if (oldContext) {
+          const oldKind = getContextKind(oldContext);
+          const newKind = getContextKind(newContext);
+          const oldKey = getContextKey(oldContext) || getContextDisplayName(oldContext);
+          const newKey = getContextKey(newContext) || getContextDisplayName(newContext);
+          analytics.trackContextUpdated(oldKind, oldKey, newKind, newKey);
+        }
+
+        return updated;
+      });
+
+      // If updating active context, update the LD client via identify
+      // This ensures the SDK is in sync with our edited version
+      if (isUpdatingActiveContext && ldClient) {
+        isSettingContextRef.current = true;
+        ldClient
+          .identify(newContext)
+          .then(() => {
+            saveActiveContext(newContext);
+          })
+          .catch((error) => {
+            console.error('Failed to update active context in LD client:', error);
+          })
+          .finally(() => {
+            setTimeout(() => {
+              isSettingContextRef.current = false;
+            }, 100);
+          });
+      } else if (isUpdatingActiveContext) {
+        // No LD client available, just save to localStorage
+        saveActiveContext(newContext);
+      }
+    },
+    [activeContextId, analytics, ldClient],
   );
 
   // Set the current context and update the host application's LD Client via identify
@@ -108,15 +188,17 @@ export const ContextsProvider = ({ children }: { children: React.ReactNode }) =>
         // Mark that we're setting context ourselves so the change handler doesn't interfere
         isSettingContextRef.current = true;
 
-        // Skip if the context is already active (using hash comparison)
-        if (areContextsEqual(activeContext, context)) {
+        const stableId = getStableContextId(context);
+
+        // Skip if the context is already active (using stable ID comparison)
+        if (activeContextId === stableId) {
           isSettingContextRef.current = false;
           return;
         }
 
         await ldClient.identify(context);
 
-        setActiveContext(context);
+        setActiveContextId(stableId);
         saveActiveContext(context);
 
         // Track analytics
@@ -133,44 +215,7 @@ export const ContextsProvider = ({ children }: { children: React.ReactNode }) =>
         }, 100);
       }
     },
-    [ldClient, analytics, activeContext],
-  );
-
-  // Update a context in the list (contextId is the hash from generateContextId)
-  const updateContext = useCallback(
-    (contextId: string, newContext: LDContext) => {
-      setStoredContexts((prev) => {
-        const oldContext = prev.find((c) => generateContextId(c) === contextId);
-        const updated = prev.map((c) => {
-          if (generateContextId(c) === contextId) {
-            return newContext;
-          }
-          return c;
-        });
-        saveContexts(updated);
-
-        // If the updated context is the active context, update it
-        const activeContextId = generateContextId(activeContext);
-        if (activeContext && activeContextId === contextId) {
-          // Use setContext to properly update the LD client and sync with dev server
-          setContext(newContext).catch((error) => {
-            console.error('Failed to update active context:', error);
-          });
-        }
-
-        // Track analytics
-        if (oldContext) {
-          const oldKind = getContextKind(oldContext);
-          const newKind = getContextKind(newContext);
-          const oldKey = getContextKey(oldContext) || getContextDisplayName(oldContext);
-          const newKey = getContextKey(newContext) || getContextDisplayName(newContext);
-          analytics.trackContextUpdated(oldKind, oldKey, newKind, newKey);
-        }
-
-        return updated;
-      });
-    },
-    [activeContext, analytics, setContext],
+    [ldClient, analytics, activeContextId],
   );
 
   // Restore saved active context on mount when LD client is available
@@ -183,9 +228,9 @@ export const ContextsProvider = ({ children }: { children: React.ReactNode }) =>
 
     const savedActiveContext = loadActiveContext();
     if (savedActiveContext) {
-      // Verify the saved context still exists in the stored contexts using hash comparison
-      const savedContextId = generateContextId(savedActiveContext);
-      const contextExists = storedContexts.some((c) => generateContextId(c) === savedContextId);
+      // Verify the saved context still exists in the stored contexts using stable ID comparison
+      const savedStableId = getStableContextId(savedActiveContext);
+      const contextExists = storedContexts.some((c) => getStableContextId(c) === savedStableId);
 
       if (contextExists) {
         // Restore the context by directly calling identify
@@ -196,12 +241,12 @@ export const ContextsProvider = ({ children }: { children: React.ReactNode }) =>
           .identify(savedActiveContext)
           .then(() => {
             // Ensure state is in sync (it should already be from useState initialization)
-            setActiveContext(savedActiveContext);
+            setActiveContextId(savedStableId);
           })
           .catch((error) => {
             console.error('Failed to restore saved active context:', error);
             // Clear invalid saved context
-            setActiveContext(null);
+            setActiveContextId(null);
             saveActiveContext(null);
           })
           .finally(() => {
@@ -211,7 +256,7 @@ export const ContextsProvider = ({ children }: { children: React.ReactNode }) =>
           });
       } else {
         // Saved context no longer exists, clear it
-        setActiveContext(null);
+        setActiveContextId(null);
         saveActiveContext(null);
       }
     }
@@ -235,26 +280,24 @@ export const ContextsProvider = ({ children }: { children: React.ReactNode }) =>
         const currentLdContext = ldClient.getContext();
 
         if (currentLdContext) {
-          const currentContextId = generateContextId(currentLdContext);
+          const currentStableId = getStableContextId(currentLdContext);
 
-          // Find matching context in stored contexts using hash comparison
-          const matchingContext = storedContexts.find((c) => generateContextId(c) === currentContextId);
+          // Find matching context in stored contexts using stable ID comparison
+          const matchingContext = storedContexts.find((c) => getStableContextId(c) === currentStableId);
 
           if (matchingContext) {
             // Update active context if it's different
-            const activeContextId = generateContextId(activeContext);
-            const isDifferent = !activeContext || activeContextId !== currentContextId;
+            const isDifferent = !activeContextId || activeContextId !== currentStableId;
 
             if (isDifferent) {
-              setActiveContext(matchingContext);
+              setActiveContextId(currentStableId);
               saveActiveContext(matchingContext);
             }
           } else {
-            // Context changed to something not in our list, clear active context
-            if (activeContext) {
-              setActiveContext(null);
-              saveActiveContext(null);
-            }
+            // Context changed to something not in our list, add it and make it active
+            addOrUpdateContext(currentLdContext);
+            setActiveContextId(currentStableId);
+            saveActiveContext(currentLdContext);
           }
         }
       } catch (error) {
@@ -271,7 +314,7 @@ export const ContextsProvider = ({ children }: { children: React.ReactNode }) =>
     return () => {
       ldClient.off('change', handleContextChange);
     };
-  }, [ldClient, storedContexts, activeContext]);
+  }, [ldClient, storedContexts, activeContextId, addOrUpdateContext]);
 
   // Automatically add the current SDK context to the list if it's not already there
   useEffect(() => {
@@ -286,33 +329,23 @@ export const ContextsProvider = ({ children }: { children: React.ReactNode }) =>
       return;
     }
 
-    // Create a unique identifier for this context
-    const contextId = generateContextId(context);
+    // Create a stable identifier for this context (based on kind+key)
+    const stableId = getStableContextId(context);
 
     // Skip if we've already processed this context
-    if (lastAddedContextRef.current === contextId) {
+    if (lastAddedContextRef.current === stableId) {
       return;
     }
 
-    // Use functional update to check current state and add if needed
-    setStoredContexts((prev) => {
-      // Check if context already exists in stored contexts using hash comparison
-      const exists = prev.some((c) => generateContextId(c) === contextId);
+    // Only ADD if it doesn't exist - don't overwrite existing contexts
+    // This preserves user edits to contexts
+    const contextExists = storedContexts.some((c) => getStableContextId(c) === stableId);
+    if (!contextExists) {
+      addOrUpdateContext(context);
+    }
 
-      if (exists) {
-        // Track that we've seen this context (even if it already existed)
-        lastAddedContextRef.current = contextId;
-        return prev;
-      }
-
-      // Add the LDContext directly
-      const updated = [...prev, context];
-      saveContexts(updated);
-      // Track that we've added this context
-      lastAddedContextRef.current = contextId;
-      return updated;
-    });
-  }, [ldClient]);
+    lastAddedContextRef.current = stableId;
+  }, [ldClient, addOrUpdateContext, storedContexts]);
 
   // Filter contexts client-side
   const contexts = useMemo(() => {
@@ -331,16 +364,15 @@ export const ContextsProvider = ({ children }: { children: React.ReactNode }) =>
       });
     }
 
-    // Sort to put active context first
-    const activeContextId = generateContextId(activeContext);
+    // Sort to put active context first (using stable ID)
     return filtered.sort((a, b) => {
-      const aIsActive = activeContext && generateContextId(a) === activeContextId;
-      const bIsActive = activeContext && generateContextId(b) === activeContextId;
+      const aIsActive = activeContext && getStableContextId(a) === activeContextId;
+      const bIsActive = activeContext && getStableContextId(b) === activeContextId;
       if (aIsActive && !bIsActive) return -1;
       if (!aIsActive && bIsActive) return 1;
       return 0;
     });
-  }, [storedContexts, filter, activeContext]);
+  }, [storedContexts, filter, activeContext, activeContextId]);
 
   const clearContexts = useCallback(() => {
     if (!activeContext) {
