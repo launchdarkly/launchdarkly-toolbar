@@ -1,5 +1,20 @@
 # Changelog
 
+## [2.8.0-beta.1](https://github.com/launchdarkly/launchdarkly-toolbar/compare/2.7.0-beta.1...2.8.0-beta.1) (2026-01-06)
+
+
+### Features
+
+* [REL-10723] implement a way to share overrides with others using urls ([#371](https://github.com/launchdarkly/launchdarkly-toolbar/issues/371)) ([642e962](https://github.com/launchdarkly/launchdarkly-toolbar/commit/642e962d540fccb15cca8d53edd1564934e63ab4))
+* adding localstorage hook ([#449](https://github.com/launchdarkly/launchdarkly-toolbar/issues/449)) ([738357a](https://github.com/launchdarkly/launchdarkly-toolbar/commit/738357a8d30dd74625eee6a8df928ebbe308263d))
+* REL-11387 dev server context management ([#461](https://github.com/launchdarkly/launchdarkly-toolbar/issues/461)) ([37b328d](https://github.com/launchdarkly/launchdarkly-toolbar/commit/37b328d19cb0658b075a89793348c0423b0dc7e0))
+
+
+### Bug Fixes
+
+* preserve auto-collapse preference when manually collapsing toolbar ([#485](https://github.com/launchdarkly/launchdarkly-toolbar/issues/485)) ([0eae386](https://github.com/launchdarkly/launchdarkly-toolbar/commit/0eae386db8e718c8a08816a04985dd9289481baf))
+* use stable IDs for context identification instead of hash-based IDs ([#484](https://github.com/launchdarkly/launchdarkly-toolbar/issues/484)) ([1fa2e1e](https://github.com/launchdarkly/launchdarkly-toolbar/commit/1fa2e1eb122955ba2701297a4ef6efcb4e92ff3f))
+
 ## [2.7.0-beta.1](https://github.com/launchdarkly/launchdarkly-toolbar/compare/2.6.1-beta.1...2.7.0-beta.1) (2025-12-19)
 
 
