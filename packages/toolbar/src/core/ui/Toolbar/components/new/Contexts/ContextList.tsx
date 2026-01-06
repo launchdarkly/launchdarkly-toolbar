@@ -7,7 +7,7 @@ import { ContextItem } from './ContextItem';
 import { GenericHelpText } from '../../GenericHelpText';
 import { AddContextForm } from './AddContextForm';
 import { VIRTUALIZATION } from '../../../constants';
-import { generateContextId } from '../../../utils/context';
+import { getStableContextId } from '../../../utils/context';
 import * as styles from './ContextList.module.css';
 
 export function ContextList() {
@@ -103,7 +103,7 @@ export function ContextList() {
                 <ContextItem
                   context={context}
                   isActiveContext={
-                    activeContext !== null && generateContextId(activeContext) === generateContextId(context)
+                    activeContext !== null && getStableContextId(activeContext) === getStableContextId(context)
                   }
                   handleHeightChange={handleHeightChange}
                   index={virtualItem.index}

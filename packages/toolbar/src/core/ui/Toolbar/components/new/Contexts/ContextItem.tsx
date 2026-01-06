@@ -9,7 +9,7 @@ import { JsonEditor } from '../../../../JsonEditor/JsonEditor';
 import { VIRTUALIZATION, EASING } from '../../../constants';
 import { IconButton } from '../../../../Buttons/IconButton';
 import { useAnalytics } from '../../../context/telemetry/AnalyticsProvider';
-import { generateContextId, getContextDisplayName, getContextKey, getContextKind } from '../../../utils/context';
+import { getContextDisplayName, getContextKey, getContextKind, getStableContextId } from '../../../utils/context';
 
 interface ContextItemProps {
   context: LDContext;
@@ -26,7 +26,7 @@ export function ContextItem({ context, isActiveContext, handleHeightChange, inde
   const hasResetOnMountRef = useRef(false);
   const { removeContext, updateContext, setContext } = useContextsContext();
   const analytics = useAnalytics();
-  const contextId = generateContextId(context);
+  const stableId = getStableContextId(context);
   const contextKey = getContextKey(context);
   const contextKind = getContextKind(context);
   const displayName = getContextDisplayName(context);
@@ -69,8 +69,8 @@ export function ContextItem({ context, isActiveContext, handleHeightChange, inde
         return;
       }
 
-      // Update the context using the hash-based contextId
-      updateContext(contextId, parsed as LDContext);
+      // Update the context using the stable ID
+      updateContext(stableId, parsed as LDContext);
       setIsEditing(false);
 
       // Reset height when collapsing
@@ -80,7 +80,7 @@ export function ContextItem({ context, isActiveContext, handleHeightChange, inde
     } catch (error) {
       console.error('Failed to parse JSON:', error);
     }
-  }, [editedJson, hasLintErrors, contextId, updateContext, handleHeightChange, index]);
+  }, [editedJson, hasLintErrors, stableId, updateContext, handleHeightChange, index]);
 
   const handleCancel = useCallback(() => {
     setIsEditing(false);
@@ -122,9 +122,9 @@ export function ContextItem({ context, isActiveContext, handleHeightChange, inde
         return;
       }
       // Note: Analytics tracking happens in removeContext in ContextsProvider
-      removeContext(contextId);
+      removeContext(stableId);
     },
-    [removeContext, contextId, isActiveContext],
+    [removeContext, stableId, isActiveContext],
   );
 
   const handleSelect = useCallback(async () => {
@@ -217,14 +217,14 @@ export function ContextItem({ context, isActiveContext, handleHeightChange, inde
                 disabled={hasLintErrors}
                 label="Save context"
                 title="Save context"
-                data-testid={`save-context-${contextId}`}
+                data-testid={`save-context-${stableId}`}
               />
               <IconButton
                 icon={<CancelIcon />}
                 onClick={handleCancel}
                 label="Cancel editing"
                 title="Cancel editing"
-                data-testid={`cancel-context-${contextId}`}
+                data-testid={`cancel-context-${stableId}`}
               />
             </>
           )}
@@ -233,8 +233,8 @@ export function ContextItem({ context, isActiveContext, handleHeightChange, inde
       <AnimatePresence mode="wait">
         {isEditing && (
           <motion.div
-            key={`json-editor-${contextId}`}
-            data-testid={`json-editor-${contextId}`}
+            key={`json-editor-${stableId}`}
+            data-testid={`json-editor-${stableId}`}
             onClick={(e) => e.stopPropagation()}
             initial={{
               opacity: 0,
@@ -267,8 +267,8 @@ export function ContextItem({ context, isActiveContext, handleHeightChange, inde
               docString={editedJson}
               onChange={handleJsonChange}
               onLintErrors={handleLintErrors}
-              data-testid={`context-json-${contextId}`}
-              editorId={`json-editor-${contextId}`}
+              data-testid={`context-json-${stableId}`}
+              editorId={`json-editor-${stableId}`}
               onEditorHeightChange={handleEditorHeightChange}
               initialState={{
                 startCursorAtLine: 0,

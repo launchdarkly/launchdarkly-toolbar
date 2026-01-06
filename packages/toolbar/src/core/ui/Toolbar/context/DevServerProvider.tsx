@@ -6,7 +6,7 @@ import { LdToolbarConfig, ToolbarState } from '../../../types/devServer';
 import { useFlagsContext } from './api/FlagsProvider';
 import { useApi, useProjectContext } from './api';
 import { useContextsContext } from './api/ContextsProvider';
-import { areContextsEqual, generateContextId, getContextKey, getContextKind } from '../utils/context';
+import { getStableContextId } from '../utils/context';
 
 interface DevServerContextValue {
   state: ToolbarState;
@@ -104,21 +104,18 @@ export const DevServerProvider: FC<DevServerProviderProps> = ({ children, config
     return true;
   }, [flagStateManager, handleError]);
 
-  // Helper: Add or update context in stored contexts (compared by kind+key)
+  // Helper: Add or update context in stored contexts (compared by kind+key via stable ID)
   const addOrUpdateStoredContext = useCallback(
     (context: any) => {
-      const contextKind = getContextKind(context);
-      const contextKey = getContextKey(context);
+      const stableId = getStableContextId(context);
       const contexts = contextsApi.contexts;
 
-      const existingContextIndex = contexts.findIndex((c) => {
-        return getContextKind(c) === contextKind && getContextKey(c) === contextKey;
-      });
+      // Check if context already exists using stable ID (kind+key)
+      const existingContext = contexts.find((c) => getStableContextId(c) === stableId);
 
-      if (existingContextIndex >= 0) {
+      if (existingContext) {
         // Update existing context
-        const existingContextId = generateContextId(contexts[existingContextIndex]);
-        updateStoredContext(existingContextId, context);
+        updateStoredContext(stableId, context);
       } else {
         // Add new context
         addContext(context);
@@ -138,8 +135,12 @@ export const DevServerProvider: FC<DevServerProviderProps> = ({ children, config
       return;
     }
 
-    // Skip if context hasn't changed from what dev server already has
-    if (areContextsEqual(lastDevServerContextRef.current, activeContext)) {
+    // Skip if context hasn't changed from what dev server already has (compare by stable ID)
+    const currentStableId = lastDevServerContextRef.current
+      ? getStableContextId(lastDevServerContextRef.current)
+      : null;
+    const activeStableId = getStableContextId(activeContext);
+    if (currentStableId === activeStableId) {
       return;
     }
 
@@ -180,7 +181,11 @@ export const DevServerProvider: FC<DevServerProviderProps> = ({ children, config
 
       // Check if dev server context has changed and update toolbar
       if (projectData.context) {
-        const contextChanged = !areContextsEqual(lastDevServerContextRef.current, projectData.context);
+        const lastStableId = lastDevServerContextRef.current
+          ? getStableContextId(lastDevServerContextRef.current)
+          : null;
+        const newStableId = getStableContextId(projectData.context);
+        const contextChanged = lastStableId !== newStableId;
         if (contextChanged) {
           isUpdatingFromDevServerRef.current = true;
           lastDevServerContextRef.current = projectData.context;
