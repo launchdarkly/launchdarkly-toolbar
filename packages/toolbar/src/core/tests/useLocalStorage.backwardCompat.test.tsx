@@ -21,17 +21,13 @@ describe('useLocalStorage - Backward Compatibility', () => {
       const oldFormatData = JSON.stringify(['flag-1', 'flag-2', 'flag-3']);
       localStorage.setItem(TOOLBAR_STORAGE_KEYS.STARRED_FLAGS, oldFormatData);
 
-      const { result } = renderHook(() =>
-        useLocalStorage<string[]>(TOOLBAR_STORAGE_KEYS.STARRED_FLAGS, []),
-      );
+      const { result } = renderHook(() => useLocalStorage<string[]>(TOOLBAR_STORAGE_KEYS.STARRED_FLAGS, []));
 
       expect(result.current[0]).toEqual(['flag-1', 'flag-2', 'flag-3']);
     });
 
     test('writes data in same format as old saveStarredFlags', () => {
-      const { result } = renderHook(() =>
-        useLocalStorage<string[]>(TOOLBAR_STORAGE_KEYS.STARRED_FLAGS, []),
-      );
+      const { result } = renderHook(() => useLocalStorage<string[]>(TOOLBAR_STORAGE_KEYS.STARRED_FLAGS, []));
 
       act(() => {
         result.current[1](['new-flag-1', 'new-flag-2']);
