@@ -41,9 +41,9 @@ export const ProjectProvider = ({ children, clientSideId, providedProjectKey }: 
       return;
     }
 
-    const environments = projects.find((project) => project.key === projectKey)?.environments;
-    if (environments) {
-      setEnvironments(environments);
+    const envs = projects.find((project) => project.key === projectKey)?.environments;
+    if (envs) {
+      setEnvironments(envs);
     }
   }, [projects, projectKey]);
 
@@ -78,19 +78,19 @@ export const ProjectProvider = ({ children, clientSideId, providedProjectKey }: 
             throw new Error('No projects found');
           }
 
-          let project = projects.items[0];
-          let environments: ApiEnvironment[] = [];
+          let project: ApiProject | undefined = projects.items[0];
+          let envs: ApiEnvironment[] = [];
 
           if (clientSideId) {
-            project = projects.items.find((project) =>
-              project.environments.some((environment) => environment._id === clientSideId),
+            project = projects.items.find((proj) =>
+              proj.environments.some((environment) => environment._id === clientSideId),
             );
 
             if (!project) {
               throw new Error(`No project found for clientSideId: ${clientSideId}`);
             }
 
-            environments = project.environments;
+            envs = project.environments;
           }
 
           if (!project) {
@@ -98,7 +98,7 @@ export const ProjectProvider = ({ children, clientSideId, providedProjectKey }: 
           }
 
           setProjectKey(project.key);
-          setEnvironments(environments);
+          setEnvironments(envs);
           setLoading(false);
         })
         .catch((error) => {
