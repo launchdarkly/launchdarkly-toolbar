@@ -140,7 +140,7 @@
     "css-loader": "^7.1.2",
     "jsdom": "^27.3.0",
     "launchdarkly-js-client-sdk": "^3.9.0",
-    "motion": "^12.23.26",
+    "motion": "^12.26.1",
     "oxlint": "^1.35.0",
     "react": "^19.2.3",
     "react-dom": "^19.2.3",
