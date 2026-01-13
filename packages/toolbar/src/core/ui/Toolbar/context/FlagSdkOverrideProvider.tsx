@@ -107,7 +107,6 @@ export function FlagSdkOverrideProvider({ children, flagOverridePlugin }: FlagSd
     setIsLoading(false);
 
     // Subscribe to changes with incremental updates
-    // NOTE: we are overloading this function so that it can handle both the old and new browser SDKs
     const handleChange = (changes: Record<string, { current: any }>, keys: string[]) => {
       setFlags((prevFlags) => {
         const updatedRawFlags = ldClient.allFlags();
@@ -115,7 +114,7 @@ export function FlagSdkOverrideProvider({ children, flagOverridePlugin }: FlagSd
 
         let changedKeys = keys;
         if (changedKeys === undefined) {
-          changedKeys = Object.keys(changes);
+          changedKeys = Object.keys(changes)
         }
 
         // Only update the flags that actually changed for better performance

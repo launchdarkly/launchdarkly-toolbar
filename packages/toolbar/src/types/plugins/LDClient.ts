@@ -1,5 +1,5 @@
-import { LDFlagSet, Hook, LDPluginEnvironmentMetadata } from "launchdarkly-js-client-sdk";
-import { LDIdentifyResult } from "@launchdarkly/js-client-sdk";
+import { LDFlagSet, LDPluginEnvironmentMetadata } from "launchdarkly-js-client-sdk";
+import { LDIdentifyResult, Hook } from "@launchdarkly/js-client-sdk";
 
 /**
  * LDClient based on the LDClient type in the SDK package with

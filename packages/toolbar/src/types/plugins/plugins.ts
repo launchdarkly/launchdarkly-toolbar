@@ -1,9 +1,11 @@
-import type { LDFlagSet, LDFlagValue, LDDebugOverride } from '@launchdarkly/js-client-sdk';
-import type { LDPlugin } from '../compat/LDPlugin';
-import type { LDClient } from '../compat/LDClient';
+import type { LDDebugOverride, LDFlagSet, LDFlagValue, LDPlugin, LDPluginEnvironmentMetadata } from 'launchdarkly-js-client-sdk';
+import type { LDClient } from './LDClient';
 import type { ProcessedEvent } from '../events';
 
-export interface IFlagOverridePlugin extends LDPlugin, LDDebugOverride {
+export interface IFlagOverridePlugin extends Omit<LDPlugin, 'register'>, LDDebugOverride {
+
+  register(client: LDClient, metadata: LDPluginEnvironmentMetadata): void;
+
   /**
    * Sets an override value for a feature flag
    * @param flagKey - The key of the flag to override
@@ -38,7 +40,8 @@ export interface IFlagOverridePlugin extends LDPlugin, LDDebugOverride {
 /**
  * Interface for event interception plugins that can be used with the LaunchDarkly Toolbar
  */
-export interface IEventInterceptionPlugin extends LDPlugin {
+export interface IEventInterceptionPlugin extends Omit<LDPlugin, 'register'> {
+  register(client: LDClient, metadata: LDPluginEnvironmentMetadata): void;
   /**
    * Gets all intercepted events from the event store
    * @returns Array of processed events
