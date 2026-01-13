@@ -1,5 +1,100 @@
 # Changelog
 
+## [3.0.0](https://github.com/launchdarkly/launchdarkly-toolbar/compare/2.0.0...3.0.0) (2026-01-13)
+
+
+### ⚠ BREAKING CHANGES
+
+* [REL-10665] display flag names via API ([#309](https://github.com/launchdarkly/launchdarkly-toolbar/issues/309))
+* [REL-9841] modify toolbar to be framework-agnostic using shadow DOM ([#157](https://github.com/launchdarkly/launchdarkly-toolbar/issues/157))
+* Major restructure to industry-standard monorepo pattern
+
+### Features
+
+* [REL-10136] revamp json editing experience ([#233](https://github.com/launchdarkly/launchdarkly-toolbar/issues/233)) ([003e0d7](https://github.com/launchdarkly/launchdarkly-toolbar/commit/003e0d7386ab09e12f966528493703285e7b0713))
+* [REL-10137] add IconLinkButton and use that for linking to create missing flag ([#186](https://github.com/launchdarkly/launchdarkly-toolbar/issues/186)) ([398c8eb](https://github.com/launchdarkly/launchdarkly-toolbar/commit/398c8eb432c166bf5f5fe9addaea7eb979e73779))
+* [REL-10145] Update 'pin' functionality to be called 'Auto-collapse' ([#193](https://github.com/launchdarkly/launchdarkly-toolbar/issues/193)) ([fd4562b](https://github.com/launchdarkly/launchdarkly-toolbar/commit/fd4562bfe3a8a6543220c7d8c8d8b87bc57b5af8))
+* [REL-10307] Context Management ([#422](https://github.com/launchdarkly/launchdarkly-toolbar/issues/422)) ([2cedb92](https://github.com/launchdarkly/launchdarkly-toolbar/commit/2cedb92d0f05e5e3f40e3a7b2b25eefa80a5029a))
+* [REL-10443] Developer Toolbar authentication ([#273](https://github.com/launchdarkly/launchdarkly-toolbar/issues/273)) ([b5b44d4](https://github.com/launchdarkly/launchdarkly-toolbar/commit/b5b44d4f7cb4a928ab5c1f5af05017a355bef99f))
+* [REL-10571] Interactive mode mvp ([#385](https://github.com/launchdarkly/launchdarkly-toolbar/issues/385)) ([2ed5569](https://github.com/launchdarkly/launchdarkly-toolbar/commit/2ed5569cf0429be54f697b05850c8a0c74f2ab6d))
+* [REL-10578] Copy flag key to clipboard ([#316](https://github.com/launchdarkly/launchdarkly-toolbar/issues/316)) ([7b1d4a4](https://github.com/launchdarkly/launchdarkly-toolbar/commit/7b1d4a4e0283fb8c22c0d65642913ed856ad7625))
+* [REL-10665] display flag names via API ([#309](https://github.com/launchdarkly/launchdarkly-toolbar/issues/309)) ([6f3af66](https://github.com/launchdarkly/launchdarkly-toolbar/commit/6f3af66fb0760af9466d7d309dbc44315b7710d8))
+* [REL-10723] implement a way to share overrides with others using urls ([#371](https://github.com/launchdarkly/launchdarkly-toolbar/issues/371)) ([642e962](https://github.com/launchdarkly/launchdarkly-toolbar/commit/642e962d540fccb15cca8d53edd1564934e63ab4))
+* [REL-10964] add Session Replay capabilities to Toolbar ([#370](https://github.com/launchdarkly/launchdarkly-toolbar/issues/370)) ([026bb50](https://github.com/launchdarkly/launchdarkly-toolbar/commit/026bb5005bddc894e84ca40fc79b6dc2a1568fe3))
+* [REL-11096] update context on login + fix api calls bug ([#386](https://github.com/launchdarkly/launchdarkly-toolbar/issues/386)) ([d61e53b](https://github.com/launchdarkly/launchdarkly-toolbar/commit/d61e53b837eefdc787f9bdb2f0521195960e1608))
+* [REL-11323] Allow users to easily opt-out of tracking ([#448](https://github.com/launchdarkly/launchdarkly-toolbar/issues/448)) ([a35b3d0](https://github.com/launchdarkly/launchdarkly-toolbar/commit/a35b3d014ac734e09def0bec6216994c83619dc1))
+* [REL-11347] action tooltips + UX updates ([#454](https://github.com/launchdarkly/launchdarkly-toolbar/issues/454)) ([850eb06](https://github.com/launchdarkly/launchdarkly-toolbar/commit/850eb063ce27189f55879c220fa268f6a6a4149e))
+* [REL-9492] Add create flag option for unknown feature flag evaluations ([#108](https://github.com/launchdarkly/launchdarkly-toolbar/issues/108)) ([10f0138](https://github.com/launchdarkly/launchdarkly-toolbar/commit/10f0138692d9975da8a36d765c16e8293976eef6))
+* [REL-9565] add 'Reload on Flag Change' setting + functionality ([#185](https://github.com/launchdarkly/launchdarkly-toolbar/issues/185)) ([22afc0b](https://github.com/launchdarkly/launchdarkly-toolbar/commit/22afc0bda3be16c663c723b2edfafd25d26897dc))
+* [REL-9741 add starred flags functionality to the toolbar ([#251](https://github.com/launchdarkly/launchdarkly-toolbar/issues/251)) ([86dd6a6](https://github.com/launchdarkly/launchdarkly-toolbar/commit/86dd6a6240355aa86a56042b844a3b37d1824e16))
+* [REL-9746] add FocusScope around expanded toolbar ([#138](https://github.com/launchdarkly/launchdarkly-toolbar/issues/138)) ([76fc359](https://github.com/launchdarkly/launchdarkly-toolbar/commit/76fc35956bdcd564d7947723f3ae6f9e4c8eac7a))
+* [REL-9841] modify toolbar to be framework-agnostic using shadow DOM ([#157](https://github.com/launchdarkly/launchdarkly-toolbar/issues/157)) ([613c36e](https://github.com/launchdarkly/launchdarkly-toolbar/commit/613c36ea99d4e9e0f4cb5ff5d6f4f6b1e43104d0))
+* add analytics tracking for dev server mode ([#344](https://github.com/launchdarkly/launchdarkly-toolbar/issues/344)) ([d2b0922](https://github.com/launchdarkly/launchdarkly-toolbar/commit/d2b0922f0edd72688a41080ad5f7efd94cbbbba0))
+* add configurable eventCapacity to EventInterceptionPlugin ([#103](https://github.com/launchdarkly/launchdarkly-toolbar/issues/103)) ([2acc493](https://github.com/launchdarkly/launchdarkly-toolbar/commit/2acc4932e54d33385f209551c2fe326d13b4392e))
+* add InternalClientProvider for Toolbar flags and analytics ([#288](https://github.com/launchdarkly/launchdarkly-toolbar/issues/288)) ([63f4f5a](https://github.com/launchdarkly/launchdarkly-toolbar/commit/63f4f5aa22d497a1c2d460f5f9ed375af878bdd8))
+* Add support for all corner toolbar positions ([#128](https://github.com/launchdarkly/launchdarkly-toolbar/issues/128)) ([05c9037](https://github.com/launchdarkly/launchdarkly-toolbar/commit/05c9037a6df94a312ce7ed761b603c2d16868857))
+* add toolbar pinning functionality  ([#111](https://github.com/launchdarkly/launchdarkly-toolbar/issues/111)) ([a912491](https://github.com/launchdarkly/launchdarkly-toolbar/commit/a9124915700599e1a76150e12f51836847c21fe5))
+* adding localstorage hook ([#449](https://github.com/launchdarkly/launchdarkly-toolbar/issues/449)) ([738357a](https://github.com/launchdarkly/launchdarkly-toolbar/commit/738357a8d30dd74625eee6a8df928ebbe308263d))
+* allow dragging toolbar when expanded ([#133](https://github.com/launchdarkly/launchdarkly-toolbar/issues/133)) ([1fd998f](https://github.com/launchdarkly/launchdarkly-toolbar/commit/1fd998fce3a0350876334f45f759226e45eeccb8))
+* Enable events tab in dev-server mode ([#153](https://github.com/launchdarkly/launchdarkly-toolbar/issues/153)) ([bfb8d2f](https://github.com/launchdarkly/launchdarkly-toolbar/commit/bfb8d2f164c5fc14a098f639f2f623029cc739e4))
+* enhance toolbar focus management for a11y ([#125](https://github.com/launchdarkly/launchdarkly-toolbar/issues/125)) ([80460cf](https://github.com/launchdarkly/launchdarkly-toolbar/commit/80460cf2fc811bf876e486c00919a9d915f74fa5))
+* improve DevServerMode api call logic ([6f3af66](https://github.com/launchdarkly/launchdarkly-toolbar/commit/6f3af66fb0760af9466d7d309dbc44315b7710d8))
+* improve toolbar drag behavior with momentum and smooth animations ([2e8f4dd](https://github.com/launchdarkly/launchdarkly-toolbar/commit/2e8f4dd4a23a4f5623aaa399540983105ba737d7))
+* reduce list item heights for flag and events tabs ([#100](https://github.com/launchdarkly/launchdarkly-toolbar/issues/100)) ([fde7c08](https://github.com/launchdarkly/launchdarkly-toolbar/commit/fde7c08880b82a5d7206519255587eeb7906b8fe))
+* REL-10583 - add feedback mechanism to settings tab ([#345](https://github.com/launchdarkly/launchdarkly-toolbar/issues/345)) ([3b99673](https://github.com/launchdarkly/launchdarkly-toolbar/commit/3b996730f9d5f4997577279ff8275892cf6f0ec6))
+* REL-11387 dev server context management ([#461](https://github.com/launchdarkly/launchdarkly-toolbar/issues/461)) ([37b328d](https://github.com/launchdarkly/launchdarkly-toolbar/commit/37b328d19cb0658b075a89793348c0423b0dc7e0))
+* **REL-9867:** improve toolbar drag behavior with momentum and smooth animations ([#152](https://github.com/launchdarkly/launchdarkly-toolbar/issues/152)) ([2e8f4dd](https://github.com/launchdarkly/launchdarkly-toolbar/commit/2e8f4dd4a23a4f5623aaa399540983105ba737d7))
+* Remove LaunchPad UI dependency and inline components ([#155](https://github.com/launchdarkly/launchdarkly-toolbar/issues/155)) ([8af81cd](https://github.com/launchdarkly/launchdarkly-toolbar/commit/8af81cda85cf0aeea99125f6193f3bb29352ff4e))
+* setup telemetry for toolbar ([#126](https://github.com/launchdarkly/launchdarkly-toolbar/issues/126)) ([74ead85](https://github.com/launchdarkly/launchdarkly-toolbar/commit/74ead85e956fffeb6c1cdcd658cc5697f807b75b))
+* toolbar click-to-expand; smoother collapse bounce; drag threshold; tests updated ([#124](https://github.com/launchdarkly/launchdarkly-toolbar/issues/124)) ([3a6cf50](https://github.com/launchdarkly/launchdarkly-toolbar/commit/3a6cf50a060833095fb4c00a469ac7f595bce19e))
+* use ld logo instead of text in header ([#122](https://github.com/launchdarkly/launchdarkly-toolbar/issues/122)) ([ee59f8e](https://github.com/launchdarkly/launchdarkly-toolbar/commit/ee59f8eb1741aee65aea9ef6e2f6d5ed36355413))
+
+
+### Bug Fixes
+
+* [REL-10230] preserve search term when toggling active tab ([#225](https://github.com/launchdarkly/launchdarkly-toolbar/issues/225)) ([46bc323](https://github.com/launchdarkly/launchdarkly-toolbar/commit/46bc323f4f41d777432b1b877add0eff3461b9b4))
+* [REL-10308] consistent toolbar height ([#217](https://github.com/launchdarkly/launchdarkly-toolbar/issues/217)) ([8f4755e](https://github.com/launchdarkly/launchdarkly-toolbar/commit/8f4755eaed661060b5f779f7bd33101db02af921))
+* [REL-10339] update react, react-dom to be peer deps ([#218](https://github.com/launchdarkly/launchdarkly-toolbar/issues/218)) ([098cc91](https://github.com/launchdarkly/launchdarkly-toolbar/commit/098cc911eec2c49417e8e5459469c91b240253c9))
+* [REL-10551] update the react hook so it only loads the toolbar script once ([#262](https://github.com/launchdarkly/launchdarkly-toolbar/issues/262)) ([0705974](https://github.com/launchdarkly/launchdarkly-toolbar/commit/0705974fdac87cf48c0be5e3cf0d1c3c624bd473))
+* [REL-10721] update 'body' to '#ld-toolbar' to be more specific ([#295](https://github.com/launchdarkly/launchdarkly-toolbar/issues/295)) ([be1673f](https://github.com/launchdarkly/launchdarkly-toolbar/commit/be1673f8df375c015a0d98c41db46bc37ed33edd))
+* [REL-10746] add handrolled Select component to avoid react-aria oddities ([#297](https://github.com/launchdarkly/launchdarkly-toolbar/issues/297)) ([0117db5](https://github.com/launchdarkly/launchdarkly-toolbar/commit/0117db5868828ba747cf897595cdf7b21600316e))
+* [REL-10878] fix Select dropdown styling issue ([#317](https://github.com/launchdarkly/launchdarkly-toolbar/issues/317)) ([7651dcb](https://github.com/launchdarkly/launchdarkly-toolbar/commit/7651dcb9768fa68f5b963352ada731f0710a77aa))
+* [REL-11305] wait for context to update to load toolbar ([#436](https://github.com/launchdarkly/launchdarkly-toolbar/issues/436)) ([46fbbe1](https://github.com/launchdarkly/launchdarkly-toolbar/commit/46fbbe153450c09f67e05019e1f704031535dcf3))
+* [REL-11306] handle host application hot reloads better ([#438](https://github.com/launchdarkly/launchdarkly-toolbar/issues/438)) ([e825036](https://github.com/launchdarkly/launchdarkly-toolbar/commit/e8250367c2381030199fa6fb1aff736ad469f8f3))
+* [REL-11310] standardize context management ([#440](https://github.com/launchdarkly/launchdarkly-toolbar/issues/440)) ([43a1198](https://github.com/launchdarkly/launchdarkly-toolbar/commit/43a11986b0bc0d5bbc3a794f0cac06d35b87f866))
+* [REL-11336] Update inputs to stop propagation ([#441](https://github.com/launchdarkly/launchdarkly-toolbar/issues/441)) ([d0963e4](https://github.com/launchdarkly/launchdarkly-toolbar/commit/d0963e4715d4cdd464ed59519b14ff1b9fa725d2))
+* [REL-11345] update project + environment selector logic ([#452](https://github.com/launchdarkly/launchdarkly-toolbar/issues/452)) ([8da239a](https://github.com/launchdarkly/launchdarkly-toolbar/commit/8da239a9360467e1a6659577d16264730c4d9900))
+* [REL-9795] move blur handler up so it can close properly after search clear ([#148](https://github.com/launchdarkly/launchdarkly-toolbar/issues/148)) ([9a1530b](https://github.com/launchdarkly/launchdarkly-toolbar/commit/9a1530b9842384d3ed7cdf74b37d620fe3ae3db0))
+* [REL-9865] toolbar keyboard navigation improvements ([#150](https://github.com/launchdarkly/launchdarkly-toolbar/issues/150)) ([774523f](https://github.com/launchdarkly/launchdarkly-toolbar/commit/774523ff4f16fabd76a3dc93f8b640c0c658d002))
+* add missing tracking events ([#435](https://github.com/launchdarkly/launchdarkly-toolbar/issues/435)) ([e21ea61](https://github.com/launchdarkly/launchdarkly-toolbar/commit/e21ea61316ca65a37b5d6570600100fe5859f500))
+* bumping so we can release manually ([#498](https://github.com/launchdarkly/launchdarkly-toolbar/issues/498)) ([299203c](https://github.com/launchdarkly/launchdarkly-toolbar/commit/299203c12783010b7a00c976c9c81a94ed030f17))
+* handle host application hot reloads better ([e825036](https://github.com/launchdarkly/launchdarkly-toolbar/commit/e8250367c2381030199fa6fb1aff736ad469f8f3))
+* isolate toolbar LaunchPad styles in shadow root ([#258](https://github.com/launchdarkly/launchdarkly-toolbar/issues/258)) ([6eb2bf0](https://github.com/launchdarkly/launchdarkly-toolbar/commit/6eb2bf0ce4480c7eeeda7421045fa7859342269d))
+* move blur handler up so it can close properly after search clear ([9a1530b](https://github.com/launchdarkly/launchdarkly-toolbar/commit/9a1530b9842384d3ed7cdf74b37d620fe3ae3db0))
+* preserve auto-collapse preference when manually collapsing toolbar ([#485](https://github.com/launchdarkly/launchdarkly-toolbar/issues/485)) ([0eae386](https://github.com/launchdarkly/launchdarkly-toolbar/commit/0eae386db8e718c8a08816a04985dd9289481baf))
+* preserve search term when toggling active tab ([46bc323](https://github.com/launchdarkly/launchdarkly-toolbar/commit/46bc323f4f41d777432b1b877add0eff3461b9b4))
+* prevent parent app keyboard shortcuts from interfering with tool… ([#343](https://github.com/launchdarkly/launchdarkly-toolbar/issues/343)) ([4ef47bc](https://github.com/launchdarkly/launchdarkly-toolbar/commit/4ef47bcc611e87fe42ed19efb80a1fd319c68b37))
+* prevent parent app keyboard shortcuts from interfering with toolbar inputs ([4ef47bc](https://github.com/launchdarkly/launchdarkly-toolbar/commit/4ef47bcc611e87fe42ed19efb80a1fd319c68b37))
+* prevent UI flashing during initialization ([#429](https://github.com/launchdarkly/launchdarkly-toolbar/issues/429)) ([e09e22d](https://github.com/launchdarkly/launchdarkly-toolbar/commit/e09e22d96cdeb1cd8e34e869722ac4dd9a59b210))
+* remove provenance flag from npm publish command ([#350](https://github.com/launchdarkly/launchdarkly-toolbar/issues/350)) ([668bc27](https://github.com/launchdarkly/launchdarkly-toolbar/commit/668bc27560d187420920202302e3776c4105a5ec))
+* remove unused dependencies and excessive peer dependencies ([#239](https://github.com/launchdarkly/launchdarkly-toolbar/issues/239)) ([82f9235](https://github.com/launchdarkly/launchdarkly-toolbar/commit/82f92356a36203a63066c07b69b6095c90424599))
+* search animation stutter and improve UX polish ([#142](https://github.com/launchdarkly/launchdarkly-toolbar/issues/142)) ([b1618d8](https://github.com/launchdarkly/launchdarkly-toolbar/commit/b1618d8f6bc229384639dee27f74d2c405d1b062))
+* update 'body' to '#ld-toolbar' to be more specific ([be1673f](https://github.com/launchdarkly/launchdarkly-toolbar/commit/be1673f8df375c015a0d98c41db46bc37ed33edd))
+* Update CircleLogo component styles and event types ([#135](https://github.com/launchdarkly/launchdarkly-toolbar/issues/135)) ([6cb56c7](https://github.com/launchdarkly/launchdarkly-toolbar/commit/6cb56c7bbb91986be67a7a892e5e78ec41a337b3))
+* update click handling in SubtabDropdown component ([#428](https://github.com/launchdarkly/launchdarkly-toolbar/issues/428)) ([72a8843](https://github.com/launchdarkly/launchdarkly-toolbar/commit/72a8843607b6d266526490a0f7c4d9f64debc902))
+* update publish commands ([#368](https://github.com/launchdarkly/launchdarkly-toolbar/issues/368)) ([f020d03](https://github.com/launchdarkly/launchdarkly-toolbar/commit/f020d03d19e102152454a6efc7ce9d86562e47f2))
+* update toolbar icons to match launchpad icons ([#199](https://github.com/launchdarkly/launchdarkly-toolbar/issues/199)) ([66fdb57](https://github.com/launchdarkly/launchdarkly-toolbar/commit/66fdb57b17fce54b65d25f7f1b4eb6f031382aef))
+* Update zIndex value for LaunchDarklyToolbar to higher value ([#132](https://github.com/launchdarkly/launchdarkly-toolbar/issues/132)) ([5115b61](https://github.com/launchdarkly/launchdarkly-toolbar/commit/5115b614a058d61076adce96ccd7825b9f1de99f))
+* use composedPath for auto-collapse click detection ([#215](https://github.com/launchdarkly/launchdarkly-toolbar/issues/215)) ([2e11db0](https://github.com/launchdarkly/launchdarkly-toolbar/commit/2e11db0f0a4ffdd106641a5630c2eb4928e565ed))
+* use stable IDs for context identification instead of hash-based IDs ([#484](https://github.com/launchdarkly/launchdarkly-toolbar/issues/484)) ([1fa2e1e](https://github.com/launchdarkly/launchdarkly-toolbar/commit/1fa2e1eb122955ba2701297a4ef6efcb4e92ff3f))
+* wait for context to update to load toolbar ([46fbbe1](https://github.com/launchdarkly/launchdarkly-toolbar/commit/46fbbe153450c09f67e05019e1f704031535dcf3))
+* z index configuration for dropdowns ([#137](https://github.com/launchdarkly/launchdarkly-toolbar/issues/137)) ([d62a575](https://github.com/launchdarkly/launchdarkly-toolbar/commit/d62a57541075380fa633c1deb022f0c6f9698b61))
+
+
+### Code Refactoring
+
+* Restructure to proper monorepo layout ([#102](https://github.com/launchdarkly/launchdarkly-toolbar/issues/102)) ([e8d215a](https://github.com/launchdarkly/launchdarkly-toolbar/commit/e8d215af5dcca3d44c6ba62fe3dfc0d95efca08a))
+
 ## [2.8.0-beta.1](https://github.com/launchdarkly/launchdarkly-toolbar/compare/2.7.0-beta.1...2.8.0-beta.1) (2026-01-06)
 
 
