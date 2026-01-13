@@ -1,6 +1,6 @@
 import { useState, useCallback, useMemo, useEffect, useRef, memo } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import type { LDContext } from '@launchdarkly/js-client-sdk';
+import type { LDContext } from 'launchdarkly-js-client-sdk';
 import * as styles from './ContextItem.module.css';
 import { CopyableText } from '../../CopyableText';
 import { EditIcon, DeleteIcon, CheckIcon, CancelIcon } from '../../icons';

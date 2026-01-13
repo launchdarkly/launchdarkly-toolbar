@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { AfterIdentifyHook, type AfterIdentifyHookConfig } from '../../../types/hooks/AfterIdentifyHook';
-import type { IdentifySeriesData, IdentifySeriesContext, IdentifySeriesResult } from '@launchdarkly/js-client-sdk';
+import type { IdentifySeriesData, IdentifySeriesContext, IdentifySeriesResult } from 'launchdarkly-js-sdk-common';
 import { EventFilter, ProcessedEvent } from '../../../types';
 
 // Mock console methods to avoid noise in test output
@@ -106,7 +106,7 @@ describe('AfterIdentifyHook', () => {
 
     it('should handle contexts without key', () => {
       const contextWithoutKey = {
-        context: { kind: 'user', name: 'No Key User', key: '' },
+        context: { kind: 'user', name: 'No Key User' },
       };
       hook.afterIdentify(contextWithoutKey, mockData, mockResult);
 
