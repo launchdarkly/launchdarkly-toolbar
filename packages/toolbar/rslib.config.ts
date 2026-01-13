@@ -80,7 +80,8 @@ export default defineConfig({
       react: 'react',
       'react-dom': 'react-dom',
       'react/jsx-runtime': 'react/jsx-runtime',
-      '@launchdarkly/js-client-sdk': '@launchdarkly/js-client-sdk',
+      'launchdarkly-js-client-sdk': 'launchdarkly-js-client-sdk',
+      '@launchdarkly/js-client-sdk': '@launchdarkly/js-client-sdk'
     },
   },
   plugins: [pluginReact()],

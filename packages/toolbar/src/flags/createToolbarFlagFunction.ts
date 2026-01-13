@@ -1,4 +1,4 @@
-import type { LDClient } from '@launchdarkly/js-client-sdk';
+import type { LDClient } from 'launchdarkly-js-client-sdk';
 
 /**
  * Singleton storage for the toolbar's internal LaunchDarkly client.

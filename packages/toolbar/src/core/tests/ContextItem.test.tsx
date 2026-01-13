@@ -1,6 +1,6 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { expect, test, describe, vi, beforeEach } from 'vitest';
-import type { LDContext } from '@launchdarkly/js-client-sdk';
+import type { LDContext } from 'launchdarkly-js-client-sdk';
 import { ContextItem } from '../ui/Toolbar/components/new/Contexts/ContextItem';
 import { ContextsProvider } from '../ui/Toolbar/context/api/ContextsProvider';
 import '@testing-library/jest-dom/vitest';

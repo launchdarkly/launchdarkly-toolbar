@@ -4,9 +4,9 @@ import type {
   LDFlagSet,
   Hook,
   LDPluginEnvironmentMetadata,
-} from '@launchdarkly/js-client-sdk';
+} from 'launchdarkly-js-client-sdk';
 import type { IFlagOverridePlugin } from './plugins';
-import { LDClient } from '../compat/LDClient';
+import type { LDClient } from './LDClient';
 
 /**
  * Configuration options for the FlagOverridePlugin
@@ -48,7 +48,7 @@ export class FlagOverridePlugin implements IFlagOverridePlugin {
   /**
    * Called when the plugin is registered with the LaunchDarkly client
    */
-  register(ldClient: LDClient, _metadata: LDPluginEnvironmentMetadata): void {
+  register(ldClient: LDClient): void {
     this.ldClient = ldClient;
   }
 

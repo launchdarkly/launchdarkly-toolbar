@@ -1,4 +1,4 @@
-import type { LDContext, LDMultiKindContext, LDSingleKindContext } from '@launchdarkly/js-client-sdk';
+import type { LDContext, LDMultiKindContext, LDSingleKindContext } from 'launchdarkly-js-client-sdk';
 
 /**
  * Check if two contexts are the same using their stable IDs (kind+key)

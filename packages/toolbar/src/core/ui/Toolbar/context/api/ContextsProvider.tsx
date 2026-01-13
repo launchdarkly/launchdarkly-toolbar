@@ -1,5 +1,5 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
-import type { LDContext } from '@launchdarkly/js-client-sdk';
+import type { LDContext } from 'launchdarkly-js-client-sdk';
 import { loadContexts, saveContexts, loadActiveContext, saveActiveContext } from '../../utils/localStorage';
 import { usePlugins } from '../state/PluginsProvider';
 import { getContextDisplayName, getContextKey, getContextKind, getStableContextId } from '../../utils/context';
@@ -238,7 +238,7 @@ export const ContextsProvider = ({ children }: { children: React.ReactNode }) =>
         // and setContext would skip the identify call due to equality check
         isSettingContextRef.current = true;
         ldClient
-          .identify(savedActiveContext)!
+          .identify(savedActiveContext)
           .then(() => {
             // Ensure state is in sync (it should already be from useState initialization)
             setActiveContextId(savedStableId);
