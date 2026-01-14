@@ -1,6 +1,7 @@
 import { DevServerClient } from './DevServerClient';
 import { EnhancedFlag } from '../types/devServer';
 import { ApiFlag, ApiVariation } from '../ui/Toolbar/types/ldApi';
+import type { DevServerProjectResponse } from './DevServerClient';
 
 export class FlagStateManager {
   private devServerClient: DevServerClient;
@@ -12,8 +13,14 @@ export class FlagStateManager {
   }
 
   async getEnhancedFlags(): Promise<Record<string, EnhancedFlag>> {
-    const devServerData = await this.devServerClient.getProjectData();
+    const devServerData = await this.devServerClient.getProjectData({
+      includeOverrides: true,
+      includeAvailableVariations: false,
+    });
+    return this.getEnhancedFlagsFromDevServerData(devServerData);
+  }
 
+  getEnhancedFlagsFromDevServerData(devServerData: DevServerProjectResponse): Record<string, EnhancedFlag> {
     const enhancedFlags: Record<string, EnhancedFlag> = {};
 
     // First, create a map of API flags for quick lookup
@@ -25,8 +32,8 @@ export class FlagStateManager {
     // Process all flags from the dev server
     Object.entries(devServerData.flagsState).forEach(([flagKey, flagState]) => {
       const apiFlag = apiFlagsMap.get(flagKey);
-      const override = devServerData.overrides[flagKey];
-      const variations = devServerData.availableVariations[flagKey] || [];
+      const override = devServerData.overrides?.[flagKey];
+      const variations = devServerData.availableVariations?.[flagKey] || [];
 
       const currentValue = override ? override.value : flagState.value;
 
