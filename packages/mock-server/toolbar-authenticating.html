@@ -48,6 +48,8 @@
     </div>
     <script>
       (function () {
+        const BROADCAST_CHANNEL_NAME = 'launchdarkly-toolbar-auth';
+
         // In a real scenario, this page would show while authentication happens
         // For mocking, we'll just wait a moment then send authenticated message
         setTimeout(function () {
@@ -56,16 +58,39 @@
 
           const message = {
             type: 'toolbar-authenticated',
+            accountId: 'test-account',
+            memberId: 'test-member',
             timestamp: Date.now(),
           };
 
-          if (window.parent && window.parent !== window) {
+          // Determine context
+          const isIframe = window.parent && window.parent !== window && window.self !== window.top;
+
+          // Send to parent window (iframe context)
+          if (isIframe) {
+            console.log('[Mock Auth] Sending via window.parent (iframe context)');
             window.parent.postMessage(message, targetOrigin);
           }
 
+          // Send to opener (popup context) with BroadcastChannel fallback
           if (window.opener) {
+            // Normal path - direct postMessage to opener
+            console.log('[Mock Auth] Sending via window.opener');
             window.opener.postMessage(message, targetOrigin);
             window.close();
+          } else if (originUrl) {
+            // Incognito fallback - use BroadcastChannel to communicate with iframe
+            // which will relay to the parent window
+            console.log('[Mock Auth] window.opener is null, using BroadcastChannel fallback');
+            try {
+              const channel = new BroadcastChannel(BROADCAST_CHANNEL_NAME);
+              channel.postMessage({ ...message, targetOrigin: targetOrigin });
+              channel.close();
+              console.log('[Mock Auth] Message sent via BroadcastChannel, closing popup');
+              window.close();
+            } catch (error) {
+              console.error('[Mock Auth] BroadcastChannel failed:', error);
+            }
           }
         }, 1000);
       })();

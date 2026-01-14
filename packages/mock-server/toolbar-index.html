@@ -7,10 +7,16 @@
   <body>
     <script>
       (function () {
+        const BROADCAST_CHANNEL_NAME = 'launchdarkly-toolbar-auth';
         const originUrl = new URLSearchParams(window.location.search).get('originUrl');
 
+        // Determine context: are we in an iframe or a popup?
+        const isIframe = window.parent && window.parent !== window && window.self !== window.top;
+        const isPopup = !!originUrl; // originUrl is only passed when opened as popup
+
         // Mock authentication - always authenticated in test mode
-        console.log('[Mock Auth] Sending authenticated message to:', originUrl || window.parent);
+        console.log('[Mock Auth] Context:', isIframe ? 'iframe' : isPopup ? 'popup' : 'unknown');
+        console.log('[Mock Auth] Sending authenticated message to:', originUrl || 'parent window');
 
         const targetOrigin = originUrl || '*';
         const message = {
@@ -20,16 +26,6 @@
           timestamp: Date.now(),
         };
 
-        // Send to parent window (iframe context)
-        if (window.parent && window.parent !== window) {
-          window.parent.postMessage(message, targetOrigin);
-        }
-
-        // Send to opener (popup context)
-        if (window.opener) {
-          window.opener.postMessage(message, targetOrigin);
-        }
-
         const apiReadyMessage = {
           type: 'api-ready',
           accountId: 'test-account',
@@ -37,12 +33,75 @@
           timestamp: Date.now(),
         };
 
-        if (window.parent && window.parent !== window) {
-          window.parent.postMessage(apiReadyMessage, targetOrigin);
+        /**
+         * Send message to opener or via BroadcastChannel fallback (for Chrome incognito)
+         * @param {Object} msg - The message to send
+         * @param {string} target - The target origin
+         */
+        function sendToOpener(msg, target) {
+          if (window.opener) {
+            // Normal path - direct postMessage to opener
+            console.log('[Mock Auth] Sending via window.opener');
+            window.opener.postMessage(msg, target);
+          } else {
+            // Incognito fallback - use BroadcastChannel to communicate with iframe
+            // which will relay to the parent window
+            console.log('[Mock Auth] window.opener is null, using BroadcastChannel fallback');
+            try {
+              const channel = new BroadcastChannel(BROADCAST_CHANNEL_NAME);
+              channel.postMessage({ ...msg, targetOrigin: target });
+              channel.close();
+              console.log('[Mock Auth] Message sent via BroadcastChannel');
+            } catch (error) {
+              console.error('[Mock Auth] BroadcastChannel failed:', error);
+            }
+          }
         }
 
-        if (window.opener) {
-          window.opener.postMessage(apiReadyMessage, targetOrigin);
+        /**
+         * Send message to parent window (iframe context)
+         * @param {Object} msg - The message to send
+         * @param {string} target - The target origin
+         */
+        function sendToParent(msg, target) {
+          if (window.parent && window.parent !== window) {
+            console.log('[Mock Auth] Sending via window.parent');
+            window.parent.postMessage(msg, target);
+          }
+        }
+
+        // Send authentication messages based on context
+        if (isPopup) {
+          // Popup context - send to opener (or BroadcastChannel fallback)
+          sendToOpener(message, targetOrigin);
+          sendToOpener(apiReadyMessage, targetOrigin);
+        } else if (isIframe) {
+          // Iframe context - send to parent
+          sendToParent(message, targetOrigin);
+          sendToParent(apiReadyMessage, targetOrigin);
+        } else {
+          // Unknown context - try both for backwards compatibility
+          sendToParent(message, targetOrigin);
+          sendToParent(apiReadyMessage, targetOrigin);
+        }
+
+        // === BroadcastChannel Relay for Iframe ===
+        // When running as an iframe, listen for BroadcastChannel messages from
+        // popup windows (Chrome incognito fallback) and relay them to the parent
+        if (isIframe || (!isPopup && window.parent && window.parent !== window)) {
+          try {
+            const relayChannel = new BroadcastChannel(BROADCAST_CHANNEL_NAME);
+            relayChannel.onmessage = function (event) {
+              console.log('[Mock Auth] Received BroadcastChannel message, relaying to parent:', event.data);
+              const { targetOrigin: msgTargetOrigin, ...msgData } = event.data;
+              if (window.parent && window.parent !== window) {
+                window.parent.postMessage(msgData, msgTargetOrigin || '*');
+              }
+            };
+            console.log('[Mock Auth] BroadcastChannel relay listener active');
+          } catch (error) {
+            console.error('[Mock Auth] Failed to set up BroadcastChannel relay:', error);
+          }
         }
 
         // Listen for API requests via postMessage
