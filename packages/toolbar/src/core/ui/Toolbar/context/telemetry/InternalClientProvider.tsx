@@ -71,6 +71,12 @@ export interface InternalClientProviderProps {
    * Defaults to standard LaunchDarkly observability backend.
    */
   backendUrl?: string;
+
+  /**
+   * OTLP HTTP endpoint for Observability tracing (OpenTelemetry).
+   * If not provided, Observability will use its default endpoint.
+   */
+  observabilityOtlpEndpoint?: string;
 }
 
 /**
@@ -91,6 +97,7 @@ export function InternalClientProvider({
   streamUrl,
   eventsUrl,
   backendUrl,
+  observabilityOtlpEndpoint,
 }: InternalClientProviderProps) {
   const [client, setClient] = useState<LDClient | null>(null);
   const [loading, setLoading] = useState(false);
@@ -120,10 +127,12 @@ export function InternalClientProvider({
         const observabilityPlugin = new Observability({
           manualStart: true,
           ...(backendUrl && { backendUrl }),
+          ...(observabilityOtlpEndpoint && { otel: { otlpEndpoint: observabilityOtlpEndpoint } }),
           networkRecording: {
             enabled: true,
             recordHeadersAndBody: true,
           },
+          reportConsoleErrors: true,
         });
         const sessionReplayPlugin = new SessionReplay({
           manualStart: true,
@@ -172,7 +181,7 @@ export function InternalClientProvider({
         clientToCleanup.close();
       }
     };
-  }, [clientSideId, initialContext, baseUrl, streamUrl, eventsUrl, backendUrl]); // Re-initialize if any config changes
+  }, [clientSideId, initialContext, baseUrl, streamUrl, eventsUrl, backendUrl, observabilityOtlpEndpoint]); // Re-initialize if any config changes
 
   const updateContext = useCallback(
     async (accountId: string, memberId: string) => {

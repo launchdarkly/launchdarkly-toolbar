@@ -278,6 +278,7 @@ export function LaunchDarklyToolbar(props: LaunchDarklyToolbarProps) {
       streamUrl: import.meta.env.TOOLBAR_INTERNAL_STREAM_URL,
       eventsUrl: import.meta.env.TOOLBAR_INTERNAL_EVENTS_URL,
       backendUrl: import.meta.env.TOOLBAR_INTERNAL_BACKEND_URL,
+      observabilityOtlpEndpoint: import.meta.env.TOOLBAR_INTERNAL_OBSERVABILITY_OTLP_ENDPOINT,
     }),
     [],
   );
@@ -299,6 +300,7 @@ export function LaunchDarklyToolbar(props: LaunchDarklyToolbarProps) {
       streamUrl={internalClientConfig.streamUrl}
       eventsUrl={internalClientConfig.eventsUrl}
       backendUrl={internalClientConfig.backendUrl}
+      observabilityOtlpEndpoint={internalClientConfig.observabilityOtlpEndpoint}
     >
       <ToolbarStateBundleProvider
         initialPosition={position}
