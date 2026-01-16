@@ -181,6 +181,41 @@ describe('FlagSdkOverrideProvider', () => {
     expect(screen.getByTestId('flag-dynamic-flag')).toHaveTextContent('Dynamic Flag: updated (original)');
   });
 
+  test('handles LaunchDarkly client change events from client v4', async () => {
+    mockLdClient.allFlags.mockReturnValue({
+      'dynamic-flag': 'initial',
+    });
+
+    let changeHandler: (context: object, changedKeys: string[]) => void;
+    mockLdClient.on.mockImplementation((event: string, handler: any) => {
+      if (event === 'change') {
+        changeHandler = handler;
+      }
+    });
+
+    render(
+      <FlagSdkOverrideProvider flagOverridePlugin={mockFlagOverridePlugin}>
+        <TestConsumer />
+      </FlagSdkOverrideProvider>,
+    );
+
+    await act(async () => {
+      await new Promise((resolve) => setTimeout(resolve, 0));
+    });
+
+    expect(screen.getByTestId('flag-dynamic-flag')).toHaveTextContent('Dynamic Flag: initial (original)');
+
+    mockLdClient.allFlags.mockReturnValue({
+      'dynamic-flag': 'updated',
+    });
+
+    await act(async () => {
+      changeHandler!({}, ['dynamic-flag']);
+    });
+
+    expect(screen.getByTestId('flag-dynamic-flag')).toHaveTextContent('Dynamic Flag: updated (original)');
+  });
+
   test('handles null LaunchDarkly client gracefully', async () => {
     // GIVEN: Plugin returns null client (edge case)
     (mockFlagOverridePlugin.getClient as any).mockReturnValue(null);
