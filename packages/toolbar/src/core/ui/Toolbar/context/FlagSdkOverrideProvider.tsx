@@ -107,16 +107,21 @@ export function FlagSdkOverrideProvider({ children, flagOverridePlugin }: FlagSd
     setIsLoading(false);
 
     // Subscribe to changes with incremental updates
-    const handleChange = (changes: Record<string, { current: any }>) => {
+    const handleChange = (changes: Record<string, { current: any }>, keys: string[]) => {
       setFlags((prevFlags) => {
         const updatedRawFlags = ldClient.allFlags();
         const newFlags = buildFlags(updatedRawFlags, apiFlags);
+
+        let changedKeys = keys;
+        if (changedKeys === undefined) {
+          changedKeys = Object.keys(changes)
+        }
 
         // Only update the flags that actually changed for better performance
         const updatedFlags = { ...prevFlags };
         let hasChanges = false;
 
-        Object.keys(changes).forEach((flagKey) => {
+        changedKeys.forEach((flagKey) => {
           if (newFlags[flagKey]) {
             updatedFlags[flagKey] = newFlags[flagKey];
             hasChanges = true;
