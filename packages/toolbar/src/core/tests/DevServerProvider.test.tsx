@@ -29,6 +29,7 @@ const mockDevServerClientInstance = {
 
 const mockFlagStateManagerInstance = {
   getEnhancedFlags: vi.fn().mockResolvedValue({}),
+  getEnhancedFlagsFromDevServerData: vi.fn().mockReturnValue({}),
   setApiFlags: vi.fn(),
   setOverride: vi.fn(),
   clearOverride: vi.fn(),
@@ -186,6 +187,7 @@ describe('DevServerProvider - Integration Flows', () => {
     });
 
     mockFlagStateManagerInstance.getEnhancedFlags.mockResolvedValue({});
+    mockFlagStateManagerInstance.getEnhancedFlagsFromDevServerData.mockReturnValue({});
     mockFlagStateManagerInstance.subscribe.mockReturnValue(() => {});
 
     // Reset context mocks

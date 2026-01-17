@@ -2,9 +2,9 @@ import { ApiVariation } from '../ui/Toolbar/types/ldApi';
 
 export interface DevServerProjectResponse {
   _lastSyncedFromSource: number;
-  availableVariations: Record<string, ApiVariation[]>;
+  availableVariations?: Record<string, ApiVariation[]>;
   flagsState: Record<string, FlagState>;
-  overrides: Record<string, Override>;
+  overrides?: Record<string, Override>;
   sourceEnvironmentKey: string;
   context?: any;
 }
@@ -19,6 +19,11 @@ export interface Override {
   version: number;
 }
 
+export interface GetProjectDataOptions {
+  includeOverrides?: boolean;
+  includeAvailableVariations?: boolean;
+}
+
 export class DevServerClient {
   private baseUrl: string;
   private projectKey: string;
@@ -28,11 +33,19 @@ export class DevServerClient {
     this.projectKey = projectKey;
   }
 
-  async getProjectData(): Promise<DevServerProjectResponse> {
-    const url = `${this.baseUrl}/dev/projects/${this.projectKey}?expand=overrides&expand=availableVariations`;
+  async getProjectData(options: GetProjectDataOptions = {}): Promise<DevServerProjectResponse> {
+    const { includeOverrides = true, includeAvailableVariations = false } = options;
+
+    const url = new URL(`${this.baseUrl}/dev/projects/${this.projectKey}`);
+    if (includeOverrides) {
+      url.searchParams.append('expand', 'overrides');
+    }
+    if (includeAvailableVariations) {
+      url.searchParams.append('expand', 'availableVariations');
+    }
 
     try {
-      const response = await fetch(url);
+      const response = await fetch(url.toString());
 
       if (!response.ok) {
         throw new Error(`Dev server error: ${response.status} ${response.statusText}`);
