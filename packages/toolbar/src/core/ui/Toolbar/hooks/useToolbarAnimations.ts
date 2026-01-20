@@ -1,6 +1,7 @@
 import { useMemo, useCallback, useRef, Dispatch, SetStateAction } from 'react';
 
 import { ANIMATION_CONFIG, DIMENSIONS, SHADOWS } from '../constants';
+import { useReducedMotion } from './useReducedMotion';
 
 export interface UseToolbarAnimationsProps {
   isExpanded: boolean;
@@ -9,7 +10,10 @@ export interface UseToolbarAnimationsProps {
   onCollapseComplete?: () => void;
 }
 
-type AnimationConfig = typeof ANIMATION_CONFIG.containerExpand | typeof ANIMATION_CONFIG.containerCollapse;
+type AnimationConfig =
+  | typeof ANIMATION_CONFIG.containerExpand
+  | typeof ANIMATION_CONFIG.containerCollapse
+  | typeof ANIMATION_CONFIG.containerInstant;
 
 export interface UseToolbarAnimationsReturn {
   containerAnimations: {
@@ -27,6 +31,7 @@ export interface UseToolbarAnimationsReturn {
 export function useToolbarAnimations(props: UseToolbarAnimationsProps): UseToolbarAnimationsReturn {
   const { isExpanded, setIsAnimating, onExpandComplete, onCollapseComplete } = props;
   const previousIsExpanded = useRef(isExpanded);
+  const prefersReducedMotion = useReducedMotion();
 
   const containerAnimations = useMemo(
     () => ({
@@ -42,7 +47,13 @@ export function useToolbarAnimations(props: UseToolbarAnimationsProps): UseToolb
   // Determine animation direction and apply appropriate easing
   // - Expanding: smooth animation for professional feel
   // - Collapsing: bouncy animation for playful feedback
+  // - Reduced motion: instant transitions for accessibility
   const animationConfig = useMemo(() => {
+    // Respect user's reduced motion preference
+    if (prefersReducedMotion) {
+      return ANIMATION_CONFIG.containerInstant;
+    }
+
     const wasExpanded = previousIsExpanded.current;
     const currentlyExpanded = isExpanded;
 
@@ -61,7 +72,7 @@ export function useToolbarAnimations(props: UseToolbarAnimationsProps): UseToolb
     else {
       return ANIMATION_CONFIG.containerExpand;
     }
-  }, [isExpanded]);
+  }, [isExpanded, prefersReducedMotion]);
 
   const handleAnimationStart = useCallback(() => {
     setIsAnimating(true);

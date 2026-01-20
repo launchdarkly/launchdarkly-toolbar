@@ -29,6 +29,7 @@ export function BooleanFlagControl(props: BooleanFlagControlProps) {
         onChange={onOverride}
         isDisabled={disabled}
         className={styles.switchControl}
+        aria-label={`Toggle ${flag.name} flag`}
       />
     </div>
   );
