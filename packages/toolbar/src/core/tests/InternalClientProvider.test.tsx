@@ -20,16 +20,22 @@ vi.mock('launchdarkly-js-client-sdk', () => {
 
 vi.mock('@launchdarkly/observability', () => {
   class MockObservability {
-    options: { manualStart: boolean; networkRecording?: { enabled: boolean; recordHeadersAndBody: boolean } };
+    options: {
+      manualStart: boolean;
+      networkRecording?: { enabled: boolean; recordHeadersAndBody: boolean };
+      otel?: { otlpEndpoint?: string };
+    };
 
     constructor(options?: {
       manualStart?: boolean;
       backendUrl?: string;
+      otel?: { otlpEndpoint?: string };
       networkRecording?: { enabled: boolean; recordHeadersAndBody: boolean };
     }) {
       this.options = {
         manualStart: options?.manualStart ?? true,
         networkRecording: options?.networkRecording,
+        otel: options?.otel,
       };
     }
   }
@@ -274,6 +280,24 @@ describe('InternalClientProvider', () => {
           }),
         );
       });
+    });
+
+    test('passes observability OTLP endpoint when provided', async () => {
+      const otlpEndpoint = 'https://otel.observability';
+      render(
+        <InternalClientProvider clientSideId="test-client-id-123" observabilityOtlpEndpoint={otlpEndpoint}>
+          <TestConsumer />
+        </InternalClientProvider>,
+      );
+
+      await waitFor(() => {
+        expect(mockInitialize).toHaveBeenCalled();
+      });
+
+      const initOptions = mockInitialize.mock.calls[0]?.[2] as { plugins?: Array<{ options?: any }> };
+      const observabilityPlugin = (initOptions.plugins ?? []).find((p) => p.options?.otel !== undefined);
+
+      expect(observabilityPlugin?.options?.otel?.otlpEndpoint).toBe(otlpEndpoint);
     });
 
     test('includes observabilityPlugins even when baseUrl is not specified', async () => {
