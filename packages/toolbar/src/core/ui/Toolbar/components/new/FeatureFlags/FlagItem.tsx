@@ -123,7 +123,9 @@ export function FlagItem({
                   onClick={handleFlagLinkClick}
                   title={`Open ${flag.name} in LaunchDarkly`}
                 >
-                  <span className={styles.nameLinkText}>{flag.name}</span>
+                  <span className={styles.nameLinkText} title={flag.name}>
+                    {flag.name}
+                  </span>
                   <ExternalLinkIcon size="small" className={styles.externalLinkIcon} />
                 </a>
               </div>
@@ -197,7 +199,9 @@ export function FlagItem({
               onClick={handleFlagLinkClick}
               title={`Open ${flag.name} in LaunchDarkly`}
             >
-              <span className={styles.nameLinkText}>{flag.name}</span>
+              <span className={styles.nameLinkText} title={flag.name}>
+                {flag.name}
+              </span>
               <ExternalLinkIcon size="small" className={styles.externalLinkIcon} />
             </a>
           </div>

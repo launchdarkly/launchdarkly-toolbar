@@ -492,5 +492,66 @@ describe('Flag Content Components', () => {
       expect(screen.getByText('Save')).toBeInTheDocument();
       expect(screen.getByText('Cancel')).toBeInTheDocument();
     });
+
+    it('should display flag name with title attribute for tooltip on standard flags', () => {
+      render(
+        <TestWrapper>
+          <FlagItem
+            flag={booleanFlag}
+            onOverride={mockOnOverride}
+            onClearOverride={mockOnClearOverride}
+            handleHeightChange={mockHandleHeightChange}
+            index={0}
+          />
+        </TestWrapper>,
+      );
+
+      const flagNameElement = screen.getByText('Boolean Flag');
+      expect(flagNameElement).toHaveAttribute('title', 'Boolean Flag');
+    });
+
+    it('should display flag name with title attribute for tooltip on object flags', () => {
+      render(
+        <TestWrapper>
+          <FlagItem
+            flag={objectFlag}
+            onOverride={mockOnOverride}
+            onClearOverride={mockOnClearOverride}
+            handleHeightChange={mockHandleHeightChange}
+            index={0}
+          />
+        </TestWrapper>,
+      );
+
+      const flagNameElement = screen.getByText('Object Flag');
+      expect(flagNameElement).toHaveAttribute('title', 'Object Flag');
+    });
+
+    it('should display full flag name in title for long flag names', () => {
+      const longNameFlag: NormalizedFlag = {
+        key: '2025-03-feature-sasquatch-killswitch',
+        name: '2025-03-feature-sasquatch-killswitch',
+        type: 'boolean',
+        currentValue: true,
+        isOverridden: false,
+        availableVariations: [],
+      };
+
+      render(
+        <TestWrapper>
+          <FlagItem
+            flag={longNameFlag}
+            onOverride={mockOnOverride}
+            onClearOverride={mockOnClearOverride}
+            handleHeightChange={mockHandleHeightChange}
+            index={0}
+          />
+        </TestWrapper>,
+      );
+
+      const flagNameElements = screen.getAllByText('2025-03-feature-sasquatch-killswitch');
+      const flagNameElement = flagNameElements.find((el) => el.hasAttribute('title'));
+      expect(flagNameElement).toHaveAttribute('title', '2025-03-feature-sasquatch-killswitch');
+    });
   });
 });
