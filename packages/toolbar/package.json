@@ -111,7 +111,7 @@
     "@launchdarkly/observability": "^1.0.0",
     "@launchdarkly/session-replay": "^1.0.0",
     "@launchpad-ui/components": "^0.17.12",
-    "@launchdarkly/js-client-sdk": "^0.12.1",
+    "@launchdarkly/js-client-sdk": "^0.13.0",
     "@launchpad-ui/tokens": "^0.15.1",
     "@lezer/highlight": "1.2.1",
     "@react-aria/focus": "^3.21.3",

@@ -139,8 +139,8 @@ importers:
         specifier: ^6.39.11
         version: 6.39.11
       '@launchdarkly/js-client-sdk':
-        specifier: ^0.12.1
-        version: 0.12.1
+        specifier: ^0.13.0
+        version: 0.13.0
       '@launchdarkly/observability':
         specifier: ^1.0.0
         version: 1.0.0
@@ -1164,14 +1164,14 @@ packages:
   '@launchdarkly/js-client-sdk-common@1.16.0':
     resolution: {integrity: sha512-W6yVVlIV/BqCLR1je3uReVfJcTNK9mznp1PWpEEBRRrapjMnLYUcCJat6yj3dyyn3VKyawXy1MkSn34gEEicjg==}
 
-  '@launchdarkly/js-client-sdk-common@1.17.1':
-    resolution: {integrity: sha512-ZwzMKwP3qfhpDzkjQG76PITYsrvQUT+YfqFv4MHjoD96PNRcYRhzULhDewC51OBKajWjFMYmi5MvAXZtIMDWAQ==}
+  '@launchdarkly/js-client-sdk-common@1.17.2':
+    resolution: {integrity: sha512-MV4I8h2a/C6UKxsoPMLQW0ileb/qj30gfCyQl2KsM2ZJGP3hwN2mkKUUwytlL+RURpN+0XGpuQ6UIQFfePUTgQ==}
 
   '@launchdarkly/js-client-sdk@0.11.0':
     resolution: {integrity: sha512-PRmSsPsOi3NXjXpG4D4MoyImBibNoh9wOoWFbIMXHA26h5cMNBQjTFI6gqe8kyf2rDwqHerhrj5f734Zqwl33Q==}
 
-  '@launchdarkly/js-client-sdk@0.12.1':
-    resolution: {integrity: sha512-blzKe93qWFN3CoLYP5BjPE62CM1qfYQDTUEMV+RoMm4waQb80ALFNfXp4QNmOpxDAasUtVPrCn08WpRmBxdSYw==}
+  '@launchdarkly/js-client-sdk@0.13.0':
+    resolution: {integrity: sha512-x0BcTUxqaul9f1iAlz1/S9Ckp7M2x9CgCgVVFDhQidiapxLQ5K8jtSYcseLFovjPd5hJ1ZvpawN5D3vftmkA3A==}
 
   '@launchdarkly/js-client-sdk@0.6.0':
     resolution: {integrity: sha512-9aBgpGKXxaiPudNuQ9MoS8wFSIR1h0P2EFDP2veNJG7tBuxzDKfH3hzjW01C4/WyWN6bk7P7XKwisxw775klBQ==}
@@ -6012,7 +6012,7 @@ snapshots:
     dependencies:
       '@launchdarkly/js-sdk-common': 2.20.0
 
-  '@launchdarkly/js-client-sdk-common@1.17.1':
+  '@launchdarkly/js-client-sdk-common@1.17.2':
     dependencies:
       '@launchdarkly/js-sdk-common': 2.20.0
 
@@ -6020,9 +6020,9 @@ snapshots:
     dependencies:
       '@launchdarkly/js-client-sdk-common': 1.16.0
 
-  '@launchdarkly/js-client-sdk@0.12.1':
+  '@launchdarkly/js-client-sdk@0.13.0':
     dependencies:
-      '@launchdarkly/js-client-sdk-common': 1.17.1
+      '@launchdarkly/js-client-sdk-common': 1.17.2
 
   '@launchdarkly/js-client-sdk@0.6.0':
     dependencies:

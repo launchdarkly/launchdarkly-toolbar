@@ -1,5 +1,5 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
-import type { LDContext } from 'launchdarkly-js-client-sdk';
+import type { LDContext } from '@launchdarkly/js-client-sdk';
 import { loadContexts, saveContexts, loadActiveContext, saveActiveContext } from '../../utils/localStorage';
 import { usePlugins } from '../state/PluginsProvider';
 import { getContextDisplayName, getContextKey, getContextKind, getStableContextId } from '../../utils/context';
