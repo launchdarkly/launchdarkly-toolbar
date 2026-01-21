@@ -1,9 +1,14 @@
-import type { LDDebugOverride, LDFlagSet, LDFlagValue, LDPlugin, LDPluginEnvironmentMetadata } from 'launchdarkly-js-client-sdk';
+import type {
+  LDDebugOverride,
+  LDFlagSet,
+  LDFlagValue,
+  LDPlugin,
+  LDPluginEnvironmentMetadata,
+} from '@launchdarkly/js-client-sdk';
 import type { LDClient } from './LDClient';
 import type { ProcessedEvent } from '../events';
 
 export interface IFlagOverridePlugin extends Omit<LDPlugin, 'register'>, LDDebugOverride {
-
   register(client: LDClient, metadata: LDPluginEnvironmentMetadata): void;
 
   /**
