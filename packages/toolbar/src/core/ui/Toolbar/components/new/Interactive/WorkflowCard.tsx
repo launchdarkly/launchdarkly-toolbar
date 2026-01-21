@@ -352,7 +352,7 @@ export function WorkflowCard({ workflow, disabled = false }: WorkflowCardProps) 
             </button>
           </ButtonGroup>
 
-          {isDropdownOpen && (
+          {isDropdownOpen ? (
             <div className={styles.dropdownMenu} role="listbox">
               {IDE_CONFIGS.map((ide) => (
                 <button
@@ -364,7 +364,7 @@ export function WorkflowCard({ workflow, disabled = false }: WorkflowCardProps) 
                 >
                   <IdeIcon ide={ide.id} />
                   <span>{ide.label}</span>
-                  {ide.id === preferredIde && <span className={styles.preferredBadge}>Default</span>}
+                  {ide.id === preferredIde ? <span className={styles.preferredBadge}>Default</span> : null}
                 </button>
               ))}
               <div className={styles.dropdownSeparator} />
@@ -373,7 +373,7 @@ export function WorkflowCard({ workflow, disabled = false }: WorkflowCardProps) 
                 <span>Copy prompt</span>
               </button>
             </div>
-          )}
+          ) : null}
         </div>
       </div>
     </div>

@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, memo } from 'react';
 import { motion } from 'motion/react';
 import * as styles from './FlagItem.module.css';
 import { CopyableText } from '../../CopyableText';
@@ -19,7 +19,7 @@ interface OverrideDotProps {
   onClear: () => void;
 }
 
-function OverrideDot({ onClear }: OverrideDotProps) {
+const OverrideDot = memo(function OverrideDot({ onClear }: OverrideDotProps) {
   const [isHovered, setIsHovered] = useState(false);
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
@@ -56,7 +56,7 @@ function OverrideDot({ onClear }: OverrideDotProps) {
       />
     </motion.span>
   );
-}
+});
 
 interface FlagItemProps {
   flag: NormalizedFlag;
@@ -67,7 +67,7 @@ interface FlagItemProps {
   index: number;
 }
 
-export function FlagItem({
+export const FlagItem = memo(function FlagItem({
   flag,
   onOverride,
   onClearOverride,
@@ -79,7 +79,7 @@ export function FlagItem({
   const [tempValue, setTempValue] = useState('');
   const [hasErrors, setHasErrors] = useState(false);
   const { isStarred, toggleStarred } = useStarredFlags();
-  const analytics = useAnalytics();
+  const { trackStarredFlag, trackOpenFlagDeeplink, trackFlagKeyCopy } = useAnalytics();
   const { baseUrl } = usePlugins();
   const { projectKey } = useProjectContext();
 
@@ -87,22 +87,22 @@ export function FlagItem({
     (flagKey: string) => {
       const wasPreviouslyStarred = isStarred(flagKey);
       toggleStarred(flagKey);
-      analytics.trackStarredFlag(flagKey, wasPreviouslyStarred ? 'unstar' : 'star');
+      trackStarredFlag(flagKey, wasPreviouslyStarred ? 'unstar' : 'star');
     },
-    [isStarred, toggleStarred, analytics],
+    [isStarred, toggleStarred, trackStarredFlag],
   );
 
   const flagDeeplinkUrl = `${baseUrl}/projects/${projectKey}/flags/${flag.key}`;
 
   const handleFlagLinkClick = useCallback(() => {
-    analytics.trackOpenFlagDeeplink(flag.key, baseUrl);
-  }, [analytics, flag.key, baseUrl]);
+    trackOpenFlagDeeplink(flag.key, baseUrl);
+  }, [trackOpenFlagDeeplink, flag.key, baseUrl]);
 
   const handleCopy = useCallback(
     (text: string) => {
-      analytics.trackFlagKeyCopy(text);
+      trackFlagKeyCopy(text);
     },
-    [analytics],
+    [trackFlagKeyCopy],
   );
 
   // Object/JSON flags have a different layout structure
@@ -114,7 +114,7 @@ export function FlagItem({
             <StarButton flagKey={flag.key} isStarred={isStarred(flag.key)} onToggle={handleToggleStarred} />
             <div className={styles.info}>
               <div className={styles.nameRow}>
-                {flag.isOverridden && onClearOverride && <OverrideDot onClear={onClearOverride} />}
+                {flag.isOverridden && onClearOverride ? <OverrideDot onClear={onClearOverride} /> : null}
                 <a
                   className={styles.nameLink}
                   href={flagDeeplinkUrl}
@@ -188,7 +188,7 @@ export function FlagItem({
         <StarButton flagKey={flag.key} isStarred={isStarred(flag.key)} onToggle={handleToggleStarred} />
         <div className={styles.info}>
           <div className={styles.nameRow}>
-            {flag.isOverridden && onClearOverride && <OverrideDot onClear={onClearOverride} />}
+            {flag.isOverridden && onClearOverride ? <OverrideDot onClear={onClearOverride} /> : null}
             <a
               className={styles.nameLink}
               href={flagDeeplinkUrl}
@@ -207,4 +207,4 @@ export function FlagItem({
       <div className={styles.control}>{renderControl()}</div>
     </div>
   );
-}
+});

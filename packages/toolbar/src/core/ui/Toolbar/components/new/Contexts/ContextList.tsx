@@ -1,4 +1,4 @@
-import { useRef, useCallback, useMemo, useEffect } from 'react';
+import { useRef, useCallback, useMemo, useEffect, memo } from 'react';
 import { useVirtualizer } from '@tanstack/react-virtual';
 
 import { useContextsContext } from '../../../context/api/ContextsProvider';
@@ -10,7 +10,7 @@ import { VIRTUALIZATION } from '../../../constants';
 import { getStableContextId } from '../../../utils/context';
 import * as styles from './ContextList.module.css';
 
-export function ContextList() {
+export const ContextList = memo(function ContextList() {
   const { contexts, activeContext, filter, setFilter, isAddFormOpen, setIsAddFormOpen } = useContextsContext();
   const { searchTerms } = useTabSearchContext();
 
@@ -115,4 +115,4 @@ export function ContextList() {
       </div>
     </div>
   );
-}
+});

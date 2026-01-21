@@ -29,7 +29,7 @@ const FilterOptionItem = memo(function FilterOptionItem({ option, isActive, onTo
       </div>
       <div className={styles.filterLabel}>
         <span className={styles.filterName}>{option.label}</span>
-        {option.description && <span className={styles.filterDescription}>{option.description}</span>}
+        {option.description ? <span className={styles.filterDescription}>{option.description}</span> : null}
       </div>
     </button>
   );
@@ -43,7 +43,7 @@ interface FilterOverlayContentProps {
 const FilterOverlayContent = memo(function FilterOverlayContent({ subtab, onClose }: FilterOverlayContentProps) {
   const overlayRef = useRef<HTMLDivElement>(null);
   const { getActiveFilters, getFilterConfig, toggleFilter, resetFilters, hasActiveNonDefaultFilters } = useFilters();
-  const analytics = useAnalytics();
+  const { trackFilterChange } = useAnalytics();
 
   const config = getFilterConfig(subtab);
   const activeFilters = getActiveFilters(subtab);
@@ -53,9 +53,9 @@ const FilterOverlayContent = memo(function FilterOverlayContent({ subtab, onClos
     (optionId: string) => {
       const wasActive = activeFilters.has(optionId);
       toggleFilter(subtab, optionId);
-      analytics.trackFilterChange(optionId as 'all' | 'overrides' | 'starred', wasActive ? 'deselected' : 'selected');
+      trackFilterChange(optionId as 'all' | 'overrides' | 'starred', wasActive ? 'deselected' : 'selected');
     },
-    [subtab, toggleFilter, activeFilters, analytics],
+    [subtab, toggleFilter, activeFilters, trackFilterChange],
   );
 
   const handleReset = useCallback(() => {
@@ -162,16 +162,16 @@ export function FilterButton({ className }: FilterButtonProps) {
   return (
     <div className={styles.container}>
       <IconButton icon={<FilterTuneIcon />} label="Filter" onClick={toggleFilterOverlay} className={className} />
-      {hasActiveFilters && filterCount > 0 && (
+      {hasActiveFilters && filterCount > 0 ? (
         <div className={styles.filterCount} aria-label={`${filterCount} filters active`}>
           {filterCount}
         </div>
-      )}
+      ) : null}
 
       <AnimatePresence>
-        {isFilterOverlayOpen && (
+        {isFilterOverlayOpen ? (
           <FilterOverlayContent key="filter-overlay" subtab={subtab} onClose={closeFilterOverlay} />
-        )}
+        ) : null}
       </AnimatePresence>
     </div>
   );

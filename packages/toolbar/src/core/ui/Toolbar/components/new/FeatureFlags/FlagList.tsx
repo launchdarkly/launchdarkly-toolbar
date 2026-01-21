@@ -26,7 +26,7 @@ function DevServerFlagList() {
   const searchTerm = useMemo(() => searchTerms['flags'] || '', [searchTerms]);
   const { activeFilters } = useSubtabFilters('flags');
   const { isStarred } = useStarredFlags();
-  const analytics = useAnalytics();
+  const { trackFlagOverride } = useAnalytics();
 
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const getScrollElement = useCallback(() => scrollContainerRef.current, []);
@@ -53,26 +53,34 @@ function DevServerFlagList() {
     const showOverrides = activeFilters.has('overrides');
     const showStarred = activeFilters.has('starred');
 
-    return normalizedFlags
-      .map((flag, index) => ({ flag, index }))
-      .filter(({ flag }) => {
-        // Apply search filter
-        if (searchTerm) {
-          const matchesSearch =
-            flag.name.toLowerCase().includes(searchLower) || flag.key.toLowerCase().includes(searchLower);
-          if (!matchesSearch) return false;
-        }
+    // Single pass through the array instead of .map().filter().map()
+    const result: number[] = [];
+    for (let index = 0; index < normalizedFlags.length; index++) {
+      const flag = normalizedFlags[index];
+      if (!flag) continue;
 
-        // Apply category filters
-        if (showAll) return true;
+      // Apply search filter
+      if (searchTerm) {
+        const matchesSearch =
+          flag.name.toLowerCase().includes(searchLower) || flag.key.toLowerCase().includes(searchLower);
+        if (!matchesSearch) continue;
+      }
 
-        // Check if flag matches any active filter
-        const matchesOverrides = showOverrides && flag.isOverridden;
-        const matchesStarred = showStarred && isStarred(flag.key);
+      // Apply category filters
+      if (showAll) {
+        result.push(index);
+        continue;
+      }
 
-        return matchesOverrides || matchesStarred;
-      })
-      .map(({ index }) => index);
+      // Check if flag matches any active filter
+      const matchesOverrides = showOverrides && flag.isOverridden;
+      const matchesStarred = showStarred && isStarred(flag.key);
+
+      if (matchesOverrides || matchesStarred) {
+        result.push(index);
+      }
+    }
+    return result;
   }, [normalizedFlags, searchTerm, activeFilters, isStarred]);
 
   const virtualizer = useVirtualizer({
@@ -98,17 +106,17 @@ function DevServerFlagList() {
   const handleOverride = useCallback(
     async (flagKey: string, value: any) => {
       await setOverride(flagKey, value);
-      analytics.trackFlagOverride(flagKey, value, 'set');
+      trackFlagOverride(flagKey, value, 'set');
     },
-    [setOverride, analytics],
+    [setOverride, trackFlagOverride],
   );
 
   const handleClearOverride = useCallback(
     async (flagKey: string) => {
       await clearOverride(flagKey);
-      analytics.trackFlagOverride(flagKey, null, 'remove');
+      trackFlagOverride(flagKey, null, 'remove');
     },
-    [clearOverride, analytics],
+    [clearOverride, trackFlagOverride],
   );
 
   // Calculate stats
@@ -194,7 +202,7 @@ function SdkFlagList() {
   const searchTerm = useMemo(() => searchTerms['flags'] || '', [searchTerms]);
   const { activeFilters } = useSubtabFilters('flags');
   const { isStarred } = useStarredFlags();
-  const analytics = useAnalytics();
+  const { trackFlagOverride } = useAnalytics();
 
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const getScrollElement = useCallback(() => scrollContainerRef.current, []);
@@ -221,26 +229,34 @@ function SdkFlagList() {
     const showOverrides = activeFilters.has('overrides');
     const showStarred = activeFilters.has('starred');
 
-    return normalizedFlags
-      .map((flag, index) => ({ flag, index }))
-      .filter(({ flag }) => {
-        // Apply search filter
-        if (searchTerm) {
-          const matchesSearch =
-            flag.name.toLowerCase().includes(searchLower) || flag.key.toLowerCase().includes(searchLower);
-          if (!matchesSearch) return false;
-        }
+    // Single pass through the array instead of .map().filter().map()
+    const result: number[] = [];
+    for (let index = 0; index < normalizedFlags.length; index++) {
+      const flag = normalizedFlags[index];
+      if (!flag) continue;
 
-        // Apply category filters
-        if (showAll) return true;
+      // Apply search filter
+      if (searchTerm) {
+        const matchesSearch =
+          flag.name.toLowerCase().includes(searchLower) || flag.key.toLowerCase().includes(searchLower);
+        if (!matchesSearch) continue;
+      }
 
-        // Check if flag matches any active filter
-        const matchesOverrides = showOverrides && flag.isOverridden;
-        const matchesStarred = showStarred && isStarred(flag.key);
+      // Apply category filters
+      if (showAll) {
+        result.push(index);
+        continue;
+      }
 
-        return matchesOverrides || matchesStarred;
-      })
-      .map(({ index }) => index);
+      // Check if flag matches any active filter
+      const matchesOverrides = showOverrides && flag.isOverridden;
+      const matchesStarred = showStarred && isStarred(flag.key);
+
+      if (matchesOverrides || matchesStarred) {
+        result.push(index);
+      }
+    }
+    return result;
   }, [normalizedFlags, searchTerm, activeFilters, isStarred]);
 
   const virtualizer = useVirtualizer({
@@ -253,17 +269,17 @@ function SdkFlagList() {
   const handleOverride = useCallback(
     (flagKey: string, value: any) => {
       setOverride(flagKey, value);
-      analytics.trackFlagOverride(flagKey, value, 'set');
+      trackFlagOverride(flagKey, value, 'set');
     },
-    [setOverride, analytics],
+    [setOverride, trackFlagOverride],
   );
 
   const handleClearOverride = useCallback(
     (flagKey: string) => {
       removeOverride(flagKey);
-      analytics.trackFlagOverride(flagKey, null, 'remove');
+      trackFlagOverride(flagKey, null, 'remove');
     },
-    [removeOverride, analytics],
+    [removeOverride, trackFlagOverride],
   );
 
   const handleHeightChange = useCallback(

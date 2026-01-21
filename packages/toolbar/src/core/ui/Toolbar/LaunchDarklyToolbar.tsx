@@ -41,7 +41,7 @@ export function LdToolbar(props: LdToolbarProps) {
   const { mode, flagOverridePlugin, eventInterceptionPlugin, baseUrl } = props;
   const { searchTerm } = useSearchContext();
   const { position, handlePositionChange } = useToolbarUIContext();
-  const analytics = useAnalytics();
+  const { trackPositionChange } = useAnalytics();
   const { activeTab, setActiveTab } = useActiveTabContext();
   const { isOptedInToSessionReplay } = useAnalyticsPreferences();
   const { loading: authLoading } = useAuthContext();
@@ -107,13 +107,13 @@ export function LdToolbar(props: LdToolbarProps) {
 
       // Track position change
       if (newPosition !== position) {
-        analytics.trackPositionChange(position, newPosition, 'drag');
+        trackPositionChange(position, newPosition, 'drag');
       }
 
       // Update position immediately
       handlePositionChange(newPosition);
     },
-    [handlePositionChange, position, analytics],
+    [handlePositionChange, position, trackPositionChange],
   );
 
   const { handleMouseDown, isDragging } = useToolbarDrag({
@@ -200,13 +200,13 @@ export function LdToolbar(props: LdToolbarProps) {
       tabIndex={isExpanded ? -1 : 0}
     >
       <AnimatePresence>
-        {!isExpanded && (
+        {!isExpanded ? (
           <CircleLogo ref={circleButtonRef} onClick={handleCircleClickWithDragCheck} onMouseDown={handleMouseDown} />
-        )}
+        ) : null}
       </AnimatePresence>
       <AnimatePresence>
-        {isExpanded && isInitializing && <LoadingScreen onMouseDown={handleMouseDown} />}
-        {isExpanded && !isInitializing && !newToolbarDesign && (
+        {isExpanded && isInitializing ? <LoadingScreen onMouseDown={handleMouseDown} /> : null}
+        {isExpanded && !isInitializing && !newToolbarDesign ? (
           <ExpandedToolbarContentLegacy
             ref={expandedContentRef}
             activeTab={activeTab as ActiveTabId}
@@ -229,15 +229,15 @@ export function LdToolbar(props: LdToolbarProps) {
             onToggleReloadOnFlagChange={handleToggleReloadOnFlagChange}
             onOpenAuthModal={() => setIsAuthModalOpen(true)}
           />
-        )}
-        {isExpanded && !isInitializing && newToolbarDesign && (
+        ) : null}
+        {isExpanded && !isInitializing && newToolbarDesign ? (
           <ExpandedToolbarContent
             onClose={handleClose}
             onHeaderMouseDown={handleMouseDown}
             defaultActiveTab={defaultActiveTab}
             onOpenAuthModal={() => setIsAuthModalOpen(true)}
           />
-        )}
+        ) : null}
       </AnimatePresence>
       <AuthenticationModal isOpen={isAuthModalOpen} onClose={() => setIsAuthModalOpen(false)} />
     </motion.div>

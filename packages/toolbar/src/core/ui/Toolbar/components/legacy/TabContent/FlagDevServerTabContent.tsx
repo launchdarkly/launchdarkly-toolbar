@@ -26,7 +26,7 @@ interface FlagDevServerTabContentProps {
 export function FlagDevServerTabContent(props: FlagDevServerTabContentProps) {
   const { reloadOnFlagChangeIsEnabled } = props;
   const { searchTerm } = useSearchContext();
-  const analytics = useAnalytics();
+  const { trackFilterChange, trackFlagOverride, trackStarredFlag, trackShareState, trackFlagKeyCopy } = useAnalytics();
   const { state, setOverride, clearOverride, clearAllOverrides } = useDevServerContext();
   const { flags } = state;
   const { isStarred, toggleStarred, clearAllStarred, starredCount } = useStarredFlags();
@@ -43,7 +43,7 @@ export function FlagDevServerTabContent(props: FlagDevServerTabContentProps) {
       setActiveFilters((prev) => {
         // Clicking "All" resets to default state
         if (filter === FILTER_MODES.ALL) {
-          analytics.trackFilterChange(FILTER_MODES.ALL, 'selected');
+          trackFilterChange(FILTER_MODES.ALL, 'selected');
           return new Set([FILTER_MODES.ALL]);
         }
 
@@ -54,22 +54,22 @@ export function FlagDevServerTabContent(props: FlagDevServerTabContentProps) {
         const wasActive = next.has(filter);
         if (wasActive) {
           next.delete(filter);
-          analytics.trackFilterChange(filter, 'deselected');
+          trackFilterChange(filter, 'deselected');
         } else {
           next.add(filter);
-          analytics.trackFilterChange(filter, 'selected');
+          trackFilterChange(filter, 'selected');
         }
 
         // Default to "All" if no filters remain
         if (next.size === 0) {
-          analytics.trackFilterChange(FILTER_MODES.ALL, 'selected');
+          trackFilterChange(FILTER_MODES.ALL, 'selected');
           return new Set([FILTER_MODES.ALL]);
         }
 
         return next;
       });
     },
-    [analytics],
+    [trackFilterChange],
   );
 
   const flagEntries = Object.entries(flags);
@@ -108,7 +108,7 @@ export function FlagDevServerTabContent(props: FlagDevServerTabContentProps) {
 
   const handleSetOverride = (flagKey: string, value: any) => {
     setOverride(flagKey, value);
-    analytics.trackFlagOverride(flagKey, value, 'set');
+    trackFlagOverride(flagKey, value, 'set');
 
     if (reloadOnFlagChangeIsEnabled) {
       window.location.reload();
@@ -137,8 +137,8 @@ export function FlagDevServerTabContent(props: FlagDevServerTabContentProps) {
   const onRemoveAllOverrides = async () => {
     const overrideCount = totalOverriddenFlags;
     await clearAllOverrides();
-    analytics.trackFlagOverride('*', { count: overrideCount }, 'clear_all');
-    analytics.trackFilterChange(FILTER_MODES.ALL, 'selected');
+    trackFlagOverride('*', { count: overrideCount }, 'clear_all');
+    trackFilterChange(FILTER_MODES.ALL, 'selected');
     setActiveFilters(new Set([FILTER_MODES.ALL]));
     if (reloadOnFlagChangeIsEnabled) {
       window.location.reload();
@@ -146,9 +146,9 @@ export function FlagDevServerTabContent(props: FlagDevServerTabContentProps) {
   };
 
   const onClearAllStarred = () => {
-    analytics.trackStarredFlag('*', 'clear_all');
+    trackStarredFlag('*', 'clear_all');
     clearAllStarred();
-    analytics.trackFilterChange(FILTER_MODES.ALL, 'selected');
+    trackFilterChange(FILTER_MODES.ALL, 'selected');
     setActiveFilters(new Set([FILTER_MODES.ALL]));
   };
 
@@ -162,22 +162,22 @@ export function FlagDevServerTabContent(props: FlagDevServerTabContentProps) {
         setActiveFilters(new Set([FILTER_MODES.ALL]));
       }
       clearOverride(flagKey).then(() => {
-        analytics.trackFlagOverride(flagKey, null, 'remove');
+        trackFlagOverride(flagKey, null, 'remove');
         if (reloadOnFlagChangeIsEnabled) {
           window.location.reload();
         }
       });
     },
-    [totalOverriddenFlags, activeFilters, clearOverride, analytics, reloadOnFlagChangeIsEnabled],
+    [totalOverriddenFlags, activeFilters, clearOverride, trackFlagOverride, reloadOnFlagChangeIsEnabled],
   );
 
   const handleToggleStarred = useCallback(
     (flagKey: string) => {
       const wasPreviouslyStarred = isStarred(flagKey);
       toggleStarred(flagKey);
-      analytics.trackStarredFlag(flagKey, wasPreviouslyStarred ? 'unstar' : 'star');
+      trackStarredFlag(flagKey, wasPreviouslyStarred ? 'unstar' : 'star');
     },
-    [isStarred, toggleStarred, analytics],
+    [isStarred, toggleStarred, trackStarredFlag],
   );
 
   const handleShareUrlClick = useCallback(() => {
@@ -231,7 +231,7 @@ export function FlagDevServerTabContent(props: FlagDevServerTabContentProps) {
           .writeText(result.url)
           .then(() => {
             console.log('Share URL copied to clipboard:', result.url);
-            analytics.trackShareState({
+            trackShareState({
               includeSettings: options.includeSettings,
               overrideCount: Object.keys(overrides).length,
               contextCount: toolbarState.contexts.length,
@@ -247,7 +247,7 @@ export function FlagDevServerTabContent(props: FlagDevServerTabContentProps) {
         alert('Failed to create shareable link. Check console for details.');
       }
     },
-    [flags, analytics],
+    [flags, trackShareState],
   );
 
   const handleHeightChange = useCallback(
@@ -281,9 +281,9 @@ export function FlagDevServerTabContent(props: FlagDevServerTabContentProps) {
 
   const handleCopy = useCallback(
     (text: string) => {
-      analytics.trackFlagKeyCopy(text);
+      trackFlagKeyCopy(text);
     },
-    [analytics],
+    [trackFlagKeyCopy],
   );
 
   return (
@@ -356,7 +356,9 @@ export function FlagDevServerTabContent(props: FlagDevServerTabContentProps) {
                           <div className={styles.flagHeader}>
                             <span className={styles.flagName}>
                               <span className={styles.flagNameText}>{flag.name}</span>
-                              {flag.isOverridden && <OverrideIndicator onClear={() => onClearOverride(flag.key)} />}
+                              {flag.isOverridden ? (
+                                <OverrideIndicator onClear={() => onClearOverride(flag.key)} />
+                              ) : null}
                             </span>
                             <CopyableText text={flag.key} className={styles.flagKey} onCopy={handleCopy} />
                           </div>

@@ -32,7 +32,7 @@ export function LocalObjectFlagControlListItem(props: LocalObjectFlagControlList
   const [isEditing, setIsEditing] = useState(false);
   const [tempValue, setTempValue] = useState(currentValue);
   const [hasErrors, setHasErrors] = useState(false);
-  const analytics = useAnalytics();
+  const { trackFlagKeyCopy } = useAnalytics();
 
   // Since this is a virtualized item, we need to set the height to the standard item height when the component mounts
   // This happens specifically if the user is editing a JSON flag, scrolls to the point where the item is no longer visible,
@@ -71,9 +71,9 @@ export function LocalObjectFlagControlListItem(props: LocalObjectFlagControlList
 
   const handleCopy = useCallback(
     (text: string) => {
-      analytics.trackFlagKeyCopy(text);
+      trackFlagKeyCopy(text);
     },
-    [analytics],
+    [trackFlagKeyCopy],
   );
 
   return (
@@ -94,7 +94,7 @@ export function LocalObjectFlagControlListItem(props: LocalObjectFlagControlList
                 <span className={styles.flagNameText} data-testid={`flag-name-${flag.key}`}>
                   {flag.name}
                 </span>
-                {flag.isOverridden && <OverrideIndicator onClear={() => handleClearOverride(flag.key)} />}
+                {flag.isOverridden ? <OverrideIndicator onClear={() => handleClearOverride(flag.key)} /> : null}
               </span>
               <CopyableText text={flag.key} className={sharedStyles.flagKey} onCopy={handleCopy} />
             </div>
@@ -113,7 +113,7 @@ export function LocalObjectFlagControlListItem(props: LocalObjectFlagControlList
           </div>
 
           <AnimatePresence data-testid={`json-editor-${flag.key}`} mode="wait">
-            {isEditing && (
+            {isEditing ? (
               <motion.div
                 key={`json-editor-${flag.key}`}
                 initial={{
@@ -156,7 +156,7 @@ export function LocalObjectFlagControlListItem(props: LocalObjectFlagControlList
                   onEditorHeightChange={handleEditorHeightChange}
                 />
               </motion.div>
-            )}
+            ) : null}
           </AnimatePresence>
         </div>
       </ListItem>
