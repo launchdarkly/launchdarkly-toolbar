@@ -116,7 +116,7 @@
     "@react-aria/focus": "^3.21.3",
     "@react-stately/flags": "^3.1.2",
     "@rsbuild/core": "^1.7.2",
-    "@rsbuild/plugin-react": "^1.4.2",
+    "@rsbuild/plugin-react": "^1.4.3",
     "@rslib/core": "^0.19.2",
     "@storybook/addon-docs": "^10.1.11",
     "@storybook/addon-essentials": "^9.0.0-alpha.12",
@@ -125,7 +125,7 @@
     "@storybook/addon-onboarding": "^10.1.10",
     "@storybook/blocks": "^9.0.0-alpha.17",
     "@storybook/react": "^10.1.11",
-    "@storybook/react-vite": "^10.1.10",
+    "@storybook/react-vite": "^10.1.11",
     "@storybook/test": "^9.0.0-alpha.2",
     "@tanstack/react-virtual": "^3.13.18",
     "@testing-library/jest-dom": "^6.9.1",
@@ -144,11 +144,11 @@
     "oxlint": "^1.39.0",
     "react": "^19.2.3",
     "react-dom": "^19.2.3",
-    "storybook": "^10.1.10",
-    "storybook-addon-rslib": "^3.2.1",
+    "storybook": "^10.1.11",
+    "storybook-addon-rslib": "^3.2.2",
     "storybook-react-rsbuild": "^3.2.1",
     "typescript": "^5.9.3",
-    "vitest": "^4.0.16"
+    "vitest": "^4.0.17"
   },
   "peerDependencies": {
     "launchdarkly-js-client-sdk": ">=3.9.0 <4.0.0",

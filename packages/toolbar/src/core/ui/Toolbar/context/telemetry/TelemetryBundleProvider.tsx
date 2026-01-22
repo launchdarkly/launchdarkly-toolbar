@@ -10,11 +10,12 @@ interface TelemetryBundleProviderProps {
   streamUrl?: string;
   eventsUrl?: string;
   backendUrl?: string;
+  observabilityOtlpEndpoint?: string;
   children: React.ReactNode;
 }
 
 export function TelemetryBundleProvider(props: TelemetryBundleProviderProps) {
-  const { mode, baseUrl, clientSideId, streamUrl, eventsUrl, backendUrl, children } = props;
+  const { mode, baseUrl, clientSideId, streamUrl, eventsUrl, backendUrl, observabilityOtlpEndpoint, children } = props;
 
   return (
     <AnalyticsPreferencesProvider>
@@ -24,6 +25,7 @@ export function TelemetryBundleProvider(props: TelemetryBundleProviderProps) {
         streamUrl={streamUrl}
         eventsUrl={eventsUrl}
         backendUrl={backendUrl}
+        observabilityOtlpEndpoint={observabilityOtlpEndpoint}
       >
         <AnalyticsProvider mode={mode}>{children}</AnalyticsProvider>
       </InternalClientProvider>
