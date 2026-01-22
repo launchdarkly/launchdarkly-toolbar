@@ -27,8 +27,8 @@ importers:
         specifier: ^10.1.11
         version: 10.1.11(@testing-library/dom@10.4.0)(prettier@3.8.0)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
       storybook-addon-rslib:
-        specifier: ^3.2.1
-        version: 3.2.1(@rsbuild/core@1.7.2)(@rslib/core@0.19.2(typescript@5.9.3))(storybook-builder-rsbuild@3.2.1(@rsbuild/core@1.7.2)(@rspack/core@1.7.1(@swc/helpers@0.5.18))(msw@2.12.7(@types/node@25.0.9)(typescript@5.9.3))(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(storybook@10.1.11(@testing-library/dom@10.4.0)(prettier@3.8.0)(react-dom@19.2.3(react@19.2.3))(react@19.2.3))(typescript@5.9.3)(vite@7.3.1(@types/node@25.0.9)(jiti@2.6.1)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.1)))(typescript@5.9.3)
+        specifier: ^3.2.2
+        version: 3.2.2(@rsbuild/core@1.7.2)(@rslib/core@0.19.2(typescript@5.9.3))(storybook-builder-rsbuild@3.2.1(@rsbuild/core@1.7.2)(@rspack/core@1.7.1(@swc/helpers@0.5.18))(msw@2.12.7(@types/node@25.0.9)(typescript@5.9.3))(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(storybook@10.1.11(@testing-library/dom@10.4.0)(prettier@3.8.0)(react-dom@19.2.3(react@19.2.3))(react@19.2.3))(typescript@5.9.3)(vite@7.3.1(@types/node@25.0.9)(jiti@2.6.1)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.1)))(typescript@5.9.3)
       storybook-react-rsbuild:
         specifier: ^3.2.1
         version: 3.2.1(@rsbuild/core@1.7.2)(@rspack/core@1.7.1(@swc/helpers@0.5.18))(msw@2.12.7(@types/node@25.0.9)(typescript@5.9.3))(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(rollup@4.55.1)(storybook@10.1.11(@testing-library/dom@10.4.0)(prettier@3.8.0)(react-dom@19.2.3(react@19.2.3))(react@19.2.3))(typescript@5.9.3)(vite@7.3.1(@types/node@25.0.9)(jiti@2.6.1)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.1))(webpack@5.102.1)
@@ -241,8 +241,8 @@ importers:
         specifier: ^10.1.11
         version: 10.1.11(@testing-library/dom@10.4.0)(prettier@3.8.0)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
       storybook-addon-rslib:
-        specifier: ^3.2.1
-        version: 3.2.1(@rsbuild/core@1.7.2)(@rslib/core@0.19.2(typescript@5.9.3))(storybook-builder-rsbuild@3.2.1(@rsbuild/core@1.7.2)(@rspack/core@1.7.1(@swc/helpers@0.5.18))(msw@2.12.7(@types/node@25.0.9)(typescript@5.9.3))(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(storybook@10.1.11(@testing-library/dom@10.4.0)(prettier@3.8.0)(react-dom@19.2.3(react@19.2.3))(react@19.2.3))(typescript@5.9.3)(vite@7.3.1(@types/node@25.0.9)(jiti@2.6.1)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.1)))(typescript@5.9.3)
+        specifier: ^3.2.2
+        version: 3.2.2(@rsbuild/core@1.7.2)(@rslib/core@0.19.2(typescript@5.9.3))(storybook-builder-rsbuild@3.2.1(@rsbuild/core@1.7.2)(@rspack/core@1.7.1(@swc/helpers@0.5.18))(msw@2.12.7(@types/node@25.0.9)(typescript@5.9.3))(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(storybook@10.1.11(@testing-library/dom@10.4.0)(prettier@3.8.0)(react-dom@19.2.3(react@19.2.3))(react@19.2.3))(typescript@5.9.3)(vite@7.3.1(@types/node@25.0.9)(jiti@2.6.1)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.1)))(typescript@5.9.3)
       storybook-react-rsbuild:
         specifier: ^3.2.1
         version: 3.2.1(@rsbuild/core@1.7.2)(@rspack/core@1.7.1(@swc/helpers@0.5.18))(msw@2.12.7(@types/node@25.0.9)(typescript@5.9.3))(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(rollup@4.55.1)(storybook@10.1.11(@testing-library/dom@10.4.0)(prettier@3.8.0)(react-dom@19.2.3(react@19.2.3))(react@19.2.3))(typescript@5.9.3)(vite@7.3.1(@types/node@25.0.9)(jiti@2.6.1)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.1))(webpack@5.102.1(esbuild@0.27.2))
@@ -4394,8 +4394,8 @@ packages:
   std-env@3.10.0:
     resolution: {integrity: sha512-5GS12FdOZNliM5mAOxFRg7Ir0pWz8MdpYm6AY6VPkGpbA7ZzmbzNcBJQ0GPvvyWgcY7QAhCgf9Uy89I03faLkg==}
 
-  storybook-addon-rslib@3.2.1:
-    resolution: {integrity: sha512-4bgpznRp8VZX+I357qVrWjaYeAmHA3fg1O+ZfaZ7CRlpsrLWHzEkVw9NvaJq93e8oK5ufWN70skOoHe9T66Ekg==}
+  storybook-addon-rslib@3.2.2:
+    resolution: {integrity: sha512-ubW+t9L9+yYVFEM3isbZPSBKcpJMPykkzZymNGwLnkD4LOvxR2MT1ZDAeDMv8ZzwuzTmmEjTI0NyDXh62+jsUA==}
     peerDependencies:
       '@rsbuild/core': ^1.5.0
       '@rslib/core': '>= 0.1.1 || >= 0.2'
@@ -9884,7 +9884,7 @@ snapshots:
 
   std-env@3.10.0: {}
 
-  storybook-addon-rslib@3.2.1(@rsbuild/core@1.7.2)(@rslib/core@0.19.2(typescript@5.9.3))(storybook-builder-rsbuild@3.2.1(@rsbuild/core@1.7.2)(@rspack/core@1.7.1(@swc/helpers@0.5.18))(msw@2.12.7(@types/node@25.0.9)(typescript@5.9.3))(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(storybook@10.1.11(@testing-library/dom@10.4.0)(prettier@3.8.0)(react-dom@19.2.3(react@19.2.3))(react@19.2.3))(typescript@5.9.3)(vite@7.3.1(@types/node@25.0.9)(jiti@2.6.1)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.1)))(typescript@5.9.3):
+  storybook-addon-rslib@3.2.2(@rsbuild/core@1.7.2)(@rslib/core@0.19.2(typescript@5.9.3))(storybook-builder-rsbuild@3.2.1(@rsbuild/core@1.7.2)(@rspack/core@1.7.1(@swc/helpers@0.5.18))(msw@2.12.7(@types/node@25.0.9)(typescript@5.9.3))(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(storybook@10.1.11(@testing-library/dom@10.4.0)(prettier@3.8.0)(react-dom@19.2.3(react@19.2.3))(react@19.2.3))(typescript@5.9.3)(vite@7.3.1(@types/node@25.0.9)(jiti@2.6.1)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.1)))(typescript@5.9.3):
     dependencies:
       '@rsbuild/core': 1.7.2
       '@rslib/core': 0.19.2(typescript@5.9.3)
