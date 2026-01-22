@@ -1,6 +1,8 @@
 import type { LDClient } from 'launchdarkly-js-client-sdk';
+
 import type { FeedbackSentiment } from '../../types/analytics';
 import { isDoNotTrackEnabled } from './browser';
+import { sendFeedback } from './feedback';
 import { ToolbarMode } from '../ui/Toolbar/types';
 
 export const ANALYTICS_EVENT_PREFIX = 'ld.toolbar';
@@ -283,11 +285,44 @@ export class ToolbarAnalytics {
   /**
    * Track user feedback
    */
-  trackFeedback(feedback: string, sentiment: FeedbackSentiment): void {
+  trackFeedback(
+    feedback: string,
+    sentiment: FeedbackSentiment,
+    options?: {
+      flagKey?: string;
+      prompt?: string;
+      customProperties?: Record<string, unknown>;
+    },
+  ): void {
     this.track(EVENTS.FEEDBACK_SUBMITTED, {
       sentiment,
       comment: feedback,
     });
+
+    if (!options?.flagKey) {
+      return;
+    }
+
+    if (!this.ldClient) {
+      console.debug('ToolbarAnalytics: LDClient not available, skipping feedback event:', options.flagKey);
+      return;
+    }
+
+    if (isDoNotTrackEnabled() || !this.isOptedInToAnalytics) {
+      return;
+    }
+
+    try {
+      sendFeedback(this.ldClient, {
+        flagKey: options.flagKey,
+        feedback,
+        sentiment,
+        prompt: options.prompt,
+        customProperties: options.customProperties,
+      });
+    } catch (error) {
+      console.error('ToolbarAnalytics: Failed to send feedback event:', error);
+    }
   }
 
   /**

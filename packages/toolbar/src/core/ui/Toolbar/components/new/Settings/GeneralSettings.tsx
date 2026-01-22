@@ -17,6 +17,7 @@ import * as styles from './SettingsContent.module.css';
 import * as settingsItemStyles from './SettingsItem.module.css';
 import { EnvironmentSelector } from './EnvironmentSelector';
 import { FeedbackSentiment } from '../../../../../../types';
+import { USE_NEW_TOOLBAR_DESIGN_FLAG_KEY } from '../../../../../../flags/toolbarFlags';
 import { ShareStatePopover, type ShareStateOptions } from '../../ShareStatePopover';
 import { serializeToolbarState, SHARED_STATE_VERSION, MAX_STATE_SIZE_LIMIT } from '../../../../../utils/urlOverrides';
 import { loadContexts, loadActiveContext, loadAllSettings, loadStarredFlags } from '../../../utils/localStorage';
@@ -50,6 +51,7 @@ export function GeneralSettings() {
   const searchTerm = useMemo(() => searchTerms['general'] || '', [searchTerms]);
   const { flagOverridePlugin } = usePlugins();
   const [isSharePopoverOpen, setIsSharePopoverOpen] = useState(false);
+  const feedbackPrompt = "How's your experience?";
 
   const handleAutoCollapseToggle = () => {
     analytics.trackAutoCollapseToggle(!isAutoCollapseEnabled ? 'enable' : 'disable');
@@ -62,7 +64,10 @@ export function GeneralSettings() {
   };
 
   const handleFeedbackSubmit = (feedback: string, sentiment: FeedbackSentiment) => {
-    analytics.trackFeedback(feedback, sentiment);
+    analytics.trackFeedback(feedback, sentiment, {
+      flagKey: USE_NEW_TOOLBAR_DESIGN_FLAG_KEY,
+      prompt: feedbackPrompt,
+    });
   };
 
   const handleShare = useCallback(
@@ -372,7 +377,7 @@ export function GeneralSettings() {
       })}
       <div className={styles.feedbackSection}>
         <h3 className={styles.feedbackTitle}>Feedback</h3>
-        <Feedback onSubmit={handleFeedbackSubmit} />
+        <Feedback onSubmit={handleFeedbackSubmit} title={feedbackPrompt} />
       </div>
     </div>
   );

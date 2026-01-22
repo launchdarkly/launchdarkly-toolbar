@@ -10,6 +10,7 @@ import {
   useToolbarUIContext,
 } from '../../../context';
 import { FeedbackSentiment } from '../../../../../../types';
+import { USE_NEW_TOOLBAR_DESIGN_FLAG_KEY } from '../../../../../../flags/toolbarFlags';
 import { List } from '../../../../List/List';
 import { ListItem } from '../../../../List/ListItem';
 import { ToolbarPosition, TOOLBAR_POSITIONS, ToolbarMode } from '../../../types';
@@ -213,6 +214,7 @@ export function SettingsTabContent(props: SettingsTabContentProps) {
   const { searchTerm } = useSearchContext();
   const analytics = useAnalytics();
   const { logout } = useAuthContext();
+  const feedbackPrompt = "How's your experience?";
 
   const handlePositionSelect = (newPosition: ToolbarPosition) => {
     // Track position change
@@ -227,7 +229,10 @@ export function SettingsTabContent(props: SettingsTabContentProps) {
   };
 
   const handleFeedbackSubmit = (feedback: string, sentiment: FeedbackSentiment) => {
-    analytics.trackFeedback(feedback, sentiment);
+    analytics.trackFeedback(feedback, sentiment, {
+      flagKey: USE_NEW_TOOLBAR_DESIGN_FLAG_KEY,
+      prompt: feedbackPrompt,
+    });
   };
 
   // Settings data based on mode
@@ -444,7 +449,7 @@ export function SettingsTabContent(props: SettingsTabContentProps) {
         );
       })}
       <div className={styles.settingsGroup}>
-        <Feedback onSubmit={handleFeedbackSubmit} />
+        <Feedback onSubmit={handleFeedbackSubmit} title={feedbackPrompt} />
       </div>
     </div>
   );
