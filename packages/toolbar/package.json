@@ -110,7 +110,7 @@
     "@codemirror/view": "^6.39.11",
     "@launchdarkly/observability": "^0.5.0",
     "@launchdarkly/session-replay": "^0.5.0",
-    "@launchpad-ui/components": "^0.17.8",
+    "@launchpad-ui/components": "^0.17.9",
     "@launchpad-ui/tokens": "^0.15.1",
     "@lezer/highlight": "^1.2.3",
     "@react-aria/focus": "^3.21.3",
