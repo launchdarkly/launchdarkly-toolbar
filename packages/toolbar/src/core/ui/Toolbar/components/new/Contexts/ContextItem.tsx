@@ -30,7 +30,7 @@ export const ContextItem = memo(function ContextItem({
   const [isSelecting, setIsSelecting] = useState(false);
   const hasResetOnMountRef = useRef(false);
   const { removeContext, updateContext, setContext } = useContextsContext();
-  const { trackContextEditStarted, trackContextEditCancelled, trackContextKeyCopy } = useAnalytics();
+  const analytics = useAnalytics();
   const stableId = getStableContextId(context);
   const contextKey = getContextKey(context);
   const contextKind = getContextKind(context);
@@ -54,8 +54,8 @@ export const ContextItem = memo(function ContextItem({
 
     // Track analytics
     const trackKey = contextKind === 'multi' ? displayName : contextKey;
-    trackContextEditStarted(contextKind, trackKey);
-  }, [contextJson, contextKind, contextKey, displayName, trackContextEditStarted]);
+    analytics.trackContextEditStarted(contextKind, trackKey);
+  }, [contextJson, contextKind, contextKey, displayName, analytics]);
 
   const handleSave = useCallback(() => {
     if (hasLintErrors) {
@@ -94,13 +94,13 @@ export const ContextItem = memo(function ContextItem({
 
     // Track analytics
     const trackKey = contextKind === 'multi' ? displayName : contextKey;
-    trackContextEditCancelled(contextKind, trackKey);
+    analytics.trackContextEditCancelled(contextKind, trackKey);
 
     // Reset height when collapsing
     if (handleHeightChange && index !== undefined) {
       handleHeightChange(index, VIRTUALIZATION.ITEM_HEIGHT + VIRTUALIZATION.GAP);
     }
-  }, [handleHeightChange, index, contextKind, contextKey, displayName, trackContextEditCancelled]);
+  }, [handleHeightChange, index, contextKind, contextKey, displayName, analytics]);
 
   const handleJsonChange = useCallback((value: string) => {
     setEditedJson(value);
@@ -196,7 +196,7 @@ export const ContextItem = memo(function ContextItem({
             <CopyableText
               text={displayName}
               onCopy={() => {
-                trackContextKeyCopy(displayName);
+                analytics.trackContextKeyCopy(displayName);
               }}
             />
           </div>

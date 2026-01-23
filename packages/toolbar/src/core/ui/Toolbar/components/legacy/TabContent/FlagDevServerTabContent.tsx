@@ -26,7 +26,7 @@ interface FlagDevServerTabContentProps {
 export function FlagDevServerTabContent(props: FlagDevServerTabContentProps) {
   const { reloadOnFlagChangeIsEnabled } = props;
   const { searchTerm } = useSearchContext();
-  const { trackFilterChange, trackFlagOverride, trackStarredFlag, trackShareState, trackFlagKeyCopy } = useAnalytics();
+  const analytics = useAnalytics();
   const { state, setOverride, clearOverride, clearAllOverrides } = useDevServerContext();
   const { flags } = state;
   const { isStarred, toggleStarred, clearAllStarred, starredCount } = useStarredFlags();
@@ -43,7 +43,7 @@ export function FlagDevServerTabContent(props: FlagDevServerTabContentProps) {
       setActiveFilters((prev) => {
         // Clicking "All" resets to default state
         if (filter === FILTER_MODES.ALL) {
-          trackFilterChange(FILTER_MODES.ALL, 'selected');
+          analytics.trackFilterChange(FILTER_MODES.ALL, 'selected');
           return new Set([FILTER_MODES.ALL]);
         }
 
@@ -54,22 +54,22 @@ export function FlagDevServerTabContent(props: FlagDevServerTabContentProps) {
         const wasActive = next.has(filter);
         if (wasActive) {
           next.delete(filter);
-          trackFilterChange(filter, 'deselected');
+          analytics.trackFilterChange(filter, 'deselected');
         } else {
           next.add(filter);
-          trackFilterChange(filter, 'selected');
+          analytics.trackFilterChange(filter, 'selected');
         }
 
         // Default to "All" if no filters remain
         if (next.size === 0) {
-          trackFilterChange(FILTER_MODES.ALL, 'selected');
+          analytics.trackFilterChange(FILTER_MODES.ALL, 'selected');
           return new Set([FILTER_MODES.ALL]);
         }
 
         return next;
       });
     },
-    [trackFilterChange],
+    [analytics],
   );
 
   const flagEntries = Object.entries(flags);
@@ -108,7 +108,7 @@ export function FlagDevServerTabContent(props: FlagDevServerTabContentProps) {
 
   const handleSetOverride = (flagKey: string, value: any) => {
     setOverride(flagKey, value);
-    trackFlagOverride(flagKey, value, 'set');
+    analytics.trackFlagOverride(flagKey, value, 'set');
 
     if (reloadOnFlagChangeIsEnabled) {
       window.location.reload();
@@ -137,8 +137,8 @@ export function FlagDevServerTabContent(props: FlagDevServerTabContentProps) {
   const onRemoveAllOverrides = async () => {
     const overrideCount = totalOverriddenFlags;
     await clearAllOverrides();
-    trackFlagOverride('*', { count: overrideCount }, 'clear_all');
-    trackFilterChange(FILTER_MODES.ALL, 'selected');
+    analytics.trackFlagOverride('*', { count: overrideCount }, 'clear_all');
+    analytics.trackFilterChange(FILTER_MODES.ALL, 'selected');
     setActiveFilters(new Set([FILTER_MODES.ALL]));
     if (reloadOnFlagChangeIsEnabled) {
       window.location.reload();
@@ -146,9 +146,9 @@ export function FlagDevServerTabContent(props: FlagDevServerTabContentProps) {
   };
 
   const onClearAllStarred = () => {
-    trackStarredFlag('*', 'clear_all');
+    analytics.trackStarredFlag('*', 'clear_all');
     clearAllStarred();
-    trackFilterChange(FILTER_MODES.ALL, 'selected');
+    analytics.trackFilterChange(FILTER_MODES.ALL, 'selected');
     setActiveFilters(new Set([FILTER_MODES.ALL]));
   };
 
@@ -162,22 +162,22 @@ export function FlagDevServerTabContent(props: FlagDevServerTabContentProps) {
         setActiveFilters(new Set([FILTER_MODES.ALL]));
       }
       clearOverride(flagKey).then(() => {
-        trackFlagOverride(flagKey, null, 'remove');
+        analytics.trackFlagOverride(flagKey, null, 'remove');
         if (reloadOnFlagChangeIsEnabled) {
           window.location.reload();
         }
       });
     },
-    [totalOverriddenFlags, activeFilters, clearOverride, trackFlagOverride, reloadOnFlagChangeIsEnabled],
+    [totalOverriddenFlags, activeFilters, clearOverride, analytics, reloadOnFlagChangeIsEnabled],
   );
 
   const handleToggleStarred = useCallback(
     (flagKey: string) => {
       const wasPreviouslyStarred = isStarred(flagKey);
       toggleStarred(flagKey);
-      trackStarredFlag(flagKey, wasPreviouslyStarred ? 'unstar' : 'star');
+      analytics.trackStarredFlag(flagKey, wasPreviouslyStarred ? 'unstar' : 'star');
     },
-    [isStarred, toggleStarred, trackStarredFlag],
+    [isStarred, toggleStarred, analytics],
   );
 
   const handleShareUrlClick = useCallback(() => {
@@ -231,7 +231,7 @@ export function FlagDevServerTabContent(props: FlagDevServerTabContentProps) {
           .writeText(result.url)
           .then(() => {
             console.log('Share URL copied to clipboard:', result.url);
-            trackShareState({
+            analytics.trackShareState({
               includeSettings: options.includeSettings,
               overrideCount: Object.keys(overrides).length,
               contextCount: toolbarState.contexts.length,
@@ -247,7 +247,7 @@ export function FlagDevServerTabContent(props: FlagDevServerTabContentProps) {
         alert('Failed to create shareable link. Check console for details.');
       }
     },
-    [flags, trackShareState],
+    [flags, analytics],
   );
 
   const handleHeightChange = useCallback(
@@ -281,9 +281,9 @@ export function FlagDevServerTabContent(props: FlagDevServerTabContentProps) {
 
   const handleCopy = useCallback(
     (text: string) => {
-      trackFlagKeyCopy(text);
+      analytics.trackFlagKeyCopy(text);
     },
-    [trackFlagKeyCopy],
+    [analytics],
   );
 
   return (

@@ -35,7 +35,7 @@ interface FlagSdkOverrideTabContentInnerProps {
 function FlagSdkOverrideTabContentInner(props: FlagSdkOverrideTabContentInnerProps) {
   const { flagOverridePlugin, reloadOnFlagChangeIsEnabled } = props;
   const { searchTerm } = useSearchContext();
-  const { trackFilterChange, trackFlagOverride, trackStarredFlag, trackShareState, trackFlagKeyCopy } = useAnalytics();
+  const analytics = useAnalytics();
   const { flags, isLoading } = useFlagSdkOverrideContext();
   const { isStarred, toggleStarred, clearAllStarred, starredCount } = useStarredFlags();
   const [activeFilters, setActiveFilters] = useState<Set<FlagFilterMode>>(new Set([FILTER_MODES.ALL]));
@@ -50,7 +50,7 @@ function FlagSdkOverrideTabContentInner(props: FlagSdkOverrideTabContentInnerPro
       setActiveFilters((prev) => {
         // Clicking "All" resets to default state
         if (filter === FILTER_MODES.ALL) {
-          trackFilterChange(FILTER_MODES.ALL, 'selected');
+          analytics.trackFilterChange(FILTER_MODES.ALL, 'selected');
           return new Set([FILTER_MODES.ALL]);
         }
 
@@ -61,36 +61,36 @@ function FlagSdkOverrideTabContentInner(props: FlagSdkOverrideTabContentInnerPro
         const wasActive = next.has(filter);
         if (wasActive) {
           next.delete(filter);
-          trackFilterChange(filter, 'deselected');
+          analytics.trackFilterChange(filter, 'deselected');
         } else {
           next.add(filter);
-          trackFilterChange(filter, 'selected');
+          analytics.trackFilterChange(filter, 'selected');
         }
 
         // Default to "All" if no filters remain
         if (next.size === 0) {
-          trackFilterChange(FILTER_MODES.ALL, 'selected');
+          analytics.trackFilterChange(FILTER_MODES.ALL, 'selected');
           return new Set([FILTER_MODES.ALL]);
         }
 
         return next;
       });
     },
-    [trackFilterChange],
+    [analytics],
   );
 
   const handleClearOverride = useCallback(
     (flagKey: string) => {
       if (flagOverridePlugin) {
         flagOverridePlugin.removeOverride(flagKey);
-        trackFlagOverride(flagKey, null, 'remove');
+        analytics.trackFlagOverride(flagKey, null, 'remove');
 
         if (reloadOnFlagChangeIsEnabled) {
           window.location.reload();
         }
       }
     },
-    [flagOverridePlugin, trackFlagOverride, reloadOnFlagChangeIsEnabled],
+    [flagOverridePlugin, analytics, reloadOnFlagChangeIsEnabled],
   );
 
   // Count total overridden flags (not just filtered ones)
@@ -133,9 +133,9 @@ function FlagSdkOverrideTabContentInner(props: FlagSdkOverrideTabContentInnerPro
     (flagKey: string) => {
       const wasPreviouslyStarred = isStarred(flagKey);
       toggleStarred(flagKey);
-      trackStarredFlag(flagKey, wasPreviouslyStarred ? 'unstar' : 'star');
+      analytics.trackStarredFlag(flagKey, wasPreviouslyStarred ? 'unstar' : 'star');
     },
-    [isStarred, toggleStarred, trackStarredFlag],
+    [isStarred, toggleStarred, analytics],
   );
 
   const handleHeightChange = useCallback(
@@ -153,9 +153,9 @@ function FlagSdkOverrideTabContentInner(props: FlagSdkOverrideTabContentInnerPro
 
   const handleCopy = useCallback(
     (text: string) => {
-      trackFlagKeyCopy(text);
+      analytics.trackFlagKeyCopy(text);
     },
-    [trackFlagKeyCopy],
+    [analytics],
   );
 
   // Now we can do conditional returns
@@ -174,7 +174,7 @@ function FlagSdkOverrideTabContentInner(props: FlagSdkOverrideTabContentInnerPro
   const handleSetOverride = (flagKey: string, value: any) => {
     console.log('🚀 ~ handleSetOverride ~ handleSetOverride:', flagKey, value);
     flagOverridePlugin.setOverride(flagKey, value);
-    trackFlagOverride(flagKey, value, 'set');
+    analytics.trackFlagOverride(flagKey, value, 'set');
 
     if (reloadOnFlagChangeIsEnabled) {
       window.location.reload();
@@ -186,8 +186,8 @@ function FlagSdkOverrideTabContentInner(props: FlagSdkOverrideTabContentInnerPro
     const overrideCount = Object.keys(currentOverrides).length;
 
     flagOverridePlugin.clearAllOverrides();
-    trackFlagOverride('*', { count: overrideCount }, 'clear_all');
-    trackFilterChange(FILTER_MODES.ALL, 'selected');
+    analytics.trackFlagOverride('*', { count: overrideCount }, 'clear_all');
+    analytics.trackFilterChange(FILTER_MODES.ALL, 'selected');
     setActiveFilters(new Set([FILTER_MODES.ALL]));
 
     if (reloadOnFlagChangeIsEnabled) {
@@ -196,9 +196,9 @@ function FlagSdkOverrideTabContentInner(props: FlagSdkOverrideTabContentInnerPro
   };
 
   const handleClearAllStarred = () => {
-    trackStarredFlag('*', 'clear_all');
+    analytics.trackStarredFlag('*', 'clear_all');
     clearAllStarred();
-    trackFilterChange(FILTER_MODES.ALL, 'selected');
+    analytics.trackFilterChange(FILTER_MODES.ALL, 'selected');
     setActiveFilters(new Set([FILTER_MODES.ALL]));
   };
 
@@ -244,7 +244,7 @@ function FlagSdkOverrideTabContentInner(props: FlagSdkOverrideTabContentInnerPro
           .writeText(result.url)
           .then(() => {
             console.log('Share URL copied to clipboard:', result.url);
-            trackShareState({
+            analytics.trackShareState({
               includeSettings: options.includeSettings,
               overrideCount: Object.keys(state.overrides).length,
               contextCount: state.contexts.length,
@@ -260,7 +260,7 @@ function FlagSdkOverrideTabContentInner(props: FlagSdkOverrideTabContentInnerPro
         alert('Failed to create shareable link. Check console for details.');
       }
     },
-    [flagOverridePlugin, trackShareState],
+    [flagOverridePlugin, analytics],
   );
 
   const renderFlagControl = (flag: LocalFlag) => {

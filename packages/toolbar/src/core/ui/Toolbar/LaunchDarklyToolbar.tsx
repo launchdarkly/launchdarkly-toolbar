@@ -41,7 +41,7 @@ export function LdToolbar(props: LdToolbarProps) {
   const { mode, flagOverridePlugin, eventInterceptionPlugin, baseUrl } = props;
   const { searchTerm } = useSearchContext();
   const { position, handlePositionChange } = useToolbarUIContext();
-  const { trackPositionChange } = useAnalytics();
+  const analytics = useAnalytics();
   const { activeTab, setActiveTab } = useActiveTabContext();
   const { isOptedInToSessionReplay } = useAnalyticsPreferences();
   const { loading: authLoading } = useAuthContext();
@@ -107,13 +107,13 @@ export function LdToolbar(props: LdToolbarProps) {
 
       // Track position change
       if (newPosition !== position) {
-        trackPositionChange(position, newPosition, 'drag');
+        analytics.trackPositionChange(position, newPosition, 'drag');
       }
 
       // Update position immediately
       handlePositionChange(newPosition);
     },
-    [handlePositionChange, position, trackPositionChange],
+    [handlePositionChange, position, analytics],
   );
 
   const { handleMouseDown, isDragging } = useToolbarDrag({

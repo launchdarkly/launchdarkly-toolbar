@@ -26,7 +26,7 @@ function DevServerFlagList() {
   const searchTerm = useMemo(() => searchTerms['flags'] || '', [searchTerms]);
   const { activeFilters } = useSubtabFilters('flags');
   const { isStarred } = useStarredFlags();
-  const { trackFlagOverride } = useAnalytics();
+  const analytics = useAnalytics();
 
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const getScrollElement = useCallback(() => scrollContainerRef.current, []);
@@ -106,17 +106,17 @@ function DevServerFlagList() {
   const handleOverride = useCallback(
     async (flagKey: string, value: any) => {
       await setOverride(flagKey, value);
-      trackFlagOverride(flagKey, value, 'set');
+      analytics.trackFlagOverride(flagKey, value, 'set');
     },
-    [setOverride, trackFlagOverride],
+    [setOverride, analytics],
   );
 
   const handleClearOverride = useCallback(
     async (flagKey: string) => {
       await clearOverride(flagKey);
-      trackFlagOverride(flagKey, null, 'remove');
+      analytics.trackFlagOverride(flagKey, null, 'remove');
     },
-    [clearOverride, trackFlagOverride],
+    [clearOverride, analytics],
   );
 
   // Calculate stats
@@ -202,7 +202,7 @@ function SdkFlagList() {
   const searchTerm = useMemo(() => searchTerms['flags'] || '', [searchTerms]);
   const { activeFilters } = useSubtabFilters('flags');
   const { isStarred } = useStarredFlags();
-  const { trackFlagOverride } = useAnalytics();
+  const analytics = useAnalytics();
 
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const getScrollElement = useCallback(() => scrollContainerRef.current, []);
@@ -269,17 +269,17 @@ function SdkFlagList() {
   const handleOverride = useCallback(
     (flagKey: string, value: any) => {
       setOverride(flagKey, value);
-      trackFlagOverride(flagKey, value, 'set');
+      analytics.trackFlagOverride(flagKey, value, 'set');
     },
-    [setOverride, trackFlagOverride],
+    [setOverride, analytics],
   );
 
   const handleClearOverride = useCallback(
     (flagKey: string) => {
       removeOverride(flagKey);
-      trackFlagOverride(flagKey, null, 'remove');
+      analytics.trackFlagOverride(flagKey, null, 'remove');
     },
-    [removeOverride, trackFlagOverride],
+    [removeOverride, analytics],
   );
 
   const handleHeightChange = useCallback(

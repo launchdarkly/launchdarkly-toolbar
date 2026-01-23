@@ -43,7 +43,7 @@ interface FilterOverlayContentProps {
 const FilterOverlayContent = memo(function FilterOverlayContent({ subtab, onClose }: FilterOverlayContentProps) {
   const overlayRef = useRef<HTMLDivElement>(null);
   const { getActiveFilters, getFilterConfig, toggleFilter, resetFilters, hasActiveNonDefaultFilters } = useFilters();
-  const { trackFilterChange } = useAnalytics();
+  const analytics = useAnalytics();
 
   const config = getFilterConfig(subtab);
   const activeFilters = getActiveFilters(subtab);
@@ -53,9 +53,9 @@ const FilterOverlayContent = memo(function FilterOverlayContent({ subtab, onClos
     (optionId: string) => {
       const wasActive = activeFilters.has(optionId);
       toggleFilter(subtab, optionId);
-      trackFilterChange(optionId as 'all' | 'overrides' | 'starred', wasActive ? 'deselected' : 'selected');
+      analytics.trackFilterChange(optionId as 'all' | 'overrides' | 'starred', wasActive ? 'deselected' : 'selected');
     },
-    [subtab, toggleFilter, activeFilters, trackFilterChange],
+    [subtab, toggleFilter, activeFilters, analytics],
   );
 
   const handleReset = useCallback(() => {

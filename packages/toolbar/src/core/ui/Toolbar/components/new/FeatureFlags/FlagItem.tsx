@@ -79,7 +79,7 @@ export const FlagItem = memo(function FlagItem({
   const [tempValue, setTempValue] = useState('');
   const [hasErrors, setHasErrors] = useState(false);
   const { isStarred, toggleStarred } = useStarredFlags();
-  const { trackStarredFlag, trackOpenFlagDeeplink, trackFlagKeyCopy } = useAnalytics();
+  const analytics = useAnalytics();
   const { baseUrl } = usePlugins();
   const { projectKey } = useProjectContext();
 
@@ -87,22 +87,22 @@ export const FlagItem = memo(function FlagItem({
     (flagKey: string) => {
       const wasPreviouslyStarred = isStarred(flagKey);
       toggleStarred(flagKey);
-      trackStarredFlag(flagKey, wasPreviouslyStarred ? 'unstar' : 'star');
+      analytics.trackStarredFlag(flagKey, wasPreviouslyStarred ? 'unstar' : 'star');
     },
-    [isStarred, toggleStarred, trackStarredFlag],
+    [isStarred, toggleStarred, analytics],
   );
 
   const flagDeeplinkUrl = `${baseUrl}/projects/${projectKey}/flags/${flag.key}`;
 
   const handleFlagLinkClick = useCallback(() => {
-    trackOpenFlagDeeplink(flag.key, baseUrl);
-  }, [trackOpenFlagDeeplink, flag.key, baseUrl]);
+    analytics.trackOpenFlagDeeplink(flag.key, baseUrl);
+  }, [analytics, flag.key, baseUrl]);
 
   const handleCopy = useCallback(
     (text: string) => {
-      trackFlagKeyCopy(text);
+      analytics.trackFlagKeyCopy(text);
     },
-    [trackFlagKeyCopy],
+    [analytics],
   );
 
   // Object/JSON flags have a different layout structure
