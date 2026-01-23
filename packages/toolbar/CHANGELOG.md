@@ -1,5 +1,17 @@
 # Changelog
 
+## [2.1.0](https://github.com/launchdarkly/launchdarkly-toolbar/compare/2.0.0...2.1.0) (2026-01-23)
+
+
+### Features
+
+* add title attribute to flag names for tooltip visibility ([#529](https://github.com/launchdarkly/launchdarkly-toolbar/issues/529)) ([d1ea60c](https://github.com/launchdarkly/launchdarkly-toolbar/commit/d1ea60cae9daf7f45bd97a79a37048432704ad9e))
+
+
+### Bug Fixes
+
+* add o11y telemetry endpoint to internal client ([#496](https://github.com/launchdarkly/launchdarkly-toolbar/issues/496)) ([2090b46](https://github.com/launchdarkly/launchdarkly-toolbar/commit/2090b46787c7c714203996624a17060311677ed1))
+
 ## [2.0.0](https://github.com/launchdarkly/launchdarkly-toolbar/compare/1.6.0...2.0.0) (2026-01-13)
 
 
