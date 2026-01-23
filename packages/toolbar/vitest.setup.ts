@@ -67,3 +67,18 @@ globalThis.ResizeObserver =
     unobserve() {}
     disconnect() {}
   };
+
+// Mock window.matchMedia (not implemented in jsdom)
+Object.defineProperty(window, 'matchMedia', {
+  writable: true,
+  value: vi.fn().mockImplementation((query: string) => ({
+    matches: false,
+    media: query,
+    onchange: null,
+    addListener: vi.fn(), // Deprecated but still used
+    removeListener: vi.fn(), // Deprecated but still used
+    addEventListener: vi.fn(),
+    removeEventListener: vi.fn(),
+    dispatchEvent: vi.fn(),
+  })),
+});
