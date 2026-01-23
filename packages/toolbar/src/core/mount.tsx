@@ -11,6 +11,7 @@ const toolbarStyleCache = new Set<string>();
 
 export default function mount(rootNode: HTMLElement, config: InitializationConfig) {
   const cleanup: (() => void)[] = [];
+  let isMounted = true;
 
   // Make sure host applications don't mount the toolbar multiple
   if (document.getElementById(TOOLBAR_DOM_ID) != null) {
@@ -25,8 +26,10 @@ export default function mount(rootNode: HTMLElement, config: InitializationConfi
 
   // Dynamically import toolbar to capture style injection timing
   import('./ui/Toolbar/LaunchDarklyToolbar').then((module) => {
+    if (!isMounted) return;
     const { LaunchDarklyToolbar } = module;
     import('./context/ReactMountContext').then((contextModule) => {
+      if (!isMounted) return;
       const ReactMountContext = contextModule.default;
       reactRoot.render(
         <StrictMode>
@@ -50,6 +53,7 @@ export default function mount(rootNode: HTMLElement, config: InitializationConfi
   });
 
   cleanup.push(() => {
+    isMounted = false;
     observer.disconnect();
     // `setTimeout` helps to avoid "Attempted to synchronously unmount a root while React was already rendering."
     setTimeout(() => reactRoot.unmount(), 0);
