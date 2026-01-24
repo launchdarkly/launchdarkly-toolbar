@@ -114,7 +114,7 @@ export function FlagSdkOverrideProvider({ children, flagOverridePlugin }: FlagSd
     //   <= v3: changes are passed as the first argument and as a map of flag keys and their changed values.
     //   >= v4: changes are passed as the second argument (the first argument is the context) and is an array of flag keys
     //          of changed flags.
-    const handleChange = (changes: Record<string, { current: any }>, keys: string[]) => {
+    const handleChange = (changes: Record<string, { current: any }>, keys?: string[]) => {
       setFlags((prevFlags) => {
         const updatedRawFlags = ldClient.allFlags();
         const newFlags = buildFlags(updatedRawFlags, apiFlags);
