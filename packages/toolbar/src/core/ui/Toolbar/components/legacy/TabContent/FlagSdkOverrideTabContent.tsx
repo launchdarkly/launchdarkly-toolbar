@@ -402,7 +402,9 @@ function FlagSdkOverrideTabContentInner(props: FlagSdkOverrideTabContentInnerPro
                               <span className={sharedStyles.flagNameText} data-testid={`flag-name-${flagKey}`}>
                                 {flag.name}
                               </span>
-                              {flag.isOverridden && <OverrideIndicator onClear={() => handleClearOverride(flagKey)} />}
+                              {flag.isOverridden ? (
+                                <OverrideIndicator onClear={() => handleClearOverride(flagKey)} />
+                              ) : null}
                             </span>
                             <CopyableText text={flagKey} className={sharedStyles.flagKey} onCopy={handleCopy} />
                           </div>

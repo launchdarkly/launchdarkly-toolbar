@@ -12,7 +12,7 @@ export function SettingsItem({ label, description, children }: SettingsItemProps
     <div className={styles.item}>
       <div className={styles.info}>
         <div className={styles.label}>{label}</div>
-        {description && <div className={styles.description}>{description}</div>}
+        {description ? <div className={styles.description}>{description}</div> : null}
       </div>
       <div className={styles.control}>{children}</div>
     </div>

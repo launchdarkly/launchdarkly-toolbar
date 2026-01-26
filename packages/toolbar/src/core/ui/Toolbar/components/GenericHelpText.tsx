@@ -11,7 +11,7 @@ export function GenericHelpText(props: GenericHelpTextProps) {
   return (
     <div className={styles.genericHelpText}>
       <p className={styles.genericHelpTextP}>{title}</p>
-      {subtitle && <span className={styles.genericHelpTextSpan}>{subtitle}</span>}
+      {subtitle ? <span className={styles.genericHelpTextSpan}>{subtitle}</span> : null}
     </div>
   );
 }

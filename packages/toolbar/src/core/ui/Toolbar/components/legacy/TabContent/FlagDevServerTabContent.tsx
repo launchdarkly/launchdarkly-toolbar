@@ -356,7 +356,9 @@ export function FlagDevServerTabContent(props: FlagDevServerTabContentProps) {
                           <div className={styles.flagHeader}>
                             <span className={styles.flagName}>
                               <span className={styles.flagNameText}>{flag.name}</span>
-                              {flag.isOverridden && <OverrideIndicator onClear={() => onClearOverride(flag.key)} />}
+                              {flag.isOverridden ? (
+                                <OverrideIndicator onClear={() => onClearOverride(flag.key)} />
+                              ) : null}
                             </span>
                             <CopyableText text={flag.key} className={styles.flagKey} onCopy={handleCopy} />
                           </div>

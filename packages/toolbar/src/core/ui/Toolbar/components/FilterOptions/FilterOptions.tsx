@@ -65,18 +65,20 @@ export function FilterOptions(props: FilterOptionsProps) {
             : `Showing ${filteredFlags} of ${totalFlags} flags`}
         </div>
         <div className={styles.buttonGroup}>
-          {onShareUrl && <ShareUrlButton onClick={onShareUrl} count={totalOverriddenFlags} isLoading={isLoading} />}
-          {!hasMultipleFilters && isOverridesActive && totalOverriddenFlags > 0 && onClearOverrides && (
+          {onShareUrl ? (
+            <ShareUrlButton onClick={onShareUrl} count={totalOverriddenFlags} isLoading={isLoading} />
+          ) : null}
+          {!hasMultipleFilters && isOverridesActive && totalOverriddenFlags > 0 && onClearOverrides ? (
             <ClearButton
               label="Overrides"
               count={totalOverriddenFlags}
               onClick={onClearOverrides}
               isLoading={isLoading}
             />
-          )}
-          {!hasMultipleFilters && isStarredActive && starredCount > 0 && onClearStarred && (
+          ) : null}
+          {!hasMultipleFilters && isStarredActive && starredCount > 0 && onClearStarred ? (
             <ClearButton label="Starred" count={starredCount} onClick={onClearStarred} isLoading={isLoading} />
-          )}
+          ) : null}
         </div>
       </div>
     </div>

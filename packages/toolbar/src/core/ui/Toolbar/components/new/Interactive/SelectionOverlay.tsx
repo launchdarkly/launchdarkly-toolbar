@@ -227,21 +227,21 @@ export function SelectionOverlay() {
         {announcement}
       </div>
 
-      {isSelecting && <div style={overlayStyles as any} />}
+      {isSelecting ? <div style={overlayStyles as any} /> : null}
 
       {/* Hover highlight (blue) */}
-      {highlightBox && isSelecting && (
+      {highlightBox && isSelecting ? (
         <div style={highlightStyles as any}>
           <div style={labelStyles as any}>{highlightBox.label}</div>
         </div>
-      )}
+      ) : null}
 
       {/* Selected element highlight (green) */}
-      {selectedBox && !isSelecting && (
+      {selectedBox && !isSelecting ? (
         <div style={selectedStyles as any}>
           <div style={selectedLabelStyles as any}>{selectedBox.label}</div>
         </div>
-      )}
+      ) : null}
     </>,
     document.body,
   );

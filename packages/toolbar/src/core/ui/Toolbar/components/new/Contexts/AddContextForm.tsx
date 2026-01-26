@@ -162,7 +162,7 @@ export function AddContextForm({ isOpen, onClose }: AddContextFormProps) {
 
   return (
     <AnimatePresence>
-      {isOpen && (
+      {isOpen ? (
         <motion.div
           className={styles.container}
           initial={{ opacity: 0, height: 0 }}
@@ -191,7 +191,7 @@ export function AddContextForm({ isOpen, onClose }: AddContextFormProps) {
                   initialState={{ autoFocus: true }}
                 />
               </div>
-              {parseError && <div className={styles.errorText}>{parseError}</div>}
+              {parseError ? <div className={styles.errorText}>{parseError}</div> : null}
             </div>
             <div className={styles.actions}>
               <button type="button" onClick={handleCancel} className={styles.cancelButton}>
@@ -203,7 +203,7 @@ export function AddContextForm({ isOpen, onClose }: AddContextFormProps) {
             </div>
           </form>
         </motion.div>
-      )}
+      ) : null}
     </AnimatePresence>
   );
 }
