@@ -29,6 +29,7 @@ export const BooleanFlagControl = memo(function BooleanFlagControl(props: Boolea
         onChange={onOverride}
         isDisabled={disabled}
         className={styles.switchControl}
+        aria-label={`Toggle ${flag.name} flag`}
       />
     </div>
   );
