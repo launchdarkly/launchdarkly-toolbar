@@ -1,7 +1,7 @@
 {
   "private": false,
   "name": "@launchdarkly/toolbar",
-  "version": "2.0.0",
+  "version": "2.1.0",
   "description": "A framework-agnostic developer toolbar for interacting with LaunchDarkly during development",
   "keywords": [
     "launchdarkly",
@@ -105,7 +105,7 @@
     "@codemirror/commands": "^6.10.1",
     "@codemirror/lang-json": "^6.0.2",
     "@codemirror/language": "^6.12.1",
-    "@codemirror/lint": "^6.9.3",
+    "@codemirror/lint": "^6.9.2",
     "@codemirror/state": "^6.5.4",
     "@codemirror/view": "^6.39.11",
     "@launchdarkly/observability": "^0.5.0",
