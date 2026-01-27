@@ -17,12 +17,12 @@ test.describe('LaunchDarkly Toolbar - New Design', () => {
       const toolbar = page.getByTestId('launchdarkly-toolbar');
 
       // 1. Initial collapsed state
-      await expect(toolbar).toBeVisible();
+      await expect(page.getByRole('img', { name: 'LaunchDarkly' })).toBeVisible();
       await expect(toolbar).toHaveAttribute('role', 'button');
       await expect(toolbar).toHaveAttribute('aria-label', 'Open LaunchDarkly toolbar');
 
       // 2. Expand toolbar by clicking logo
-      await toolbar.click();
+      await page.getByRole('img', { name: 'LaunchDarkly' }).click();
       await expect(toolbar).toHaveAttribute('role', 'toolbar');
       await expect(toolbar).toHaveAttribute('aria-label', 'LaunchDarkly toolbar');
 

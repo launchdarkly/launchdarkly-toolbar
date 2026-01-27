@@ -46,4 +46,3 @@ export class ToolbarPage {
     return this.page.getByTestId(`flag-item-${flagKey}`);
   }
 }
-

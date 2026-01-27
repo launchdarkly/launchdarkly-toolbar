@@ -34,10 +34,7 @@ export const test = base.extend<{
   },
   makeAxeBuilder: async ({ page }, use) => {
     const makeAxeBuilder = () =>
-      new AxeBuilder({ page })
-        .withTags(WCAG_21_AA_TAGS)
-        .exclude(EXCLUDED_SELECTORS)
-        .disableRules(DISABLED_RULES);
+      new AxeBuilder({ page }).withTags(WCAG_21_AA_TAGS).exclude(EXCLUDED_SELECTORS).disableRules(DISABLED_RULES);
 
     await use(makeAxeBuilder);
   },
@@ -72,9 +69,7 @@ export { expect };
 /**
  * Formats axe-core violations into a readable string for test output
  */
-export function formatViolations(
-  violations: Awaited<ReturnType<AxeBuilder['analyze']>>['violations'],
-): string {
+export function formatViolations(violations: Awaited<ReturnType<AxeBuilder['analyze']>>['violations']): string {
   if (violations.length === 0) {
     return 'No violations found';
   }
@@ -103,10 +98,7 @@ ${nodes}`;
  * Runs an accessibility scan and attaches results to the test report.
  * Throws an assertion error if violations are found.
  */
-export async function expectNoViolations(
-  axeBuilder: AxeBuilder,
-  testInfo: TestInfo,
-): Promise<void> {
+export async function expectNoViolations(axeBuilder: AxeBuilder, testInfo: TestInfo): Promise<void> {
   const results = await axeBuilder.analyze();
 
   // Attach scan results to test report for debugging
@@ -125,8 +117,7 @@ export async function expectNoViolations(
   });
 
   // Assert no violations
-  expect(
-    results.violations,
-    `Accessibility violations found:\n${formatViolations(results.violations)}`,
-  ).toHaveLength(0);
+  expect(results.violations, `Accessibility violations found:\n${formatViolations(results.violations)}`).toHaveLength(
+    0,
+  );
 }

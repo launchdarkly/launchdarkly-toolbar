@@ -43,10 +43,7 @@ test.describe('LaunchDarkly Toolbar - Accessibility', () => {
     /**
      * Comprehensive Flags tab accessibility test
      */
-    test('Flags tab - should have no accessibility violations', async ({
-      page,
-      makeToolbarAxeBuilder,
-    }, testInfo) => {
+    test('Flags tab - should have no accessibility violations', async ({ page, makeToolbarAxeBuilder }, testInfo) => {
       await expandToolbar(page);
 
       // Verify Flags content is visible (default view after expansion)
@@ -152,9 +149,7 @@ test.describe('LaunchDarkly Toolbar - Accessibility', () => {
       await toolbarPage.selectIcon('Analytics');
       // EventsContent shows either "events captured" (when events exist) or "Listening for events" (empty state)
       // In SDK mode, identify events are captured automatically, so we check for either case
-      await expect(
-        page.getByText(/events captured|Listening for events/i).first(),
-      ).toBeVisible();
+      await expect(page.getByText(/events captured|Listening for events/i).first()).toBeVisible();
 
       const axeBuilder = await makeToolbarAxeBuilder();
       await expectNoViolations(axeBuilder, testInfo);
@@ -274,17 +269,13 @@ test.describe('LaunchDarkly Toolbar - Accessibility', () => {
       await expectNoViolations(axeBuilder, testInfo);
     });
   });
-
 });
 
 /**
  * Separate describe block for login screen test - triggers logout to show login screen
  */
 test.describe('LaunchDarkly Toolbar - Login Screen Accessibility', () => {
-  test('should have no accessibility violations on login screen', async ({
-    page,
-    makeToolbarAxeBuilder,
-  }, testInfo) => {
+  test('should have no accessibility violations on login screen', async ({ page, makeToolbarAxeBuilder }, testInfo) => {
     // First, set up the page with mocked feature flags
     await blockApiResponses(page);
     await page.goto('/sdk');
@@ -329,7 +320,10 @@ test.describe('LaunchDarkly Toolbar - Accessibility (Legacy design)', () => {
    *
    * The legacy UI is deprecated and will be removed in a future version.
    */
-  test('should have no accessibility violations when expanded (legacy)', async ({ page, makeToolbarAxeBuilder }, testInfo) => {
+  test('should have no accessibility violations when expanded (legacy)', async ({
+    page,
+    makeToolbarAxeBuilder,
+  }, testInfo) => {
     const toolbarPage = new ToolbarPage(page);
     await toolbarPage.expand();
     await toolbarPage.expectExpanded();
