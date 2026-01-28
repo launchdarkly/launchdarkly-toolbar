@@ -286,15 +286,7 @@ export const DevServerProvider: FC<DevServerProviderProps> = ({ children, config
         isSyncInFlightRef.current = false;
       }
     },
-    [
-      devServerClient,
-      flagStateManager,
-      projectKey,
-      getProjectFlags,
-      apiReady,
-      setContext,
-      addOrUpdateStoredContext,
-    ],
+    [devServerClient, flagStateManager, projectKey, getProjectFlags, apiReady, setContext, addOrUpdateStoredContext],
   );
 
   const initializeProjectSelection = useCallback(async () => {
