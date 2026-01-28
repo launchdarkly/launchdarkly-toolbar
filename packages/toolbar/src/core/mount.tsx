@@ -2,28 +2,31 @@ import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { InitializationConfig } from '../types';
 import { TOOLBAR_DOM_ID } from '../types/constants';
-
-/**
- * Module-level cache for toolbar styles.
- * This persists across HMR cycles since it's outside the component lifecycle.
- */
-const toolbarStyleCache = new Set<string>();
+import {
+  createStyleInterceptor,
+  injectStylesIntoShadowRoot,
+  getCachedToolbarStyles,
+  cacheToolbarStyle,
+  isToolbarStyleContent,
+} from './styles';
 
 export default function mount(rootNode: HTMLElement, config: InitializationConfig) {
   const cleanup: (() => void)[] = [];
 
-  // Make sure host applications don't mount the toolbar multiple
+  // Make sure host applications don't mount the toolbar multiple times
   if (document.getElementById(TOOLBAR_DOM_ID) != null) {
     return () => {
       cleanup.forEach((fn) => fn());
     };
   }
 
-  const { host, reactMount, observer } = buildDom();
+  const { host, reactMount, cleanupInterceptor } = buildDom();
+  cleanup.push(cleanupInterceptor);
 
   const reactRoot = createRoot(reactMount);
 
   // Dynamically import toolbar to capture style injection timing
+  // The style interceptor set up in buildDom() will redirect any injected styles
   import('./ui/Toolbar/LaunchDarklyToolbar').then((module) => {
     const { LaunchDarklyToolbar } = module;
     import('./context/ReactMountContext').then((contextModule) => {
@@ -50,7 +53,6 @@ export default function mount(rootNode: HTMLElement, config: InitializationConfi
   });
 
   cleanup.push(() => {
-    observer.disconnect();
     // `setTimeout` helps to avoid "Attempted to synchronously unmount a root while React was already rendering."
     setTimeout(() => reactRoot.unmount(), 0);
   });
@@ -63,7 +65,13 @@ export default function mount(rootNode: HTMLElement, config: InitializationConfi
   };
 }
 
-function buildDom() {
+interface DomElements {
+  host: HTMLDivElement;
+  reactMount: HTMLDivElement;
+  cleanupInterceptor: () => void;
+}
+
+function buildDom(): DomElements {
   const host = document.createElement('div');
   host.id = TOOLBAR_DOM_ID;
   host.style.inset = '0';
@@ -77,42 +85,63 @@ function buildDom() {
     throw new Error('[LaunchDarkly Toolbar] Failed to create shadow root');
   }
 
-  const reactMount = document.createElement('div');
+  // Set up synchronous style interception BEFORE any toolbar imports
+  // This prevents toolbar styles from ever appearing in document.head
+  const cleanupInterceptor = createStyleInterceptor(shadowRoot);
 
-  // Snapshot existing styles BEFORE the toolbar component loads
-  const existingStylesSnapshot = document.head
-    ? new Set(Array.from(document.head.querySelectorAll('style')).map((el) => el.textContent || ''))
-    : new Set();
-
-  // Copy existing LaunchPad styles (including Gonfalon's) to shadow root
-  // so toolbar has the base styles it needs
-  if (document.head) {
-    const existingStyles = Array.from(document.head.querySelectorAll('style'))
-      .filter((styleEl) => styleEl.textContent?.includes('--lp-') || styleEl.textContent?.includes('_'))
-      .map((styleEl) => styleEl.textContent || '')
-      .join('\n');
-
-    if (existingStyles) {
-      const style = document.createElement('style');
-      style.textContent = existingStyles;
-      shadowRoot.appendChild(style);
-    }
-  }
+  // Inject any existing LaunchPad styles that the toolbar might need
+  // (e.g., if the host app also uses LaunchPad and has already loaded tokens)
+  injectExistingLaunchPadStyles(shadowRoot);
 
   // Restore cached toolbar styles from previous mounts (HMR support)
-  // These styles were removed from document.head on previous mount but cached
-  toolbarStyleCache.forEach((cachedContent) => {
-    const style = document.createElement('style');
-    style.textContent = cachedContent;
-    shadowRoot.appendChild(style);
-  });
+  const cachedStyles = getCachedToolbarStyles();
+  if (cachedStyles.length > 0) {
+    const combinedCached = cachedStyles.join('\n');
+    injectStylesIntoShadowRoot(shadowRoot, combinedCached);
+  }
 
+  const reactMount = document.createElement('div');
   reactMount.dataset.name = 'react-mount';
   reactMount.id = 'ld-toolbar-react-mount';
   shadowRoot.appendChild(reactMount);
 
-  // Watch for NEW styles injected by the toolbar and redirect them to shadow root
-  // This prevents toolbar's LaunchPad styles from overriding host app custom styles
+  // Set up a backup MutationObserver for edge cases where interception might miss styles
+  // (e.g., styles injected via mechanisms other than appendChild/insertBefore)
+  setupBackupObserver(shadowRoot);
+
+  return { host, reactMount, cleanupInterceptor };
+}
+
+/**
+ * Copies existing LaunchPad styles from document.head to the Shadow DOM.
+ * This handles cases where the host app uses LaunchPad and has already loaded
+ * design tokens that the toolbar components depend on.
+ */
+function injectExistingLaunchPadStyles(shadowRoot: ShadowRoot): void {
+  if (!document.head) return;
+
+  const existingStyles = Array.from(document.head.querySelectorAll('style'))
+    .filter((styleEl) => {
+      const content = styleEl.textContent || '';
+      // Only copy LaunchPad token styles (CSS custom properties)
+      // Don't copy component styles that might conflict
+      return content.includes('--lp-') && !content.includes('ldtb_');
+    })
+    .map((styleEl) => styleEl.textContent || '')
+    .join('\n');
+
+  if (existingStyles) {
+    injectStylesIntoShadowRoot(shadowRoot, existingStyles);
+  }
+}
+
+/**
+ * Sets up a backup MutationObserver to catch any styles that slip through
+ * the synchronous interception (edge cases like innerHTML assignment).
+ */
+function setupBackupObserver(shadowRoot: ShadowRoot): void {
+  if (!document.head) return;
+
   const observer = new MutationObserver((mutations) => {
     mutations.forEach((mutation) => {
       mutation.addedNodes.forEach((node) => {
@@ -120,21 +149,15 @@ function buildDom() {
           const styleEl = node as HTMLStyleElement;
           const content = styleEl.textContent || '';
 
-          // Check if this is a NEW LaunchPad/toolbar style (not from host app)
-          const isNewToolbarStyle =
-            !existingStylesSnapshot.has(content) && (content.includes('--lp-') || content.includes('_'));
+          // Check if this is a toolbar style that slipped through
+          if (isToolbarStyleContent(content)) {
+            // Cache for HMR support
+            cacheToolbarStyle(content);
 
-          if (isNewToolbarStyle) {
-            // Cache the style content for HMR support
-            toolbarStyleCache.add(content);
+            // Move to shadow root
+            injectStylesIntoShadowRoot(shadowRoot, content);
 
-            // Copy to shadow root so toolbar still works
-            const shadowStyleEl = document.createElement('style');
-            shadowStyleEl.textContent = content;
-            shadowRoot.insertBefore(shadowStyleEl, reactMount);
-
-            // Remove from document.head to prevent overriding host app styles
-            // We can remove immediately since we've already copied to shadow root
+            // Remove from document.head
             try {
               styleEl.remove();
             } catch (error) {
@@ -146,13 +169,9 @@ function buildDom() {
     });
   });
 
-  // Only observe document.head if it exists
-  if (document.head) {
-    observer.observe(document.head, { childList: true });
-  }
+  observer.observe(document.head, { childList: true });
 
-  // Keep observer running longer for HMR scenarios where styles may be re-injected
-  setTimeout(() => observer.disconnect(), 5000);
-
-  return { host, reactMount, observer };
+  // Keep observer running for HMR scenarios, but disconnect after a reasonable time
+  // to avoid memory leaks in production
+  setTimeout(() => observer.disconnect(), 10000);
 }
