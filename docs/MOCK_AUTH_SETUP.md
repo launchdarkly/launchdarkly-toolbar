@@ -87,7 +87,7 @@ This starts both the demo app and mock auth server. No environment variables nee
 ```
 ┌──────────────┐         ┌──────────────┐         ┌──────────────┐
 │   Toolbar    │         │ Auth Iframe  │         │ Mock Auth    │
-│  Component   │         │ (port 8080)  │         │  Server      │
+│  Component   │         │ (port 5764)  │         │  Server      │
 └──────┬───────┘         └──────┬───────┘         └──────┬───────┘
        │                        │                        │
        │ 1. Load iframe         │                        │
@@ -106,7 +106,7 @@ This starts both the demo app and mock auth server. No environment variables nee
 
 ### Components
 
-1. **Toolbar CDN Server** (port 8080)
+1. **Toolbar CDN Server** (port 5764)
    - Serves toolbar bundle
    - Hot-reload via SSE
    - File watching
@@ -152,7 +152,7 @@ VITE_LD_AUTH_URL=http://localhost:9090 pnpm demo
 
 **Environment Variables:**
 
-- `PORT` - CDN server port (default: 8080)
+- `PORT` - CDN server port (default: 5764)
 - `AUTH_PORT` - Auth server port (default: 9090)
 - `VITE_LD_AUTH_URL` - Auth server URL for demo app
 
@@ -277,7 +277,7 @@ env: {
 
 ### Tests Failing
 
-1. Ensure both servers are running (ports 8080 and 9090)
+1. Ensure both servers are running (ports 5764 and 9090)
 2. Check Playwright webServer configuration
 3. Review test output for specific errors
 4. Check Playwright trace/video for visual debugging
