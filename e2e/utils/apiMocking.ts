@@ -74,14 +74,13 @@ export async function blockApiResponses(page: Page) {
 
 /**
  * Waits for the toolbar to be authenticated and ready
+ * Uses Playwright selectors which can pierce shadow DOM
  */
 export async function waitForToolbarReady(page: Page) {
-  await page.waitForSelector('[data-testid="launchdarkly-toolbar"]');
-  await page.waitForFunction(
-    () => {
-      const loginScreen = document.querySelector('[data-testid="login-screen"]');
-      return !loginScreen;
-    },
-    { timeout: 10000 },
-  );
+  // Wait for toolbar container to be visible
+  await page.getByTestId('launchdarkly-toolbar').waitFor({ state: 'visible' });
+
+  // Wait for login screen to disappear (auth completed)
+  // Playwright selectors automatically pierce shadow DOM
+  await page.getByTestId('login-screen').waitFor({ state: 'hidden', timeout: 10000 });
 }

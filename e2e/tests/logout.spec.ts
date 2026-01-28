@@ -1,6 +1,6 @@
 import { expect } from '@playwright/test';
 import type { Page } from '@playwright/test';
-import { test } from '../setup/global';
+import { testLegacy as test } from '../setup/global';
 import { blockApiResponses, waitForToolbarReady } from '../utils/apiMocking';
 
 test.describe('LaunchDarkly Toolbar - Logout Functionality', () => {
@@ -64,7 +64,6 @@ test.describe('LaunchDarkly Toolbar - Logout Functionality', () => {
   test.describe('Logout Functionality', () => {
     test('should handle logout successfully and show login screen', async ({ page }: { page: Page }) => {
       // 1. Setup message listener to verify logout message is sent
-      const messages: any[] = [];
       await page.evaluate(() => {
         window.addEventListener('message', (event) => {
           if (event.data.type === 'logout') {
@@ -83,8 +82,6 @@ test.describe('LaunchDarkly Toolbar - Logout Functionality', () => {
 
       // 4. Click logout button
       await logoutButton.click();
-
-      await page.waitForTimeout(500);
 
       // 5. Verify authentication state changed - should show login screen
       // The toolbar should show the login/authentication UI after logout
