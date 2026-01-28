@@ -15,4 +15,5 @@ export interface LDClient {
   getContext(): any;
   on(key: string, callback: (...args: any[]) => void): void;
   off(key: string, callback: (...args: any[]) => void): void;
+  flush(): void;
 }
