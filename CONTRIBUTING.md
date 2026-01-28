@@ -71,6 +71,8 @@ The toolbar package has its own internal LaunchDarkly client for toolbar feature
    - `TOOLBAR_INTERNAL_BASE_URL` - LaunchDarkly base URL (defaults to `https://app.launchdarkly.com`)
    - `TOOLBAR_INTERNAL_STREAM_URL` - LaunchDarkly stream URL (defaults to `https://clientstream.launchdarkly.com`)
    - `TOOLBAR_INTERNAL_EVENTS_URL` - LaunchDarkly events URL (defaults to `https://events.launchdarkly.com`)
+   - `TOOLBAR_INTERNAL_BACKEND_URL` - Backend URL for Observability and Session Replay (defaults to `https://pub.observability.launchdarkly.com`)
+   - `TOOLBAR_INTERNAL_OBSERVABILITY_OTLP_ENDPOINT` - OTLP HTTP endpoint for Observability tracing (OpenTelemetry)
 
 **Note:** This configuration is optional and only needed if you're developing or testing toolbar-specific feature flags. If not provided, the toolbar's internal client will not be initialized, and the toolbar will function normally without it. The URL configurations are only needed if you're using a custom LaunchDarkly instance.
 

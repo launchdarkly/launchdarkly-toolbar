@@ -10,7 +10,7 @@ import * as styles from './WorkflowCard.module.css.ts';
 
 // Copy icon
 const CopyIcon = () => (
-  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
     <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
     <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
   </svg>
@@ -18,13 +18,13 @@ const CopyIcon = () => (
 
 // Check icon for success indicator
 const CheckIcon = () => (
-  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
     <polyline points="20 6 9 17 4 12" />
   </svg>
 );
 
 const WindsurfIcon = () => (
-  <svg width="16" height="16" viewBox="0 0 1024 1024" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <svg width="16" height="16" viewBox="0 0 1024 1024" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
     <path
       d="M897.246 286.869H889.819C850.735 286.808 819.017 318.46 819.017 357.539V515.589C819.017 547.15 792.93 572.716 761.882 572.716C743.436 572.716 725.02 563.433 714.093 547.85L552.673 317.304C539.28 298.16 517.486 286.747 493.895 286.747C457.094 286.747 423.976 318.034 423.976 356.657V515.619C423.976 547.181 398.103 572.746 366.842 572.746C348.335 572.746 329.949 563.463 319.021 547.881L138.395 289.882C134.316 284.038 125.154 286.93 125.154 294.052V431.892C125.154 438.862 127.285 445.619 131.272 451.34L309.037 705.2C319.539 720.204 335.033 731.344 352.9 735.392C397.616 745.557 438.77 711.135 438.77 667.278V508.406C438.77 476.845 464.339 451.279 495.904 451.279H495.995C515.02 451.279 532.857 460.562 543.785 476.145L705.235 706.661C718.659 725.835 739.327 737.218 763.983 737.218C801.606 737.218 833.841 705.9 833.841 667.308V508.376C833.841 476.815 859.41 451.249 890.975 451.249H897.276C901.233 451.249 904.43 448.053 904.43 444.097V294.021C904.43 290.065 901.233 286.869 897.276 286.869H897.246Z"
       fill="currentColor"
@@ -39,7 +39,7 @@ const VSCodeIcon = () => {
   const gradientId = `paint0-${Math.random().toString(36).substring(2, 11)}`;
 
   return (
-    <svg width="16" height="16" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <svg width="16" height="16" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
       <mask id={maskId} maskUnits="userSpaceOnUse" x="0" y="0" width="100" height="100">
         <path
           fillRule="evenodd"
@@ -126,7 +126,14 @@ const VSCodeIcon = () => {
 };
 
 const GitHubCopilotIcon = () => (
-  <svg width="16" height="16" viewBox="0 0 96 96" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+  <svg
+    width="16"
+    height="16"
+    viewBox="0 0 96 96"
+    fill="currentColor"
+    xmlns="http://www.w3.org/2000/svg"
+    aria-hidden="true"
+  >
     <path d="M95.667 67.954C92.225 73.933 72.24 88.04 47.997 88.04 23.754 88.04 3.769 73.933.328 67.954c-.216-.375-.307-.796-.328-1.226V55.661c.019-.371.089-.736.226-1.081 1.489-3.738 5.386-9.166 10.417-10.623.667-1.712 1.655-4.215 2.576-6.062-.154-1.414-.208-2.872-.208-4.345 0-5.322 1.128-9.99 4.527-13.466 1.587-1.623 3.557-2.869 5.893-3.805 5.595-4.545 13.563-8.369 24.48-8.369s19.057 3.824 24.652 8.369c2.337.936 4.306 2.182 5.894 3.805 3.399 3.476 4.527 8.144 4.527 13.466 0 1.473-.054 2.931-.208 4.345.921 1.847 1.909 4.35 2.576 6.062 5.03 1.457 8.928 6.885 10.417 10.623.163.41.231.848.231 1.289v10.644c0 .504-.081 1.004-.333 1.441ZM48.686 43.993l-.3.001-1.077-.001c-.423.709-.894 1.39-1.418 2.035-3.078 3.787-7.672 5.964-14.026 5.964-6.897 0-11.952-1.435-15.123-5.032a7.886 7.886 0 0 1-.342-.419l-.39.419v26.326c5.737 3.118 18.05 8.713 31.987 8.713 13.938 0 26.251-5.595 31.988-8.713V46.96l-.39-.419s-.132.181-.342.419c-3.171 3.597-8.226 5.032-15.123 5.032-6.354 0-10.949-2.177-14.026-5.964a17.178 17.178 0 0 1-1.418-2.034h-.066l.066-.001Zm-3.94-11.733c.17-1.326.251-2.513.253-3.573v-.084c-.005-3.077-.678-5.079-1.752-6.308-1.365-1.562-4.184-2.758-10.127-2.115-6.021.652-9.386 2.146-11.294 4.098-1.847 1.889-2.818 4.715-2.818 9.272 0 4.842.698 7.703 2.232 9.443 1.459 1.655 4.332 3.001 10.625 3.001 4.837 0 7.603-1.573 9.371-3.749 1.899-2.336 2.967-5.759 3.51-9.985Zm6.503 0c.543 4.226 1.611 7.649 3.51 9.985 1.768 2.176 4.533 3.749 9.371 3.749 6.292 0 9.165-1.346 10.624-3.001 1.535-1.74 2.232-4.601 2.232-9.443 0-4.557-.97-7.383-2.817-9.272-1.908-1.952-5.274-3.446-11.294-4.098-5.943-.643-8.763.553-10.127 2.115-1.074 1.229-1.747 3.231-1.752 6.308v.084c.002 1.06.083 2.247.253 3.573Zm-2.563 11.734h.066l-.066-.001v.001Z" />
     <path d="M38.5 55.75a3.5 3.5 0 0 1 3.5 3.5v8.5a3.5 3.5 0 1 1-7 0v-8.5a3.5 3.5 0 0 1 3.5-3.5Zm19 0a3.5 3.5 0 0 1 3.5 3.5v8.5a3.5 3.5 0 1 1-7 0v-8.5a3.5 3.5 0 0 1 3.5-3.5Z" />
   </svg>
@@ -305,13 +312,17 @@ export function WorkflowCard({ workflow, disabled = false }: WorkflowCardProps) 
       </div>
 
       <div className={styles.inputGroup}>
-        <label className={styles.inputLabel}>{config.inputLabel}</label>
+        <label className={styles.inputLabel} htmlFor={`workflow-input-${workflow}`}>
+          {config.inputLabel}
+        </label>
         <input
+          id={`workflow-input-${workflow}`}
           type="text"
           className={styles.input}
           placeholder={config.inputPlaceholder}
           value={inputValue}
           onChange={(e) => setInputValue(e.target.value)}
+          autoComplete="off"
           onKeyDown={(e) => {
             // Stop propagation to prevent parent app keyboard shortcuts from interfering
             e.stopPropagation();
@@ -352,7 +363,7 @@ export function WorkflowCard({ workflow, disabled = false }: WorkflowCardProps) 
             </button>
           </ButtonGroup>
 
-          {isDropdownOpen && (
+          {isDropdownOpen ? (
             <div className={styles.dropdownMenu} role="listbox">
               {IDE_CONFIGS.map((ide) => (
                 <button
@@ -364,7 +375,7 @@ export function WorkflowCard({ workflow, disabled = false }: WorkflowCardProps) 
                 >
                   <IdeIcon ide={ide.id} />
                   <span>{ide.label}</span>
-                  {ide.id === preferredIde && <span className={styles.preferredBadge}>Default</span>}
+                  {ide.id === preferredIde ? <span className={styles.preferredBadge}>Default</span> : null}
                 </button>
               ))}
               <div className={styles.dropdownSeparator} />
@@ -373,7 +384,7 @@ export function WorkflowCard({ workflow, disabled = false }: WorkflowCardProps) 
                 <span>Copy prompt</span>
               </button>
             </div>
-          )}
+          ) : null}
         </div>
       </div>
     </div>

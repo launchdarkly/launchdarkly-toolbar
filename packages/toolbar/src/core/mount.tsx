@@ -12,6 +12,7 @@ import {
 
 export default function mount(rootNode: HTMLElement, config: InitializationConfig) {
   const cleanup: (() => void)[] = [];
+  let isMounted = true;
 
   // Make sure host applications don't mount the toolbar multiple times
   if (document.getElementById(TOOLBAR_DOM_ID) != null) {
@@ -28,8 +29,10 @@ export default function mount(rootNode: HTMLElement, config: InitializationConfi
   // Dynamically import toolbar to capture style injection timing
   // The style interceptor set up in buildDom() will redirect any injected styles
   import('./ui/Toolbar/LaunchDarklyToolbar').then((module) => {
+    if (!isMounted) return;
     const { LaunchDarklyToolbar } = module;
     import('./context/ReactMountContext').then((contextModule) => {
+      if (!isMounted) return;
       const ReactMountContext = contextModule.default;
       reactRoot.render(
         <StrictMode>

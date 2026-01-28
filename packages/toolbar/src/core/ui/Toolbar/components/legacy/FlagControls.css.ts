@@ -71,6 +71,7 @@ export const currentValue = style({
   boxSizing: 'border-box',
   display: 'flex',
   alignItems: 'center',
+  fontVariantNumeric: 'tabular-nums', // Consistent width for numbers
 });
 
 export const customVariantField = style({
@@ -89,6 +90,7 @@ export const currentValueText = style({
   overflow: 'hidden',
   textOverflow: 'ellipsis',
   whiteSpace: 'nowrap',
+  fontVariantNumeric: 'tabular-nums', // Consistent width for numbers
 });
 
 export const select = style({
