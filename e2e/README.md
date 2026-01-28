@@ -50,7 +50,7 @@ E2E tests use a **mock auth server** (`http://localhost:9090`) that simulates `i
 - Provides authentication iframe pages (`/toolbar/index.html`, `/toolbar/authenticating.html`)
 - Automatically authenticates users in test mode (no real OAuth required)
 - Handles API requests via postMessage for projects and flags
-- Runs on port 9090 alongside the main dev server (port 8080)
+- Runs on port 9090 alongside the main dev server (port 5764)
 
 **Configuration:**
 
@@ -166,7 +166,7 @@ describe('LaunchDarkly Toolbar - {environment}', () => {
 The mock auth server is configured in `packages/mock-server` and runs automatically when you start tests:
 
 - **Port**: 9090 (configurable via `AUTH_PORT` env var)
-- **Base URL**: `http://localhost:8080`
+- **Base URL**: `http://localhost:5764`
 - **Environment Variable**: `VITE_LD_AUTH_URL=http://localhost:9090` (set in `playwright.config.ts`)
 
 To manually start the auth server for local testing:

@@ -7,7 +7,7 @@ export function enableHotReload() {
   }
 
   try {
-    eventSource = new EventSource('http://localhost:8080/hot-reload');
+    eventSource = new EventSource('http://localhost:5764/hot-reload');
 
     eventSource.onopen = () => {
       console.log('🔄 Hot reload connected to mock server');

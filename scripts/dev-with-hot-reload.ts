@@ -236,11 +236,11 @@ class DevEnvironment {
         name: 'mock-server',
         command: 'pnpm',
         args: ['--filter', 'mock-server', 'start'],
-        env: { PORT: '8080' },
-        port: 8080,
+        env: { PORT: '5764' },
+        port: 5764,
         emoji: '🎭',
         startupDelay: 2000,
-        healthCheck: () => this.healthCheckHttp('http://localhost:8080/hot-reload'),
+        healthCheck: () => this.healthCheckHttp('http://localhost:5764/hot-reload'),
       },
       {
         name: 'demo-app',
@@ -270,7 +270,7 @@ class DevEnvironment {
     console.log('');
     this.log('info', 'Services running:', '📋');
     console.log(`  🔧 Toolbar watcher: rslib watch mode rebuilds toolbar.min.js on source changes`);
-    console.log(`  🎭 Mock server: http://localhost:8080 (serves toolbar with hot reload)`);
+    console.log(`  🎭 Mock server: http://localhost:5764 (serves toolbar with hot reload)`);
     console.log(`  🎨 Demo app: http://localhost:5173`);
     console.log('');
   }

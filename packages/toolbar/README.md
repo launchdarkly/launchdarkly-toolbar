@@ -220,7 +220,7 @@ Connect directly to a LaunchDarkly dev server to manage server-side flags:
 
 ```tsx
 useLaunchDarklyToolbar({
-  devServerUrl: 'http://localhost:8080',
+  devServerUrl: 'http://localhost:5764',
   projectKey: 'my-project', // Optional
   position: 'bottom-right',
 });
