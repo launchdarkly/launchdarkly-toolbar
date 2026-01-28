@@ -1,4 +1,4 @@
-import type { LDClient } from 'launchdarkly-js-client-sdk';
+import type { LDClient } from '../../types/plugins/LDClient';
 import type { FeedbackSentiment } from '../../types/analytics';
 import { isDoNotTrackEnabled } from './browser';
 import { sendFeedback } from './feedback';
