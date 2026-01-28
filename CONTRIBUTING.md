@@ -39,7 +39,7 @@ pnpm install
 
 ```bash
 pnpm dev:cdn
-pnpm dev:server # Serve compiled toolbar code on a localhost port (defaults to port 8080)
+pnpm dev:server # Serve compiled toolbar code on a localhost port (defaults to port 5764)
 ```
 
 4. **Verify everything works:**
@@ -88,7 +88,7 @@ For Dev Server Mode setup instructions, see [DEV_SERVER_SETUP.md](docs/DEV_SERVE
 ## Standalone Demo Application
 
 To allow for contributors to easily test toolbar changes locally, this repository comes with a standalone Demo application, as well as a local "dev server" that will host the locally compiled toolbar
-code on a localhost port (defaults to 8080). The Demo application is a react application and allows contributors to easily test the toolbar in both SDK Mode and Dev Server Mode.
+code on a localhost port (defaults to 5764). The Demo application is a react application and allows contributors to easily test the toolbar in both SDK Mode and Dev Server Mode.
 
 To set up the Demo application, copy the values in `.env.example` into a `.env.local` file and replace them where applicable.
 More than likely, the only environment variable you will need to fill in will be `VITE_LD_CLIENT_SIDE_ID` with your
