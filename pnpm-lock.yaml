@@ -142,8 +142,8 @@ importers:
         specifier: ^0.15.1
         version: 0.15.1
       '@lezer/highlight':
-        specifier: ^1.2.1
-        version: 1.2.3
+        specifier: 1.2.1
+        version: 1.2.1
       '@react-aria/focus':
         specifier: ^3.21.3
         version: 3.21.3(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
@@ -1199,8 +1199,8 @@ packages:
   '@lezer/common@1.5.0':
     resolution: {integrity: sha512-PNGcolp9hr4PJdXR4ix7XtixDrClScvtSCYW3rQG106oVMOOI+jFb+0+J3mbeL/53g1Zd6s0kJzaw6Ri68GmAA==}
 
-  '@lezer/highlight@1.2.3':
-    resolution: {integrity: sha512-qXdH7UqTvGfdVBINrgKhDsVTJTxactNNxLk7+UMwZhU13lMHaOBlJe9Vqp907ya56Y3+ed2tlqzys7jDkTmW0g==}
+  '@lezer/highlight@1.2.1':
+    resolution: {integrity: sha512-Z5duk4RN/3zuVO7Jq0pGLJ3qynpxUVsh7IbUbGj88+uV2ApSAn6kWg2au3iJb+0Zi7kKtqffIESgNcRXWZWmSA==}
 
   '@lezer/json@1.0.3':
     resolution: {integrity: sha512-BP9KzdF9Y35PDpv04r0VeSTKDeox5vVr3efE7eBbx3r4s3oNLfunchejZhjArmeieBH+nVOpgIiBJpEAv8ilqQ==}
@@ -5270,7 +5270,7 @@ snapshots:
       '@codemirror/state': 6.5.4
       '@codemirror/view': 6.39.11
       '@lezer/common': 1.5.0
-      '@lezer/highlight': 1.2.3
+      '@lezer/highlight': 1.2.1
       '@lezer/lr': 1.4.5
       style-mod: 4.1.3
 
@@ -5887,14 +5887,14 @@ snapshots:
 
   '@lezer/common@1.5.0': {}
 
-  '@lezer/highlight@1.2.3':
+  '@lezer/highlight@1.2.1':
     dependencies:
       '@lezer/common': 1.5.0
 
   '@lezer/json@1.0.3':
     dependencies:
       '@lezer/common': 1.5.0
-      '@lezer/highlight': 1.2.3
+      '@lezer/highlight': 1.2.1
       '@lezer/lr': 1.4.5
 
   '@lezer/lr@1.4.5':
