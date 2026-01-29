@@ -15,7 +15,7 @@ export const settingsGroupTitle = style({
   padding: '16px 20px 8px',
   fontSize: '12px',
   fontWeight: 600,
-  color: 'var(--lp-color-gray-400)',
+  color: 'var(--lp-color-gray-300)',
   textTransform: 'uppercase',
   letterSpacing: '0.5px',
 });
@@ -53,7 +53,7 @@ export const settingDescription = style({
 
 export const settingValue = style({
   fontSize: '12px',
-  color: 'var(--lp-color-gray-400)',
+  color: 'var(--lp-color-gray-300)',
   fontFamily: 'var(--lp-font-family-monospace)',
 });
 

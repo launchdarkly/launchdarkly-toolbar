@@ -7,21 +7,19 @@ import { LaunchDarklyIcon } from './icons/LaunchDarklyIcon';
 import * as styles from '../LaunchDarklyToolbar.css';
 
 interface CircleLogoProps {
-  onClick: () => void;
   onMouseDown: (event: MouseEvent) => void;
 }
 
-export const CircleLogo = forwardRef<HTMLButtonElement, CircleLogoProps>((props, ref) => {
-  const { onClick, onMouseDown } = props;
+export const CircleLogo = forwardRef<HTMLDivElement, CircleLogoProps>((props, ref) => {
+  const { onMouseDown } = props;
 
   return (
-    <motion.button
+    <motion.div
       ref={ref}
       key="circle-logo"
       className={styles.circleContent}
-      onClick={onClick}
       onMouseDown={onMouseDown}
-      aria-label="Open LaunchDarkly toolbar"
+      tabIndex={-1}
       initial={{
         opacity: 0,
         x: '-50%',
@@ -54,6 +52,6 @@ export const CircleLogo = forwardRef<HTMLButtonElement, CircleLogoProps>((props,
       <motion.div whileHover={{ scale: 1.1 }} transition={{ duration: 0.2, ease: 'easeInOut' }}>
         <LaunchDarklyIcon className={styles.circleLogo} aria-hidden="true" />
       </motion.div>
-    </motion.button>
+    </motion.div>
   );
 });

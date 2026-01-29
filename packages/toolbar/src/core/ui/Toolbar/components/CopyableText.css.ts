@@ -34,7 +34,7 @@ export const container = style({
 
 export const text = style({
   fontSize: '12px',
-  color: 'var(--lp-color-gray-400)',
+  color: 'var(--lp-color-gray-300)',
   fontFamily: 'var(--lp-font-family-monospace)',
   overflow: 'hidden',
   textOverflow: 'ellipsis',
