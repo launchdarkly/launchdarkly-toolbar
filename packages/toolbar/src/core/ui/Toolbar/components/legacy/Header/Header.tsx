@@ -39,7 +39,7 @@ export function Header(props: HeaderProps) {
         <LogoSection onMouseDown={onMouseDown} />
 
         <div className={styles.centerSection}>
-          {(projectKey || showSearch) && (
+          {projectKey || showSearch ? (
             <AnimatePresence mode="wait">
               {!searchIsExpanded ? (
                 projectKey || loadingProjectKey ? (
@@ -71,7 +71,7 @@ export function Header(props: HeaderProps) {
                 </motion.div>
               )}
             </AnimatePresence>
-          )}
+          ) : null}
         </div>
 
         <ActionButtons
@@ -84,7 +84,7 @@ export function Header(props: HeaderProps) {
           showRefreshButton={showRefresh}
         />
       </div>
-      {showConnectionStatus && <ConnectionStatus status={connectionStatus} lastSyncTime={state.lastSyncTime} />}
+      {showConnectionStatus ? <ConnectionStatus status={connectionStatus} lastSyncTime={state.lastSyncTime} /> : null}
     </>
   );
 }

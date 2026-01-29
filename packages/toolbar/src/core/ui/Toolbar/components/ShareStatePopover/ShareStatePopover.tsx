@@ -110,7 +110,7 @@ export function ShareStatePopover(props: ShareStatePopoverProps) {
 
   return (
     <AnimatePresence>
-      {isOpen && (
+      {isOpen ? (
         <motion.div
           ref={popoverRef}
           className={styles.popover}
@@ -136,7 +136,7 @@ export function ShareStatePopover(props: ShareStatePopoverProps) {
                 >
                   <span className={styles.optionLabel}>
                     Flag Overrides
-                    {overrideCount > 0 && <span className={styles.count}>({overrideCount})</span>}
+                    {overrideCount > 0 ? <span className={styles.count}>({overrideCount})</span> : null}
                   </span>
                 </Checkbox>
               </div>
@@ -145,7 +145,7 @@ export function ShareStatePopover(props: ShareStatePopoverProps) {
                 <Checkbox isSelected={includeContexts} onChange={setIncludeContexts} aria-label="Include contexts">
                   <span className={styles.optionLabel}>
                     Contexts
-                    {contextCount > 0 && <span className={styles.count}>({contextCount})</span>}
+                    {contextCount > 0 ? <span className={styles.count}>({contextCount})</span> : null}
                   </span>
                 </Checkbox>
               </div>
@@ -167,7 +167,7 @@ export function ShareStatePopover(props: ShareStatePopoverProps) {
             </Button>
           </div>
         </motion.div>
-      )}
+      ) : null}
     </AnimatePresence>
   );
 }

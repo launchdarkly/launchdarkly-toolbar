@@ -1,4 +1,4 @@
-import { useState, useCallback, useMemo, useEffect, useRef } from 'react';
+import { useState, useCallback, useMemo, useEffect, useRef, memo } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import type { LDContext } from 'launchdarkly-js-client-sdk';
 import * as styles from './ContextItem.module.css';
@@ -18,7 +18,12 @@ interface ContextItemProps {
   index?: number;
 }
 
-export function ContextItem({ context, isActiveContext, handleHeightChange, index }: ContextItemProps) {
+export const ContextItem = memo(function ContextItem({
+  context,
+  isActiveContext,
+  handleHeightChange,
+  index,
+}: ContextItemProps) {
   const [isEditing, setIsEditing] = useState(false);
   const [editedJson, setEditedJson] = useState('');
   const [hasLintErrors, setHasLintErrors] = useState(false);
@@ -180,7 +185,7 @@ export function ContextItem({ context, isActiveContext, handleHeightChange, inde
       }}
     >
       <div className={styles.header}>
-        {isActiveContext && <span className={styles.activeDot} />}
+        {isActiveContext ? <span className={styles.activeDot} /> : null}
         <div className={styles.info}>
           <div className={styles.nameRow}>
             <span className={styles.name} title={displayName}>
@@ -231,7 +236,7 @@ export function ContextItem({ context, isActiveContext, handleHeightChange, inde
         </div>
       </div>
       <AnimatePresence mode="wait">
-        {isEditing && (
+        {isEditing ? (
           <motion.div
             key={`json-editor-${stableId}`}
             data-testid={`json-editor-${stableId}`}
@@ -276,8 +281,8 @@ export function ContextItem({ context, isActiveContext, handleHeightChange, inde
               }}
             />
           </motion.div>
-        )}
+        ) : null}
       </AnimatePresence>
     </div>
   );
-}
+});

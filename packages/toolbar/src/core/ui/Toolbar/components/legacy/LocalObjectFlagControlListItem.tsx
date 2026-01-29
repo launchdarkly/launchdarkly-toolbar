@@ -94,7 +94,7 @@ export function LocalObjectFlagControlListItem(props: LocalObjectFlagControlList
                 <span className={styles.flagNameText} data-testid={`flag-name-${flag.key}`}>
                   {flag.name}
                 </span>
-                {flag.isOverridden && <OverrideIndicator onClear={() => handleClearOverride(flag.key)} />}
+                {flag.isOverridden ? <OverrideIndicator onClear={() => handleClearOverride(flag.key)} /> : null}
               </span>
               <CopyableText text={flag.key} className={sharedStyles.flagKey} onCopy={handleCopy} />
             </div>
@@ -113,7 +113,7 @@ export function LocalObjectFlagControlListItem(props: LocalObjectFlagControlList
           </div>
 
           <AnimatePresence data-testid={`json-editor-${flag.key}`} mode="wait">
-            {isEditing && (
+            {isEditing ? (
               <motion.div
                 key={`json-editor-${flag.key}`}
                 initial={{
@@ -156,7 +156,7 @@ export function LocalObjectFlagControlListItem(props: LocalObjectFlagControlList
                   onEditorHeightChange={handleEditorHeightChange}
                 />
               </motion.div>
-            )}
+            ) : null}
           </AnimatePresence>
         </div>
       </ListItem>

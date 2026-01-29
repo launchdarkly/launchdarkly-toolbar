@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, memo } from 'react';
 import { Switch, TextField, Group, Input, Button } from '@launchpad-ui/components';
 import { EditIcon, CheckIcon, CancelIcon } from '../../icons';
 import { IconButton } from '../../../../Buttons/IconButton';
@@ -18,7 +18,7 @@ interface BooleanFlagControlProps {
   disabled?: boolean;
 }
 
-export function BooleanFlagControl(props: BooleanFlagControlProps) {
+export const BooleanFlagControl = memo(function BooleanFlagControl(props: BooleanFlagControlProps) {
   const { flag, onOverride, disabled = false } = props;
 
   return (
@@ -29,10 +29,11 @@ export function BooleanFlagControl(props: BooleanFlagControlProps) {
         onChange={onOverride}
         isDisabled={disabled}
         className={styles.switchControl}
+        aria-label={`Toggle ${flag.name} flag`}
       />
     </div>
   );
-}
+});
 
 interface MultivariateFlagControlProps {
   flag: NormalizedFlag;
@@ -40,7 +41,7 @@ interface MultivariateFlagControlProps {
   disabled?: boolean;
 }
 
-export function MultivariateFlagControl(props: MultivariateFlagControlProps) {
+export const MultivariateFlagControl = memo(function MultivariateFlagControl(props: MultivariateFlagControlProps) {
   const { flag, onOverride, disabled = false } = props;
   const currentVariation = flag.availableVariations.find((v) => deepEqual(v.value, flag.currentValue));
 
@@ -69,7 +70,7 @@ export function MultivariateFlagControl(props: MultivariateFlagControlProps) {
       options={options}
     />
   );
-}
+});
 
 interface StringNumberFlagControlProps {
   flag: NormalizedFlag;
@@ -77,7 +78,7 @@ interface StringNumberFlagControlProps {
   disabled?: boolean;
 }
 
-export function StringNumberFlagControl(props: StringNumberFlagControlProps) {
+export const StringNumberFlagControl = memo(function StringNumberFlagControl(props: StringNumberFlagControlProps) {
   const { flag, onOverride, disabled = false } = props;
   const [isEditing, setIsEditing] = useState(false);
   const currentValue = String(flag.currentValue);
@@ -156,7 +157,7 @@ export function StringNumberFlagControl(props: StringNumberFlagControlProps) {
       )}
     </div>
   );
-}
+});
 
 interface ObjectFlagControlButtonsProps {
   isEditing: boolean;
@@ -166,7 +167,7 @@ interface ObjectFlagControlButtonsProps {
   hasErrors: boolean;
 }
 
-export function ObjectFlagControlButtons(props: ObjectFlagControlButtonsProps) {
+export const ObjectFlagControlButtons = memo(function ObjectFlagControlButtons(props: ObjectFlagControlButtonsProps) {
   const { isEditing, onEditStart, onConfirm, onCancel, hasErrors } = props;
 
   return (
@@ -187,7 +188,7 @@ export function ObjectFlagControlButtons(props: ObjectFlagControlButtonsProps) {
       )}
     </div>
   );
-}
+});
 
 interface ObjectFlagEditorProps {
   flag: NormalizedFlag;
@@ -198,7 +199,7 @@ interface ObjectFlagEditorProps {
   handleHeightChange: (height: number) => void;
 }
 
-export function ObjectFlagEditor(props: ObjectFlagEditorProps) {
+export const ObjectFlagEditor = memo(function ObjectFlagEditor(props: ObjectFlagEditorProps) {
   const { flag, isEditing, tempValue, onValueChange, onLintErrors, handleHeightChange } = props;
 
   const handleEditorHeightChange = (height: number) => {
@@ -211,7 +212,7 @@ export function ObjectFlagEditor(props: ObjectFlagEditorProps) {
 
   return (
     <AnimatePresence mode="wait">
-      {isEditing && (
+      {isEditing ? (
         <motion.div
           key={`json-editor-${flag.key}`}
           data-testid={`json-editor-${flag.key}`}
@@ -255,7 +256,7 @@ export function ObjectFlagEditor(props: ObjectFlagEditorProps) {
             onEditorHeightChange={handleEditorHeightChange}
           />
         </motion.div>
-      )}
+      ) : null}
     </AnimatePresence>
   );
-}
+});

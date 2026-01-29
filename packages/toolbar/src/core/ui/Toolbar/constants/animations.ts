@@ -19,6 +19,13 @@ export const ANIMATION_CONFIG = {
     borderRadius: { duration: 0.25, ease: EASING.smooth },
     boxShadow: { duration: 0.25, ease: 'easeInOut' as const },
   },
+  // Instant animations for reduced motion preference (accessibility)
+  containerInstant: {
+    width: { duration: 0.01 },
+    height: { duration: 0.01 },
+    borderRadius: { duration: 0.01 },
+    boxShadow: { duration: 0.01 },
+  },
   // Backward compatibility - default to expand
   container: {
     width: { duration: 0.25, ease: EASING.smooth },

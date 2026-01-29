@@ -18,7 +18,7 @@ export function SDKMode() {
   });
 
   useLaunchDarklyToolbar({
-    toolbarBundleUrl: import.meta.env.DEV ? 'http://localhost:8080/toolbar.min.js' : undefined,
+    toolbarBundleUrl: import.meta.env.DEV ? 'http://localhost:5764/toolbar.min.js' : undefined,
     baseUrl: import.meta.env.VITE_LD_BASE_URL,
     authUrl: import.meta.env.VITE_LD_AUTH_URL,
     enabled: true,

@@ -1,5 +1,6 @@
+import { memo } from 'react';
 import { FlagList } from './FlagList';
 
-export function FlagListContent() {
+export const FlagListContent = memo(function FlagListContent() {
   return <FlagList />;
-}
+});

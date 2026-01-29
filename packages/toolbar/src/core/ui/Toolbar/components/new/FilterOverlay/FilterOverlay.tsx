@@ -29,7 +29,7 @@ const FilterOptionItem = memo(function FilterOptionItem({ option, isActive, onTo
       </div>
       <div className={styles.filterLabel}>
         <span className={styles.filterName}>{option.label}</span>
-        {option.description && <span className={styles.filterDescription}>{option.description}</span>}
+        {option.description ? <span className={styles.filterDescription}>{option.description}</span> : null}
       </div>
     </button>
   );
@@ -162,16 +162,16 @@ export function FilterButton({ className }: FilterButtonProps) {
   return (
     <div className={styles.container}>
       <IconButton icon={<FilterTuneIcon />} label="Filter" onClick={toggleFilterOverlay} className={className} />
-      {hasActiveFilters && filterCount > 0 && (
+      {hasActiveFilters && filterCount > 0 ? (
         <div className={styles.filterCount} aria-label={`${filterCount} filters active`}>
           {filterCount}
         </div>
-      )}
+      ) : null}
 
       <AnimatePresence>
-        {isFilterOverlayOpen && (
+        {isFilterOverlayOpen ? (
           <FilterOverlayContent key="filter-overlay" subtab={subtab} onClose={closeFilterOverlay} />
-        )}
+        ) : null}
       </AnimatePresence>
     </div>
   );

@@ -173,8 +173,8 @@ export const ExpandedToolbarContentLegacy = React.forwardRef<HTMLDivElement, Exp
                 mode={mode}
                 onMouseDown={onHeaderMouseDown}
               />
-              {shouldShowError && <ErrorMessage error={error} />}
-              {!shouldShowError && (
+              {shouldShowError ? <ErrorMessage error={error} /> : null}
+              {!shouldShowError ? (
                 <motion.div
                   className={styles.scrollableContent}
                   initial={{ opacity: 0, y: -10 }}
@@ -182,7 +182,7 @@ export const ExpandedToolbarContentLegacy = React.forwardRef<HTMLDivElement, Exp
                   transition={{ duration: 0.25, ease: EASING.smooth, delay: 0.05 }}
                 >
                   <AnimatePresence mode="wait">
-                    {activeTab && (
+                    {activeTab ? (
                       <TabContentRenderer
                         activeTab={activeTab}
                         baseUrl={baseUrl}
@@ -195,10 +195,10 @@ export const ExpandedToolbarContentLegacy = React.forwardRef<HTMLDivElement, Exp
                         isAutoCollapseEnabled={isAutoCollapseEnabled}
                         onToggleAutoCollapse={onToggleAutoCollapse}
                       />
-                    )}
+                    ) : null}
                   </AnimatePresence>
                 </motion.div>
-              )}
+              ) : null}
             </motion.div>
           </motion.div>
         </FocusScope>

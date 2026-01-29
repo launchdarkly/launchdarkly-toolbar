@@ -60,6 +60,10 @@ export default defineConfig({
       env: {
         VITE_LD_AUTH_URL: 'http://localhost:9090',
         VITE_LD_DEV_SERVER_PROJECT_KEY: 'test-project',
+        // Prevent EMFILE (too many open files) from Vite/Chokidar watchers during e2e runs.
+        // Polling uses far fewer file descriptors and is more reliable in constrained environments.
+        CHOKIDAR_USEPOLLING: 'true',
+        CHOKIDAR_INTERVAL: '200',
       },
       reuseExistingServer: !process.env.CI,
       timeout: 120 * 1000,

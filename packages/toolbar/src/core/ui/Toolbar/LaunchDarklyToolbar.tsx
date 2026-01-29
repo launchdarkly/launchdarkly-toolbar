@@ -54,7 +54,6 @@ export function LdToolbar(props: LdToolbarProps) {
   const isInitializing = authLoading || internalClientLoading;
 
   const toolbarState = useToolbarState();
-  const circleButtonRef = useRef<HTMLButtonElement>(null);
   const expandedContentRef = useRef<HTMLDivElement>(null);
 
   const {
@@ -82,10 +81,10 @@ export function LdToolbar(props: LdToolbarProps) {
   }, [expandedContentRef]);
 
   const focusCollapsedToolbar = useCallback(() => {
-    if (circleButtonRef.current) {
-      circleButtonRef.current.focus();
+    if (toolbarRef.current) {
+      toolbarRef.current.focus();
     }
-  }, [circleButtonRef]);
+  }, [toolbarRef]);
 
   const handleDragEnd = useCallback(
     (centerX: number, centerY: number) => {
@@ -184,6 +183,11 @@ export function LdToolbar(props: LdToolbarProps) {
       transition={animationConfig}
       onAnimationStart={handleAnimationStart}
       onAnimationComplete={handleAnimationComplete}
+      onClick={() => {
+        if (!isExpanded) {
+          handleCircleClickWithDragCheck();
+        }
+      }}
       onKeyDown={(e) => {
         if (isExpanded) {
           return;
@@ -199,14 +203,10 @@ export function LdToolbar(props: LdToolbarProps) {
       aria-label={isExpanded ? 'LaunchDarkly toolbar' : 'Open LaunchDarkly toolbar'}
       tabIndex={isExpanded ? -1 : 0}
     >
+      <AnimatePresence>{!isExpanded ? <CircleLogo onMouseDown={handleMouseDown} /> : null}</AnimatePresence>
       <AnimatePresence>
-        {!isExpanded && (
-          <CircleLogo ref={circleButtonRef} onClick={handleCircleClickWithDragCheck} onMouseDown={handleMouseDown} />
-        )}
-      </AnimatePresence>
-      <AnimatePresence>
-        {isExpanded && isInitializing && <LoadingScreen onMouseDown={handleMouseDown} />}
-        {isExpanded && !isInitializing && !newToolbarDesign && (
+        {isExpanded && isInitializing ? <LoadingScreen onMouseDown={handleMouseDown} /> : null}
+        {isExpanded && !isInitializing && !newToolbarDesign ? (
           <ExpandedToolbarContentLegacy
             ref={expandedContentRef}
             activeTab={activeTab as ActiveTabId}
@@ -229,15 +229,15 @@ export function LdToolbar(props: LdToolbarProps) {
             onToggleReloadOnFlagChange={handleToggleReloadOnFlagChange}
             onOpenAuthModal={() => setIsAuthModalOpen(true)}
           />
-        )}
-        {isExpanded && !isInitializing && newToolbarDesign && (
+        ) : null}
+        {isExpanded && !isInitializing && newToolbarDesign ? (
           <ExpandedToolbarContent
             onClose={handleClose}
             onHeaderMouseDown={handleMouseDown}
             defaultActiveTab={defaultActiveTab}
             onOpenAuthModal={() => setIsAuthModalOpen(true)}
           />
-        )}
+        ) : null}
       </AnimatePresence>
       <AuthenticationModal isOpen={isAuthModalOpen} onClose={() => setIsAuthModalOpen(false)} />
     </motion.div>

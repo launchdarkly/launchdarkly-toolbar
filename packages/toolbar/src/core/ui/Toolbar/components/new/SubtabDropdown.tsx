@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from 'react';
+import { useId, useState, useRef, useEffect } from 'react';
 import { AnimatePresence, motion } from 'motion/react';
 import { ChevronDownIcon } from '../icons/ChevronDownIcon';
 import { SubTab, TabConfig } from './types';
@@ -12,6 +12,7 @@ interface SubtabDropdownProps {
 }
 
 export function SubtabDropdown({ subtabs, activeSubtab, onSelectSubtab }: SubtabDropdownProps) {
+  const listboxId = useId();
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const analytics = useAnalytics();
@@ -62,10 +63,14 @@ export function SubtabDropdown({ subtabs, activeSubtab, onSelectSubtab }: Subtab
     <div className={styles.container} ref={dropdownRef}>
       <button
         className={`${styles.trigger} ${isOpen ? styles.triggerOpen : ''}`}
+        type="button"
         onClick={handleToggle}
         onKeyDown={handleKeyDown}
         aria-expanded={isOpen}
-        aria-haspopup="true"
+        aria-haspopup="listbox"
+        aria-controls={listboxId}
+        aria-label="Subtab selector"
+        data-testid="subtab-dropdown-trigger"
       >
         <span className={styles.label}>{activeLabel}</span>
         <motion.span className={styles.chevron} animate={{ rotate: isOpen ? 180 : 0 }} transition={{ duration: 0.2 }}>
@@ -77,6 +82,10 @@ export function SubtabDropdown({ subtabs, activeSubtab, onSelectSubtab }: Subtab
         {isOpen && (
           <motion.div
             className={styles.menu}
+            id={listboxId}
+            role="listbox"
+            aria-label="Subtabs"
+            data-testid="subtab-dropdown-listbox"
             initial={{ opacity: 0, y: -8 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -8 }}
@@ -90,7 +99,9 @@ export function SubtabDropdown({ subtabs, activeSubtab, onSelectSubtab }: Subtab
                 onClick={(e) => {
                   handleSelect(e, tab.id as SubTab);
                 }}
-                role="menuitem"
+                id={`${listboxId}-${tab.id}`}
+                role="option"
+                aria-selected={tab.id === activeSubtab}
                 type="button"
               >
                 {tab.label}

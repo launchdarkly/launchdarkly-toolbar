@@ -26,7 +26,7 @@ export const TabButton = React.forwardRef<HTMLButtonElement, TabButtonProps>(fun
       disabled={disabled}
       className={`${styles.tab} ${isActive ? styles.tabActive : ''}`}
     >
-      {IconComponent && <IconComponent className={styles.iconSvg} />}
+      {IconComponent ? <IconComponent className={styles.iconSvg} /> : null}
       {label}
     </button>
   );

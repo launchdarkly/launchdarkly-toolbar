@@ -406,7 +406,9 @@ export function SettingsTabContent(props: SettingsTabContentProps) {
                         <div className={styles.settingInfo}>
                           <div className={styles.settingDetails}>
                             <span className={styles.settingName}>{item.name}</span>
-                            {item.description && <span className={styles.settingDescription}>{item.description}</span>}
+                            {item.description ? (
+                              <span className={styles.settingDescription}>{item.description}</span>
+                            ) : null}
                           </div>
                           <Button aria-label="Log out" data-testid="logout-button" onClick={handleLogout}>
                             Log out
@@ -421,7 +423,9 @@ export function SettingsTabContent(props: SettingsTabContentProps) {
                       <div className={styles.settingInfo}>
                         <div className={styles.settingDetails}>
                           <span className={styles.settingName}>{item.name}</span>
-                          {item.description && <span className={styles.settingDescription}>{item.description}</span>}
+                          {item.description ? (
+                            <span className={styles.settingDescription}>{item.description}</span>
+                          ) : null}
                         </div>
                         {item.isProjectSelector ? (
                           <ProjectSelector />

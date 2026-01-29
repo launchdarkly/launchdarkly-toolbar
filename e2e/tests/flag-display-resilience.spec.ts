@@ -1,5 +1,5 @@
 import { expect, type Page } from '@playwright/test';
-import { test } from '../setup/global';
+import { testLegacy as test } from '../setup/global';
 import { blockApiResponses, delayApiResponses, waitForToolbarReady } from '../utils/apiMocking';
 
 /**

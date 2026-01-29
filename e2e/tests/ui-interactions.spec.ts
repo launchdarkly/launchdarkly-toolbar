@@ -1,6 +1,6 @@
 import { expect } from '@playwright/test';
 import type { Page } from '@playwright/test';
-import { test } from '../setup/global';
+import { testLegacy as test } from '../setup/global';
 import { blockApiResponses, waitForToolbarReady } from '../utils/apiMocking';
 
 test.describe('LaunchDarkly Toolbar - UI Interactions', () => {
@@ -34,7 +34,6 @@ test.describe('LaunchDarkly Toolbar - UI Interactions', () => {
 
       // 3. Navigate through all tabs and verify content loads
       await page.getByRole('tab', { name: 'Events' }).click();
-      await page.waitForTimeout(300);
       await expect(page.getByRole('tab', { name: 'Events' })).toHaveAttribute('aria-selected', 'true');
       await expect(page.getByRole('tab', { name: 'Flags' })).toHaveAttribute('aria-selected', 'false');
 
