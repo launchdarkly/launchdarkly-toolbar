@@ -24,12 +24,15 @@
     "test": "pnpm --filter @launchdarkly/toolbar test",
     "test:e2e:ci": "TEST_ENV=ci playwright test --config=./e2e/playwright.config.ts",
     "test:e2e:local": "TEST_ENV=local playwright test --config=./e2e/playwright.config.ts",
-    "test:e2e:local:ui": "TEST_ENV=local playwright test --ui --config=./e2e/playwright.config.ts"
+    "test:e2e:local:ui": "TEST_ENV=local playwright test --ui --config=./e2e/playwright.config.ts",
+    "prepare": "husky"
   },
   "devDependencies": {
     "@playwright/test": "^1.58.0",
     "@types/node": "^25.0.9",
     "http-server": "^14.1.1",
+    "husky": "^9.1.7",
+    "lint-staged": "^16.2.7",
     "prettier": "^3.8.0",
     "qs": "^6.14.1",
     "storybook": "^10.2.0",
@@ -37,5 +40,8 @@
     "storybook-react-rsbuild": "^3.2.2",
     "tsx": "^4.21.0"
   },
-  "packageManager": "pnpm@10.14.0"
+  "packageManager": "pnpm@10.14.0",
+  "lint-staged": {
+    "*.{js,jsx,ts,tsx,json,css,md,yml,yaml}": "prettier --write"
+  }
 }
