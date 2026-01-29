@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.1.1](https://github.com/launchdarkly/launchdarkly-toolbar/compare/2.1.0...2.1.1) (2026-01-29)
+
+
+### Bug Fixes
+
+* [REL-11891]: nextjs css modules styling override bug ([#559](https://github.com/launchdarkly/launchdarkly-toolbar/issues/559)) ([6564857](https://github.com/launchdarkly/launchdarkly-toolbar/commit/65648577c9abd931d5dadd39b3aa83a1ba906799))
+
 ## [2.1.0](https://github.com/launchdarkly/launchdarkly-toolbar/compare/2.0.0...2.1.0) (2026-01-28)
 
 
