@@ -1,5 +1,28 @@
 # Changelog
 
+## [2.1.0](https://github.com/launchdarkly/launchdarkly-toolbar/compare/2.0.0...2.1.0) (2026-01-28)
+
+
+### Features
+
+* add title attribute to flag names for tooltip visibility ([#529](https://github.com/launchdarkly/launchdarkly-toolbar/issues/529)) ([d1ea60c](https://github.com/launchdarkly/launchdarkly-toolbar/commit/d1ea60cae9daf7f45bd97a79a37048432704ad9e))
+
+
+### Bug Fixes
+
+* [REL-11893] fix CodeEditor error ([#554](https://github.com/launchdarkly/launchdarkly-toolbar/issues/554)) ([097c694](https://github.com/launchdarkly/launchdarkly-toolbar/commit/097c69405f6fa3db32b4f919e71b19d18c19abf0))
+* [REL-11894] update DevServerProvider to fix api call bug ([#555](https://github.com/launchdarkly/launchdarkly-toolbar/issues/555)) ([9479e23](https://github.com/launchdarkly/launchdarkly-toolbar/commit/9479e239e2f4d8fcd51d2ab6e406704c51694390))
+* add o11y telemetry endpoint to internal client ([#496](https://github.com/launchdarkly/launchdarkly-toolbar/issues/496)) ([2090b46](https://github.com/launchdarkly/launchdarkly-toolbar/commit/2090b46787c7c714203996624a17060311677ed1))
+* improve a11y per Web Interface Guidelines ([#530](https://github.com/launchdarkly/launchdarkly-toolbar/issues/530)) ([c96c75f](https://github.com/launchdarkly/launchdarkly-toolbar/commit/c96c75f2893d2676ad90a3ac12788350af9643a2))
+* prevent race condition when cleanup runs before dynamic imports … ([#544](https://github.com/launchdarkly/launchdarkly-toolbar/issues/544)) ([1e654b6](https://github.com/launchdarkly/launchdarkly-toolbar/commit/1e654b64db2831e15b437c39dbf09cbaa9dc281c))
+* prevent race condition when cleanup runs before dynamic imports resolve ([1e654b6](https://github.com/launchdarkly/launchdarkly-toolbar/commit/1e654b64db2831e15b437c39dbf09cbaa9dc281c))
+
+
+### Performance Improvements
+
+* apply React performance best practices across toolbar ([#532](https://github.com/launchdarkly/launchdarkly-toolbar/issues/532)) ([4411e00](https://github.com/launchdarkly/launchdarkly-toolbar/commit/4411e00467bc5a6c7ce4cc281fcaca41ab98a3fb))
+* optimize dev server flag loading with progressive enhancement ([#507](https://github.com/launchdarkly/launchdarkly-toolbar/issues/507)) ([5550c80](https://github.com/launchdarkly/launchdarkly-toolbar/commit/5550c80576b1ed38869451827a010cfabd532eda))
+
 ## [2.0.0](https://github.com/launchdarkly/launchdarkly-toolbar/compare/1.6.0...2.0.0) (2026-01-13)
 
 

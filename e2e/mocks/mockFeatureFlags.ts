@@ -4,12 +4,19 @@ import type { Page } from '@playwright/test';
 const LD_BASE_URL = '**/sdk/evalx/**';
 const LD_EVENT_STREAM_URL = '**/eval/**';
 
-// Static fixture flags
+// Static fixture flags - new toolbar design enabled by default
 export const FIXTURE_FLAGS = {
   'boolean-flag': { value: false, version: 1 },
   'json-object-flag': { value: { key: 'value', nested: { prop: 123 } }, version: 2 },
   'number-flag': { value: 42, version: 3 },
   'string-flag': { value: 'default-string-value', version: 4 },
+  'use-new-toolbar-design': { value: true, version: 1 },
+};
+
+// Legacy fixture flags - for tests that need the old toolbar design
+export const FIXTURE_FLAGS_LEGACY = {
+  ...FIXTURE_FLAGS,
+  'use-new-toolbar-design': { value: false, version: 1 },
 };
 
 /**

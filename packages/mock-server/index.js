@@ -4,7 +4,7 @@ const { watch } = require('chokidar');
 const path = require('path');
 
 const host = 'localhost';
-const port = process.env.PORT ?? '8080';
+const port = process.env.PORT ?? '5764';
 const authPort = process.env.AUTH_PORT ?? '9090';
 
 const app = express();

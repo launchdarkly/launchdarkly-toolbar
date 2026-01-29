@@ -51,7 +51,8 @@ export const DevServerProvider: FC<DevServerProviderProps> = ({ children, config
   });
 
   // Track the last sync timestamp from dev server to detect changes
-  const [lastDevServerSync, setLastDevServerSync] = useState<number>(0);
+  // Using a ref to avoid triggering re-renders and effect loops when this value changes
+  const lastDevServerSyncRef = useRef<number>(0);
 
   // Track the last known dev server context
   const lastDevServerContextRef = useRef<any>(null);
@@ -202,7 +203,7 @@ export const DevServerProvider: FC<DevServerProviderProps> = ({ children, config
         lastProjectDataRef.current = projectData;
 
         // Check if dev server data has changed since last sync
-        const devServerDataChanged = projectData._lastSyncedFromSource !== lastDevServerSync;
+        const devServerDataChanged = projectData._lastSyncedFromSource !== lastDevServerSyncRef.current;
 
         // Check if dev server context has changed and update toolbar
         if (projectData.context) {
@@ -246,13 +247,13 @@ export const DevServerProvider: FC<DevServerProviderProps> = ({ children, config
         }));
 
         // Update last sync timestamp immediately so polling can be cheap
-        if (forceApiRefresh || lastDevServerSync === 0 || devServerDataChanged) {
-          setLastDevServerSync(projectData._lastSyncedFromSource);
+        if (forceApiRefresh || lastDevServerSyncRef.current === 0 || devServerDataChanged) {
+          lastDevServerSyncRef.current = projectData._lastSyncedFromSource;
         }
 
         // Fetch API flag metadata (names, etc.) in the background when available.
         // This can be slow (iframe/API) and shouldn't block flag rendering.
-        const shouldFetchApiFlags = forceApiRefresh || lastDevServerSync === 0 || devServerDataChanged;
+        const shouldFetchApiFlags = forceApiRefresh || lastDevServerSyncRef.current === 0 || devServerDataChanged;
         if (shouldFetchApiFlags && apiReady && !isApiFlagsFetchInFlightRef.current) {
           isApiFlagsFetchInFlightRef.current = true;
           void (async () => {
@@ -285,16 +286,7 @@ export const DevServerProvider: FC<DevServerProviderProps> = ({ children, config
         isSyncInFlightRef.current = false;
       }
     },
-    [
-      devServerClient,
-      flagStateManager,
-      projectKey,
-      getProjectFlags,
-      lastDevServerSync,
-      apiReady,
-      setContext,
-      addOrUpdateStoredContext,
-    ],
+    [devServerClient, flagStateManager, projectKey, getProjectFlags, apiReady, setContext, addOrUpdateStoredContext],
   );
 
   const initializeProjectSelection = useCallback(async () => {
