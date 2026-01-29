@@ -65,7 +65,7 @@ const ExpandedToolbarContentInner = forwardRef<HTMLDivElement, ExpandedToolbarCo
             <ToolbarHeader onClose={onClose} onHeaderMouseDown={onHeaderMouseDown} />
             <IconBar defaultActiveTab={defaultActiveTab} />
             <TabBar />
-            <div className={styles.content}>
+            <div className={styles.content} tabIndex={0}>
               <ContentRenderer />
             </div>
             <AnalyticsConsentToast />

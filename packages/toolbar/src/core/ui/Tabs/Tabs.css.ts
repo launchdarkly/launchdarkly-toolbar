@@ -29,7 +29,7 @@ export const activeIndicator = style({
 export const tab = style({
   borderRadius: 'var(--radius)',
   transition: 'all var(--lp-duration-150) ease',
-  color: 'var(--lp-color-gray-400)',
+  color: 'var(--lp-color-gray-300)',
   background: 'transparent',
   flex: 1,
   minWidth: 0,

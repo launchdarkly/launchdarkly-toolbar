@@ -1,4 +1,4 @@
-import { useEffect, useState, useMemo } from 'react';
+import { useEffect, useState } from 'react';
 import { ToggleOffIcon } from '../../icons/ToggleOffIcon';
 import { ClickIcon } from '../../icons/ClickIcon';
 import { GearIcon } from '../../icons/GearIcon';
@@ -46,7 +46,7 @@ export function IconBar({ defaultActiveTab }: IconBarProps) {
       tooltip: interactiveIconEnabled ? 'Interactive mode' : 'Interactive mode (coming soon)',
       disabled: !interactiveIconEnabled,
     },
-    { id: 'flags', Icon: ToggleOffIcon, label: '  Flags', tooltip: 'Feature flags' },
+    { id: 'flags', Icon: ToggleOffIcon, label: 'Flags', tooltip: 'Feature flags' },
     {
       id: 'optimize',
       Icon: FlaskIcon,
@@ -104,11 +104,10 @@ export function IconBar({ defaultActiveTab }: IconBarProps) {
   return (
     <div className={styles.container}>
       {icons.map(({ id, Icon, label, tooltip, disabled }) => {
-        const icon = useMemo(() => ({ id, Icon, label, tooltip, disabled }), [id, Icon, label, tooltip, disabled]);
         const showSelectState = isInteractiveSelectMode(id);
 
         return (
-          <Tooltip key={id} content={getTooltip(icon)}>
+          <Tooltip key={id} content={getTooltip({ id, Icon, label, tooltip, disabled })}>
             <button
               onClick={() => handleIconClick(id as TabId, disabled)}
               onMouseEnter={() => setHoveredIcon(id)}

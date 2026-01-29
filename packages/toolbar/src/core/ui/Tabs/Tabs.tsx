@@ -55,9 +55,9 @@ export const Tabs = React.forwardRef<HTMLDivElement, TabsProps>(function Tabs(pr
   return (
     <TabsContext.Provider value={{ activeTab: currentActiveTab, onTabChange: handleTabChange }}>
       <div ref={ref} className={styles.toolbar}>
-        <div ref={tabsContainerRef} className={styles.tabsContainer}>
+        <div ref={tabsContainerRef} className={styles.tabsContainer} role="tablist">
           {children}
-          <div className={styles.activeIndicator} style={indicatorStyle} />
+          <div className={styles.activeIndicator} style={indicatorStyle} aria-hidden="true" role="presentation" />
         </div>
       </div>
     </TabsContext.Provider>

@@ -35,7 +35,7 @@ test.describe('LaunchDarkly Toolbar - New Design', () => {
 
     test('should navigate between tabs using IconBar', async ({ page }: { page: Page }) => {
       // Expand toolbar
-      await page.getByRole('img', { name: 'LaunchDarkly' }).click();
+      await page.getByTestId('launchdarkly-toolbar').click();
 
       // Default tab should be flags - verify content is showing
       // Use .first() because flag key appears in multiple places (display and copy button)
@@ -58,7 +58,7 @@ test.describe('LaunchDarkly Toolbar - New Design', () => {
       const toolbar = page.getByTestId('launchdarkly-toolbar');
 
       // Expand toolbar
-      await page.getByRole('img', { name: 'LaunchDarkly' }).click();
+      await toolbar.click();
       await expect(toolbar).toHaveAttribute('role', 'toolbar');
 
       // Click collapse button (chevron)
@@ -95,7 +95,7 @@ test.describe('LaunchDarkly Toolbar - New Design', () => {
   test.describe('Flags Tab', () => {
     test('should display mocked flags in the flags list', async ({ page }: { page: Page }) => {
       // Expand toolbar
-      await page.getByRole('img', { name: 'LaunchDarkly' }).click();
+      await page.getByTestId('launchdarkly-toolbar').click();
 
       // Verify flags are displayed (use .first() to avoid matching copy button text)
       await expect(page.getByText('boolean-flag').first()).toBeVisible();
@@ -105,7 +105,7 @@ test.describe('LaunchDarkly Toolbar - New Design', () => {
 
     test('should toggle boolean flag and show override indicator', async ({ page }: { page: Page }) => {
       // Expand toolbar
-      await page.getByRole('img', { name: 'LaunchDarkly' }).click();
+      await page.getByTestId('launchdarkly-toolbar').click();
 
       // Wait for flags to be loaded
       await expect(page.getByText('boolean-flag').first()).toBeVisible();
@@ -130,7 +130,7 @@ test.describe('LaunchDarkly Toolbar - New Design', () => {
 
     test('should search and filter flags', async ({ page }: { page: Page }) => {
       // Expand toolbar
-      await page.getByRole('img', { name: 'LaunchDarkly' }).click();
+      await page.getByTestId('launchdarkly-toolbar').click();
 
       // Click search button to expand search
       await page.getByRole('button', { name: /search/i }).click();
@@ -146,46 +146,53 @@ test.describe('LaunchDarkly Toolbar - New Design', () => {
 
     test('should show subtab dropdown with Flags and Contexts options', async ({ page }: { page: Page }) => {
       // Expand toolbar
-      await page.getByRole('img', { name: 'LaunchDarkly' }).click();
+      await page.getByTestId('launchdarkly-toolbar').click();
 
-      // Find the subtab dropdown button (has aria-haspopup="true")
-      const subtabDropdown = page.locator('button[aria-haspopup="true"]').filter({ hasText: 'Flags' });
+      // Wait for flags content to load first
+      await expect(page.getByText('boolean-flag').first()).toBeVisible();
+
+      const subtabDropdown = page.getByTestId('subtab-dropdown-trigger');
       await expect(subtabDropdown).toBeVisible();
       await subtabDropdown.click();
+      await expect(page.getByTestId('subtab-dropdown-listbox')).toBeVisible();
 
       // Verify dropdown menu items appear
-      await expect(page.getByRole('menuitem', { name: 'Flags' })).toBeVisible();
-      await expect(page.getByRole('menuitem', { name: 'Contexts' })).toBeVisible();
+      await expect(page.getByRole('option', { name: 'Flags', exact: true })).toBeVisible();
+      await expect(page.getByRole('option', { name: 'Contexts', exact: true })).toBeVisible();
     });
 
     test('should switch to Contexts subtab', async ({ page }: { page: Page }) => {
       // Expand toolbar
-      await page.getByRole('img', { name: 'LaunchDarkly' }).click();
+      await page.getByTestId('launchdarkly-toolbar').click();
+
+      // Wait for flags content to load first
+      await expect(page.getByText('boolean-flag').first()).toBeVisible();
 
       // Open subtab dropdown and select Contexts
-      const subtabDropdown = page.locator('button[aria-haspopup="true"]').filter({ hasText: 'Flags' });
-      await subtabDropdown.click();
-      await page.getByRole('menuitem', { name: 'Contexts' }).click();
+      await page.getByTestId('subtab-dropdown-trigger').click();
+      await page.getByRole('option', { name: 'Contexts', exact: true }).click();
 
       // Verify subtab dropdown now shows "Contexts"
-      await expect(page.locator('button[aria-haspopup="true"]').filter({ hasText: 'Contexts' })).toBeVisible();
+      await expect(page.getByTestId('subtab-dropdown-trigger')).toHaveText(/Contexts/);
     });
   });
 
   test.describe('Contexts Subtab', () => {
     test.beforeEach(async ({ page }: { page: Page }) => {
       // Expand toolbar and navigate to Contexts subtab
-      await page.getByRole('img', { name: 'LaunchDarkly' }).click();
-      const subtabDropdown = page.locator('button[aria-haspopup="true"]').filter({ hasText: 'Flags' });
-      await expect(subtabDropdown).toBeVisible();
-      await subtabDropdown.click();
-      await expect(page.getByRole('menuitem', { name: 'Contexts' })).toBeVisible();
-      await page.getByRole('menuitem', { name: 'Contexts' }).click();
+      await page.getByTestId('launchdarkly-toolbar').click();
+
+      // Wait for flags content to load first
+      await expect(page.getByText('boolean-flag').first()).toBeVisible();
+
+      await page.getByTestId('subtab-dropdown-trigger').click();
+      await expect(page.getByTestId('subtab-dropdown-listbox')).toBeVisible();
+      await page.getByRole('option', { name: 'Contexts', exact: true }).click();
     });
 
     test('should display contexts list', async ({ page }: { page: Page }) => {
       // Verify we're now on the Contexts subtab
-      await expect(page.locator('button[aria-haspopup="true"]').filter({ hasText: 'Contexts' })).toBeVisible();
+      await expect(page.getByTestId('subtab-dropdown-trigger')).toHaveText(/Contexts/);
     });
 
     test('should open Add Context form', async ({ page }: { page: Page }) => {
@@ -198,7 +205,7 @@ test.describe('LaunchDarkly Toolbar - New Design', () => {
         await expect(page.getByRole('button', { name: /close/i }).first()).toBeVisible();
       } else {
         // Just verify we're on the contexts subtab
-        await expect(page.locator('button[aria-haspopup="true"]').filter({ hasText: 'Contexts' })).toBeVisible();
+        await expect(page.getByTestId('subtab-dropdown-trigger')).toHaveText(/Contexts/);
       }
     });
   });
@@ -245,7 +252,7 @@ test.describe('LaunchDarkly Toolbar - New Design', () => {
   test.describe('Monitoring/Events Tab', () => {
     test.beforeEach(async ({ page }: { page: Page }) => {
       // Expand toolbar and navigate to Monitoring
-      await page.getByRole('img', { name: 'LaunchDarkly' }).click();
+      await page.getByTestId('launchdarkly-toolbar').click();
       await page.getByLabel('Analytics', { exact: true }).click();
       await expect(page.getByText(/events captured/i)).toBeVisible();
     });
@@ -259,7 +266,7 @@ test.describe('LaunchDarkly Toolbar - New Design', () => {
   test.describe('Search Functionality', () => {
     test('should toggle search input and support clear functionality', async ({ page }: { page: Page }) => {
       // Expand toolbar
-      await page.getByRole('img', { name: 'LaunchDarkly' }).click();
+      await page.getByTestId('launchdarkly-toolbar').click();
 
       // Click search button
       await page.getByRole('button', { name: /search/i }).click();
@@ -295,7 +302,7 @@ test.describe('LaunchDarkly Toolbar - New Design', () => {
       expect(initialBox!.y + initialBox!.height).toBeLessThanOrEqual(viewport.height);
 
       // Expand toolbar
-      await page.getByRole('img', { name: 'LaunchDarkly' }).click();
+      await toolbar.click();
       await expect(page.getByRole('button', { name: 'Collapse toolbar' })).toBeVisible();
 
       const expandedBox = await toolbar.boundingBox();

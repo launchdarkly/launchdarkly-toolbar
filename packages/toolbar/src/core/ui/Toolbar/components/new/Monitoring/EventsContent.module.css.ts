@@ -15,7 +15,7 @@ export const statsHeader = style({
 
 export const statsText = style({
   fontSize: '12px',
-  color: 'var(--lp-color-gray-400)',
+  color: 'var(--lp-color-gray-300)',
   fontWeight: 500,
 });
 
@@ -41,7 +41,7 @@ export const eventName = style({
 
 export const eventMeta = style({
   fontSize: '12px',
-  color: 'var(--lp-color-gray-400)',
+  color: 'var(--lp-color-gray-300)',
 });
 
 export const eventBadge = style({
@@ -177,7 +177,7 @@ export const liveTailContainer = style({
   justifyContent: 'center',
   flex: 1,
   gap: '12px',
-  color: 'var(--lp-color-gray-400)',
+  color: 'var(--lp-color-gray-300)',
 });
 
 export const liveTailIndicator = style({
@@ -217,7 +217,7 @@ export const liveTailText = style({
 
 export const liveTailSubtext = style({
   fontSize: '14px',
-  color: 'var(--lp-color-gray-500)',
+  color: 'var(--lp-color-gray-400)',
   textAlign: 'center',
 });
 

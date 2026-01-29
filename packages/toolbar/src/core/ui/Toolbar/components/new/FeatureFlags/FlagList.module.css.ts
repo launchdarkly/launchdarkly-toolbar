@@ -15,7 +15,7 @@ export const statsHeader = style({
 
 export const statsText = style({
   fontSize: '12px',
-  color: 'var(--lp-color-gray-400)',
+  color: 'var(--lp-color-gray-300)',
   fontWeight: 500,
 });
 

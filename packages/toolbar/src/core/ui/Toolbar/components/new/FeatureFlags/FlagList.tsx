@@ -151,7 +151,13 @@ function DevServerFlagList() {
           {isFiltered ? `${filteredCount} of ${totalFlags} flags` : `${totalFlags} flags`}
         </span>
       </div>
-      <div ref={scrollContainerRef} className={styles.scrollContainer}>
+      <div
+        ref={scrollContainerRef}
+        className={styles.scrollContainer}
+        tabIndex={0}
+        role="region"
+        aria-label="Feature flags list"
+      >
         <div
           className={styles.virtualInner}
           style={{
@@ -327,7 +333,13 @@ function SdkFlagList() {
           {isFiltered ? `${filteredCount} of ${totalFlags} flags` : `${totalFlags} flags`}
         </span>
       </div>
-      <div ref={scrollContainerRef} className={styles.scrollContainer}>
+      <div
+        ref={scrollContainerRef}
+        className={styles.scrollContainer}
+        tabIndex={0}
+        role="region"
+        aria-label="Feature flags list"
+      >
         <div
           className={styles.virtualInner}
           style={{
