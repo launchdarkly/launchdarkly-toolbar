@@ -1,3 +1,8 @@
+// Enable Shadow DOM support for React Aria/Stately components BEFORE any other imports
+// This must be called early to ensure all LaunchPad components work correctly in Shadow DOM
+import { enableShadowDOM } from '@react-stately/flags';
+enableShadowDOM();
+
 import { InitializationConfig } from '../types';
 import mount from './mount';
 import hydrateConfig from './utils/hydrateConfig';

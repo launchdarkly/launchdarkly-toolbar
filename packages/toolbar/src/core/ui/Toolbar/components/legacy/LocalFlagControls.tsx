@@ -1,14 +1,11 @@
 import { useState, useRef, useEffect } from 'react';
 import { Switch, TextField, Group, Input, Button } from '@launchpad-ui/components';
-import { enableShadowDOM } from '@react-stately/flags';
 import * as sharedStyles from './FlagControls.css';
 import * as styles from './LocalFlagControls.css';
 import { LocalFlag } from '../../context';
 import { EnhancedFlag } from '../../../../types/devServer';
 import { EditIcon, CheckIcon, CancelIcon } from '../icons';
 import { IconButton } from '../../../Buttons/IconButton';
-
-enableShadowDOM();
 
 interface LocalBooleanFlagControlProps {
   flag: LocalFlag;
