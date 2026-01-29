@@ -1,20 +1,12 @@
 import { expect, type Page } from '@playwright/test';
-import { test } from '../setup/global';
+import { testLegacy as test } from '../setup/global';
+import { waitForToolbarReady } from '../utils/apiMocking';
 
 test.describe('LaunchDarkly Toolbar - SDK Mode', () => {
   test.beforeEach(async ({ page }: { page: Page }) => {
     await page.goto('/sdk');
-    await page.waitForSelector('[data-testid="launchdarkly-toolbar"]');
     await expect(page.getByText('LaunchDarkly Toolbar Demo (sdk mode)')).toBeVisible();
-
-    // Wait for authentication to complete (login screen should not be visible)
-    await page.waitForFunction(
-      () => {
-        const loginScreen = document.querySelector('[data-testid="login-screen"]');
-        return !loginScreen;
-      },
-      { timeout: 10000 },
-    );
+    await waitForToolbarReady(page);
   });
 
   test.describe('SDK Integration', () => {

@@ -9,7 +9,7 @@ interface UseLaunchDarklyToolbarConfig extends InitializationConfig {
    * URL to load the toolbar bundle from.
    * Use this when developing the toolbar itself locally.
    *
-   * Example: `'http://localhost:8080/toolbar.min.js'`
+   * Example: `'http://localhost:5764/toolbar.min.js'`
    *
    * Default: CDN URL based on package version
    */

@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, memo } from 'react';
 import { motion } from 'motion/react';
 import * as styles from './FlagItem.module.css';
 import { CopyableText } from '../../CopyableText';
@@ -19,7 +19,7 @@ interface OverrideDotProps {
   onClear: () => void;
 }
 
-function OverrideDot({ onClear }: OverrideDotProps) {
+const OverrideDot = memo(function OverrideDot({ onClear }: OverrideDotProps) {
   const [isHovered, setIsHovered] = useState(false);
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
@@ -56,7 +56,7 @@ function OverrideDot({ onClear }: OverrideDotProps) {
       />
     </motion.span>
   );
-}
+});
 
 interface FlagItemProps {
   flag: NormalizedFlag;
@@ -67,7 +67,7 @@ interface FlagItemProps {
   index: number;
 }
 
-export function FlagItem({
+export const FlagItem = memo(function FlagItem({
   flag,
   onOverride,
   onClearOverride,
@@ -108,13 +108,16 @@ export function FlagItem({
   // Object/JSON flags have a different layout structure
   if (flag.type === 'object') {
     return (
-      <div className={`${styles.containerBlock} ${flag.isOverridden ? styles.containerBlockOverridden : ''}`}>
+      <div
+        className={`${styles.containerBlock} ${flag.isOverridden ? styles.containerBlockOverridden : ''}`}
+        data-testid={`flag-item-${flag.key}`}
+      >
         <div className={styles.header}>
           <div className={styles.flagInfo}>
             <StarButton flagKey={flag.key} isStarred={isStarred(flag.key)} onToggle={handleToggleStarred} />
             <div className={styles.info}>
               <div className={styles.nameRow}>
-                {flag.isOverridden && onClearOverride && <OverrideDot onClear={onClearOverride} />}
+                {flag.isOverridden && onClearOverride ? <OverrideDot onClear={onClearOverride} /> : null}
                 <a
                   className={styles.nameLink}
                   href={flagDeeplinkUrl}
@@ -185,12 +188,15 @@ export function FlagItem({
   };
 
   return (
-    <div className={`${styles.container} ${flag.isOverridden ? styles.containerOverridden : ''}`}>
+    <div
+      className={`${styles.container} ${flag.isOverridden ? styles.containerOverridden : ''}`}
+      data-testid={`flag-item-${flag.key}`}
+    >
       <div className={styles.flagInfo}>
         <StarButton flagKey={flag.key} isStarred={isStarred(flag.key)} onToggle={handleToggleStarred} />
         <div className={styles.info}>
           <div className={styles.nameRow}>
-            {flag.isOverridden && onClearOverride && <OverrideDot onClear={onClearOverride} />}
+            {flag.isOverridden && onClearOverride ? <OverrideDot onClear={onClearOverride} /> : null}
             <a
               className={styles.nameLink}
               href={flagDeeplinkUrl}
@@ -211,4 +217,4 @@ export function FlagItem({
       <div className={styles.control}>{renderControl()}</div>
     </div>
   );
-}
+});

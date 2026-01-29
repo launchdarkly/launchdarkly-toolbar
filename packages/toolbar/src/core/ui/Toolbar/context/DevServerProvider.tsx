@@ -1,6 +1,6 @@
 import { createContext, useContext, useState, useEffect, useMemo, useCallback, useRef } from 'react';
 import type { FC, ReactNode } from 'react';
-import { DevServerClient } from '../../../services/DevServerClient';
+import { DevServerClient, DevServerProjectResponse } from '../../../services/DevServerClient';
 import { FlagStateManager } from '../../../services/FlagStateManager';
 import { LdToolbarConfig, ToolbarState } from '../../../types/devServer';
 import { useFlagsContext } from './api/FlagsProvider';
@@ -51,13 +51,23 @@ export const DevServerProvider: FC<DevServerProviderProps> = ({ children, config
   });
 
   // Track the last sync timestamp from dev server to detect changes
-  const [lastDevServerSync, setLastDevServerSync] = useState<number>(0);
+  // Using a ref to avoid triggering re-renders and effect loops when this value changes
+  const lastDevServerSyncRef = useRef<number>(0);
 
   // Track the last known dev server context
   const lastDevServerContextRef = useRef<any>(null);
 
   // Track when we're updating from dev server to prevent sync loops
   const isUpdatingFromDevServerRef = useRef(false);
+
+  // Prevent overlapping syncs (polling + initial load can otherwise stack requests)
+  const isSyncInFlightRef = useRef(false);
+
+  // Keep the latest dev-server project data so we can re-derive flags after API metadata arrives
+  const lastProjectDataRef = useRef<DevServerProjectResponse | null>(null);
+
+  // Avoid starting multiple API metadata requests at once
+  const isApiFlagsFetchInFlightRef = useRef(false);
 
   const devServerClient = useMemo(() => {
     // Only create devServerClient if devServerUrl is provided (dev-server mode)
@@ -158,87 +168,125 @@ export const DevServerProvider: FC<DevServerProviderProps> = ({ children, config
     syncToDevServer();
   }, [activeContext, devServerClient, projectKey]);
 
-  // Helper: Load and sync flags from dev server and API
-  // Only fetches from API if dev server data has changed (based on _lastSyncedFromSource timestamp)
-  // Set forceApiRefresh=true to always fetch from API (useful for manual refresh)
+  /**
+   * Load and sync flags from dev server and API using progressive enhancement.
+   *
+   * PERFORMANCE STRATEGY:
+   * 1. Immediately fetch lightweight dev server data (excludes availableVariations for speed)
+   * 2. Render flags immediately with basic info (values, overrides)
+   * 3. Asynchronously fetch API metadata (names, descriptions) in background
+   * 4. Re-derive and update flags when metadata arrives
+   *
+   * Only fetches from API if dev server data has changed (based on _lastSyncedFromSource timestamp)
+   * Set forceApiRefresh=true to always fetch from API (useful for manual refresh)
+   */
   const syncFlags = useCallback(
     async (forceApiRefresh = false) => {
       if (!devServerClient || !flagStateManager || !projectKey) {
         throw new Error('Dev server client, flag state manager, or project key not available');
       }
 
-      // Wait for API to be ready before attempting to fetch
-      if (!apiReady) {
-        console.warn('API not ready yet, skipping flag sync');
+      // Skip if a sync is already in progress (prevents request pile-ups)
+      if (isSyncInFlightRef.current) {
         return;
       }
 
-      // Always fetch dev server data (lightweight, local)
-      const projectData = await devServerClient.getProjectData();
+      isSyncInFlightRef.current = true;
 
-      // Check if dev server data has changed since last sync
-      const devServerDataChanged = projectData._lastSyncedFromSource !== lastDevServerSync;
+      try {
+        // Fetch dev server data (local) without pulling down available variations by default
+        const projectData = await devServerClient.getProjectData({
+          includeOverrides: true,
+          includeAvailableVariations: false,
+        });
 
-      // Check if dev server context has changed and update toolbar
-      if (projectData.context) {
-        const lastStableId = lastDevServerContextRef.current
-          ? getStableContextId(lastDevServerContextRef.current)
-          : null;
-        const newStableId = getStableContextId(projectData.context);
-        const contextChanged = lastStableId !== newStableId;
-        if (contextChanged) {
-          isUpdatingFromDevServerRef.current = true;
-          lastDevServerContextRef.current = projectData.context;
+        lastProjectDataRef.current = projectData;
 
-          // Add or update context in stored contexts before activating it
-          addOrUpdateStoredContext(projectData.context);
+        // Check if dev server data has changed since last sync
+        const devServerDataChanged = projectData._lastSyncedFromSource !== lastDevServerSyncRef.current;
 
-          try {
-            await setContext(projectData.context);
-          } catch (error) {
-            console.error('Failed to update toolbar context from dev server:', error);
-          } finally {
-            // Reset flag after a short delay to ensure state updates settle
-            setTimeout(() => {
-              isUpdatingFromDevServerRef.current = false;
-            }, 100);
+        // Check if dev server context has changed and update toolbar
+        if (projectData.context) {
+          const lastStableId = lastDevServerContextRef.current
+            ? getStableContextId(lastDevServerContextRef.current)
+            : null;
+          const newStableId = getStableContextId(projectData.context);
+          const contextChanged = lastStableId !== newStableId;
+          if (contextChanged) {
+            isUpdatingFromDevServerRef.current = true;
+            lastDevServerContextRef.current = projectData.context;
+
+            // Add or update context in stored contexts before activating it
+            addOrUpdateStoredContext(projectData.context);
+
+            try {
+              await setContext(projectData.context);
+            } catch (error) {
+              console.error('Failed to update toolbar context from dev server:', error);
+            } finally {
+              // Reset flag after a short delay to ensure state updates settle
+              setTimeout(() => {
+                isUpdatingFromDevServerRef.current = false;
+              }, 100);
+            }
           }
         }
+
+        // Always update flags from dev server (includes overrides) immediately
+        // (Do not block initial UI on remote API flag metadata.)
+        const flags = flagStateManager.getEnhancedFlagsFromDevServerData(projectData);
+
+        setToolbarState((prev) => ({
+          ...prev,
+          connectionStatus: 'connected',
+          flags,
+          sourceEnvironmentKey: projectData.sourceEnvironmentKey,
+          lastSyncTime: Date.now(),
+          error: null,
+          isLoading: false,
+        }));
+
+        // Update last sync timestamp immediately so polling can be cheap
+        if (forceApiRefresh || lastDevServerSyncRef.current === 0 || devServerDataChanged) {
+          lastDevServerSyncRef.current = projectData._lastSyncedFromSource;
+        }
+
+        // Fetch API flag metadata (names, etc.) in the background when available.
+        // This can be slow (iframe/API) and shouldn't block flag rendering.
+        const shouldFetchApiFlags = forceApiRefresh || lastDevServerSyncRef.current === 0 || devServerDataChanged;
+        if (shouldFetchApiFlags && apiReady && !isApiFlagsFetchInFlightRef.current) {
+          isApiFlagsFetchInFlightRef.current = true;
+          void (async () => {
+            try {
+              const apiFlags = await getProjectFlags(projectKey);
+              flagStateManager.setApiFlags(apiFlags.items);
+
+              const latestProjectData = lastProjectDataRef.current;
+              if (latestProjectData) {
+                const updatedFlags = flagStateManager.getEnhancedFlagsFromDevServerData(latestProjectData);
+                setToolbarState((prev) => ({
+                  ...prev,
+                  flags: updatedFlags,
+                  lastSyncTime: Date.now(),
+                }));
+              }
+            } catch (error) {
+              // Log API metadata fetch failures, but don't fail hard since flags are already
+              // rendered with basic info. This is a non-critical enhancement.
+              const errorMessage = getErrorMessage(error);
+              console.error('Failed to fetch API flags metadata:', errorMessage);
+              // Optionally notify consumer, but don't update connection status
+              config.onError?.(errorMessage);
+            } finally {
+              isApiFlagsFetchInFlightRef.current = false;
+            }
+          })();
+        }
+      } finally {
+        isSyncInFlightRef.current = false;
       }
-
-      // Only fetch API flags if:
-      // 1. This is the first sync (lastDevServerSync === 0), OR
-      // 2. Dev server data has changed (_lastSyncedFromSource timestamp changed), OR
-      // 3. Force refresh is requested (manual refresh)
-      if (forceApiRefresh || lastDevServerSync === 0 || devServerDataChanged) {
-        const apiFlags = await getProjectFlags(projectKey);
-        flagStateManager.setApiFlags(apiFlags.items);
-        setLastDevServerSync(projectData._lastSyncedFromSource);
-      }
-
-      // Always update flags from dev server (includes overrides)
-      const flags = await flagStateManager.getEnhancedFlags();
-
-      setToolbarState((prev) => ({
-        ...prev,
-        connectionStatus: 'connected',
-        flags,
-        sourceEnvironmentKey: projectData.sourceEnvironmentKey,
-        lastSyncTime: Date.now(),
-        error: null,
-        isLoading: false,
-      }));
     },
-    [
-      devServerClient,
-      flagStateManager,
-      projectKey,
-      getProjectFlags,
-      lastDevServerSync,
-      apiReady,
-      setContext,
-      addOrUpdateStoredContext,
-    ],
+    [devServerClient, flagStateManager, projectKey, getProjectFlags, apiReady, setContext, addOrUpdateStoredContext],
   );
 
   const initializeProjectSelection = useCallback(async () => {
@@ -286,11 +334,6 @@ export const DevServerProvider: FC<DevServerProviderProps> = ({ children, config
         return;
       }
 
-      // Wait for API to be ready before syncing
-      if (!apiReady) {
-        return;
-      }
-
       try {
         setToolbarState((prev) => ({ ...prev, isLoading: true }));
         await syncFlags();
@@ -300,7 +343,7 @@ export const DevServerProvider: FC<DevServerProviderProps> = ({ children, config
     };
 
     loadProjectData();
-  }, [toolbarState.connectionStatus, devServerClient, flagStateManager, projectKey, syncFlags, handleError, apiReady]);
+  }, [toolbarState.connectionStatus, devServerClient, flagStateManager, projectKey, syncFlags, handleError]);
 
   // Setup real-time updates
   useEffect(() => {
@@ -323,11 +366,6 @@ export const DevServerProvider: FC<DevServerProviderProps> = ({ children, config
   useEffect(() => {
     // Skip polling if not in dev-server mode
     if (!config.devServerUrl || !devServerClient || !flagStateManager) {
-      return;
-    }
-
-    // Wait for API to be ready before polling
-    if (!apiReady) {
       return;
     }
 
@@ -359,7 +397,6 @@ export const DevServerProvider: FC<DevServerProviderProps> = ({ children, config
     getProjectFlags,
     syncFlags,
     handleError,
-    apiReady,
   ]);
 
   const setOverride = useCallback(

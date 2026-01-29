@@ -1,5 +1,16 @@
-import { style } from '@vanilla-extract/css';
+import { style, globalStyle } from '@vanilla-extract/css';
 import { Z_INDEX } from '../constants/zIndex';
+
+// Respect user's motion preferences - disable animations and transitions
+globalStyle('*', {
+  '@media': {
+    '(prefers-reduced-motion: reduce)': {
+      animationDuration: '0.01ms !important',
+      animationIterationCount: '1 !important',
+      transitionDuration: '0.01ms !important',
+    },
+  },
+});
 
 export const toolbarContainer = style({
   position: 'fixed',

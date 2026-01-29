@@ -53,6 +53,7 @@ export const currentValueText = style({
   overflow: 'hidden',
   textOverflow: 'ellipsis',
   whiteSpace: 'nowrap',
+  fontVariantNumeric: 'tabular-nums', // Consistent width for numbers
 });
 
 export const customVariantField = style({

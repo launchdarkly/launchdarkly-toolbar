@@ -7,7 +7,7 @@ export const section = style({
 export const title = style({
   fontSize: '12px',
   fontWeight: 600,
-  color: 'var(--lp-color-gray-400)',
+  color: 'var(--lp-color-gray-300)',
   textTransform: 'uppercase',
   letterSpacing: '0.5px',
   marginBottom: '12px',

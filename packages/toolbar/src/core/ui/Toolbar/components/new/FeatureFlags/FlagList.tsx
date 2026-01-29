@@ -53,26 +53,34 @@ function DevServerFlagList() {
     const showOverrides = activeFilters.has('overrides');
     const showStarred = activeFilters.has('starred');
 
-    return normalizedFlags
-      .map((flag, index) => ({ flag, index }))
-      .filter(({ flag }) => {
-        // Apply search filter
-        if (searchTerm) {
-          const matchesSearch =
-            flag.name.toLowerCase().includes(searchLower) || flag.key.toLowerCase().includes(searchLower);
-          if (!matchesSearch) return false;
-        }
+    // Single pass through the array instead of .map().filter().map()
+    const result: number[] = [];
+    for (let index = 0; index < normalizedFlags.length; index++) {
+      const flag = normalizedFlags[index];
+      if (!flag) continue;
 
-        // Apply category filters
-        if (showAll) return true;
+      // Apply search filter
+      if (searchTerm) {
+        const matchesSearch =
+          flag.name.toLowerCase().includes(searchLower) || flag.key.toLowerCase().includes(searchLower);
+        if (!matchesSearch) continue;
+      }
 
-        // Check if flag matches any active filter
-        const matchesOverrides = showOverrides && flag.isOverridden;
-        const matchesStarred = showStarred && isStarred(flag.key);
+      // Apply category filters
+      if (showAll) {
+        result.push(index);
+        continue;
+      }
 
-        return matchesOverrides || matchesStarred;
-      })
-      .map(({ index }) => index);
+      // Check if flag matches any active filter
+      const matchesOverrides = showOverrides && flag.isOverridden;
+      const matchesStarred = showStarred && isStarred(flag.key);
+
+      if (matchesOverrides || matchesStarred) {
+        result.push(index);
+      }
+    }
+    return result;
   }, [normalizedFlags, searchTerm, activeFilters, isStarred]);
 
   const virtualizer = useVirtualizer({
@@ -143,7 +151,13 @@ function DevServerFlagList() {
           {isFiltered ? `${filteredCount} of ${totalFlags} flags` : `${totalFlags} flags`}
         </span>
       </div>
-      <div ref={scrollContainerRef} className={styles.scrollContainer}>
+      <div
+        ref={scrollContainerRef}
+        className={styles.scrollContainer}
+        tabIndex={0}
+        role="region"
+        aria-label="Feature flags list"
+      >
         <div
           className={styles.virtualInner}
           style={{
@@ -221,26 +235,34 @@ function SdkFlagList() {
     const showOverrides = activeFilters.has('overrides');
     const showStarred = activeFilters.has('starred');
 
-    return normalizedFlags
-      .map((flag, index) => ({ flag, index }))
-      .filter(({ flag }) => {
-        // Apply search filter
-        if (searchTerm) {
-          const matchesSearch =
-            flag.name.toLowerCase().includes(searchLower) || flag.key.toLowerCase().includes(searchLower);
-          if (!matchesSearch) return false;
-        }
+    // Single pass through the array instead of .map().filter().map()
+    const result: number[] = [];
+    for (let index = 0; index < normalizedFlags.length; index++) {
+      const flag = normalizedFlags[index];
+      if (!flag) continue;
 
-        // Apply category filters
-        if (showAll) return true;
+      // Apply search filter
+      if (searchTerm) {
+        const matchesSearch =
+          flag.name.toLowerCase().includes(searchLower) || flag.key.toLowerCase().includes(searchLower);
+        if (!matchesSearch) continue;
+      }
 
-        // Check if flag matches any active filter
-        const matchesOverrides = showOverrides && flag.isOverridden;
-        const matchesStarred = showStarred && isStarred(flag.key);
+      // Apply category filters
+      if (showAll) {
+        result.push(index);
+        continue;
+      }
 
-        return matchesOverrides || matchesStarred;
-      })
-      .map(({ index }) => index);
+      // Check if flag matches any active filter
+      const matchesOverrides = showOverrides && flag.isOverridden;
+      const matchesStarred = showStarred && isStarred(flag.key);
+
+      if (matchesOverrides || matchesStarred) {
+        result.push(index);
+      }
+    }
+    return result;
   }, [normalizedFlags, searchTerm, activeFilters, isStarred]);
 
   const virtualizer = useVirtualizer({
@@ -311,7 +333,13 @@ function SdkFlagList() {
           {isFiltered ? `${filteredCount} of ${totalFlags} flags` : `${totalFlags} flags`}
         </span>
       </div>
-      <div ref={scrollContainerRef} className={styles.scrollContainer}>
+      <div
+        ref={scrollContainerRef}
+        className={styles.scrollContainer}
+        tabIndex={0}
+        role="region"
+        aria-label="Feature flags list"
+      >
         <div
           className={styles.virtualInner}
           style={{
