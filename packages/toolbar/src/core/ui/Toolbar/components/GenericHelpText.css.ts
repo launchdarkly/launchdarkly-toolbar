@@ -8,7 +8,7 @@ export const genericHelpText = style({
   gap: '12px',
   padding: '40px 20px',
   minHeight: '400px',
-  color: 'var(--lp-color-gray-400)',
+  color: 'var(--lp-color-gray-300)',
   textAlign: 'center',
 });
 
@@ -20,5 +20,5 @@ export const genericHelpTextP = style({
 
 export const genericHelpTextSpan = style({
   fontSize: '14px',
-  opacity: 0.8,
+  color: 'var(--lp-color-gray-300)',
 });

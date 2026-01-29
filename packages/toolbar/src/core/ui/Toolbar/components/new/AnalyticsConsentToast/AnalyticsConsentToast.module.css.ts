@@ -115,14 +115,17 @@ export const button = style({
 });
 
 export const primaryButton = style({
-  backgroundColor: 'var(--lp-color-blue-600)',
-  borderColor: 'var(--lp-color-blue-500)',
-  color: 'var(--lp-color-white)',
-
   selectors: {
-    '&:hover': {
+    '&[type="button"]': {
+      backgroundColor: 'var(--lp-color-blue-600)',
+      borderColor: 'var(--lp-color-blue-500)',
+      // Use pure white for sufficient contrast against blue-600 background (WCAG AA)
+      color: 'var(--lp-color-gray-100)',
+    },
+    '&[type="button"]:hover': {
       backgroundColor: 'var(--lp-color-blue-500)',
       borderColor: 'var(--lp-color-blue-400)',
+      color: 'var(--lp-color-gray-100)',
     },
   },
 });

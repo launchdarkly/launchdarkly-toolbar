@@ -108,7 +108,10 @@ export const FlagItem = memo(function FlagItem({
   // Object/JSON flags have a different layout structure
   if (flag.type === 'object') {
     return (
-      <div className={`${styles.containerBlock} ${flag.isOverridden ? styles.containerBlockOverridden : ''}`}>
+      <div
+        className={`${styles.containerBlock} ${flag.isOverridden ? styles.containerBlockOverridden : ''}`}
+        data-testid={`flag-item-${flag.key}`}
+      >
         <div className={styles.header}>
           <div className={styles.flagInfo}>
             <StarButton flagKey={flag.key} isStarred={isStarred(flag.key)} onToggle={handleToggleStarred} />
@@ -185,7 +188,10 @@ export const FlagItem = memo(function FlagItem({
   };
 
   return (
-    <div className={`${styles.container} ${flag.isOverridden ? styles.containerOverridden : ''}`}>
+    <div
+      className={`${styles.container} ${flag.isOverridden ? styles.containerOverridden : ''}`}
+      data-testid={`flag-item-${flag.key}`}
+    >
       <div className={styles.flagInfo}>
         <StarButton flagKey={flag.key} isStarred={isStarred(flag.key)} onToggle={handleToggleStarred} />
         <div className={styles.info}>
