@@ -7,7 +7,6 @@ import { EnhancedFlag } from '../../../../types/devServer';
 import { EditIcon, CheckIcon, CancelIcon } from '../icons';
 import { IconButton } from '../../../Buttons/IconButton';
 
-
 interface LocalBooleanFlagControlProps {
   flag: LocalFlag;
   onOverride: (value: boolean) => void;

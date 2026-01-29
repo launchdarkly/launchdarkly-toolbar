@@ -18,10 +18,12 @@ export const TOOLBAR_CLASS_PREFIX = 'ldtb_';
 export const TOOLBAR_STYLE_MARKER = '/* LD_TOOLBAR_STYLES */';
 
 /**
- * LaunchPad token prefixes that indicate LaunchDarkly design system styles.
- * These CSS custom properties should only exist within the toolbar's Shadow DOM.
+ * CSS variable prefixes used by LaunchDarkly design systems.
+ * Add new prefixes here as they are introduced.
  */
-export const LAUNCHPAD_TOKEN_PREFIXES = ['--lp-color-', '--lp-font-', '--lp-spacing-', '--lp-size-'] as const;
+export const LAUNCHPAD_TOKEN_PREFIXES = [
+  '--lp-', // LaunchPad design system tokens
+] as const;
 
 /**
  * Checks if CSS content belongs to the toolbar based on known markers.

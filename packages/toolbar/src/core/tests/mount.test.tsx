@@ -146,8 +146,7 @@ describe('mount', () => {
       if (!hasStyles) {
         const styleElements = shadowRoot?.querySelectorAll('style');
         hasStyles =
-          styleElements != null &&
-          Array.from(styleElements).some((s) => s.textContent?.includes('--lp-color-primary'));
+          styleElements != null && Array.from(styleElements).some((s) => s.textContent?.includes('--lp-color-primary'));
       }
 
       // Check style container
