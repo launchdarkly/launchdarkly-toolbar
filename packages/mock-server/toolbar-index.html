@@ -63,15 +63,28 @@
               event.origin,
             );
           } else if (type === 'get-projects') {
-            // Return mock projects
+            // Return mock projects - must have 'items' array with proper structure
             event.source.postMessage(
               {
                 type: 'get-projects-response',
                 requestId: requestId,
-                data: [
-                  { key: 'test-project', name: 'Test Project' },
-                  { key: 'demo-project', name: 'Demo Project' },
-                ],
+                data: {
+                  items: [
+                    {
+                      key: 'test-project',
+                      name: 'Test Project',
+                      environments: [
+                        { key: 'production', name: 'Production', _id: 'prod-env-id' },
+                        { key: 'test', name: 'Test', _id: 'test-env-id' },
+                      ],
+                    },
+                    {
+                      key: 'demo-project',
+                      name: 'Demo Project',
+                      environments: [{ key: 'production', name: 'Production', _id: 'demo-prod-env-id' }],
+                    },
+                  ],
+                },
               },
               event.origin,
             );
