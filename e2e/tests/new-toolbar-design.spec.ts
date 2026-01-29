@@ -148,6 +148,9 @@ test.describe('LaunchDarkly Toolbar - New Design', () => {
       // Expand toolbar
       await page.getByTestId('launchdarkly-toolbar').click();
 
+      // Wait for flags content to load first
+      await expect(page.getByText('boolean-flag').first()).toBeVisible();
+
       const subtabDropdown = page.getByTestId('subtab-dropdown-trigger');
       await expect(subtabDropdown).toBeVisible();
       await subtabDropdown.click();
@@ -162,6 +165,9 @@ test.describe('LaunchDarkly Toolbar - New Design', () => {
       // Expand toolbar
       await page.getByTestId('launchdarkly-toolbar').click();
 
+      // Wait for flags content to load first
+      await expect(page.getByText('boolean-flag').first()).toBeVisible();
+
       // Open subtab dropdown and select Contexts
       await page.getByTestId('subtab-dropdown-trigger').click();
       await page.getByRole('option', { name: 'Contexts', exact: true }).click();
@@ -175,6 +181,10 @@ test.describe('LaunchDarkly Toolbar - New Design', () => {
     test.beforeEach(async ({ page }: { page: Page }) => {
       // Expand toolbar and navigate to Contexts subtab
       await page.getByTestId('launchdarkly-toolbar').click();
+
+      // Wait for flags content to load first
+      await expect(page.getByText('boolean-flag').first()).toBeVisible();
+
       await page.getByTestId('subtab-dropdown-trigger').click();
       await expect(page.getByTestId('subtab-dropdown-listbox')).toBeVisible();
       await page.getByRole('option', { name: 'Contexts', exact: true }).click();
