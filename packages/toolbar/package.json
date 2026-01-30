@@ -112,7 +112,7 @@
     "@launchdarkly/session-replay": "^0.5.1",
     "@launchpad-ui/components": "^0.17.9",
     "@launchpad-ui/tokens": "^0.15.1",
-    "@lezer/highlight": "1.2.1",
+    "@lezer/highlight": "1.2.3",
     "@react-aria/focus": "^3.21.3",
     "@react-stately/flags": "^3.1.2",
     "@rsbuild/core": "^1.7.2",
