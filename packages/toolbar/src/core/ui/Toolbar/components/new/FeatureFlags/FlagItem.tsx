@@ -14,7 +14,7 @@ import { VIRTUALIZATION } from '../../../constants';
 import { StarButton } from '../../../../Buttons/StarButton';
 import { useStarredFlags, useAnalytics, usePlugins, useProjectContext } from '../../../context';
 import { ExternalLinkIcon, CancelCircleIcon } from '../../icons';
-import { clearOverrideHoverReveal, clearOverrideIconButton } from '../../../../../../flags';
+import { clearOverrideUxVariant } from '../../../../../../flags';
 
 interface OverrideDotProps {
   onClear: () => void;
@@ -134,14 +134,13 @@ const OverrideDotIconButton = memo(function OverrideDotIconButton({ onClear }: O
 });
 
 const OverrideDot = memo(function OverrideDot({ onClear }: OverrideDotProps) {
-  const useIconButton = clearOverrideIconButton();
-  const useHoverReveal = clearOverrideHoverReveal();
+  const variant = clearOverrideUxVariant();
 
-  if (useIconButton) {
+  if (variant === 'icon-button') {
     return <OverrideDotIconButton onClear={onClear} />;
   }
 
-  if (useHoverReveal) {
+  if (variant === 'hover-reveal') {
     return <OverrideDotHoverReveal onClear={onClear} />;
   }
 
