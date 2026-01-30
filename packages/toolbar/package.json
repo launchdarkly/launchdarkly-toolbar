@@ -144,7 +144,7 @@
     "oxlint": "^1.41.0",
     "react": "^19.2.4",
     "react-dom": "^19.2.4",
-    "storybook": "^10.2.0",
+    "storybook": "^10.2.3",
     "storybook-addon-rslib": "^3.2.2",
     "storybook-react-rsbuild": "^3.2.2",
     "typescript": "^5.9.3",
