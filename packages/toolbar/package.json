@@ -108,7 +108,7 @@
     "@codemirror/lint": "^6.9.3",
     "@codemirror/state": "^6.5.4",
     "@codemirror/view": "^6.39.11",
-    "@launchdarkly/observability": "^0.5.0",
+    "@launchdarkly/observability": "^1.0.0",
     "@launchdarkly/session-replay": "^0.5.1",
     "@launchpad-ui/components": "^0.17.9",
     "@launchpad-ui/tokens": "^0.15.1",
