@@ -1,5 +1,5 @@
 import React, { useState, useCallback, memo } from 'react';
-import { motion } from 'motion/react';
+import { motion, AnimatePresence } from 'motion/react';
 import * as styles from './FlagItem.module.css';
 import { CopyableText } from '../../CopyableText';
 import { NormalizedFlag } from './types';
@@ -13,13 +13,14 @@ import {
 import { VIRTUALIZATION } from '../../../constants';
 import { StarButton } from '../../../../Buttons/StarButton';
 import { useStarredFlags, useAnalytics, usePlugins, useProjectContext } from '../../../context';
-import { ExternalLinkIcon } from '../../icons';
+import { ExternalLinkIcon, CancelCircleIcon } from '../../icons';
+import { clearOverrideHoverReveal, clearOverrideIconButton } from '../../../../../../flags';
 
 interface OverrideDotProps {
   onClear: () => void;
 }
 
-const OverrideDot = memo(function OverrideDot({ onClear }: OverrideDotProps) {
+const OverrideDotDefault = memo(function OverrideDotDefault({ onClear }: OverrideDotProps) {
   const [isHovered, setIsHovered] = useState(false);
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
@@ -38,8 +39,8 @@ const OverrideDot = memo(function OverrideDot({ onClear }: OverrideDotProps) {
       onKeyDown={handleKeyDown}
       tabIndex={0}
       role="button"
-      aria-label="Remove flag override"
-      title={isHovered ? 'Click to remove override' : 'Override active'}
+      aria-label="Clear override"
+      title={isHovered ? 'Click to clear override' : 'Override active'}
       whileHover={{ scale: 1.1 }}
       transition={{ duration: 0.1 }}
       data-testid="override-dot"
@@ -56,6 +57,95 @@ const OverrideDot = memo(function OverrideDot({ onClear }: OverrideDotProps) {
       />
     </motion.span>
   );
+});
+
+const OverrideDotHoverReveal = memo(function OverrideDotHoverReveal({ onClear }: OverrideDotProps) {
+  const [isHovered, setIsHovered] = useState(false);
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      onClear();
+    }
+  };
+
+  return (
+    <motion.span
+      className={styles.overrideHoverReveal}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+      onClick={onClear}
+      onKeyDown={handleKeyDown}
+      tabIndex={0}
+      role="button"
+      aria-label="Clear override"
+      title="Click to clear override"
+      data-testid="override-hover-reveal"
+      style={{ cursor: 'pointer' }}
+    >
+      <motion.span
+        className={styles.overrideDotInner}
+        animate={{
+          backgroundColor: isHovered ? 'var(--lp-color-red-500)' : 'var(--lp-color-brand-cyan-base)',
+        }}
+        transition={{ duration: 0.1 }}
+      />
+      <AnimatePresence>
+        {isHovered && (
+          <motion.span
+            className={styles.overrideHoverText}
+            initial={{ opacity: 0, width: 0 }}
+            animate={{ opacity: 1, width: 'auto' }}
+            exit={{ opacity: 0, width: 0 }}
+            transition={{ duration: 0.15 }}
+          >
+            Clear
+          </motion.span>
+        )}
+      </AnimatePresence>
+    </motion.span>
+  );
+});
+
+const OverrideDotIconButton = memo(function OverrideDotIconButton({ onClear }: OverrideDotProps) {
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      onClear();
+    }
+  };
+
+  return (
+    <motion.button
+      className={styles.overrideIconButton}
+      onClick={onClear}
+      onKeyDown={handleKeyDown}
+      aria-label="Clear override"
+      title="Clear override"
+      whileHover={{ scale: 1.1 }}
+      whileTap={{ scale: 0.95 }}
+      transition={{ duration: 0.1 }}
+      data-testid="override-icon-button"
+      type="button"
+    >
+      <CancelCircleIcon className={styles.overrideIcon} />
+    </motion.button>
+  );
+});
+
+const OverrideDot = memo(function OverrideDot({ onClear }: OverrideDotProps) {
+  const useIconButton = clearOverrideIconButton();
+  const useHoverReveal = clearOverrideHoverReveal();
+
+  if (useIconButton) {
+    return <OverrideDotIconButton onClear={onClear} />;
+  }
+
+  if (useHoverReveal) {
+    return <OverrideDotHoverReveal onClear={onClear} />;
+  }
+
+  return <OverrideDotDefault onClear={onClear} />;
 });
 
 interface FlagItemProps {
