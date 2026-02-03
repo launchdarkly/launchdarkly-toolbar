@@ -142,8 +142,8 @@ importers:
         specifier: ^0.5.0
         version: 0.5.0
       '@launchdarkly/session-replay':
-        specifier: ^0.5.1
-        version: 0.5.1
+        specifier: ^1.0.0
+        version: 1.0.0
       '@launchpad-ui/components':
         specifier: ^0.17.9
         version: 0.17.9(@react-aria/focus@3.21.3(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(@react-aria/interactions@3.26.0(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(@react-aria/utils@3.32.0(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(@react-stately/utils@3.11.0(react@19.2.4))(@react-types/shared@3.32.1(react@19.2.4))(react-aria-components@1.13.0(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-aria@3.44.0(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react-hook-form@7.65.0(react@19.2.4))(react-router@7.13.0(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-stately@3.42.0(react@19.2.4))(react@19.2.4)
@@ -1179,8 +1179,8 @@ packages:
   '@launchdarkly/observability@0.5.0':
     resolution: {integrity: sha512-4niW0kFE47NOeN93de6AxTcjrX6c5WTdvtboXCQ/a18F0UdToZKCm3/bcpk2xGGp2cTCQew+1Ld/lmPmjtppSA==}
 
-  '@launchdarkly/session-replay@0.5.1':
-    resolution: {integrity: sha512-m+4OqIBnPHfy3G1Ukssazkg9ii5D+AEKKYGfr1w/gJqXqEzvzKJkWN1FtvxlpYlr52W/scSgd9t8uov5nvDeNA==}
+  '@launchdarkly/session-replay@1.0.0':
+    resolution: {integrity: sha512-E7h4ZjKDbsh0nsBbBxHtYryVVJWojCF38M6a0TQyePuncxPo1rTUpJ8Z+lF6eTkI6kdrke5/8Bwo6W/d5SGuCA==}
 
   '@launchpad-ui/components@0.17.9':
     resolution: {integrity: sha512-lwVRqErDcpgvXRrYnbvFW40vXp9PdO6oB9GQlvoXNOpvSCQLU+SCeYGCLhqMDWh7vFTmNHO4FkhaOsH5t7fqoQ==}
@@ -3529,8 +3529,8 @@ packages:
   highlight.run@9.25.0:
     resolution: {integrity: sha512-E2ofYAyn1l6Zqa5/CyS4dAlZbFpLBCzLAPNtLx1MDeB2DrSVstFTcrkTSVw23hdL/jDvpim05QpQUelr8bFWdw==}
 
-  highlight.run@9.25.1:
-    resolution: {integrity: sha512-vaPaSOwE88IvrO/N5lUSv5RObHWHc/jnfUwECXhEkfMtElIKg/P6OfjQoDghSGRP/9wfX0+62Ti/HP5y1HbgeA==}
+  highlight.run@9.26.0:
+    resolution: {integrity: sha512-fwD1dY1blJKykpBj/SNxqRjrBboa/eGkf/oYf3fOBuUl6V8bSB2TQmsX/0IA+dzx3fTl4kPF972C+RxHaJ9aIA==}
 
   hoist-non-react-statics@3.3.2:
     resolution: {integrity: sha512-/gGivxi8JPKWNm/W0jSmzcMPpfpPLc3dY/6GxhX2hQ9iGj3aDfklV4ET7NjKpSinLpJ5vafa9iiGIEZg10SfBw==}
@@ -6001,9 +6001,9 @@ snapshots:
     dependencies:
       highlight.run: 9.25.0
 
-  '@launchdarkly/session-replay@0.5.1':
+  '@launchdarkly/session-replay@1.0.0':
     dependencies:
-      highlight.run: 9.25.1
+      highlight.run: 9.26.0
 
   '@launchpad-ui/components@0.17.9(@react-aria/focus@3.21.3(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(@react-aria/interactions@3.26.0(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(@react-aria/utils@3.32.0(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(@react-stately/utils@3.11.0(react@19.2.4))(@react-types/shared@3.32.1(react@19.2.4))(react-aria-components@1.13.0(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-aria@3.44.0(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react-hook-form@7.65.0(react@19.2.4))(react-router@7.13.0(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-stately@3.42.0(react@19.2.4))(react@19.2.4)':
     dependencies:
@@ -9038,7 +9038,7 @@ snapshots:
       '@launchdarkly/js-client-sdk': 0.6.0
       imurmurhash: 0.1.4
 
-  highlight.run@9.25.1:
+  highlight.run@9.26.0:
     dependencies:
       '@launchdarkly/js-client-sdk': 0.11.0
       imurmurhash: 0.1.4
