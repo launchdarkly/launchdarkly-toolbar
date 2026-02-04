@@ -1,5 +1,13 @@
 # Changelog
 
+## [2.1.2](https://github.com/launchdarkly/launchdarkly-toolbar/compare/2.1.1...2.1.2) (2026-02-04)
+
+
+### Bug Fixes
+
+* [REL-12000] wire up Reload on Flag Change + opt. updates ([#572](https://github.com/launchdarkly/launchdarkly-toolbar/issues/572)) ([36c3399](https://github.com/launchdarkly/launchdarkly-toolbar/commit/36c33995a8dab48533a12b51ddc9e28c1d5439ef))
+* wire up Reload on Flag Change + opt. updates ([36c3399](https://github.com/launchdarkly/launchdarkly-toolbar/commit/36c33995a8dab48533a12b51ddc9e28c1d5439ef))
+
 ## [2.1.1](https://github.com/launchdarkly/launchdarkly-toolbar/compare/2.1.0...2.1.1) (2026-01-29)
 
 
