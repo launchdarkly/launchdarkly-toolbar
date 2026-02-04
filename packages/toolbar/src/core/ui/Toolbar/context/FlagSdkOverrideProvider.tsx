@@ -146,6 +146,22 @@ export function FlagSdkOverrideProvider({ children, flagOverridePlugin }: FlagSd
   const setOverride = useCallback(
     (flagKey: string, value: any) => {
       flagOverridePlugin.setOverride(flagKey, value);
+
+      // Optimistically update local state immediately
+      // The SDK's 'change' event may not fire for debug overrides
+      setFlags((prevFlags) => {
+        const existingFlag = prevFlags[flagKey];
+        if (!existingFlag) return prevFlags;
+
+        return {
+          ...prevFlags,
+          [flagKey]: {
+            ...existingFlag,
+            currentValue: value,
+            isOverridden: true,
+          },
+        };
+      });
     },
     [flagOverridePlugin],
   );
@@ -153,6 +169,31 @@ export function FlagSdkOverrideProvider({ children, flagOverridePlugin }: FlagSd
   const removeOverride = useCallback(
     (flagKey: string) => {
       flagOverridePlugin.removeOverride(flagKey);
+
+      // Optimistically update local state
+      // Need to get the original value from SDK after override is removed
+      const ldClient = flagOverridePlugin.getClient();
+      if (!ldClient) return;
+
+      // Use setTimeout to ensure SDK has processed the removal
+      setTimeout(() => {
+        const allFlags = ldClient.allFlags();
+        const originalValue = allFlags[flagKey];
+
+        setFlags((prevFlags) => {
+          const existingFlag = prevFlags[flagKey];
+          if (!existingFlag) return prevFlags;
+
+          return {
+            ...prevFlags,
+            [flagKey]: {
+              ...existingFlag,
+              currentValue: originalValue,
+              isOverridden: false,
+            },
+          };
+        });
+      }, 0);
     },
     [flagOverridePlugin],
   );

@@ -22,6 +22,7 @@ import * as styles from './FlagList.module.css.ts';
 // Dev Server Mode Component
 function DevServerFlagList() {
   const { state, setOverride, clearOverride } = useDevServerContext();
+  const { reloadOnFlagChangeIsEnabled } = useToolbarState();
   const { searchTerms } = useTabSearchContext();
   const searchTerm = useMemo(() => searchTerms['flags'] || '', [searchTerms]);
   const { activeFilters } = useSubtabFilters('flags');
@@ -107,16 +108,24 @@ function DevServerFlagList() {
     async (flagKey: string, value: any) => {
       await setOverride(flagKey, value);
       analytics.trackFlagOverride(flagKey, value, 'set');
+
+      if (reloadOnFlagChangeIsEnabled) {
+        window.location.reload();
+      }
     },
-    [setOverride, analytics],
+    [setOverride, analytics, reloadOnFlagChangeIsEnabled],
   );
 
   const handleClearOverride = useCallback(
     async (flagKey: string) => {
       await clearOverride(flagKey);
       analytics.trackFlagOverride(flagKey, null, 'remove');
+
+      if (reloadOnFlagChangeIsEnabled) {
+        window.location.reload();
+      }
     },
-    [clearOverride, analytics],
+    [clearOverride, analytics, reloadOnFlagChangeIsEnabled],
   );
 
   // Calculate stats
@@ -204,6 +213,7 @@ function DevServerFlagList() {
 // SDK Mode Component
 function SdkFlagList() {
   const { flags, setOverride, removeOverride } = useFlagSdkOverrideContext();
+  const { reloadOnFlagChangeIsEnabled } = useToolbarState();
   const { searchTerms } = useTabSearchContext();
   const searchTerm = useMemo(() => searchTerms['flags'] || '', [searchTerms]);
   const { activeFilters } = useSubtabFilters('flags');
@@ -276,16 +286,24 @@ function SdkFlagList() {
     (flagKey: string, value: any) => {
       setOverride(flagKey, value);
       analytics.trackFlagOverride(flagKey, value, 'set');
+
+      if (reloadOnFlagChangeIsEnabled) {
+        window.location.reload();
+      }
     },
-    [setOverride, analytics],
+    [setOverride, analytics, reloadOnFlagChangeIsEnabled],
   );
 
   const handleClearOverride = useCallback(
     (flagKey: string) => {
       removeOverride(flagKey);
       analytics.trackFlagOverride(flagKey, null, 'remove');
+
+      if (reloadOnFlagChangeIsEnabled) {
+        window.location.reload();
+      }
     },
-    [removeOverride, analytics],
+    [removeOverride, analytics, reloadOnFlagChangeIsEnabled],
   );
 
   const handleHeightChange = useCallback(
