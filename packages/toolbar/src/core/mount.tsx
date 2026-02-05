@@ -8,6 +8,7 @@ import {
   getCachedToolbarStyles,
   cacheToolbarStyle,
   isToolbarStyleContent,
+  shouldCopyToShadowDom,
 } from './styles';
 
 export default function mount(rootNode: HTMLElement, config: InitializationConfig) {
@@ -145,6 +146,9 @@ function injectExistingLaunchPadStyles(shadowRoot: ShadowRoot): void {
 function setupBackupObserver(shadowRoot: ShadowRoot): void {
   if (!document.head) return;
 
+  // Track styles we've already copied to avoid duplicates
+  const copiedStyleHashes = new Set<string>();
+
   const observer = new MutationObserver((mutations) => {
     mutations.forEach((mutation) => {
       mutation.addedNodes.forEach((node) => {
@@ -160,11 +164,21 @@ function setupBackupObserver(shadowRoot: ShadowRoot): void {
             // Move to shadow root
             injectStylesIntoShadowRoot(shadowRoot, content);
 
-            // Remove from document.head
+            // Remove from document.head (toolbar styles should only be in Shadow DOM)
             try {
               styleEl.remove();
             } catch (error) {
               console.warn('[LaunchDarkly Toolbar] Failed to remove style element from document.head:', error);
+            }
+          }
+          // Check if this contains LaunchPad tokens that toolbar needs
+          // Copy to shadow DOM but DON'T remove from document.head (host app needs them too)
+          else if (shouldCopyToShadowDom(content)) {
+            // Use content as hash key to avoid duplicate copies
+            if (!copiedStyleHashes.has(content)) {
+              copiedStyleHashes.add(content);
+              injectStylesIntoShadowRoot(shadowRoot, content);
+              // Note: we intentionally do NOT remove from document.head here
             }
           }
         }

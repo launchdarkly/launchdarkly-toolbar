@@ -212,44 +212,57 @@ describe('mount', () => {
       cleanup();
     });
 
-    test('intercepts LaunchPad styles with --lp- prefix', async () => {
+    test('copies --lp- styles to Shadow DOM but does NOT remove from document.head (prevents host app style conflicts)', async () => {
+      // This test verifies the fix for the react-select styling bug.
+      // Host applications may also use LaunchPad tokens (--lp-*), and their styles
+      // must NOT be removed from document.head, otherwise components like react-select break.
+      // However, they should be COPIED to Shadow DOM so the toolbar can use them.
       const cleanup = mount(rootNode, mockConfig);
 
-      const newStyle = document.createElement('style');
-      newStyle.textContent = ':root { --lp-spacing-test: 8px; }';
-      document.head.appendChild(newStyle);
+      const hostAppStyle = document.createElement('style');
+      // Simulate a host app component that uses LaunchPad tokens for theming
+      hostAppStyle.textContent = '.my-select-control { background: var(--lp-color-bg-ui-primary); display: flex; }';
+      document.head.appendChild(hostAppStyle);
 
-      // Wait for interception to process
+      // Wait for any potential interception
       await new Promise((resolve) => setTimeout(resolve, 100));
 
+      // The style should STILL be in document.head (not removed)
+      const headStyles = Array.from(document.head.querySelectorAll('style'));
+      const stillInHead = headStyles.some((style) => style.textContent?.includes('my-select-control'));
+      expect(stillInHead).toBe(true);
+
+      // The style should ALSO be copied to Shadow DOM (for toolbar to use)
       const toolbarHost = document.getElementById('ld-toolbar');
       const shadowRoot = toolbarHost?.shadowRoot;
 
-      // Check for style in either adoptedStyleSheets or style elements
-      let hasLpStyle = false;
+      let copiedToShadow = false;
 
+      // Check adoptedStyleSheets
       if (shadowRoot?.adoptedStyleSheets) {
         for (const sheet of shadowRoot.adoptedStyleSheets) {
           try {
             const rules = Array.from(sheet.cssRules);
-            if (rules.some((rule) => rule.cssText.includes('--lp-spacing-test'))) {
-              hasLpStyle = true;
+            if (rules.some((rule) => rule.cssText.includes('my-select-control'))) {
+              copiedToShadow = true;
               break;
             }
           } catch {
-            // cssRules may not be accessible in some cases
+            // cssRules may not be accessible
           }
         }
       }
 
-      if (!hasLpStyle) {
+      // Check style elements
+      if (!copiedToShadow) {
         const shadowStyles = Array.from(shadowRoot?.querySelectorAll('style') || []);
-        hasLpStyle = shadowStyles.some((style) => style.textContent?.includes('--lp-spacing-test'));
+        copiedToShadow = shadowStyles.some((style) => style.textContent?.includes('my-select-control'));
       }
 
-      expect(hasLpStyle).toBe(true);
+      expect(copiedToShadow).toBe(true);
 
       cleanup();
+      hostAppStyle.remove();
     });
 
     test('does not intercept host app styles without toolbar markers', async () => {
@@ -271,17 +284,17 @@ describe('mount', () => {
       hostAppStyle.remove();
     });
 
-    test('handles duplicate styles gracefully', async () => {
-      // Add existing style to head first
+    test('handles duplicate toolbar styles gracefully', async () => {
+      // Add existing toolbar style to head first
       const existingStyle = document.createElement('style');
-      existingStyle.textContent = '.existing { --lp-color-test: blue; }';
+      existingStyle.textContent = `.${TOOLBAR_CLASS_PREFIX}existing_abc123 { color: blue; }`;
       document.head.appendChild(existingStyle);
 
       const cleanup = mount(rootNode, mockConfig);
 
-      // Try adding a similar style again (simulating toolbar re-injecting)
+      // Try adding a similar toolbar style (simulating toolbar re-injecting)
       const duplicateStyle = document.createElement('style');
-      duplicateStyle.textContent = '.existing-dup { --lp-color-test2: blue; }';
+      duplicateStyle.textContent = `.${TOOLBAR_CLASS_PREFIX}existing_def456 { color: red; }`;
       document.head.appendChild(duplicateStyle);
 
       await new Promise((resolve) => setTimeout(resolve, 100));
@@ -290,7 +303,7 @@ describe('mount', () => {
       const toolbarHost = document.getElementById('ld-toolbar');
       const shadowRoot = toolbarHost?.shadowRoot;
 
-      // Should have styles
+      // Should have styles in shadow root
       const hasStyles =
         (shadowRoot?.adoptedStyleSheets && shadowRoot.adoptedStyleSheets.length > 0) ||
         shadowRoot?.querySelector('style') !== null ||
