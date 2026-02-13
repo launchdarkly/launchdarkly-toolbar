@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.1.3](https://github.com/launchdarkly/launchdarkly-toolbar/compare/2.1.2...2.1.3) (2026-02-13)
+
+
+### Bug Fixes
+
+* fix unintentional removal of launchpad styles ([#580](https://github.com/launchdarkly/launchdarkly-toolbar/issues/580)) ([8dc56e7](https://github.com/launchdarkly/launchdarkly-toolbar/commit/8dc56e76c5f521ff21c4bc963cb420c38b8a43d9))
+
 ## [2.1.2](https://github.com/launchdarkly/launchdarkly-toolbar/compare/2.1.1...2.1.2) (2026-02-04)
 
 

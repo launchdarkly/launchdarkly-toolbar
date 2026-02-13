@@ -30,8 +30,8 @@ importers:
         specifier: ^3.8.1
         version: 3.8.1
       qs:
-        specifier: ^6.14.1
-        version: 6.14.1
+        specifier: ^6.14.2
+        version: 6.14.2
       storybook:
         specifier: ^10.2.4
         version: 10.2.4(@testing-library/dom@10.4.0)(prettier@3.8.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
@@ -4283,6 +4283,10 @@ packages:
     resolution: {integrity: sha512-4EK3+xJl8Ts67nLYNwqw/dsFVnCf+qR7RgXSK9jEEm9unao3njwMDdmsdvoKBKHzxd7tCYz5e5M+SnMjdtXGQQ==}
     engines: {node: '>=0.6'}
 
+  qs@6.14.2:
+    resolution: {integrity: sha512-V/yCWTTF7VJ9hIh18Ugr2zhJMP01MY7c5kh4J870L7imm6/DIzBsNLTXzMwUA3yZ5b/KBqLx8Kp3uRvd7xSe3Q==}
+    engines: {node: '>=0.6'}
+
   randombytes@2.1.0:
     resolution: {integrity: sha512-vYl3iOX+4CKUWuxGi9Ukhie6fsqXqS9FE2Zaic4tNFD2N2QQaXOMFbuKK4QmDHC0JO6B1Zp41J0LpT0oR68amQ==}
 
@@ -8329,7 +8333,7 @@ snapshots:
       http-errors: 2.0.1
       iconv-lite: 0.7.0
       on-finished: 2.4.1
-      qs: 6.14.1
+      qs: 6.14.2
       raw-body: 3.0.2
       type-is: 2.0.1
     transitivePeerDependencies:
@@ -9853,6 +9857,10 @@ snapshots:
     dependencies:
       side-channel: 1.1.0
 
+  qs@6.14.2:
+    dependencies:
+      side-channel: 1.1.0
+
   randombytes@2.1.0:
     dependencies:
       safe-buffer: 5.2.1
@@ -10604,7 +10612,7 @@ snapshots:
 
   union@0.5.0:
     dependencies:
-      qs: 6.14.1
+      qs: 6.14.2
 
   universalify@2.0.1: {}
 
@@ -10634,7 +10642,7 @@ snapshots:
   url@0.11.4:
     dependencies:
       punycode: 1.4.1
-      qs: 6.14.1
+      qs: 6.14.2
 
   use-sync-external-store@1.6.0(react@19.2.4):
     dependencies:
