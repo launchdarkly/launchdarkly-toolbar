@@ -3,6 +3,7 @@ export {
   TOOLBAR_STYLE_MARKER,
   LAUNCHPAD_TOKEN_PREFIXES,
   isToolbarStyleContent,
+  shouldCopyToShadowDom,
 } from './constants';
 
 export {
