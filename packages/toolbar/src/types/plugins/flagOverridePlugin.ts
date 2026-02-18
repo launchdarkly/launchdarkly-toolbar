@@ -1,12 +1,12 @@
 import type {
-  LDClient,
   LDDebugOverride,
   LDPluginMetadata,
   LDFlagSet,
   Hook,
   LDPluginEnvironmentMetadata,
-} from 'launchdarkly-js-client-sdk';
+} from '@launchdarkly/js-client-sdk';
 import type { IFlagOverridePlugin } from './plugins';
+import type { LDClient } from './LDClient';
 
 /**
  * Configuration options for the FlagOverridePlugin

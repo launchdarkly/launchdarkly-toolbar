@@ -107,16 +107,28 @@ export function FlagSdkOverrideProvider({ children, flagOverridePlugin }: FlagSd
     setIsLoading(false);
 
     // Subscribe to changes with incremental updates
-    const handleChange = (changes: Record<string, { current: any }>) => {
+    // NOTE: a better way to do this might be to be able to use the LDPluginEnvironmentMetadata that
+    // is passed in when the plugin is registered. That property has the client version number which can
+    // then be used to determine how to adapt the change handler.
+    // Currently the change handler is set up to be able to handle both <= v3 and >= v4 change events.
+    //   <= v3: changes are passed as the first argument and as a map of flag keys and their changed values.
+    //   >= v4: changes are passed as the second argument (the first argument is the context) and is an array of flag keys
+    //          of changed flags.
+    const handleChange = (changes: Record<string, { current: any }>, keys?: string[]) => {
       setFlags((prevFlags) => {
         const updatedRawFlags = ldClient.allFlags();
         const newFlags = buildFlags(updatedRawFlags, apiFlags);
+
+        let changedKeys = keys;
+        if (changedKeys === undefined) {
+          changedKeys = Object.keys(changes);
+        }
 
         // Only update the flags that actually changed for better performance
         const updatedFlags = { ...prevFlags };
         let hasChanges = false;
 
-        Object.keys(changes).forEach((flagKey) => {
+        changedKeys.forEach((flagKey) => {
           if (newFlags[flagKey]) {
             updatedFlags[flagKey] = newFlags[flagKey];
             hasChanges = true;
