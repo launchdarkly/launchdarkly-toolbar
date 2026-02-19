@@ -113,7 +113,7 @@ describe('mount', () => {
   });
 
   describe('Style Isolation', () => {
-    test('copies existing LaunchPad styles to shadow root', () => {
+    test('does not touch existing LaunchPad styles in document.head', () => {
       // Add some LaunchPad styles to document.head BEFORE mounting
       const styleEl = document.createElement('style');
       styleEl.textContent = '.test { --lp-color-primary: blue; }';
@@ -121,43 +121,15 @@ describe('mount', () => {
 
       mount(rootNode, mockConfig);
 
+      // The style should still be in document.head (not moved or removed)
+      const headStyles = Array.from(document.head.querySelectorAll('style'));
+      const stillInHead = headStyles.some((s) => s.textContent?.includes('--lp-color-primary'));
+      expect(stillInHead).toBe(true);
+
+      // The style should NOT have been copied into the shadow root
       const toolbarHost = document.getElementById('ld-toolbar');
-      // Check if shadow root has styles (could be in adoptedStyleSheets or style elements)
       const shadowRoot = toolbarHost?.shadowRoot;
-
-      // Check for styles in various places they could be injected
-      let hasStyles = false;
-
-      // Check adoptedStyleSheets
-      if (shadowRoot?.adoptedStyleSheets && shadowRoot.adoptedStyleSheets.length > 0) {
-        for (const sheet of shadowRoot.adoptedStyleSheets) {
-          try {
-            if (Array.from(sheet.cssRules).some((rule) => rule.cssText.includes('--lp-color-primary'))) {
-              hasStyles = true;
-              break;
-            }
-          } catch {
-            // cssRules may not be accessible
-          }
-        }
-      }
-
-      // Check style elements
-      if (!hasStyles) {
-        const styleElements = shadowRoot?.querySelectorAll('style');
-        hasStyles =
-          styleElements != null && Array.from(styleElements).some((s) => s.textContent?.includes('--lp-color-primary'));
-      }
-
-      // Check style container
-      if (!hasStyles) {
-        const container = shadowRoot?.querySelector('[data-ld-toolbar-styles]');
-        hasStyles =
-          container != null &&
-          Array.from(container.querySelectorAll('style')).some((s) => s.textContent?.includes('--lp-color-primary'));
-      }
-
-      expect(hasStyles).toBe(true);
+      expect(checkForStyle(shadowRoot, '--lp-color-primary')).toBe(false);
 
       styleEl.remove();
     });
@@ -212,15 +184,14 @@ describe('mount', () => {
       cleanup();
     });
 
-    test('copies --lp- styles to Shadow DOM but does NOT remove from document.head (prevents host app style conflicts)', async () => {
-      // This test verifies the fix for the react-select styling bug.
-      // Host applications may also use LaunchPad tokens (--lp-*), and their styles
-      // must NOT be removed from document.head, otherwise components like react-select break.
-      // However, they should be COPIED to Shadow DOM so the toolbar can use them.
+    test('does not copy host app --lp- styles to Shadow DOM (prevents version conflicts)', async () => {
+      // Host applications may use their own version of LaunchPad tokens (--lp-*).
+      // The toolbar must NOT intercept, copy, or remove these styles. They belong
+      // entirely to the host app. The toolbar loads its own tokens into the Shadow
+      // DOM via the dynamic globals.css import instead.
       const cleanup = mount(rootNode, mockConfig);
 
       const hostAppStyle = document.createElement('style');
-      // Simulate a host app component that uses LaunchPad tokens for theming
       hostAppStyle.textContent = '.my-select-control { background: var(--lp-color-bg-ui-primary); display: flex; }';
       document.head.appendChild(hostAppStyle);
 
@@ -232,34 +203,10 @@ describe('mount', () => {
       const stillInHead = headStyles.some((style) => style.textContent?.includes('my-select-control'));
       expect(stillInHead).toBe(true);
 
-      // The style should ALSO be copied to Shadow DOM (for toolbar to use)
+      // The style should NOT be copied to Shadow DOM
       const toolbarHost = document.getElementById('ld-toolbar');
       const shadowRoot = toolbarHost?.shadowRoot;
-
-      let copiedToShadow = false;
-
-      // Check adoptedStyleSheets
-      if (shadowRoot?.adoptedStyleSheets) {
-        for (const sheet of shadowRoot.adoptedStyleSheets) {
-          try {
-            const rules = Array.from(sheet.cssRules);
-            if (rules.some((rule) => rule.cssText.includes('my-select-control'))) {
-              copiedToShadow = true;
-              break;
-            }
-          } catch {
-            // cssRules may not be accessible
-          }
-        }
-      }
-
-      // Check style elements
-      if (!copiedToShadow) {
-        const shadowStyles = Array.from(shadowRoot?.querySelectorAll('style') || []);
-        copiedToShadow = shadowStyles.some((style) => style.textContent?.includes('my-select-control'));
-      }
-
-      expect(copiedToShadow).toBe(true);
+      expect(checkForStyle(shadowRoot, 'my-select-control')).toBe(false);
 
       cleanup();
       hostAppStyle.remove();

@@ -31,7 +31,7 @@ export default function mount(rootNode: HTMLElement, config: InitializationConfi
   // isToolbarStyleContent (ldtb_ prefix) are already redirected. Everything else
   // (LaunchPad tokens, LP component styles) passes through to document.head and
   // we relocate it in a single sweep after all imports resolve.
-  const stylesBefore = new Set(document.head.querySelectorAll('style'));
+  const stylesBefore = new Set(document.head ? document.head.querySelectorAll('style') : []);
 
   // Load globals.css first (tokens must be available before component styles),
   // then toolbar + context in parallel.
@@ -45,7 +45,9 @@ export default function mount(rootNode: HTMLElement, config: InitializationConfi
 
       // Sweep: find all styles added to document.head during the import chain
       // (LaunchPad tokens from globals.css + LP component styles from @launchpad-ui/components)
-      const newStyles = Array.from(document.head.querySelectorAll('style')).filter((s) => !stylesBefore.has(s));
+      const newStyles = document.head
+        ? Array.from(document.head.querySelectorAll('style')).filter((s) => !stylesBefore.has(s))
+        : [];
 
       for (const styleEl of newStyles) {
         const content = (styleEl.textContent || '').replace(/:root/g, ':host').replace(/#ld-toolbar/g, ':host');
