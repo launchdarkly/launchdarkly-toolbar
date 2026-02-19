@@ -1,10 +1,4 @@
-export {
-  TOOLBAR_CLASS_PREFIX,
-  TOOLBAR_STYLE_MARKER,
-  LAUNCHPAD_TOKEN_PREFIXES,
-  isToolbarStyleContent,
-  shouldCopyToShadowDom,
-} from './constants';
+export { TOOLBAR_CLASS_PREFIX, TOOLBAR_STYLE_MARKER, isToolbarStyleContent } from './constants';
 
 export {
   injectStylesIntoShadowRoot,

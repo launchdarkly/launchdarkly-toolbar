@@ -7,7 +7,6 @@ import { InitializationConfig } from '../types';
 import mount from './mount';
 import hydrateConfig from './utils/hydrateConfig';
 import { loadSharedStateFromUrl } from './utils/urlOverrides';
-import './globals.css';
 
 export type Cleanup = () => void;
 

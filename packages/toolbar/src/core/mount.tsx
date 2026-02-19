@@ -8,7 +8,6 @@ import {
   getCachedToolbarStyles,
   cacheToolbarStyle,
   isToolbarStyleContent,
-  shouldCopyToShadowDom,
 } from './styles';
 
 export default function mount(rootNode: HTMLElement, config: InitializationConfig) {
@@ -22,18 +21,40 @@ export default function mount(rootNode: HTMLElement, config: InitializationConfi
     };
   }
 
-  const { host, reactMount, cleanupInterceptor } = buildDom();
+  const { host, shadowRoot, reactMount, cleanupInterceptor } = buildDom();
   cleanup.push(cleanupInterceptor);
 
   const reactRoot = createRoot(reactMount);
 
-  // Dynamically import toolbar to capture style injection timing
-  // The style interceptor set up in buildDom() will redirect any injected styles
-  import('./ui/Toolbar/LaunchDarklyToolbar').then((module) => {
-    if (!isMounted) return;
-    const { LaunchDarklyToolbar } = module;
-    import('./context/ReactMountContext').then((contextModule) => {
+  // Snapshot styles currently in document.head so we can identify everything the
+  // toolbar's import chain adds. The interceptor is active, so styles matching
+  // isToolbarStyleContent (ldtb_ prefix) are already redirected. Everything else
+  // (LaunchPad tokens, LP component styles) passes through to document.head and
+  // we relocate it in a single sweep after all imports resolve.
+  const stylesBefore = new Set(document.head.querySelectorAll('style'));
+
+  // Load globals.css first (tokens must be available before component styles),
+  // then toolbar + context in parallel.
+  import('./globals.css')
+    .then(() => {
       if (!isMounted) return;
+      return Promise.all([import('./ui/Toolbar/LaunchDarklyToolbar'), import('./context/ReactMountContext')]);
+    })
+    .then((modules) => {
+      if (!isMounted || !modules) return;
+
+      // Sweep: find all styles added to document.head during the import chain
+      // (LaunchPad tokens from globals.css + LP component styles from @launchpad-ui/components)
+      const newStyles = Array.from(document.head.querySelectorAll('style')).filter((s) => !stylesBefore.has(s));
+
+      for (const styleEl of newStyles) {
+        const content = (styleEl.textContent || '').replace(/:root/g, ':host').replace(/#ld-toolbar/g, ':host');
+        injectStylesIntoShadowRoot(shadowRoot, content);
+        styleEl.remove();
+      }
+
+      const [toolbarModule, contextModule] = modules;
+      const { LaunchDarklyToolbar } = toolbarModule;
       const ReactMountContext = contextModule.default;
       reactRoot.render(
         <StrictMode>
@@ -54,7 +75,6 @@ export default function mount(rootNode: HTMLElement, config: InitializationConfi
         </StrictMode>,
       );
     });
-  });
 
   cleanup.push(() => {
     // `setTimeout` helps to avoid "Attempted to synchronously unmount a root while React was already rendering."
@@ -71,6 +91,7 @@ export default function mount(rootNode: HTMLElement, config: InitializationConfi
 
 interface DomElements {
   host: HTMLDivElement;
+  shadowRoot: ShadowRoot;
   reactMount: HTMLDivElement;
   cleanupInterceptor: () => void;
 }
@@ -93,10 +114,6 @@ function buildDom(): DomElements {
   // This prevents toolbar styles from ever appearing in document.head
   const cleanupInterceptor = createStyleInterceptor(shadowRoot);
 
-  // Inject any existing LaunchPad styles that the toolbar might need
-  // (e.g., if the host app also uses LaunchPad and has already loaded tokens)
-  injectExistingLaunchPadStyles(shadowRoot);
-
   // Restore cached toolbar styles from previous mounts (HMR support)
   const cachedStyles = getCachedToolbarStyles();
   if (cachedStyles.length > 0) {
@@ -113,30 +130,7 @@ function buildDom(): DomElements {
   // (e.g., styles injected via mechanisms other than appendChild/insertBefore)
   setupBackupObserver(shadowRoot);
 
-  return { host, reactMount, cleanupInterceptor };
-}
-
-/**
- * Copies existing LaunchPad styles from document.head to the Shadow DOM.
- * This handles cases where the host app uses LaunchPad and has already loaded
- * design tokens that the toolbar components depend on.
- */
-function injectExistingLaunchPadStyles(shadowRoot: ShadowRoot): void {
-  if (!document.head) return;
-
-  const existingStyles = Array.from(document.head.querySelectorAll('style'))
-    .filter((styleEl) => {
-      const content = styleEl.textContent || '';
-      // Only copy LaunchPad token styles (CSS custom properties)
-      // Don't copy component styles that might conflict
-      return content.includes('--lp-') && !content.includes('ldtb_');
-    })
-    .map((styleEl) => styleEl.textContent || '')
-    .join('\n');
-
-  if (existingStyles) {
-    injectStylesIntoShadowRoot(shadowRoot, existingStyles);
-  }
+  return { host, shadowRoot, reactMount, cleanupInterceptor };
 }
 
 /**
@@ -146,9 +140,6 @@ function injectExistingLaunchPadStyles(shadowRoot: ShadowRoot): void {
 function setupBackupObserver(shadowRoot: ShadowRoot): void {
   if (!document.head) return;
 
-  // Track styles we've already copied to avoid duplicates
-  const copiedStyleHashes = new Set<string>();
-
   const observer = new MutationObserver((mutations) => {
     mutations.forEach((mutation) => {
       mutation.addedNodes.forEach((node) => {
@@ -156,29 +147,14 @@ function setupBackupObserver(shadowRoot: ShadowRoot): void {
           const styleEl = node as HTMLStyleElement;
           const content = styleEl.textContent || '';
 
-          // Check if this is a toolbar style that slipped through
           if (isToolbarStyleContent(content)) {
-            // Cache for HMR support
             cacheToolbarStyle(content);
-
-            // Move to shadow root
             injectStylesIntoShadowRoot(shadowRoot, content);
 
-            // Remove from document.head (toolbar styles should only be in Shadow DOM)
             try {
               styleEl.remove();
             } catch (error) {
               console.warn('[LaunchDarkly Toolbar] Failed to remove style element from document.head:', error);
-            }
-          }
-          // Check if this contains LaunchPad tokens that toolbar needs
-          // Copy to shadow DOM but DON'T remove from document.head (host app needs them too)
-          else if (shouldCopyToShadowDom(content)) {
-            // Use content as hash key to avoid duplicate copies
-            if (!copiedStyleHashes.has(content)) {
-              copiedStyleHashes.add(content);
-              injectStylesIntoShadowRoot(shadowRoot, content);
-              // Note: we intentionally do NOT remove from document.head here
             }
           }
         }
