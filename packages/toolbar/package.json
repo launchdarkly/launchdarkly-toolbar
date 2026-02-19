@@ -8,6 +8,7 @@
     "feature-flags",
     "toolbar",
     "react",
+    "vue",
     "development",
     "typescript",
     "javascript",
@@ -35,6 +36,9 @@
       ],
       "react": [
         "./dist/react.d.ts"
+      ],
+      "vue": [
+        "./dist/vue.d.ts"
       ],
       "types": [
         "./dist/types-entry.d.ts"
@@ -77,6 +81,16 @@
       "require": {
         "types": "./dist/react.d.ts",
         "default": "./dist/react.cjs"
+      }
+    },
+    "./vue": {
+      "import": {
+        "types": "./dist/vue.d.ts",
+        "default": "./dist/js/vue.js"
+      },
+      "require": {
+        "types": "./dist/vue.d.ts",
+        "default": "./dist/vue.cjs"
       }
     },
     "./types": {
@@ -148,12 +162,25 @@
     "storybook-addon-rslib": "^3.2.2",
     "storybook-react-rsbuild": "^3.2.2",
     "typescript": "^5.9.3",
-    "vitest": "^4.0.18"
+    "vitest": "^4.0.18",
+    "vue": "^3.5.28"
   },
   "peerDependencies": {
     "launchdarkly-js-client-sdk": ">=3.9.0 <4.0.0",
     "react": "^18.0.0 || ^19.0.0",
-    "react-dom": "^18.0.0 || ^19.0.0"
+    "react-dom": "^18.0.0 || ^19.0.0",
+    "vue": "^3.0.0"
+  },
+  "peerDependenciesMeta": {
+    "react": {
+      "optional": true
+    },
+    "react-dom": {
+      "optional": true
+    },
+    "vue": {
+      "optional": true
+    }
   },
   "publishConfig": {
     "access": "public",
