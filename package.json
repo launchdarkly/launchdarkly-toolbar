@@ -34,6 +34,7 @@
     "http-server": "^14.1.1",
     "husky": "^9.1.7",
     "lint-staged": "^16.2.7",
+    "lodash": "4.17.23",
     "prettier": "^3.8.1",
     "qs": "6.15.0",
     "storybook": "^10.2.4",
