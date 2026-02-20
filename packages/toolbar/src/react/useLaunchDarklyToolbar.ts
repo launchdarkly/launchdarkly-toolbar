@@ -46,13 +46,17 @@ export default function useLaunchDarklyToolbar(args: UseLaunchDarklyToolbarConfi
     const controller = new AbortController();
 
     let cleanup: () => void = () => {};
-    lazyLoadToolbar(controller.signal, url).then((importedToolbar) => {
-      if (configRef.current === null) {
-        return;
-      }
+    lazyLoadToolbar(controller.signal, url)
+      .then((importedToolbar) => {
+        if (configRef.current === null) {
+          return;
+        }
 
-      cleanup = importedToolbar.init(configRef.current);
-    });
+        cleanup = importedToolbar.init(configRef.current);
+      })
+      .catch((error) => {
+        console.error('[LaunchDarkly Toolbar] Failed to initialize:', error);
+      });
 
     return () => {
       controller.abort();

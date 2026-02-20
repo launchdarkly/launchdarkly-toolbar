@@ -35,26 +35,26 @@ export default function useLaunchDarklyToolbar(args: UseLaunchDarklyToolbarConfi
       return;
     }
 
-    if (configRef.value === null) {
+    if (configRef.value === null || initConfig == null) {
       configRef.value = initConfig;
-    }
-
-    if (configRef.value === null) {
-      return;
     }
 
     const controller = new AbortController();
     controllerRef.value = controller;
 
     let cleanup: () => void = () => {};
-    lazyLoadToolbar(controller.signal, url).then((importedToolbar) => {
-      if (configRef.value === null) {
-        return;
-      }
+    lazyLoadToolbar(controller.signal, url)
+      .then((importedToolbar) => {
+        if (configRef.value === null) {
+          return;
+        }
 
-      cleanup = importedToolbar.init(configRef.value);
-      cleanupRef.value = cleanup;
-    });
+        cleanup = importedToolbar.init(configRef.value);
+        cleanupRef.value = cleanup;
+      })
+      .catch((error) => {
+        console.error('[LaunchDarkly Toolbar] Failed to initialize:', error);
+      });
   });
 
   onUnmounted(() => {
