@@ -32,14 +32,14 @@ instantiating it will keep it disabled in production environments.
 
 The Developer Toolbar depends on your LaunchDarkly JS client having a reference to the same `FlagOverridePlugin` and
 `EventInterceptionPlugin` that you pass into the Developer Toolbar. As such, ensure that you instantiate the Developer Toolbar at the same time or immediately after the LaunchDarkly JS client is instantiated.
-Below are a few examples on how to instantiate the toolbar, one using the `useLaunchDarklyToolbar` react hook, and one using the CDN hosted toolbar script.
 
-### React Hook (Recommended for React Applications)
+### React Hook
 
 ```tsx
 import { render } from 'react-dom';
 import { asyncWithLDProvider } from 'launchdarkly-react-client-sdk';
-import { useLaunchDarklyToolbar, FlagOverridePlugin, EventInterceptionPlugin } from '@launchdarkly/toolbar';
+import { useLaunchDarklyToolbar } from '@launchdarkly/toolbar/react';
+import { FlagOverridePlugin, EventInterceptionPlugin } from '@launchdarkly/toolbar/plugins';
 
 const flagOverridePlugin = new FlagOverridePlugin();
 const eventInterceptionPlugin = new EventInterceptionPlugin();
@@ -90,9 +90,118 @@ const eventInterceptionPlugin = new EventInterceptionPlugin();
 })();
 ```
 
-### CDN Script Tag (Framework-Agnostic)
+### Vue Composable
 
-Works with any JavaScript framework (Vue, Angular, Svelte, vanilla JS, etc.). Add this script to your `index.html` file.
+```typescript
+import { onMounted } from 'vue';
+import * as LDClient from 'launchdarkly-js-client-sdk';
+import { useLaunchDarklyToolbar } from '@launchdarkly/toolbar/vue';
+import { FlagOverridePlugin, EventInterceptionPlugin } from '@launchdarkly/toolbar/plugins';
+
+const flagOverridePlugin = new FlagOverridePlugin();
+const eventInterceptionPlugin = new EventInterceptionPlugin();
+
+// Initialize LaunchDarkly client
+const client = LDClient.initialize(
+  'client-side-id-123abc',
+  {
+    kind: 'user',
+    key: 'user-key-123abc',
+    name: 'Sandy Smith',
+    email: 'sandy@example.com',
+  },
+  {
+    plugins: [flagOverridePlugin, eventInterceptionPlugin],
+  },
+);
+
+// In your Vue component or setup function
+export default {
+  setup() {
+    onMounted(async () => {
+      await client.waitForInitialization();
+    });
+
+    // Initialize toolbar with the same plugin instances
+    useLaunchDarklyToolbar({
+      flagOverridePlugin,
+      eventInterceptionPlugin,
+
+      // OR Dev Server Mode
+      devServerUrl: 'http://localhost:8080',
+      projectKey: 'my-project',
+
+      position: 'bottom-right',
+      enabled: import.meta.env.DEV, // Vite
+      // enabled: process.env.NODE_ENV === 'development', // Webpack
+    });
+
+    return {
+      // your component data
+    };
+  },
+};
+```
+
+### Angular Service
+
+```typescript
+import { Component, OnInit } from '@angular/core';
+import * as LDClient from 'launchdarkly-js-client-sdk';
+import LaunchDarklyToolbarService from '@launchdarkly/toolbar/angular';
+import { FlagOverridePlugin, EventInterceptionPlugin } from '@launchdarkly/toolbar/plugins';
+import { environment } from '../environments/environment';
+
+@Component({
+  selector: 'app-root',
+  template: `<router-outlet></router-outlet>`,
+  providers: [LaunchDarklyToolbarService],
+})
+export class AppComponent implements OnInit {
+  private flagOverridePlugin = new FlagOverridePlugin();
+  private eventInterceptionPlugin = new EventInterceptionPlugin();
+  private ldClient: LDClient.LDClient;
+
+  constructor(private toolbarService: LaunchDarklyToolbarService) {
+    // Initialize LaunchDarkly client
+    this.ldClient = LDClient.initialize(
+      'client-side-id-123abc',
+      {
+        kind: 'user',
+        key: 'user-key-123abc',
+        name: 'Sandy Smith',
+        email: 'sandy@example.com',
+      },
+      {
+        plugins: [this.flagOverridePlugin, this.eventInterceptionPlugin],
+      },
+    );
+  }
+
+  async ngOnInit() {
+    await this.ldClient.waitForInitialization();
+
+    // Initialize toolbar with the same plugin instances
+    if (!environment.production) {
+      await this.toolbarService.initialize({
+        flagOverridePlugin: this.flagOverridePlugin,
+        eventInterceptionPlugin: this.eventInterceptionPlugin,
+
+        // OR Dev Server Mode
+        devServerUrl: 'http://localhost:8080',
+        projectKey: 'my-project',
+
+        position: 'bottom-right',
+        enabled: true,
+      });
+    }
+  }
+}
+```
+
+### CDN Script Tag
+
+Works with any JavaScript framework or vanilla JS. Add this script to your `index.html` file.
 
 ```html
 <script src="https://unpkg.com/@launchdarkly/toolbar@latest/cdn/toolbar.min.js"></script>
@@ -150,6 +259,32 @@ declare global {
 }
 ```
 
+## Framework Support
+
+The toolbar provides first-class support for popular frameworks:
+
+### Import Paths
+
+```typescript
+// Core toolbar (for CDN or vanilla JS)
+import { init } from '@launchdarkly/toolbar';
+
+// Plugins (framework-agnostic)
+import { FlagOverridePlugin, EventInterceptionPlugin } from '@launchdarkly/toolbar/plugins';
+
+// React hook
+import { useLaunchDarklyToolbar } from '@launchdarkly/toolbar/react';
+
+// Vue composable
+import { useLaunchDarklyToolbar } from '@launchdarkly/toolbar/vue';
+
+// Angular service
+import LaunchDarklyToolbarService from '@launchdarkly/toolbar/angular';
+
+// TypeScript types
+import type { InitializationConfig } from '@launchdarkly/toolbar/types';
+```
+
 ## Package Structure
 
 ```
@@ -161,9 +296,13 @@ declare global {
 │   │   ├── ui/            # UI components (Toolbar, Tabs, List, etc.)
 │   │   ├── tests/         # Unit tests
 │   │   └── index.ts       # Core entry point (for CDN builds)
-│   ├── react/             # React-specific integrations and utilities
+│   ├── react/             # React hook and utilities
 │   │   ├── useLaunchDarklyToolbar.ts  # Main React hook
 │   │   └── lazyLoadToolbar.ts         # Dynamic CDN loading
+│   ├── vue/               # Vue composable
+│   │   └── useLaunchDarklyToolbar.ts  # Main Vue composable
+│   ├── angular/           # Angular service
+│   │   └── launchdarkly-toolbar.service.ts  # Injectable service
 │   ├── types/             # TypeScript type definitions
 │   │   ├── config.ts      # Configuration types
 │   │   ├── events.ts      # Event types
@@ -171,9 +310,13 @@ declare global {
 │   │   └── index.ts       # Type exports
 │   └── index.ts           # Main entry point (NPM package)
 ├── dist/                  # NPM package output
-│   ├── index.js           # ES module build
-│   ├── index.cjs          # CommonJS build
-│   └── index.d.ts         # TypeScript definitions
+│   ├── js/                # ES module builds
+│   │   ├── index.js
+│   │   ├── react.js
+│   │   ├── vue.js
+│   │   └── angular.js
+│   ├── *.cjs              # CommonJS builds
+│   └── *.d.ts             # TypeScript definitions
 ├── cdn/                   # CDN bundle output
 │   └── toolbar.min.js     # IIFE bundle for script tags
 ├── .storybook/            # Storybook configuration
@@ -203,7 +346,9 @@ interface ToolbarConfig {
 }
 ```
 
-### React Hook Options
+### Framework-Specific Options
+
+All framework integrations (React, Vue, Angular) support the same configuration options:
 
 ```typescript
 interface UseLaunchDarklyToolbarConfig extends ToolbarConfig {
@@ -212,11 +357,38 @@ interface UseLaunchDarklyToolbarConfig extends ToolbarConfig {
 }
 ```
 
+**Example for local development:**
+
+```typescript
+// React
+useLaunchDarklyToolbar({
+  toolbarBundleUrl: 'http://localhost:5764/toolbar.min.js',
+  enabled: process.env.NODE_ENV === 'development',
+  // ... other options
+});
+
+// Vue
+useLaunchDarklyToolbar({
+  toolbarBundleUrl: 'http://localhost:5764/toolbar.min.js',
+  enabled: import.meta.env.DEV,
+  // ... other options
+});
+
+// Angular
+await toolbarService.initialize({
+  toolbarBundleUrl: 'http://localhost:5764/toolbar.min.js',
+  enabled: !environment.production,
+  // ... other options
+});
+```
+
 ## Modes
 
 ### Dev Server Mode
 
 Connect directly to a LaunchDarkly dev server to manage server-side flags:
+
+**React:**
 
 ```tsx
 useLaunchDarklyToolbar({
@@ -226,12 +398,32 @@ useLaunchDarklyToolbar({
 });
 ```
 
-or if you are using the CDN script:
+**Vue:**
+
+```typescript
+useLaunchDarklyToolbar({
+  devServerUrl: 'http://localhost:5764',
+  projectKey: 'my-project',
+  position: 'bottom-right',
+});
+```
+
+**Angular:**
+
+```typescript
+await toolbarService.initialize({
+  devServerUrl: 'http://localhost:5764',
+  projectKey: 'my-project',
+  position: 'bottom-right',
+});
+```
+
+**CDN:**
 
 ```typescript
 window.LaunchDarklyToolbar.init({
-  devServerUrl: 'http://localhost:8080',
-  projectKey: 'my-project', // Optional
+  devServerUrl: 'http://localhost:5764',
+  projectKey: 'my-project',
   position: 'bottom-right',
 });
 ```
@@ -245,19 +437,54 @@ window.LaunchDarklyToolbar.init({
 
 ### SDK Mode
 
-Integrate with LaunchDarkly React SDK for client-side flag management:
+Integrate with LaunchDarkly JS SDK for client-side flag management:
+
+**React:**
 
 ```tsx
-import { useFlagOverridePlugin, useEventInterceptionPlugin } from './plugins';
+import { FlagOverridePlugin, EventInterceptionPlugin } from '@launchdarkly/toolbar/plugins';
+
+const flagOverridePlugin = new FlagOverridePlugin();
+const eventInterceptionPlugin = new EventInterceptionPlugin();
 
 useLaunchDarklyToolbar({
-  flagOverridePlugin: useFlagOverridePlugin(),
-  eventInterceptionPlugin: useEventInterceptionPlugin(),
+  flagOverridePlugin,
+  eventInterceptionPlugin,
   position: 'bottom-right',
 });
 ```
 
-or if you are using the CDN script:
+**Vue:**
+
+```typescript
+import { FlagOverridePlugin, EventInterceptionPlugin } from '@launchdarkly/toolbar/plugins';
+
+const flagOverridePlugin = new FlagOverridePlugin();
+const eventInterceptionPlugin = new EventInterceptionPlugin();
+
+useLaunchDarklyToolbar({
+  flagOverridePlugin,
+  eventInterceptionPlugin,
+  position: 'bottom-right',
+});
+```
+
+**Angular:**
+
+```typescript
+import { FlagOverridePlugin, EventInterceptionPlugin } from '@launchdarkly/toolbar/plugins';
+
+const flagOverridePlugin = new FlagOverridePlugin();
+const eventInterceptionPlugin = new EventInterceptionPlugin();
+
+await toolbarService.initialize({
+  flagOverridePlugin,
+  eventInterceptionPlugin,
+  position: 'bottom-right',
+});
+```
+
+**CDN:**
 
 ```typescript
 window.LaunchDarklyToolbar.init({

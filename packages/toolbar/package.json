@@ -8,6 +8,8 @@
     "feature-flags",
     "toolbar",
     "react",
+    "vue",
+    "angular",
     "development",
     "typescript",
     "javascript",
@@ -35,6 +37,12 @@
       ],
       "react": [
         "./dist/react.d.ts"
+      ],
+      "vue": [
+        "./dist/vue.d.ts"
+      ],
+      "angular": [
+        "./dist/angular.d.ts"
       ],
       "types": [
         "./dist/types-entry.d.ts"
@@ -79,6 +87,26 @@
         "default": "./dist/react.cjs"
       }
     },
+    "./vue": {
+      "import": {
+        "types": "./dist/vue.d.ts",
+        "default": "./dist/js/vue.js"
+      },
+      "require": {
+        "types": "./dist/vue.d.ts",
+        "default": "./dist/vue.cjs"
+      }
+    },
+    "./angular": {
+      "import": {
+        "types": "./dist/angular.d.ts",
+        "default": "./dist/js/angular.js"
+      },
+      "require": {
+        "types": "./dist/angular.d.ts",
+        "default": "./dist/angular.cjs"
+      }
+    },
     "./types": {
       "import": {
         "types": "./dist/types-entry.d.ts",
@@ -102,6 +130,8 @@
     "build:storybook": "storybook build"
   },
   "devDependencies": {
+    "@angular/common": "^18.2.14",
+    "@angular/core": "^18.2.14",
     "@codemirror/commands": "^6.10.1",
     "@codemirror/lang-json": "^6.0.2",
     "@codemirror/language": "^6.12.1",
@@ -144,16 +174,38 @@
     "oxlint": "^1.41.0",
     "react": "^19.2.4",
     "react-dom": "^19.2.4",
+    "rxjs": "^7.8.2",
     "storybook": "^10.2.4",
     "storybook-addon-rslib": "^3.2.2",
     "storybook-react-rsbuild": "^3.2.2",
     "typescript": "^5.9.3",
-    "vitest": "^4.0.18"
+    "vitest": "^4.0.18",
+    "vue": "^3.5.28"
   },
   "peerDependencies": {
+    "@angular/common": ">=14.0.0 <22.0.0",
+    "@angular/core": ">=14.0.0 <22.0.0",
     "launchdarkly-js-client-sdk": ">=3.9.0 <4.0.0",
     "react": "^18.0.0 || ^19.0.0",
-    "react-dom": "^18.0.0 || ^19.0.0"
+    "react-dom": "^18.0.0 || ^19.0.0",
+    "vue": "^3.0.0"
+  },
+  "peerDependenciesMeta": {
+    "react": {
+      "optional": true
+    },
+    "react-dom": {
+      "optional": true
+    },
+    "vue": {
+      "optional": true
+    },
+    "@angular/core": {
+      "optional": true
+    },
+    "@angular/common": {
+      "optional": true
+    }
   },
   "publishConfig": {
     "access": "public",

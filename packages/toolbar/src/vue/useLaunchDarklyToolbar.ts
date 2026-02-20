@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { onMounted, onUnmounted, ref } from 'vue';
 
 import lazyLoadToolbar from '../core/lazyLoadToolbar';
 import type { InitializationConfig } from '../types';
@@ -25,44 +25,46 @@ interface UseLaunchDarklyToolbarConfig extends InitializationConfig {
 
 export default function useLaunchDarklyToolbar(args: UseLaunchDarklyToolbarConfig) {
   const { toolbarBundleUrl, enabled, ...initConfig } = args;
-  const configRef = useRef<InitializationConfig | null>(null);
+  const configRef = ref<InitializationConfig | null>(null);
+  const cleanupRef = ref<(() => void) | null>(null);
+  const controllerRef = ref<AbortController | null>(null);
   const url = toolbarBundleUrl ?? versionToCdn(packageJson.version);
 
-  useEffect(() => {
+  onMounted(() => {
     if (enabled === false) {
       return;
     }
 
-    if (configRef.current === null) {
-      configRef.current = initConfig;
-    }
-  }, [enabled, initConfig]);
-
-  useEffect(() => {
-    if (enabled === false || configRef.current === null) {
-      return;
+    if (configRef.value === null || initConfig == null) {
+      configRef.value = initConfig;
     }
 
     const controller = new AbortController();
+    controllerRef.value = controller;
 
     let cleanup: () => void = () => {};
     lazyLoadToolbar(controller.signal, url)
       .then((importedToolbar) => {
-        if (configRef.current === null) {
+        if (configRef.value === null) {
           return;
         }
 
-        cleanup = importedToolbar.init(configRef.current);
+        cleanup = importedToolbar.init(configRef.value);
+        cleanupRef.value = cleanup;
       })
       .catch((error) => {
         console.error('[LaunchDarkly Toolbar] Failed to initialize:', error);
       });
+  });
 
-    return () => {
-      controller.abort();
-      cleanup();
-    };
-  }, [enabled, url]);
+  onUnmounted(() => {
+    if (controllerRef.value) {
+      controllerRef.value.abort();
+    }
+    if (cleanupRef.value) {
+      cleanupRef.value();
+    }
+  });
 }
 
 function versionToCdn(version = 'latest'): string {
