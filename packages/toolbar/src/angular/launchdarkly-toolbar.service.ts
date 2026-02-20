@@ -37,20 +37,24 @@ export interface LaunchDarklyToolbarConfig extends InitializationConfig {
  * ```typescript
  * import { Component, OnInit } from '@angular/core';
  * import { LaunchDarklyToolbarService } from '@launchdarkly/toolbar/angular';
- * import { FlagOverridePlugin } from '@launchdarkly/toolbar/plugins';
+ * import { FlagOverridePlugin, EventInterceptionPlugin } from '@launchdarkly/toolbar/plugins';
  *
  * @Component({
  *   selector: 'app-root',
+ *   standalone: true,
+ *   providers: [LaunchDarklyToolbarService],
  *   template: '<router-outlet />'
  * })
  * export class AppComponent implements OnInit {
  *   private flagOverridePlugin = new FlagOverridePlugin();
+ *   private eventInterceptionPlugin = new EventInterceptionPlugin();
  *
  *   constructor(private toolbarService: LaunchDarklyToolbarService) {}
  *
  *   ngOnInit() {
  *     this.toolbarService.initialize({
  *       flagOverridePlugin: this.flagOverridePlugin,
+ *       eventInterceptionPlugin: this.eventInterceptionPlugin,
  *       enabled: true,
  *       position: 'bottom-right'
  *     });
