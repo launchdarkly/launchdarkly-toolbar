@@ -30,7 +30,7 @@
   "devDependencies": {
     "@axe-core/playwright": "^4.11.1",
     "@playwright/test": "^1.58.1",
-    "@types/node": "^25.0.9",
+    "@types/node": "^25.3.0",
     "http-server": "^14.1.1",
     "husky": "^9.1.7",
     "lint-staged": "^16.2.7",
