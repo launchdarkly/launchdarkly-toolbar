@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.1.4](https://github.com/launchdarkly/launchdarkly-toolbar/compare/2.1.3...2.1.4) (2026-02-20)
+
+
+### Bug Fixes
+
+* [REL-12315] import launchpad styling during the mount process ([#592](https://github.com/launchdarkly/launchdarkly-toolbar/issues/592)) ([ef8838c](https://github.com/launchdarkly/launchdarkly-toolbar/commit/ef8838c0be6fa3a95ad2edfc101cd3f9e8143838))
+
 ## [2.1.3](https://github.com/launchdarkly/launchdarkly-toolbar/compare/2.1.2...2.1.3) (2026-02-13)
 
 
