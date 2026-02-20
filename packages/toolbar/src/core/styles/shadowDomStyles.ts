@@ -9,7 +9,7 @@
  * 2. Synchronous DOM interception (fallback) - Intercepts before styles are visible
  */
 
-import { isToolbarStyleContent, shouldCopyToShadowDom, TOOLBAR_STYLE_MARKER } from './constants';
+import { isToolbarStyleContent, TOOLBAR_STYLE_MARKER } from './constants';
 
 /**
  * Injects CSS directly into a Shadow DOM root using the best available method.
@@ -79,32 +79,6 @@ export function createStyleInterceptor(shadowRoot: ShadowRoot): () => void {
   styleContainer.setAttribute('data-ld-toolbar-styles', 'true');
   shadowRoot.prepend(styleContainer);
 
-  // Track styles we've already copied to shadow DOM (to avoid duplicates)
-  const copiedStyleHashes = new Set<number>();
-
-  /**
-   * Copies a style to Shadow DOM without removing from document.head.
-   * Used for LaunchPad token styles that both toolbar and host app need.
-   */
-  const copyToShadowDom = (content: string): void => {
-    if ('adoptedStyleSheets' in shadowRoot) {
-      try {
-        const sheet = new CSSStyleSheet();
-        sheet.replaceSync(content);
-        shadowRoot.adoptedStyleSheets = [...shadowRoot.adoptedStyleSheets, sheet];
-        return;
-      } catch {
-        // Fall through to style element approach
-      }
-    }
-
-    // Fallback: Create style element in shadow root
-    const style = document.createElement('style');
-    style.textContent = content;
-    style.setAttribute('data-ld-toolbar-copied', 'true');
-    styleContainer.appendChild(style);
-  };
-
   /**
    * Intercepts a node being added and redirects toolbar styles to Shadow DOM.
    * Returns true if the node was intercepted (and should not be added to head).
@@ -149,15 +123,6 @@ export function createStyleInterceptor(shadowRoot: ShadowRoot): () => void {
       return true; // Don't add to document.head
     }
 
-    // Check if this contains LaunchPad tokens (should be COPIED but not removed)
-    // This allows host apps to use LaunchPad tokens without interference
-    if (shouldCopyToShadowDom(content) && !copiedStyleHashes.has(contentHash)) {
-      copiedStyleHashes.add(contentHash);
-      copyToShadowDom(content);
-      // Return false to ALSO add to document.head (copy, not move)
-    }
-
-    // Not a toolbar style - add hash to prevent re-checking
     existingStyleHashes.add(contentHash);
     return false;
   };
