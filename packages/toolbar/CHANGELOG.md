@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.2.0](https://github.com/launchdarkly/launchdarkly-toolbar/compare/2.1.4...2.2.0) (2026-02-20)
+
+
+### Features
+
+* [REL-12314] add better out-of-the-box support for Vue and Angular ([#591](https://github.com/launchdarkly/launchdarkly-toolbar/issues/591)) ([42aff84](https://github.com/launchdarkly/launchdarkly-toolbar/commit/42aff84170ac4ffe425a5454d4c505a14881cd27))
+
 ## [2.1.4](https://github.com/launchdarkly/launchdarkly-toolbar/compare/2.1.3...2.1.4) (2026-02-20)
 
 
