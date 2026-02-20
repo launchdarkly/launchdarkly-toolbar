@@ -34,12 +34,14 @@
     "http-server": "^14.1.1",
     "husky": "^9.1.7",
     "lint-staged": "^16.2.7",
+    "lodash": "4.17.23",
     "prettier": "^3.8.1",
-    "qs": "^6.14.2",
+    "qs": "6.15.0",
     "storybook": "^10.2.4",
     "storybook-addon-rslib": "^3.2.2",
     "storybook-react-rsbuild": "^3.2.2",
-    "tsx": "^4.21.0"
+    "tsx": "^4.21.0",
+    "webpack": "5.105.2"
   },
   "packageManager": "pnpm@10.14.0",
   "lint-staged": {
