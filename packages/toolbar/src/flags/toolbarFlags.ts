@@ -17,3 +17,7 @@ export const enableInteractiveIcon = createToolbarFlagFunction('enable-interacti
 export const enableOptimizeIcon = createToolbarFlagFunction('enable-optimize-icon', false);
 export const enableSessionReplay = createToolbarFlagFunction(ENABLE_SESSION_REPLAY_FLAG_KEY, false);
 export const useNewToolbarDesign = createToolbarFlagFunction(USE_NEW_TOOLBAR_DESIGN_FLAG_KEY, false);
+
+// Clear override UX variant - controls which UX is used for clearing overrides
+// Variations: 'default' (dot), 'hover-reveal' (expands on hover), 'icon-button' (X icon)
+export const clearOverrideUxVariant = createToolbarFlagFunction('clear-override-ux-variant', 'default');
