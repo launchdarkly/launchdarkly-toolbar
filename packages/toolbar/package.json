@@ -125,7 +125,7 @@
     "@storybook/addon-onboarding": "^10.2.8",
     "@storybook/blocks": "^9.0.0-alpha.17",
     "@storybook/react": "^10.2.4",
-    "@storybook/react-vite": "^10.2.3",
+    "@storybook/react-vite": "^10.2.10",
     "@storybook/test": "^9.0.0-alpha.2",
     "@tanstack/react-virtual": "^3.13.18",
     "@testing-library/jest-dom": "^6.9.1",
