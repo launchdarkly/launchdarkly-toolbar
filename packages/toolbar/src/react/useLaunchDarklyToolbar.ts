@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react';
 
-import lazyLoadToolbar from './lazyLoadToolbar';
+import lazyLoadToolbar from '../core/lazyLoadToolbar';
 import type { InitializationConfig } from '../types';
 import packageJson from '../../package.json';
 

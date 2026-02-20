@@ -1,6 +1,6 @@
 import { Injectable, OnDestroy } from '@angular/core';
 
-import lazyLoadToolbar from '../react/lazyLoadToolbar';
+import lazyLoadToolbar from '../core/lazyLoadToolbar';
 import type { InitializationConfig } from '../types';
 import packageJson from '../../package.json';
 

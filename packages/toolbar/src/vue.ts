@@ -21,4 +21,4 @@
  * ```
  */
 export { default as useLaunchDarklyToolbar } from './vue/useLaunchDarklyToolbar';
-export { default as lazyLoadToolbar } from './react/lazyLoadToolbar';
+export { default as lazyLoadToolbar } from './core/lazyLoadToolbar';
