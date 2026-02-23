@@ -37,7 +37,7 @@
     "lodash": "4.17.23",
     "prettier": "^3.8.1",
     "qs": "6.15.0",
-    "storybook": "^10.2.4",
+    "storybook": "^10.2.11",
     "storybook-addon-rslib": "^3.2.2",
     "storybook-react-rsbuild": "^3.2.2",
     "tsx": "^4.21.0",
