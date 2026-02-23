@@ -130,8 +130,8 @@
     "build:storybook": "storybook build"
   },
   "devDependencies": {
-    "@angular/common": "^18.2.14",
-    "@angular/core": "^18.2.14",
+    "@angular/common": "^21.1.5",
+    "@angular/core": "^21.1.5",
     "@codemirror/commands": "^6.10.1",
     "@codemirror/lang-json": "^6.0.2",
     "@codemirror/language": "^6.12.1",
