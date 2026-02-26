@@ -169,6 +169,72 @@ export const overrideDotInner = style({
   backgroundColor: 'var(--lp-color-brand-cyan-base)',
   borderRadius: '50%',
   transition: 'background-color 0.2s ease',
+  flexShrink: 0,
+});
+
+export const overrideHoverReveal = style({
+  display: 'inline-flex',
+  alignItems: 'center',
+  gap: '4px',
+  padding: '2px 4px',
+  borderRadius: '4px',
+  transition: 'background-color 0.15s ease',
+  flexShrink: 0,
+
+  ':hover': {
+    backgroundColor: 'rgba(from var(--lp-color-red-500) r g b / 0.15)',
+  },
+
+  ':focus': {
+    outline: 'none',
+  },
+
+  ':focus-visible': {
+    outline: '2px solid var(--lp-color-shadow-interactive-focus)',
+    outlineOffset: '1px',
+  },
+});
+
+export const overrideHoverText = style({
+  fontSize: '11px',
+  fontWeight: 500,
+  color: 'var(--lp-color-red-500)',
+  whiteSpace: 'nowrap',
+  overflow: 'hidden',
+});
+
+export const overrideIconButton = style({
+  display: 'inline-flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  width: '16px',
+  height: '16px',
+  padding: 0,
+  border: 'none',
+  borderRadius: '50%',
+  backgroundColor: 'transparent',
+  color: 'var(--lp-color-brand-cyan-base)',
+  cursor: 'pointer',
+  flexShrink: 0,
+  transition: 'color 0.15s ease',
+
+  ':hover': {
+    color: 'var(--lp-color-red-500)',
+  },
+
+  ':focus': {
+    outline: 'none',
+  },
+
+  ':focus-visible': {
+    outline: '2px solid var(--lp-color-shadow-interactive-focus)',
+    outlineOffset: '1px',
+  },
+});
+
+export const overrideIcon = style({
+  width: '14px',
+  height: '14px',
 });
 
 export const control = style({
