@@ -262,9 +262,9 @@ declare global {
 ## Usage in a Hosted Environment
 
 By default, the LaunchDarkly Developer Toolbar is configured to only allow hosting on apps running on localhost. However, if you want to run the toolbar in a hosted environment,
-you can whitelist additional domains to circumvent this limitation. To do so, navigate to the Integrations page of your LaunchDarkly organization settings here. Search for the
-LaunchDarkly Developer Toolbar integration, and click `Add` to configure. When configuring, enter any of the domains you would like to whitelist, and click `Save` to save the
-integration settings. This list can be updated at any time to add additional domains or remove whitelisted domains.
+you can whitelist additional domains to circumvent this limitation. To do so, navigate to the Integrations page of your LaunchDarkly organization settings [here](https://app.launchdarkly.com/settings/integrations).
+Search for the LaunchDarkly Developer Toolbar integration, and click `Add` to configure. When configuring, enter any of the domains you would like to whitelist,
+and click `Save` to save the integration settings. This list can be updated at any time to add additional domains or remove whitelisted domains.
 
 Note: After configuring, it may take up to 5 minutes for changes to reflect in the Developer Toolbar, as it caches the list of valid domains.
 
