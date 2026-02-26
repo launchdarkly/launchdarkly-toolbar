@@ -18,7 +18,7 @@ interface ApiBundleProviderProps {
  * Must be rendered inside both IFrameProvider and AuthProvider.
  */
 function PersistentIFrame() {
-  const { ref, iframeSrc } = useIFrameContext();
+  const { ref, iframeSrc, onIFrameLoad } = useIFrameContext();
   const { authenticating } = useAuthContext();
 
   // The iframe source changes based on authentication state:
@@ -28,7 +28,9 @@ function PersistentIFrame() {
     ? `${iframeSrc}/toolbar/authenticating.html?originUrl=${window.location.origin}`
     : `${iframeSrc}/toolbar/index.html?originUrl=${window.location.origin}`;
 
-  return <iframe ref={ref} src={src} title="LaunchDarkly Toolbar Auth" style={{ display: 'none' }} />;
+  return (
+    <iframe ref={ref} src={src} title="LaunchDarkly Toolbar Auth" style={{ display: 'none' }} onLoad={onIFrameLoad} />
+  );
 }
 
 export function ApiBundleProvider(props: ApiBundleProviderProps) {

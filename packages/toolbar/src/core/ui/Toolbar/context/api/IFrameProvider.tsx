@@ -1,4 +1,4 @@
-import { createContext, RefObject, useContext, useMemo, useRef } from 'react';
+import { createContext, RefObject, useCallback, useContext, useMemo, useRef, useState } from 'react';
 
 export const IFRAME_COMMANDS = {
   LOGOUT: 'logout',
@@ -25,6 +25,8 @@ interface IFrameProviderProps {
 type IFrameProviderType = {
   ref: RefObject<HTMLIFrameElement | null>;
   iframeSrc: string;
+  iframeLoaded: boolean;
+  onIFrameLoad: () => void;
 };
 
 const IFrameContext = createContext<IFrameProviderType | null>(null);
@@ -32,8 +34,15 @@ const IFrameContext = createContext<IFrameProviderType | null>(null);
 export function IFrameProvider({ children, authUrl }: IFrameProviderProps) {
   const ref = useRef<HTMLIFrameElement | null>(null);
   const iframeSrc = useMemo(() => authUrl, [authUrl]);
+  const [iframeLoaded, setIframeLoaded] = useState(false);
 
-  return <IFrameContext.Provider value={{ ref, iframeSrc }}>{children}</IFrameContext.Provider>;
+  const onIFrameLoad = useCallback(() => {
+    setIframeLoaded(true);
+  }, []);
+
+  return (
+    <IFrameContext.Provider value={{ ref, iframeSrc, iframeLoaded, onIFrameLoad }}>{children}</IFrameContext.Provider>
+  );
 }
 
 export function useIFrameContext() {

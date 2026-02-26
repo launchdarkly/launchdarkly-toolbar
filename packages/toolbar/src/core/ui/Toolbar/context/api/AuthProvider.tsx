@@ -1,11 +1,14 @@
-import { createContext, Dispatch, SetStateAction, useCallback, useContext, useEffect, useState } from 'react';
+import { createContext, Dispatch, SetStateAction, useCallback, useContext, useEffect, useRef, useState } from 'react';
 import { getErrorTopic, getResponseTopic, IFRAME_COMMANDS, IFRAME_EVENTS, useIFrameContext } from './IFrameProvider';
 import { useAnalytics, useAnalyticsPreferences, useInternalClient } from '../telemetry';
+
+const IFRAME_RESPONSE_TIMEOUT_MS = 5000;
 
 interface AuthContextType {
   authenticated: boolean;
   authenticating: boolean;
   loading: boolean;
+  iframeError: boolean;
   setAuthenticating: Dispatch<SetStateAction<boolean>>;
   logout: () => void;
 }
@@ -16,7 +19,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [authenticated, setAuthenticated] = useState(false);
   const [loading, setLoading] = useState(true);
   const [authenticating, setAuthenticating] = useState(false);
-  const { iframeSrc, ref } = useIFrameContext();
+  const [iframeError, setIframeError] = useState(false);
+  const receivedMessage = useRef(false);
+  const { iframeSrc, iframeLoaded, ref } = useIFrameContext();
   const analytics = useAnalytics();
   const { updateContext } = useInternalClient();
   const { isOptedInToEnhancedAnalytics } = useAnalyticsPreferences();
@@ -26,6 +31,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       if (event.origin !== iframeSrc) {
         return;
       }
+
+      receivedMessage.current = true;
 
       if (event.data.type === IFRAME_EVENTS.AUTHENTICATED) {
         analytics.trackLoginSuccess();
@@ -56,6 +63,24 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     [updateContext, iframeSrc, isOptedInToEnhancedAnalytics],
   );
 
+  // After the iframe fires its load event, wait for a response message.
+  // If none arrives within the timeout, the iframe content is likely blocked
+  // (e.g. by frame-ancestors CSP) or otherwise non-functional.
+  useEffect(() => {
+    if (!iframeLoaded || receivedMessage.current) {
+      return;
+    }
+
+    const timer = setTimeout(() => {
+      if (!receivedMessage.current) {
+        setIframeError(true);
+        setLoading(false);
+      }
+    }, IFRAME_RESPONSE_TIMEOUT_MS);
+
+    return () => clearTimeout(timer);
+  }, [iframeLoaded]);
+
   const logout = useCallback(() => {
     const iframe = ref.current;
     if (iframe?.contentWindow) {
@@ -71,7 +96,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, [handleMessage]);
 
   return (
-    <AuthContext.Provider value={{ authenticated, loading, authenticating, setAuthenticating, logout }}>
+    <AuthContext.Provider value={{ authenticated, loading, authenticating, iframeError, setAuthenticating, logout }}>
       {children}
     </AuthContext.Provider>
   );

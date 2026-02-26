@@ -20,6 +20,7 @@ import {
 } from './context';
 import { CircleLogo } from './components';
 import { LoadingScreen } from './components/LoadingScreen';
+import { IFrameErrorScreen } from './components/IFrameErrorScreen';
 import { ExpandedToolbarContentLegacy } from './components/legacy';
 import { ExpandedToolbarContent } from './components/new/ExpandedToolbarContent';
 import { InteractiveWrapper } from './components/new/Interactive';
@@ -44,7 +45,7 @@ export function LdToolbar(props: LdToolbarProps) {
   const analytics = useAnalytics();
   const { activeTab, setActiveTab } = useActiveTabContext();
   const { isOptedInToSessionReplay } = useAnalyticsPreferences();
-  const { loading: authLoading } = useAuthContext();
+  const { loading: authLoading, iframeError } = useAuthContext();
   const { loading: internalClientLoading } = useInternalClient();
   const newToolbarDesign = useNewToolbarDesign();
   const defaultActiveTab = getDefaultActiveTab(mode, !!flagOverridePlugin, !!eventInterceptionPlugin, newToolbarDesign);
@@ -205,8 +206,9 @@ export function LdToolbar(props: LdToolbarProps) {
     >
       <AnimatePresence>{!isExpanded ? <CircleLogo onMouseDown={handleMouseDown} /> : null}</AnimatePresence>
       <AnimatePresence>
-        {isExpanded && isInitializing ? <LoadingScreen onMouseDown={handleMouseDown} /> : null}
-        {isExpanded && !isInitializing && !newToolbarDesign ? (
+        {isExpanded && iframeError ? <IFrameErrorScreen onMouseDown={handleMouseDown} /> : null}
+        {isExpanded && !iframeError && isInitializing ? <LoadingScreen onMouseDown={handleMouseDown} /> : null}
+        {isExpanded && !iframeError && !isInitializing && !newToolbarDesign ? (
           <ExpandedToolbarContentLegacy
             ref={expandedContentRef}
             activeTab={activeTab as ActiveTabId}
@@ -230,7 +232,7 @@ export function LdToolbar(props: LdToolbarProps) {
             onOpenAuthModal={() => setIsAuthModalOpen(true)}
           />
         ) : null}
-        {isExpanded && !isInitializing && newToolbarDesign ? (
+        {isExpanded && !iframeError && !isInitializing && newToolbarDesign ? (
           <ExpandedToolbarContent
             onClose={handleClose}
             onHeaderMouseDown={handleMouseDown}
