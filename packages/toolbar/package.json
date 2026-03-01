@@ -131,7 +131,7 @@
   },
   "devDependencies": {
     "@angular/common": "^21.1.5",
-    "@angular/core": "^21.1.5",
+    "@angular/core": "^21.1.6",
     "@codemirror/commands": "^6.10.1",
     "@codemirror/lang-json": "^6.0.2",
     "@codemirror/language": "^6.12.1",
