@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.2.1](https://github.com/launchdarkly/launchdarkly-toolbar/compare/2.2.0...2.2.1) (2026-03-17)
+
+
+### Bug Fixes
+
+* fix apiFlags being undefined resulting in a crash ([#617](https://github.com/launchdarkly/launchdarkly-toolbar/issues/617)) ([612e39f](https://github.com/launchdarkly/launchdarkly-toolbar/commit/612e39f02de80ca214cc6e9733d44b4771955fed))
+
 ## [2.2.0](https://github.com/launchdarkly/launchdarkly-toolbar/compare/2.1.4...2.2.0) (2026-02-23)
 
 
