@@ -48,7 +48,7 @@ export const FlagsProvider = ({ children }: { children: React.ReactNode }) => {
     setLoading(true);
     try {
       const flagsResponse = await getProjectFlags(projectKey);
-      setFlags(flagsResponse.items);
+      setFlags(flagsResponse?.items ?? []);
       setLoadedProjectKey(projectKey);
     } catch (error) {
       console.error('Error refreshing flags:', error);
@@ -82,9 +82,9 @@ export const FlagsProvider = ({ children }: { children: React.ReactNode }) => {
     let isMounted = true;
     setLoading(true);
     setFlags([]);
-    getProjectFlags(projectKey).then((flags) => {
+    getProjectFlags(projectKey).then((response) => {
       if (isMounted) {
-        setFlags(flags.items);
+        setFlags(response?.items ?? []);
         setLoadedProjectKey(projectKey);
         setHasInitialLoad(true);
         setLoading(false);

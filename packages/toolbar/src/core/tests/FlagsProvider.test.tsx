@@ -415,6 +415,126 @@ describe('FlagsProvider', () => {
     });
   });
 
+  describe('Malformed API Response Resilience', () => {
+    test('handles API response missing items property', async () => {
+      // GIVEN: API returns a response without an items property (e.g. unexpected iframe response)
+      mockGetFlags.mockResolvedValue({});
+
+      // WHEN: Flags are loaded
+      render(
+        <TestWrapper>
+          <FlagsProvider>
+            <TestConsumer />
+          </FlagsProvider>
+        </TestWrapper>,
+      );
+
+      // THEN: Falls back to empty array instead of crashing
+      await waitFor(() => {
+        expect(screen.getByTestId('loading')).toHaveTextContent('false');
+      });
+      expect(screen.getByTestId('flags-count')).toHaveTextContent('0');
+    });
+
+    test('handles API response with undefined items', async () => {
+      // GIVEN: API returns { items: undefined }
+      mockGetFlags.mockResolvedValue({ items: undefined });
+
+      // WHEN: Flags are loaded
+      render(
+        <TestWrapper>
+          <FlagsProvider>
+            <TestConsumer />
+          </FlagsProvider>
+        </TestWrapper>,
+      );
+
+      // THEN: Falls back to empty array
+      await waitFor(() => {
+        expect(screen.getByTestId('loading')).toHaveTextContent('false');
+      });
+      expect(screen.getByTestId('flags-count')).toHaveTextContent('0');
+    });
+
+    test('handles null API response', async () => {
+      // GIVEN: API returns null (e.g. network issue or iframe communication failure)
+      mockGetFlags.mockResolvedValue(null);
+
+      // WHEN: Flags are loaded
+      render(
+        <TestWrapper>
+          <FlagsProvider>
+            <TestConsumer />
+          </FlagsProvider>
+        </TestWrapper>,
+      );
+
+      // THEN: Falls back to empty array
+      await waitFor(() => {
+        expect(screen.getByTestId('loading')).toHaveTextContent('false');
+      });
+      expect(screen.getByTestId('flags-count')).toHaveTextContent('0');
+    });
+
+    test('handles undefined API response', async () => {
+      // GIVEN: API returns undefined
+      mockGetFlags.mockResolvedValue(undefined);
+
+      // WHEN: Flags are loaded
+      render(
+        <TestWrapper>
+          <FlagsProvider>
+            <TestConsumer />
+          </FlagsProvider>
+        </TestWrapper>,
+      );
+
+      // THEN: Falls back to empty array
+      await waitFor(() => {
+        expect(screen.getByTestId('loading')).toHaveTextContent('false');
+      });
+      expect(screen.getByTestId('flags-count')).toHaveTextContent('0');
+    });
+
+    test('recovers from malformed response when valid response follows', async () => {
+      // GIVEN: First API call returns malformed response
+      mockGetFlags.mockResolvedValue({});
+
+      const { rerender } = render(
+        <TestWrapper>
+          <FlagsProvider>
+            <TestConsumer />
+          </FlagsProvider>
+        </TestWrapper>,
+      );
+
+      await waitFor(() => {
+        expect(screen.getByTestId('loading')).toHaveTextContent('false');
+      });
+      expect(screen.getByTestId('flags-count')).toHaveTextContent('0');
+
+      // WHEN: Project changes and the next API call returns valid data
+      (useProjectContext as any).mockReturnValue({ projectKey: 'new-project' });
+      mockGetFlags.mockResolvedValue(
+        createFlagsResponse([{ key: 'flag-1', name: 'Flag 1', kind: 'boolean' } as ApiFlag]),
+      );
+
+      rerender(
+        <TestWrapper>
+          <FlagsProvider>
+            <TestConsumer />
+          </FlagsProvider>
+        </TestWrapper>,
+      );
+
+      // THEN: Flags load correctly after recovery
+      await waitFor(() => {
+        expect(screen.getByTestId('flags-count')).toHaveTextContent('1');
+      });
+      expect(screen.getByTestId('flag-flag-1')).toHaveTextContent('Flag 1');
+    });
+  });
+
   describe('Context Hook - useFlagsContext', () => {
     test('throws error when used without FlagsProvider', () => {
       // GIVEN: Component uses context without provider

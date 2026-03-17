@@ -278,4 +278,86 @@ describe('FlagSdkOverrideProvider', () => {
     expect(screen.getByTestId('flag-another-flag')).toBeInTheDocument();
     expect(screen.getByTestId('flag-another-flag')).toHaveTextContent('Another Flag: test-value (original)');
   });
+
+  test('does not crash when API flags context returns undefined flags', async () => {
+    // Mock FlagsProvider to return undefined flags (simulating malformed API response)
+    const faultyFlagsModule = await import('../ui/Toolbar/context/api/FlagsProvider');
+    vi.spyOn(faultyFlagsModule, 'useFlagsContext').mockReturnValue({
+      flags: undefined as unknown as any[],
+      loading: false,
+      getProjectFlags: vi.fn().mockResolvedValue([]),
+      resetFlags: vi.fn(),
+      refreshFlags: vi.fn(),
+    });
+
+    // GIVEN: LD client has flags but API flags are undefined
+    mockLdClient.allFlags.mockReturnValue({
+      'feature-flag-1': true,
+      'test-string-flag': 'hello',
+    });
+
+    // WHEN: Component is rendered
+    render(
+      <FlagSdkOverrideProvider flagOverridePlugin={mockFlagOverridePlugin}>
+        <TestConsumer />
+      </FlagSdkOverrideProvider>,
+    );
+
+    await act(async () => {
+      await new Promise((resolve) => setTimeout(resolve, 0));
+    });
+
+    // THEN: Flags from LD client are still displayed (with formatted names as fallback)
+    expect(screen.getByTestId('flags-data')).toBeInTheDocument();
+    expect(screen.getByTestId('flag-feature-flag-1')).toHaveTextContent('Feature Flag 1: true (original)');
+    expect(screen.getByTestId('flag-test-string-flag')).toHaveTextContent('Test String Flag: hello (original)');
+  });
+
+  test('does not crash when API flags context returns undefined flags during change event', async () => {
+    // Mock FlagsProvider to return undefined flags
+    const faultyFlagsModule = await import('../ui/Toolbar/context/api/FlagsProvider');
+    vi.spyOn(faultyFlagsModule, 'useFlagsContext').mockReturnValue({
+      flags: undefined as unknown as any[],
+      loading: false,
+      getProjectFlags: vi.fn().mockResolvedValue([]),
+      resetFlags: vi.fn(),
+      refreshFlags: vi.fn(),
+    });
+
+    // GIVEN: LD client has flags
+    mockLdClient.allFlags.mockReturnValue({
+      'dynamic-flag': 'initial',
+    });
+
+    let changeHandler: (changes: Record<string, { current: any }>) => void;
+    mockLdClient.on.mockImplementation((event: string, handler: any) => {
+      if (event === 'change') {
+        changeHandler = handler;
+      }
+    });
+
+    render(
+      <FlagSdkOverrideProvider flagOverridePlugin={mockFlagOverridePlugin}>
+        <TestConsumer />
+      </FlagSdkOverrideProvider>,
+    );
+
+    await act(async () => {
+      await new Promise((resolve) => setTimeout(resolve, 0));
+    });
+
+    expect(screen.getByTestId('flag-dynamic-flag')).toHaveTextContent('Dynamic Flag: initial (original)');
+
+    // WHEN: A change event fires while API flags are still undefined
+    mockLdClient.allFlags.mockReturnValue({
+      'dynamic-flag': 'updated',
+    });
+
+    await act(async () => {
+      changeHandler!({ 'dynamic-flag': { current: 'updated' } });
+    });
+
+    // THEN: The flag value updates without crashing
+    expect(screen.getByTestId('flag-dynamic-flag')).toHaveTextContent('Dynamic Flag: updated (original)');
+  });
 });
