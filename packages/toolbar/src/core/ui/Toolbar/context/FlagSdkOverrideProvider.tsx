@@ -64,7 +64,7 @@ export function FlagSdkOverrideProvider({ children, flagOverridePlugin }: FlagSd
       const overrides = flagOverridePlugin.getAllOverrides();
 
       const apiFlagsMap = new Map<string, ApiFlag>();
-      apiFlags?.forEach((apiFlag) => {
+      apiFlags.forEach((apiFlag) => {
         apiFlagsMap.set(apiFlag.key, apiFlag);
       });
 
