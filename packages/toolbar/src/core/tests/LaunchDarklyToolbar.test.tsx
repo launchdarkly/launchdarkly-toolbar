@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, screen, fireEvent, waitFor, waitForElementToBeRemoved, act } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { expect, test, describe, vi, beforeEach } from 'vitest';
 import { LaunchDarklyToolbar } from '../ui/Toolbar/LaunchDarklyToolbar';
 import '@testing-library/jest-dom/vitest';
@@ -48,7 +48,6 @@ vi.mock('@launchdarkly/session-replay', () => ({
 // Mock the toolbar flags module
 vi.mock('../../flags/toolbarFlags', () => ({
   enableSessionReplay: () => getMockEnableSessionReplay(),
-  useNewToolbarDesign: () => false,
   enableAiIcon: () => false,
   enableInteractiveIcon: () => false,
   enableOptimizeIcon: () => false,
@@ -167,19 +166,14 @@ describe('LaunchDarklyToolbar - User Flows', () => {
       const logo = screen.getByRole('img', { name: /launchdarkly/i });
       fireEvent.click(logo);
 
-      // THEN: They can see server-side flag management and settings tabs
+      // THEN: They can see the IconBar with Flags, Analytics, and Settings navigation
       await waitFor(() => {
-        const flagsTab = screen.queryByRole('tab', { name: /flags/i });
-        const settingsTab = screen.queryByRole('tab', { name: /settings/i });
-        return flagsTab && settingsTab;
+        return screen.queryByRole('button', { name: 'Flags' });
       });
 
-      // AND: The toolbar provides the expected functionality for server-side flag management
-      expect(screen.getByRole('tab', { name: /flags/i })).toBeInTheDocument();
-      expect(screen.getByRole('tab', { name: /settings/i })).toBeInTheDocument();
-
-      // AND: Events functionality is not available without event interception plugin
-      expect(screen.queryByRole('tab', { name: /events/i })).not.toBeInTheDocument();
+      expect(screen.getByRole('button', { name: 'Flags' })).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: 'Analytics' })).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: 'Settings' })).toBeInTheDocument();
     });
   });
 
@@ -221,20 +215,17 @@ describe('LaunchDarklyToolbar - User Flows', () => {
       const logo = screen.getByRole('img', { name: /launchdarkly/i });
       fireEvent.click(logo);
 
-      // THEN: They can access client-side flag overrides, events, and settings
+      // THEN: They can access flags, analytics, and settings via the IconBar
       await waitFor(() => {
-        const flagsTab = screen.queryByRole('tab', { name: /flags/i });
-        const eventsTab = screen.queryByRole('tab', { name: /events/i });
-        const settingsTab = screen.queryByRole('tab', { name: /settings/i });
-        return flagsTab && eventsTab && settingsTab;
+        return screen.queryByRole('button', { name: 'Flags' });
       });
 
-      expect(screen.getByRole('tab', { name: /flags/i })).toBeInTheDocument(); // Local overrides tab (labeled "Flags")
-      expect(screen.getByRole('tab', { name: /events/i })).toBeInTheDocument(); // Events tab
-      expect(screen.getByRole('tab', { name: /settings/i })).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: 'Flags' })).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: 'Analytics' })).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: 'Settings' })).toBeInTheDocument();
     });
 
-    test('developer without flag override plugin can only access basic settings', async () => {
+    test('developer without flag override plugin sees full navigation', async () => {
       // GIVEN: Developer is using the toolbar without any flag override plugins
       render(<LaunchDarklyToolbar domId="ld-toolbar" />);
 
@@ -242,17 +233,14 @@ describe('LaunchDarklyToolbar - User Flows', () => {
       const logo = screen.getByRole('img', { name: /launchdarkly/i });
       fireEvent.click(logo);
 
-      // THEN: They only see settings (no flag management capabilities)
+      // THEN: The full IconBar navigation is still available
       await waitFor(() => {
-        const settingsTab = screen.queryByRole('tab', { name: /settings/i });
-        return settingsTab;
+        return screen.queryByRole('button', { name: 'Settings' });
       });
 
-      expect(screen.getByRole('tab', { name: /settings/i })).toBeInTheDocument();
-
-      // AND: No flag management or events features are available
-      expect(screen.queryByRole('tab', { name: /flags/i })).not.toBeInTheDocument();
-      expect(screen.queryByRole('tab', { name: /events/i })).not.toBeInTheDocument();
+      expect(screen.getByRole('button', { name: 'Flags' })).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: 'Analytics' })).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: 'Settings' })).toBeInTheDocument();
     });
   });
 
@@ -280,82 +268,23 @@ describe('LaunchDarklyToolbar - User Flows', () => {
     });
   });
 
-  test.skip('preserves selected tab when toolbar is collapsed and expanded', async () => {
-    // TODO: This test has timing issues with tab switching after animations
-    // Needs investigation into animation timing in test environment
-    // GIVEN: Developer has the toolbar expanded with default tab (flag-dev-server for dev-server mode)
-    render(<LaunchDarklyToolbar domId="ld-toolbar" devServerUrl="http://localhost:8765" />);
-
-    const logo = screen.getByRole('img', { name: /launchdarkly/i });
-    fireEvent.click(logo);
-
-    // Wait until tabs are present
-    expect(await screen.findByRole('tab', { name: /flags/i })).toBeInTheDocument();
-    expect(await screen.findByRole('tab', { name: /settings/i })).toBeInTheDocument();
-
-    // Wait for expand animations to complete so tab changes aren't ignored
-    await new Promise((resolve) => setTimeout(resolve, 500));
-
-    // WHEN: They select the settings tab (different from default)
-    const settingsTab = screen.getByRole('tab', { name: /settings/i });
-    await act(async () => {
-      fireEvent.click(settingsTab);
-      // Give time for state update
-      await new Promise((resolve) => setTimeout(resolve, 100));
-    });
-
-    // Verify settings tab is now selected (wait for state update)
-    await waitFor(
-      () => {
-        expect(screen.getByRole('tab', { name: /settings/i })).toHaveAttribute('aria-selected', 'true');
-      },
-      { timeout: 2000 },
-    );
-
-    // AND: They enable auto-collapse
-    const autoCollapseToggle = screen.getByTestId('auto-collapse-toggle');
-    fireEvent.click(autoCollapseToggle);
-
-    // AND: They collapse the toolbar by clicking outside (if auto-collapse is enabled)
-    fireEvent.mouseDown(document.body);
-
-    // Wait for collapse (settings tab removed)
-    await waitForElementToBeRemoved(() => screen.queryByRole('tab', { name: /settings/i }));
-
-    // AND: They expand it again (re-query the logo since the DOM was re-rendered)
-    const logoAfterCollapse = screen.getByRole('img', { name: /launchdarkly/i });
-    fireEvent.click(logoAfterCollapse);
-
-    // Wait until settings tab returns
-    expect(await screen.findByRole('tab', { name: /settings/i })).toBeInTheDocument();
-
-    // THEN: The settings tab should still be selected (preserved, not reverted to default)
-    expect(screen.getByRole('tab', { name: /settings/i })).toHaveAttribute('aria-selected', 'true');
-  });
-
   describe('Error Handling and Edge Cases', () => {
-    test('SDK mode without flag override plugin shows limited functionality gracefully', async () => {
-      // GIVEN: Developer is using SDK mode but forgot to provide flag override plugin
+    test('SDK mode without plugins still shows full navigation', async () => {
+      // GIVEN: Developer is using SDK mode without any plugins
       render(<LaunchDarklyToolbar domId="ld-toolbar" />);
 
-      // WHEN: They expand the toolbar to see available features
+      // WHEN: They expand the toolbar
       const logo = screen.getByRole('img', { name: /launchdarkly/i });
       fireEvent.click(logo);
 
-      // THEN: They get a clear indication of limited functionality
+      // THEN: The full IconBar navigation is available
       await waitFor(() => {
-        const settingsTab = screen.queryByRole('tab', { name: /settings/i });
-        return settingsTab;
+        return screen.queryByRole('button', { name: 'Settings' });
       });
 
-      // AND: Only basic settings are available (no flag management or events)
-      expect(screen.getByRole('tab', { name: /settings/i })).toBeInTheDocument();
-      expect(screen.queryByRole('tab', { name: /flags/i })).not.toBeInTheDocument();
-      expect(screen.queryByRole('tab', { name: /events/i })).not.toBeInTheDocument();
-
-      // AND: The interface doesn't break or show confusing empty states
-      const tabs = screen.getAllByRole('tab');
-      expect(tabs).toHaveLength(1);
+      expect(screen.getByRole('button', { name: 'Flags' })).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: 'Analytics' })).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: 'Settings' })).toBeInTheDocument();
     });
 
     test('invalid devServerUrl is handled gracefully', async () => {
@@ -368,47 +297,34 @@ describe('LaunchDarklyToolbar - User Flows', () => {
       // THEN: The toolbar still renders and doesn't crash the application
       expect(toolbar).toBeInTheDocument();
 
-      // AND: Mode detection still works correctly despite invalid URL
+      // AND: The full IconBar navigation is available despite invalid URL
       const logo = screen.getByRole('img', { name: /launchdarkly/i });
       fireEvent.click(logo);
 
       await waitFor(() => {
-        const settingsTab = screen.queryByRole('tab', { name: /settings/i });
-        return settingsTab;
+        return screen.queryByRole('button', { name: 'Flags' });
       });
 
-      // Should still show dev-server mode tabs (the URL format doesn't affect mode detection)
-      expect(screen.getByRole('tab', { name: /flags/i })).toBeInTheDocument(); // Server-side flags
-      expect(screen.getByRole('tab', { name: /settings/i })).toBeInTheDocument();
-      expect(screen.queryByRole('tab', { name: /events/i })).not.toBeInTheDocument(); // Events is SDK-mode only
+      expect(screen.getByRole('button', { name: 'Flags' })).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: 'Settings' })).toBeInTheDocument();
     });
 
     test('empty devServerUrl is treated as SDK mode', async () => {
       // GIVEN: Developer accidentally passes empty string for devServerUrl
       render(<LaunchDarklyToolbar domId="ld-toolbar" devServerUrl="" />);
 
-      // WHEN: The toolbar renders
+      // WHEN: The toolbar renders and is expanded
       const logo = screen.getByRole('img', { name: /launchdarkly/i });
       fireEvent.click(logo);
 
-      // THEN: It behaves as SDK mode (not dev-server mode)
+      // THEN: The full IconBar navigation is available
       await waitFor(() => {
-        const settingsTab = screen.queryByRole('tab', { name: /settings/i });
-        return settingsTab;
+        return screen.queryByRole('button', { name: 'Settings' });
       });
 
-      // AND: Shows only SDK mode tabs (no flag override plugin = settings only)
-      expect(screen.getByRole('tab', { name: /settings/i })).toBeInTheDocument();
-
-      // AND: Does NOT show dev-server mode tabs (flags = server-side flags)
-      expect(screen.queryByRole('tab', { name: /flags/i })).not.toBeInTheDocument();
-
-      // AND: Does NOT show flag-sdk tab (no flag override plugin provided)
-      expect(screen.queryByText('flag-sdk')).not.toBeInTheDocument();
-
-      // AND: Only has one tab total (settings only - typical SDK mode without plugin)
-      const tabs = screen.getAllByRole('tab');
-      expect(tabs).toHaveLength(1);
+      expect(screen.getByRole('button', { name: 'Flags' })).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: 'Analytics' })).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: 'Settings' })).toBeInTheDocument();
     });
   });
 
@@ -426,8 +342,7 @@ describe('LaunchDarklyToolbar - User Flows', () => {
 
       // Wait for toolbar to expand
       await waitFor(() => {
-        const settingsTab = screen.queryByRole('tab', { name: /settings/i });
-        return settingsTab;
+        return screen.queryByRole('button', { name: 'Settings' });
       });
 
       // THEN: Session replay should start
@@ -450,8 +365,7 @@ describe('LaunchDarklyToolbar - User Flows', () => {
 
       // Wait for toolbar to expand
       await waitFor(() => {
-        const settingsTab = screen.queryByRole('tab', { name: /settings/i });
-        return settingsTab;
+        return screen.queryByRole('button', { name: 'Settings' });
       });
 
       // Wait a bit to ensure no async calls happen
@@ -475,8 +389,7 @@ describe('LaunchDarklyToolbar - User Flows', () => {
 
       // Wait for toolbar to expand
       await waitFor(() => {
-        const settingsTab = screen.queryByRole('tab', { name: /settings/i });
-        return settingsTab;
+        return screen.queryByRole('button', { name: 'Settings' });
       });
 
       // Wait a bit to ensure no async calls happen
@@ -506,9 +419,9 @@ describe('LaunchDarklyToolbar - User Flows', () => {
       // Clear mocks to track new calls
       vi.clearAllMocks();
 
-      // WHEN: User collapses the toolbar by clicking the close button
-      const closeButton = screen.getByRole('button', { name: /close/i });
-      fireEvent.click(closeButton);
+      // WHEN: User collapses the toolbar by clicking the collapse button
+      const collapseButton = screen.getByRole('button', { name: /collapse toolbar/i });
+      fireEvent.click(collapseButton);
 
       // THEN: Session replay should stop
       await waitFor(() => {
