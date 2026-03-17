@@ -17,7 +17,6 @@ import * as styles from './SettingsContent.module.css';
 import * as settingsItemStyles from './SettingsItem.module.css';
 import { EnvironmentSelector } from './EnvironmentSelector';
 import { FeedbackSentiment } from '../../../../../../types';
-import { USE_NEW_TOOLBAR_DESIGN_FLAG_KEY } from '../../../../../../flags/toolbarFlags';
 import { ShareStatePopover, type ShareStateOptions } from '../../ShareStatePopover';
 import { serializeToolbarState, SHARED_STATE_VERSION, MAX_STATE_SIZE_LIMIT } from '../../../../../utils/urlOverrides';
 import { loadContexts, loadActiveContext, loadAllSettings, loadStarredFlags } from '../../../utils/localStorage';
@@ -65,7 +64,7 @@ export function GeneralSettings() {
 
   const handleFeedbackSubmit = (feedback: string, sentiment: FeedbackSentiment) => {
     analytics.trackFeedback(feedback, sentiment, {
-      flagKey: USE_NEW_TOOLBAR_DESIGN_FLAG_KEY,
+      flagKey: 'use-new-toolbar-design',
       prompt: feedbackPrompt,
     });
   };
