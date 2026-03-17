@@ -30,7 +30,7 @@ describe('ToolbarAnalytics', () => {
     const analytics = new ToolbarAnalytics(mockClient, undefined, true);
 
     analytics.trackFeedback('Nice update', 'positive', {
-      flagKey: 'use-new-toolbar-design',
+      flagKey: 'test-flag',
       prompt: "How's your experience?",
     });
 
@@ -39,7 +39,7 @@ describe('ToolbarAnalytics', () => {
       expect.objectContaining({ sentiment: 'positive', comment: 'Nice update' }),
     );
     expect(sendFeedbackMock).toHaveBeenCalledWith(mockClient, {
-      flagKey: 'use-new-toolbar-design',
+      flagKey: 'test-flag',
       feedback: 'Nice update',
       sentiment: 'positive',
       prompt: "How's your experience?",
@@ -62,7 +62,7 @@ describe('ToolbarAnalytics', () => {
   test('does not send feedback when analytics is disabled', () => {
     const analytics = new ToolbarAnalytics(mockClient, undefined, false);
 
-    analytics.trackFeedback('Great', 'positive', { flagKey: 'use-new-toolbar-design' });
+    analytics.trackFeedback('Great', 'positive', { flagKey: 'test-flag' });
 
     expect(mockClient.track).not.toHaveBeenCalled();
     expect(sendFeedbackMock).not.toHaveBeenCalled();
@@ -72,7 +72,7 @@ describe('ToolbarAnalytics', () => {
     isDoNotTrackEnabledMock.mockReturnValue(true);
     const analytics = new ToolbarAnalytics(mockClient, undefined, true);
 
-    analytics.trackFeedback('Great', 'positive', { flagKey: 'use-new-toolbar-design' });
+    analytics.trackFeedback('Great', 'positive', { flagKey: 'test-flag' });
 
     expect(mockClient.track).not.toHaveBeenCalled();
     expect(sendFeedbackMock).not.toHaveBeenCalled();
