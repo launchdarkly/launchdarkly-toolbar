@@ -2,7 +2,6 @@ import type { Page } from '@playwright/test';
 import { test, expect, expectNoViolations } from '../setup/accessibility';
 import { blockApiResponses, waitForToolbarReady } from '../utils/apiMocking';
 import { ToolbarPage } from '../pages/ToolbarPage';
-import { FIXTURE_FLAGS_LEGACY, mockFeatureFlags } from '../mocks/mockFeatureFlags';
 
 test.describe('LaunchDarkly Toolbar - Accessibility', () => {
   test.beforeEach(async ({ page }: { page: Page }) => {
@@ -298,41 +297,6 @@ test.describe('LaunchDarkly Toolbar - Login Screen Accessibility', () => {
     await expect(page.getByTestId('login-screen')).toBeVisible({ timeout: 5000 });
 
     const axeBuilder = await makeToolbarAxeBuilder();
-    await expectNoViolations(axeBuilder, testInfo);
-  });
-});
-
-test.describe('LaunchDarkly Toolbar - Accessibility (Legacy design)', () => {
-  test.beforeEach(async ({ page }: { page: Page }) => {
-    await mockFeatureFlags(page, FIXTURE_FLAGS_LEGACY);
-    await blockApiResponses(page);
-    await page.goto('/sdk');
-    await waitForToolbarReady(page);
-  });
-
-  /**
-   * Legacy design accessibility test.
-   *
-   * Note: The legacy design uses @launchpad-ui/components which have known
-   * color contrast issues on dark backgrounds. These are documented as
-   * LaunchPad design system limitations. The color-contrast rule is disabled
-   * for this test only - the new UI tests remain strict.
-   *
-   * The legacy UI is deprecated and will be removed in a future version.
-   */
-  test('should have no accessibility violations when expanded (legacy)', async ({
-    page,
-    makeToolbarAxeBuilder,
-  }, testInfo) => {
-    const toolbarPage = new ToolbarPage(page);
-    await toolbarPage.expand();
-    await toolbarPage.expectExpanded();
-
-    // Legacy UI should render tabs
-    await expect(page.getByRole('tab').first()).toBeVisible();
-
-    // Disable color-contrast rule for legacy design due to LaunchPad design system limitations
-    const axeBuilder = (await makeToolbarAxeBuilder()).disableRules(['color-contrast']);
     await expectNoViolations(axeBuilder, testInfo);
   });
 });

@@ -56,32 +56,8 @@ export function getTabsForMode(
   return tabs as readonly TabId[];
 }
 
-export function getDefaultActiveTab(
-  mode: ToolbarMode,
-  hasFlagOverridePlugin?: boolean,
-  hasEventInterceptionPlugin?: boolean,
-  useNewToolbarDesign?: boolean,
-): TabId {
-  if (useNewToolbarDesign) {
-    return 'flags';
-  }
-
-  if (mode === 'dev-server') {
-    return 'flag-dev-server';
-  }
-
-  if (mode === 'sdk') {
-    // In SDK mode, prefer flag-sdk if available, then events, then settings
-    if (hasFlagOverridePlugin) {
-      return 'flag-sdk';
-    }
-    if (hasEventInterceptionPlugin) {
-      return 'events';
-    }
-    return 'settings';
-  }
-
-  return 'settings';
+export function getDefaultActiveTab(): TabId {
+  return 'flags';
 }
 
 // Feature flag types
