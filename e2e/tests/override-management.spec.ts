@@ -93,7 +93,7 @@ test.describe('LaunchDarkly Toolbar - Override Management', () => {
 
       const customJson = '{"environment": "e2e-test", "enabled": true}';
       await jsonEditor.click();
-      await page.keyboard.press('Meta+a');
+      await page.keyboard.press('ControlOrMeta+a');
       await page.keyboard.type(customJson);
       await jsonFlagItem.getByRole('button', { name: 'Save' }).click();
 

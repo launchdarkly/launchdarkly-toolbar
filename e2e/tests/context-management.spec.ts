@@ -40,7 +40,7 @@ test.describe('LaunchDarkly Toolbar - Context Management', () => {
 
       const editor = page.locator('.cm-content');
       await editor.first().click();
-      await page.keyboard.press('Meta+a');
+      await page.keyboard.press('ControlOrMeta+a');
       await page.keyboard.type('{"kind": "user", "key": "test-user-e2e", "name": "E2E Test User"}');
 
       const submitBtn = page.getByRole('button', { name: 'Add Context', exact: true });

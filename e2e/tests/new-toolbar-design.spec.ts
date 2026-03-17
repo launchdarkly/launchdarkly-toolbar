@@ -512,7 +512,7 @@ test.describe('LaunchDarkly Toolbar - New Design - SDK Mode Flag Overrides', () 
       await expect(jsonEditor).toBeVisible();
       const customJson = '{"environment": "test", "enabled": true}';
       await jsonEditor.click();
-      await page.keyboard.press('Meta+a');
+      await page.keyboard.press('ControlOrMeta+a');
       await page.keyboard.type(customJson);
       await jsonFlagItem.getByRole('button', { name: 'Save' }).click();
 
