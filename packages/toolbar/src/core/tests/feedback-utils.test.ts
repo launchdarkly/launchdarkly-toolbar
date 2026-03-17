@@ -26,7 +26,7 @@ describe('sendFeedback', () => {
     mockLDRecordMethods.getSession.mockReturnValue(undefined);
 
     sendFeedback(mockClient, {
-      flagKey: 'use-new-toolbar-design',
+      flagKey: 'test-flag',
       feedback: 'Looks good',
     });
 
@@ -34,7 +34,7 @@ describe('sendFeedback', () => {
       '$ld:feedback',
       expect.objectContaining({
         feedback_answer: 'Looks good',
-        flag_key: 'use-new-toolbar-design',
+        flag_key: 'test-flag',
         sentiment: 'neutral',
       }),
     );
@@ -45,7 +45,7 @@ describe('sendFeedback', () => {
     mockLDRecordMethods.getSession.mockReturnValue({ sessionSecureID: 'session-123' });
 
     sendFeedback(mockClient, {
-      flagKey: 'use-new-toolbar-design',
+      flagKey: 'test-flag',
       feedback: 'Could be better',
       sentiment: 'negative',
       prompt: "How's your experience?",
@@ -56,7 +56,7 @@ describe('sendFeedback', () => {
       '$ld:feedback',
       expect.objectContaining({
         feedback_answer: 'Could be better',
-        flag_key: 'use-new-toolbar-design',
+        flag_key: 'test-flag',
         sentiment: 'negative',
         feedback_prompt: "How's your experience?",
         o11y_session_id: 'session-123',
