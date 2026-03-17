@@ -69,41 +69,8 @@ describe('Toolbar Types Utilities', () => {
   });
 
   describe('getDefaultActiveTab', () => {
-    describe('with new toolbar design', () => {
-      it('should return "flags" when useNewToolbarDesign is true', () => {
-        expect(getDefaultActiveTab('dev-server', false, false, true)).toBe('flags');
-        expect(getDefaultActiveTab('sdk', false, false, true)).toBe('flags');
-        expect(getDefaultActiveTab('sdk', true, true, true)).toBe('flags');
-      });
-    });
-
-    describe('dev-server mode (legacy)', () => {
-      it('should return "flag-dev-server" for dev-server mode', () => {
-        expect(getDefaultActiveTab('dev-server', false, false, false)).toBe('flag-dev-server');
-        expect(getDefaultActiveTab('dev-server', true, true, false)).toBe('flag-dev-server');
-      });
-    });
-
-    describe('sdk mode (legacy)', () => {
-      it('should return "flag-sdk" when flag override plugin is available', () => {
-        expect(getDefaultActiveTab('sdk', true, false, false)).toBe('flag-sdk');
-        expect(getDefaultActiveTab('sdk', true, true, false)).toBe('flag-sdk');
-      });
-
-      it('should return "events" when only event interception plugin is available', () => {
-        expect(getDefaultActiveTab('sdk', false, true, false)).toBe('events');
-      });
-
-      it('should return "settings" when no plugins are available', () => {
-        expect(getDefaultActiveTab('sdk', false, false, false)).toBe('settings');
-      });
-    });
-
-    describe('fallback behavior', () => {
-      it('should return "settings" as ultimate fallback', () => {
-        // @ts-expect-error Testing invalid mode
-        expect(getDefaultActiveTab('invalid', false, false, false)).toBe('settings');
-      });
+    it('should always return "flags"', () => {
+      expect(getDefaultActiveTab()).toBe('flags');
     });
   });
 
@@ -125,8 +92,7 @@ describe('Toolbar Types Utilities', () => {
     });
 
     it('should be readonly arrays', () => {
-      // TypeScript enforces readonly, but we can test immutability at runtime
-      expect(Object.isFrozen(TAB_ORDER)).toBe(false); // readonly in TS, but not frozen
+      expect(Object.isFrozen(TAB_ORDER)).toBe(false);
       expect(Array.isArray(TAB_ORDER)).toBe(true);
     });
   });
