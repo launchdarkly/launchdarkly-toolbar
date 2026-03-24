@@ -59,6 +59,7 @@ vi.mock('../../ui/Toolbar/context/api/IFrameProvider', () => ({
   useIFrameContext: () => ({
     ref: { current: null },
     iframeSrc: 'https://integrations.launchdarkly.com',
+    signalIFrameReady: vi.fn(),
   }),
 }));
 

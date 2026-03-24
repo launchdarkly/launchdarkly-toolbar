@@ -93,14 +93,19 @@ describe('AuthProvider', () => {
     },
   };
 
+  let mockHasExhaustedRetries = false;
+
   beforeEach(() => {
     vi.clearAllMocks();
     setMockIsOptedInToEnhancedAnalytics(false);
+    mockHasExhaustedRetries = false;
 
-    (useIFrameContext as any).mockReturnValue({
+    (useIFrameContext as any).mockImplementation(() => ({
       ref: mockIframeRef,
       iframeSrc: 'https://integrations.launchdarkly.com',
-    });
+      hasExhaustedRetries: mockHasExhaustedRetries,
+      signalIFrameReady: vi.fn(),
+    }));
   });
 
   afterEach(() => {
@@ -384,6 +389,36 @@ describe('AuthProvider', () => {
       await waitFor(() => {
         expect(screen.getByTestId('authenticated')).toHaveTextContent('false');
       });
+    });
+  });
+
+  describe('IFrame Retry Exhaustion', () => {
+    test('sets loading to false and authenticated to false when retries are exhausted', async () => {
+      mockHasExhaustedRetries = true;
+
+      render(
+        <AuthProvider>
+          <TestConsumer />
+        </AuthProvider>,
+      );
+
+      await waitFor(() => {
+        expect(screen.getByTestId('loading')).toHaveTextContent('false');
+        expect(screen.getByTestId('authenticated')).toHaveTextContent('false');
+      });
+    });
+
+    test('remains in loading state when retries are not exhausted', () => {
+      mockHasExhaustedRetries = false;
+
+      render(
+        <AuthProvider>
+          <TestConsumer />
+        </AuthProvider>,
+      );
+
+      expect(screen.getByTestId('loading')).toHaveTextContent('true');
+      expect(screen.getByTestId('authenticated')).toHaveTextContent('false');
     });
   });
 

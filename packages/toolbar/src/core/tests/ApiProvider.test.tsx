@@ -82,6 +82,7 @@ describe('ApiProvider', () => {
     (useIFrameContext as any).mockReturnValue({
       ref: mockIframeRef,
       iframeSrc: 'https://integrations.launchdarkly.com',
+      signalIFrameReady: vi.fn(),
     });
   });
 

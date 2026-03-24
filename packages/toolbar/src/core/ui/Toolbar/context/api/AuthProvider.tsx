@@ -16,10 +16,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [authenticated, setAuthenticated] = useState(false);
   const [loading, setLoading] = useState(true);
   const [authenticating, setAuthenticating] = useState(false);
-  const { iframeSrc, ref } = useIFrameContext();
+  const { iframeSrc, ref, hasExhaustedRetries, signalIFrameReady } = useIFrameContext();
   const analytics = useAnalytics();
   const { updateContext } = useInternalClient();
   const { isOptedInToEnhancedAnalytics } = useAnalyticsPreferences();
+
+  useEffect(() => {
+    if (hasExhaustedRetries) {
+      setLoading(false);
+      setAuthenticated(false);
+    }
+  }, [hasExhaustedRetries]);
 
   const handleMessage = useCallback(
     async (event: MessageEvent) => {
@@ -28,6 +35,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       }
 
       if (event.data.type === IFRAME_EVENTS.AUTHENTICATED) {
+        signalIFrameReady();
         analytics.trackLoginSuccess();
         if (event.data.accountId && event.data.memberId) {
           if (isOptedInToEnhancedAnalytics) {
@@ -37,9 +45,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           setLoading(false);
         }
       } else if (event.data.type === IFRAME_EVENTS.AUTH_REQUIRED) {
+        signalIFrameReady();
         setAuthenticated(false);
         setLoading(false);
       } else if (event.data.type === IFRAME_EVENTS.AUTH_ERROR) {
+        signalIFrameReady();
         setAuthenticated(false);
         setLoading(false);
         analytics.trackAuthError(new Error(event.data.error));

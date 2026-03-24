@@ -27,7 +27,7 @@ const pendingRequests = new Map<string, PendingRequest>();
 
 export function ApiProvider({ children }: { children: React.ReactNode }) {
   const { authenticated } = useAuthContext();
-  const { ref, iframeSrc } = useIFrameContext();
+  const { ref, iframeSrc, signalIFrameReady } = useIFrameContext();
   const [apiReady, setApiReady] = useState(false);
   const analytics = useAnalytics();
 
@@ -38,6 +38,7 @@ export function ApiProvider({ children }: { children: React.ReactNode }) {
       }
 
       if (event.data.type === IFRAME_EVENTS.API_READY) {
+        signalIFrameReady();
         setApiReady(true);
         return;
       }

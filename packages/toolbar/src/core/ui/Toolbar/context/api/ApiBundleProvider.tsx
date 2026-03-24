@@ -16,19 +16,30 @@ interface ApiBundleProviderProps {
 /**
  * Persistent iframe component that handles authentication and API communication.
  * Must be rendered inside both IFrameProvider and AuthProvider.
+ * Supports automatic retry with exponential backoff on load errors.
  */
 function PersistentIFrame() {
-  const { ref, iframeSrc } = useIFrameContext();
+  const { ref, iframeSrc, iframeKey, hasExhaustedRetries, onIFrameError } = useIFrameContext();
   const { authenticating } = useAuthContext();
 
-  // The iframe source changes based on authentication state:
-  // - authenticating.html: Shows while popup auth is in progress
-  // - index.html: Normal state for auth checks and API calls
+  if (hasExhaustedRetries) {
+    return null;
+  }
+
   const src = authenticating
     ? `${iframeSrc}/toolbar/authenticating.html?originUrl=${window.location.origin}`
     : `${iframeSrc}/toolbar/index.html?originUrl=${window.location.origin}`;
 
-  return <iframe ref={ref} src={src} title="LaunchDarkly Toolbar Auth" style={{ display: 'none' }} />;
+  return (
+    <iframe
+      key={iframeKey}
+      ref={ref}
+      src={src}
+      title="LaunchDarkly Toolbar Auth"
+      style={{ display: 'none' }}
+      onError={onIFrameError}
+    />
+  );
 }
 
 export function ApiBundleProvider(props: ApiBundleProviderProps) {
