@@ -19,6 +19,7 @@ import {
 } from './context';
 import { CircleLogo } from './components';
 import { LoadingScreen } from './components/LoadingScreen';
+import { IFrameErrorScreen } from './components/IFrameErrorScreen';
 import { ExpandedToolbarContent } from './components/new/ExpandedToolbarContent';
 import { InteractiveWrapper } from './components/new/Interactive';
 import { AuthenticationModal } from './components/AuthenticationModal/AuthenticationModal';
@@ -33,7 +34,7 @@ export function LdToolbar() {
   const analytics = useAnalytics();
   const { activeTab, setActiveTab } = useActiveTabContext();
   const { isOptedInToSessionReplay } = useAnalyticsPreferences();
-  const { loading: authLoading } = useAuthContext();
+  const { loading: authLoading, iframeError } = useAuthContext();
   const { loading: internalClientLoading } = useInternalClient();
   const defaultActiveTab = getDefaultActiveTab();
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
@@ -169,8 +170,9 @@ export function LdToolbar() {
     >
       <AnimatePresence>{!isExpanded ? <CircleLogo onMouseDown={handleMouseDown} /> : null}</AnimatePresence>
       <AnimatePresence>
-        {isExpanded && isInitializing ? <LoadingScreen onMouseDown={handleMouseDown} /> : null}
-        {isExpanded && !isInitializing ? (
+        {isExpanded && iframeError ? <IFrameErrorScreen onMouseDown={handleMouseDown} /> : null}
+        {isExpanded && !iframeError && isInitializing ? <LoadingScreen onMouseDown={handleMouseDown} /> : null}
+        {isExpanded && !iframeError && !isInitializing ? (
           <ExpandedToolbarContent
             onClose={handleClose}
             onHeaderMouseDown={handleMouseDown}

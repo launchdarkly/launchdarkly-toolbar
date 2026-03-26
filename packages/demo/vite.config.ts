@@ -43,6 +43,7 @@ export default defineConfig(({ command }) => {
     },
     server: isDev
       ? {
+          allowedHosts: true,
           fs: {
             allow: [rootDir],
           },
