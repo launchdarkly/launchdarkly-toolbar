@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { AnimatePresence, motion } from 'motion/react';
 import { LDObserve } from '@launchdarkly/observability';
 import { LDRecord } from '@launchdarkly/session-replay';
@@ -14,72 +14,37 @@ import {
   useAnalyticsPreferences,
   useAuthContext,
   useInternalClient,
-  useSearchContext,
   useToolbarState,
   useToolbarUIContext,
 } from './context';
 import { CircleLogo } from './components';
 import { LoadingScreen } from './components/LoadingScreen';
 import { IFrameErrorScreen } from './components/IFrameErrorScreen';
-import { ExpandedToolbarContentLegacy } from './components/legacy';
 import { ExpandedToolbarContent } from './components/new/ExpandedToolbarContent';
 import { InteractiveWrapper } from './components/new/Interactive';
 import { AuthenticationModal } from './components/AuthenticationModal/AuthenticationModal';
 import { useToolbarAnimations, useToolbarVisibility, useToolbarDrag } from './hooks';
-import { ToolbarMode, ToolbarPosition, getToolbarMode, getDefaultActiveTab, ActiveTabId } from './types/toolbar';
+import { ToolbarPosition, getToolbarMode, getDefaultActiveTab } from './types/toolbar';
 import { IEventInterceptionPlugin, IFlagOverridePlugin } from '../../../types';
-import { useNewToolbarDesign, enableSessionReplay } from '../../../flags/toolbarFlags';
+import { enableSessionReplay } from '../../../flags/toolbarFlags';
 import * as styles from './LaunchDarklyToolbar.css';
 
-export interface LdToolbarProps {
-  mode: ToolbarMode;
-  baseUrl: string;
-  flagOverridePlugin?: IFlagOverridePlugin;
-  eventInterceptionPlugin?: IEventInterceptionPlugin;
-}
-
-export function LdToolbar(props: LdToolbarProps) {
-  const { mode, flagOverridePlugin, eventInterceptionPlugin, baseUrl } = props;
-  const { searchTerm } = useSearchContext();
+export function LdToolbar() {
   const { position, handlePositionChange } = useToolbarUIContext();
   const analytics = useAnalytics();
   const { activeTab, setActiveTab } = useActiveTabContext();
   const { isOptedInToSessionReplay } = useAnalyticsPreferences();
   const { loading: authLoading, iframeError } = useAuthContext();
   const { loading: internalClientLoading } = useInternalClient();
-  const newToolbarDesign = useNewToolbarDesign();
-  const defaultActiveTab = getDefaultActiveTab(mode, !!flagOverridePlugin, !!eventInterceptionPlugin, newToolbarDesign);
+  const defaultActiveTab = getDefaultActiveTab();
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [sessionReplayStarted, setSessionReplayStarted] = useState(false);
 
   const isInitializing = authLoading || internalClientLoading;
 
   const toolbarState = useToolbarState();
-  const expandedContentRef = useRef<HTMLDivElement>(null);
 
-  const {
-    slideDirection,
-    searchIsExpanded,
-    isExpanded,
-    toolbarRef,
-    handleTabChange,
-    handleClose,
-    handleSearch,
-    handleToggleReloadOnFlagChange,
-    handleCircleClick,
-    reloadOnFlagChangeIsEnabled,
-    handleToggleAutoCollapse,
-    isAutoCollapseEnabled,
-    setSearchIsExpanded,
-    setIsAnimating,
-  } = toolbarState;
-
-  // Focus management for expand/collapse
-  const focusExpandedToolbar = useCallback(() => {
-    if (expandedContentRef.current) {
-      expandedContentRef.current.focus();
-    }
-  }, [expandedContentRef]);
+  const { isExpanded, toolbarRef, handleClose, handleCircleClick, setIsAnimating } = toolbarState;
 
   const focusCollapsedToolbar = useCallback(() => {
     if (toolbarRef.current) {
@@ -125,7 +90,6 @@ export function LdToolbar(props: LdToolbarProps) {
   const { containerAnimations, animationConfig, handleAnimationStart, handleAnimationComplete } = useToolbarAnimations({
     isExpanded,
     setIsAnimating,
-    onExpandComplete: focusExpandedToolbar,
     onCollapseComplete: focusCollapsedToolbar,
   });
 
@@ -207,32 +171,8 @@ export function LdToolbar(props: LdToolbarProps) {
       <AnimatePresence>{!isExpanded ? <CircleLogo onMouseDown={handleMouseDown} /> : null}</AnimatePresence>
       <AnimatePresence>
         {isExpanded && iframeError ? <IFrameErrorScreen onMouseDown={handleMouseDown} /> : null}
-        {isExpanded && !iframeError && isInitializing ? <LoadingScreen onMouseDown={handleMouseDown} /> : null}
-        {isExpanded && !iframeError && !isInitializing && !newToolbarDesign ? (
-          <ExpandedToolbarContentLegacy
-            ref={expandedContentRef}
-            activeTab={activeTab as ActiveTabId}
-            slideDirection={slideDirection}
-            searchTerm={searchTerm}
-            searchIsExpanded={searchIsExpanded}
-            onSearch={handleSearch}
-            onClose={handleClose}
-            onToggleAutoCollapse={handleToggleAutoCollapse}
-            isAutoCollapseEnabled={isAutoCollapseEnabled}
-            onTabChange={handleTabChange}
-            setSearchIsExpanded={setSearchIsExpanded}
-            flagOverridePlugin={flagOverridePlugin}
-            eventInterceptionPlugin={eventInterceptionPlugin}
-            mode={mode}
-            baseUrl={baseUrl}
-            defaultActiveTab={defaultActiveTab}
-            onHeaderMouseDown={handleMouseDown}
-            reloadOnFlagChangeIsEnabled={reloadOnFlagChangeIsEnabled}
-            onToggleReloadOnFlagChange={handleToggleReloadOnFlagChange}
-            onOpenAuthModal={() => setIsAuthModalOpen(true)}
-          />
-        ) : null}
-        {isExpanded && !iframeError && !isInitializing && newToolbarDesign ? (
+        {isExpanded && isInitializing ? <LoadingScreen onMouseDown={handleMouseDown} /> : null}
+        {isExpanded && !isInitializing ? (
           <ExpandedToolbarContent
             onClose={handleClose}
             onHeaderMouseDown={handleMouseDown}
@@ -322,12 +262,7 @@ export function LaunchDarklyToolbar(props: LaunchDarklyToolbarProps) {
           >
             <StarredFlagsProvider>
               <InteractiveWrapper>
-                <LdToolbar
-                  mode={mode}
-                  baseUrl={baseUrl}
-                  flagOverridePlugin={flagOverridePlugin}
-                  eventInterceptionPlugin={eventInterceptionPlugin}
-                />
+                <LdToolbar />
               </InteractiveWrapper>
             </StarredFlagsProvider>
           </DevServerProvider>

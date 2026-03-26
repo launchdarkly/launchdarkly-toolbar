@@ -191,17 +191,11 @@ test.describe('LaunchDarkly Toolbar - New Design', () => {
     });
 
     test('should open Add Context form', async ({ page }: { page: Page }) => {
-      // Click add context button if visible
       const addContextBtn = page.getByRole('button', { name: /add context/i });
-      const isVisible = await addContextBtn.isVisible().catch(() => false);
-      if (isVisible) {
-        await addContextBtn.click();
-        // Verify form/modal opens - look for close button (use .first() to avoid multiple matches)
-        await expect(page.getByRole('button', { name: /close/i }).first()).toBeVisible();
-      } else {
-        // Just verify we're on the contexts subtab
-        await expect(page.getByTestId('subtab-dropdown-trigger')).toHaveText(/Contexts/);
-      }
+      await expect(addContextBtn).toBeVisible();
+      await addContextBtn.click();
+      // Verify form opens
+      await expect(page.getByRole('heading', { name: 'Add Context' })).toBeVisible();
     });
   });
 
@@ -450,22 +444,19 @@ test.describe('LaunchDarkly Toolbar - New Design - SDK Mode Flag Overrides', () 
       }
 
       // Find and click the edit button for string flag
-      const stringFlagRow = page.locator('[data-testid="flag-row-string-flag"]');
+      const stringFlagRow = page.getByTestId('flag-item-string-flag');
       const editButton = stringFlagRow.getByRole('button', { name: 'Edit' });
+      await expect(editButton).toBeVisible();
+      await editButton.click();
 
-      if (await editButton.isVisible().catch(() => false)) {
-        await editButton.click();
+      // Fill in new value
+      const input = stringFlagRow.getByRole('textbox');
+      await expect(input).toBeVisible();
+      await input.fill('test-override-string');
+      await stringFlagRow.getByRole('button', { name: 'Confirm' }).click();
 
-        // Fill in new value
-        const input = page.getByTestId('flag-input-string-flag');
-        if (await input.isVisible().catch(() => false)) {
-          await input.fill('test-override-string');
-          await page.getByRole('button', { name: 'Confirm' }).click();
-
-          // Verify override indicator appears
-          await expect(page.getByTestId('override-dot').first()).toBeVisible({ timeout: 10000 });
-        }
-      }
+      // Verify override indicator appears
+      await expect(page.getByTestId('override-dot').first()).toBeVisible({ timeout: 10000 });
     });
 
     test('should support number flag override with edit dialog', async ({ page }: { page: Page }) => {
@@ -482,22 +473,19 @@ test.describe('LaunchDarkly Toolbar - New Design - SDK Mode Flag Overrides', () 
       }
 
       // Find and click the edit button for number flag
-      const numberFlagRow = page.locator('[data-testid="flag-row-number-flag"]');
+      const numberFlagRow = page.getByTestId('flag-item-number-flag');
       const editButton = numberFlagRow.getByRole('button', { name: 'Edit' });
+      await expect(editButton).toBeVisible();
+      await editButton.click();
 
-      if (await editButton.isVisible().catch(() => false)) {
-        await editButton.click();
+      // Fill in new value
+      const input = numberFlagRow.getByRole('spinbutton');
+      await expect(input).toBeVisible();
+      await input.fill('999');
+      await numberFlagRow.getByRole('button', { name: 'Confirm' }).click();
 
-        // Fill in new value
-        const input = page.getByTestId('flag-input-number-flag');
-        if (await input.isVisible().catch(() => false)) {
-          await input.fill('999');
-          await page.getByRole('button', { name: 'Confirm' }).click();
-
-          // Verify override indicator appears
-          await expect(page.getByTestId('override-dot').first()).toBeVisible({ timeout: 10000 });
-        }
-      }
+      // Verify override indicator appears
+      await expect(page.getByTestId('override-dot').first()).toBeVisible({ timeout: 10000 });
     });
 
     test('should support JSON flag override with editor', async ({ page }: { page: Page }) => {
@@ -514,23 +502,22 @@ test.describe('LaunchDarkly Toolbar - New Design - SDK Mode Flag Overrides', () 
       }
 
       // Find and click the edit button for JSON flag
-      const jsonFlagRow = page.locator('[data-testid="flag-row-json-object-flag"]');
-      const editButton = jsonFlagRow.getByRole('button', { name: 'Edit' });
+      const jsonFlagItem = page.getByTestId('flag-item-json-object-flag');
+      const editButton = jsonFlagItem.getByRole('button', { name: 'Edit JSON' });
+      await expect(editButton).toBeVisible();
+      await editButton.click();
 
-      if (await editButton.isVisible().catch(() => false)) {
-        await editButton.click();
+      // Fill in new JSON value
+      const jsonEditor = page.getByTestId('json-editor-json-object-flag').locator('.cm-content');
+      await expect(jsonEditor).toBeVisible();
+      const customJson = '{"environment": "test", "enabled": true}';
+      await jsonEditor.click();
+      await page.keyboard.press('ControlOrMeta+a');
+      await page.keyboard.type(customJson);
+      await jsonFlagItem.getByRole('button', { name: 'Save' }).click();
 
-        // Fill in new JSON value
-        const jsonInput = page.getByTestId('json-editor-json-object-flag').getByRole('textbox');
-        if (await jsonInput.isVisible().catch(() => false)) {
-          const customJson = '{"environment": "test", "enabled": true}';
-          await jsonInput.fill(customJson);
-          await page.getByTestId('flag-confirm-json-object-flag').click();
-
-          // Verify override indicator appears
-          await expect(page.getByTestId('override-dot').first()).toBeVisible({ timeout: 10000 });
-        }
-      }
+      // Verify override indicator appears
+      await expect(page.getByTestId('override-dot').first()).toBeVisible({ timeout: 10000 });
     });
   });
 
@@ -553,14 +540,14 @@ test.describe('LaunchDarkly Toolbar - New Design - SDK Mode Flag Overrides', () 
       await booleanFlagSwitch.dispatchEvent('click');
       await expect(page.getByTestId('override-dot').first()).toBeVisible({ timeout: 10000 });
 
-      // Click show overrides filter
-      const showOverridesButton = page.getByRole('button', { name: /show overrides/i });
-      if (await showOverridesButton.isVisible().catch(() => false)) {
-        await showOverridesButton.click();
+      // Open filter overlay and select overrides filter
+      await page.getByRole('button', { name: 'Filter', exact: true }).click();
+      await expect(page.getByRole('dialog', { name: 'Filter options' })).toBeVisible();
+      await page.getByRole('checkbox', { name: 'Show overridden flags' }).click();
+      await page.keyboard.press('Escape');
 
-        // Verify only overridden flag is visible
-        await expect(page.getByText('boolean-flag').first()).toBeVisible();
-      }
+      // Verify only overridden flag is visible
+      await expect(page.getByText('boolean-flag').first()).toBeVisible();
     });
 
     test('should show starred flags filter', async ({ page }: { page: Page }) => {
@@ -570,13 +557,13 @@ test.describe('LaunchDarkly Toolbar - New Design - SDK Mode Flag Overrides', () 
       // Wait for flags to load
       await expect(page.getByText('boolean-flag').first()).toBeVisible();
 
-      // Check for starred flags filter button
-      const showStarredButton = page.getByRole('button', { name: /show starred/i });
-      if (await showStarredButton.isVisible().catch(() => false)) {
-        await showStarredButton.click();
-        // Verify filter is applied
-        await expect(showStarredButton).toBeVisible();
-      }
+      // Open filter overlay and verify starred option exists
+      await page.getByRole('button', { name: 'Filter', exact: true }).click();
+      await expect(page.getByRole('dialog', { name: 'Filter options' })).toBeVisible();
+      const starredCheckbox = page.getByRole('checkbox', { name: 'Show starred flags' });
+      await expect(starredCheckbox).toBeVisible();
+      await starredCheckbox.click();
+      await page.keyboard.press('Escape');
     });
 
     test('should show all flags filter', async ({ page }: { page: Page }) => {
@@ -586,11 +573,11 @@ test.describe('LaunchDarkly Toolbar - New Design - SDK Mode Flag Overrides', () 
       // Wait for flags to load
       await expect(page.getByText('boolean-flag').first()).toBeVisible();
 
-      // Check for show all flags filter button
-      const showAllButton = page.getByRole('button', { name: /show all/i });
-      if (await showAllButton.isVisible().catch(() => false)) {
-        await expect(showAllButton).toBeVisible();
-      }
+      // Open filter overlay and verify "all" option exists
+      await page.getByRole('button', { name: 'Filter', exact: true }).click();
+      await expect(page.getByRole('dialog', { name: 'Filter options' })).toBeVisible();
+      await expect(page.getByRole('checkbox', { name: 'Show all flags' })).toBeVisible();
+      await page.keyboard.press('Escape');
     });
   });
 
@@ -613,14 +600,15 @@ test.describe('LaunchDarkly Toolbar - New Design - SDK Mode Flag Overrides', () 
       await booleanFlagSwitch.dispatchEvent('click');
       await expect(page.getByTestId('override-dot').first()).toBeVisible({ timeout: 10000 });
 
-      // Look for clear overrides button
-      const clearOverridesButton = page.getByRole('button', { name: /clear overrides/i });
-      if (await clearOverridesButton.isVisible().catch(() => false)) {
-        await clearOverridesButton.click();
+      // Click clear overrides button
+      const clearOverridesButton = page
+        .getByRole('button', { name: /clear overrides/i })
+        .or(page.getByLabel(/clear overrides/i));
+      await expect(clearOverridesButton.first()).toBeVisible();
+      await clearOverridesButton.first().click();
 
-        // Verify overrides are cleared
-        await expect(page.getByTestId('override-dot')).not.toBeVisible();
-      }
+      // Verify overrides are cleared
+      await expect(page.getByTestId('override-dot')).not.toBeVisible();
     });
   });
 

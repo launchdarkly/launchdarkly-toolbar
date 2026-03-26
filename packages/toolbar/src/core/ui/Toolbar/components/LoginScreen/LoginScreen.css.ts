@@ -156,7 +156,7 @@ export const spinner = style({
 });
 
 export const helpText = style({
-  color: 'var(--lp-color-gray-400)',
+  color: 'var(--lp-color-gray-300)',
   fontSize: '0.75rem',
   margin: 0,
   lineHeight: '1.5',
