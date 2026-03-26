@@ -171,8 +171,8 @@ export function LdToolbar() {
       <AnimatePresence>{!isExpanded ? <CircleLogo onMouseDown={handleMouseDown} /> : null}</AnimatePresence>
       <AnimatePresence>
         {isExpanded && iframeError ? <IFrameErrorScreen onMouseDown={handleMouseDown} /> : null}
-        {isExpanded && isInitializing ? <LoadingScreen onMouseDown={handleMouseDown} /> : null}
-        {isExpanded && !isInitializing ? (
+        {isExpanded && !iframeError && isInitializing ? <LoadingScreen onMouseDown={handleMouseDown} /> : null}
+        {isExpanded && !iframeError && !isInitializing ? (
           <ExpandedToolbarContent
             onClose={handleClose}
             onHeaderMouseDown={handleMouseDown}
