@@ -23,9 +23,7 @@ export interface ToolbarSettings {
   isOptedInToAnalytics: boolean;
   isOptedInToEnhancedAnalytics: boolean;
   isOptedInToSessionReplay: boolean;
-  /** When true, show deprecated flags in the flags list (default false = live-only) */
   includeDeprecatedFlags: boolean;
-  /** When true, show archived flags in the flags list (default false = live-only) */
   includeArchivedFlags: boolean;
 }
 
