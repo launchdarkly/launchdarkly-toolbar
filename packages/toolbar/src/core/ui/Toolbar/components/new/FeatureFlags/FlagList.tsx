@@ -17,7 +17,7 @@ import { NormalizedFlag } from './types';
 import { EnhancedFlag } from '../../../../../types/devServer';
 import { GenericHelpText } from '../../GenericHelpText';
 import { VIRTUALIZATION } from '../../../constants';
-import { passesFlagLifecycleFilter } from './flagLifecycleFilter';
+import { countLifecycleEligibleFlags, filterIndicesByLifecycle } from './flagLifecycleFilter';
 import * as styles from './FlagList.module.css.ts';
 
 // Dev Server Mode Component
@@ -50,15 +50,10 @@ function DevServerFlagList() {
     }));
   }, [allFlags]);
 
-  const lifecycleEligibleCount = useMemo(() => {
-    let n = 0;
-    for (const flag of normalizedFlags) {
-      if (passesFlagLifecycleFilter(flag, includeDeprecatedFlags, includeArchivedFlags)) {
-        n++;
-      }
-    }
-    return n;
-  }, [normalizedFlags, includeDeprecatedFlags, includeArchivedFlags]);
+  const lifecycleEligibleCount = useMemo(
+    () => countLifecycleEligibleFlags(normalizedFlags, includeDeprecatedFlags, includeArchivedFlags),
+    [normalizedFlags, includeDeprecatedFlags, includeArchivedFlags],
+  );
 
   // Filter flags based on search term and active filters
   const filteredFlagIndices = useMemo(() => {
@@ -97,18 +92,10 @@ function DevServerFlagList() {
     return result;
   }, [normalizedFlags, searchTerm, activeFilters, isStarred]);
 
-  const lifecycleFilteredIndices = useMemo(() => {
-    const out: number[] = [];
-    for (const index of filteredFlagIndices) {
-      const flag = normalizedFlags[index];
-      if (!flag) continue;
-      if (!passesFlagLifecycleFilter(flag, includeDeprecatedFlags, includeArchivedFlags)) {
-        continue;
-      }
-      out.push(index);
-    }
-    return out;
-  }, [filteredFlagIndices, normalizedFlags, includeDeprecatedFlags, includeArchivedFlags]);
+  const lifecycleFilteredIndices = useMemo(
+    () => filterIndicesByLifecycle(filteredFlagIndices, normalizedFlags, includeDeprecatedFlags, includeArchivedFlags),
+    [filteredFlagIndices, normalizedFlags, includeDeprecatedFlags, includeArchivedFlags],
+  );
 
   const virtualizer = useVirtualizer({
     count: lifecycleFilteredIndices.length,
@@ -277,15 +264,10 @@ function SdkFlagList() {
     }));
   }, [allFlags]);
 
-  const lifecycleEligibleCount = useMemo(() => {
-    let n = 0;
-    for (const flag of normalizedFlags) {
-      if (passesFlagLifecycleFilter(flag, includeDeprecatedFlags, includeArchivedFlags)) {
-        n++;
-      }
-    }
-    return n;
-  }, [normalizedFlags, includeDeprecatedFlags, includeArchivedFlags]);
+  const lifecycleEligibleCount = useMemo(
+    () => countLifecycleEligibleFlags(normalizedFlags, includeDeprecatedFlags, includeArchivedFlags),
+    [normalizedFlags, includeDeprecatedFlags, includeArchivedFlags],
+  );
 
   // Filter flags based on search term and active filters
   const filteredFlagIndices = useMemo(() => {
@@ -324,18 +306,10 @@ function SdkFlagList() {
     return result;
   }, [normalizedFlags, searchTerm, activeFilters, isStarred]);
 
-  const lifecycleFilteredIndices = useMemo(() => {
-    const out: number[] = [];
-    for (const index of filteredFlagIndices) {
-      const flag = normalizedFlags[index];
-      if (!flag) continue;
-      if (!passesFlagLifecycleFilter(flag, includeDeprecatedFlags, includeArchivedFlags)) {
-        continue;
-      }
-      out.push(index);
-    }
-    return out;
-  }, [filteredFlagIndices, normalizedFlags, includeDeprecatedFlags, includeArchivedFlags]);
+  const lifecycleFilteredIndices = useMemo(
+    () => filterIndicesByLifecycle(filteredFlagIndices, normalizedFlags, includeDeprecatedFlags, includeArchivedFlags),
+    [filteredFlagIndices, normalizedFlags, includeDeprecatedFlags, includeArchivedFlags],
+  );
 
   const virtualizer = useVirtualizer({
     count: lifecycleFilteredIndices.length,
