@@ -12,7 +12,7 @@ import * as styles from './FilterOverlay.module.css';
 const FLAG_LIFECYCLE_DEPRECATED: FilterOption = {
   id: 'lifecycle_deprecated',
   label: 'Include deprecated',
-  description: 'Show flags marked as deprecated in LaunchDarkly',
+  description: 'Show deprecated flags',
 };
 
 const FLAG_LIFECYCLE_ARCHIVED: FilterOption = {
