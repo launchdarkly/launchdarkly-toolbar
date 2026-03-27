@@ -48,6 +48,8 @@ export class FlagStateManager {
         type: this.determineFlagType(variations, currentValue),
         sourceEnvironment: devServerData.sourceEnvironmentKey,
         enabled: flagState.value !== null && flagState.value !== undefined,
+        archived: apiFlag?.archived ?? false,
+        deprecated: apiFlag?.deprecated ?? false,
       };
     });
 

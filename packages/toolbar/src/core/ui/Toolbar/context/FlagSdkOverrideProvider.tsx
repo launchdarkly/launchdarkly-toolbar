@@ -10,6 +10,8 @@ interface LocalFlag {
   isOverridden: boolean;
   type: 'boolean' | 'multivariate' | 'string' | 'number' | 'object';
   availableVariations: ApiVariation[];
+  archived: boolean;
+  deprecated: boolean;
 }
 
 interface FlagSdkOverrideContextType {
@@ -84,6 +86,8 @@ export function FlagSdkOverrideProvider({ children, flagOverridePlugin }: FlagSd
           isOverridden: flagKey in overrides,
           type: determineFlagType(apiFlag?.variations || [], currentValue),
           availableVariations: apiFlag?.variations || [],
+          archived: apiFlag?.archived ?? false,
+          deprecated: apiFlag?.deprecated ?? false,
         };
       });
 
