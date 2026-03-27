@@ -69,6 +69,16 @@ export const content = style({
   padding: '8px',
 });
 
+export const sectionLabel = style({
+  fontSize: '11px',
+  fontWeight: 600,
+  textTransform: 'uppercase',
+  letterSpacing: '0.04em',
+  color: 'var(--lp-color-gray-500)',
+  padding: '8px 12px 4px',
+  margin: 0,
+});
+
 export const filterOption = style({
   display: 'flex',
   alignItems: 'center',
