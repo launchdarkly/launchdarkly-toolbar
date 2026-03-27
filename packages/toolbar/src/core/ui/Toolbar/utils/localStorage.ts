@@ -23,6 +23,10 @@ export interface ToolbarSettings {
   isOptedInToAnalytics: boolean;
   isOptedInToEnhancedAnalytics: boolean;
   isOptedInToSessionReplay: boolean;
+  /** When true, show deprecated flags in the flags list (default false = live-only) */
+  includeDeprecatedFlags: boolean;
+  /** When true, show archived flags in the flags list (default false = live-only) */
+  includeArchivedFlags: boolean;
 }
 
 export const DEFAULT_SETTINGS: ToolbarSettings = {
@@ -33,6 +37,8 @@ export const DEFAULT_SETTINGS: ToolbarSettings = {
   isOptedInToAnalytics: false,
   isOptedInToEnhancedAnalytics: false,
   isOptedInToSessionReplay: false,
+  includeDeprecatedFlags: false,
+  includeArchivedFlags: false,
 };
 
 /**
@@ -114,6 +120,46 @@ export function loadReloadOnFlagChange(): boolean {
   } catch (error) {
     console.warn('Failed to load reload on flag change from localStorage:', error);
     return DEFAULT_SETTINGS.reloadOnFlagChange;
+  }
+}
+
+export function saveIncludeDeprecatedFlags(include: boolean): void {
+  updateSetting('includeDeprecatedFlags', include);
+}
+
+export function loadIncludeDeprecatedFlags(): boolean {
+  try {
+    const stored = localStorage.getItem(TOOLBAR_STORAGE_KEYS.SETTINGS);
+    if (!stored) {
+      return DEFAULT_SETTINGS.includeDeprecatedFlags;
+    }
+    const parsed = JSON.parse(stored) as Partial<ToolbarSettings>;
+    return typeof parsed.includeDeprecatedFlags === 'boolean'
+      ? parsed.includeDeprecatedFlags
+      : DEFAULT_SETTINGS.includeDeprecatedFlags;
+  } catch (error) {
+    console.warn('Failed to load includeDeprecatedFlags from localStorage:', error);
+    return DEFAULT_SETTINGS.includeDeprecatedFlags;
+  }
+}
+
+export function saveIncludeArchivedFlags(include: boolean): void {
+  updateSetting('includeArchivedFlags', include);
+}
+
+export function loadIncludeArchivedFlags(): boolean {
+  try {
+    const stored = localStorage.getItem(TOOLBAR_STORAGE_KEYS.SETTINGS);
+    if (!stored) {
+      return DEFAULT_SETTINGS.includeArchivedFlags;
+    }
+    const parsed = JSON.parse(stored) as Partial<ToolbarSettings>;
+    return typeof parsed.includeArchivedFlags === 'boolean'
+      ? parsed.includeArchivedFlags
+      : DEFAULT_SETTINGS.includeArchivedFlags;
+  } catch (error) {
+    console.warn('Failed to load includeArchivedFlags from localStorage:', error);
+    return DEFAULT_SETTINGS.includeArchivedFlags;
   }
 }
 
