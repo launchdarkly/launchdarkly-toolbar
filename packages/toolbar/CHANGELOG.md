@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.3.0](https://github.com/launchdarkly/launchdarkly-toolbar/compare/2.2.1...2.3.0) (2026-03-27)
+
+
+### Features
+
+* [REL-12062] iframe domain whitelist error UX ([#627](https://github.com/launchdarkly/launchdarkly-toolbar/issues/627)) ([42a4186](https://github.com/launchdarkly/launchdarkly-toolbar/commit/42a41865732109b234952a1e1261c77e1b0b7e5b))
+
 ## [2.2.1](https://github.com/launchdarkly/launchdarkly-toolbar/compare/2.2.0...2.2.1) (2026-03-17)
 
 
