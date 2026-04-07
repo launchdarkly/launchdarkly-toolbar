@@ -6,8 +6,20 @@ import { useActiveSubtabContext } from '../context/ActiveSubtabProvider';
 import { SubTab } from '../types';
 import { IconButton } from '../../../../Buttons/IconButton';
 import { CheckIcon, FilterTuneIcon } from '../../icons';
-import { useAnalytics } from '../../../context';
+import { useAnalytics, useToolbarState } from '../../../context';
 import * as styles from './FilterOverlay.module.css';
+
+const FLAG_LIFECYCLE_DEPRECATED: FilterOption = {
+  id: 'lifecycle_deprecated',
+  label: 'Include deprecated',
+  description: 'Show deprecated flags',
+};
+
+const FLAG_LIFECYCLE_ARCHIVED: FilterOption = {
+  id: 'lifecycle_archived',
+  label: 'Include archived',
+  description: 'Show archived flags',
+};
 
 interface FilterOptionItemProps {
   option: FilterOption;
@@ -44,10 +56,19 @@ const FilterOverlayContent = memo(function FilterOverlayContent({ subtab, onClos
   const overlayRef = useRef<HTMLDivElement>(null);
   const { getActiveFilters, getFilterConfig, toggleFilter, resetFilters, hasActiveNonDefaultFilters } = useFilters();
   const analytics = useAnalytics();
+  const {
+    includeDeprecatedFlags,
+    includeArchivedFlags,
+    handleToggleIncludeDeprecatedFlags,
+    handleToggleIncludeArchivedFlags,
+    resetFlagLifecycleFilters,
+  } = useToolbarState();
 
   const config = getFilterConfig(subtab);
   const activeFilters = getActiveFilters(subtab);
-  const hasNonDefaultFilters = hasActiveNonDefaultFilters(subtab);
+  const hasChipNonDefaultFilters = hasActiveNonDefaultFilters(subtab);
+  const hasLifecycleNonDefault = subtab === 'flags' && (includeDeprecatedFlags || includeArchivedFlags);
+  const hasNonDefaultFilters = hasChipNonDefaultFilters || hasLifecycleNonDefault;
 
   const handleToggle = useCallback(
     (optionId: string) => {
@@ -60,7 +81,22 @@ const FilterOverlayContent = memo(function FilterOverlayContent({ subtab, onClos
 
   const handleReset = useCallback(() => {
     resetFilters(subtab);
-  }, [subtab, resetFilters]);
+    if (subtab === 'flags') {
+      resetFlagLifecycleFilters();
+    }
+  }, [subtab, resetFilters, resetFlagLifecycleFilters]);
+
+  const handleToggleDeprecated = useCallback(() => {
+    const next = !includeDeprecatedFlags;
+    handleToggleIncludeDeprecatedFlags();
+    analytics.trackFlagLifecycleFilterChange('deprecated', next);
+  }, [includeDeprecatedFlags, handleToggleIncludeDeprecatedFlags, analytics]);
+
+  const handleToggleArchived = useCallback(() => {
+    const next = !includeArchivedFlags;
+    handleToggleIncludeArchivedFlags();
+    analytics.trackFlagLifecycleFilterChange('archived', next);
+  }, [includeArchivedFlags, handleToggleIncludeArchivedFlags, analytics]);
 
   // Close on escape key
   useEffect(() => {
@@ -126,6 +162,21 @@ const FilterOverlayContent = memo(function FilterOverlayContent({ subtab, onClos
               onToggle={() => handleToggle(option.id)}
             />
           ))}
+          {subtab === 'flags' ? (
+            <>
+              <p className={styles.sectionLabel}>Flag lifecycle</p>
+              <FilterOptionItem
+                option={FLAG_LIFECYCLE_DEPRECATED}
+                isActive={includeDeprecatedFlags}
+                onToggle={handleToggleDeprecated}
+              />
+              <FilterOptionItem
+                option={FLAG_LIFECYCLE_ARCHIVED}
+                isActive={includeArchivedFlags}
+                onToggle={handleToggleArchived}
+              />
+            </>
+          ) : null}
         </div>
       </div>
     </motion.div>
@@ -146,6 +197,7 @@ export function FilterButton({ className }: FilterButtonProps) {
     toggleFilterOverlay,
     closeFilterOverlay,
   } = useFilters();
+  const { includeDeprecatedFlags, includeArchivedFlags } = useToolbarState();
 
   const subtab = activeSubtab as SubTab;
 
@@ -154,15 +206,17 @@ export function FilterButton({ className }: FilterButtonProps) {
     return null;
   }
 
-  const hasActiveFilters = hasActiveNonDefaultFilters(subtab);
   const activeFilters = getActiveFilters(subtab);
-  // Count filters, excluding 'all' since it's the default
-  const filterCount = activeFilters.has('all') ? 0 : activeFilters.size;
+  const chipCount = activeFilters.has('all') ? 0 : activeFilters.size;
+  const lifecycleCount = subtab === 'flags' ? (includeDeprecatedFlags ? 1 : 0) + (includeArchivedFlags ? 1 : 0) : 0;
+  const filterCount = chipCount + lifecycleCount;
+  const hasAnyNonDefaultFilters =
+    hasActiveNonDefaultFilters(subtab) || (subtab === 'flags' && (includeDeprecatedFlags || includeArchivedFlags));
 
   return (
     <div className={styles.container}>
       <IconButton icon={<FilterTuneIcon />} label="Filter" onClick={toggleFilterOverlay} className={className} />
-      {hasActiveFilters && filterCount > 0 ? (
+      {hasAnyNonDefaultFilters && filterCount > 0 ? (
         <div className={styles.filterCount} aria-label={`${filterCount} filters active`}>
           {filterCount}
         </div>

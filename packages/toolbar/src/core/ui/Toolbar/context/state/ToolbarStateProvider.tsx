@@ -21,6 +21,10 @@ import {
   loadToolbarAutoCollapse,
   loadReloadOnFlagChange,
   saveReloadOnFlagChange,
+  loadIncludeDeprecatedFlags,
+  saveIncludeDeprecatedFlags,
+  loadIncludeArchivedFlags,
+  saveIncludeArchivedFlags,
 } from '../../utils/localStorage';
 
 export interface ToolbarStateContextValue {
@@ -37,6 +41,8 @@ export interface ToolbarStateContextValue {
   isOptedInToAnalytics: boolean;
   isOptedInToEnhancedAnalytics: boolean;
   isOptedInToSessionReplay: boolean;
+  includeDeprecatedFlags: boolean;
+  includeArchivedFlags: boolean;
 
   // Refs
   toolbarRef: React.RefObject<HTMLDivElement | null>;
@@ -48,6 +54,9 @@ export interface ToolbarStateContextValue {
   handleToggleReloadOnFlagChange: () => void;
   handleToggleAutoCollapse: () => void;
   handleCircleClick: () => void;
+  handleToggleIncludeDeprecatedFlags: () => void;
+  handleToggleIncludeArchivedFlags: () => void;
+  resetFlagLifecycleFilters: () => void;
   setIsAnimating: Dispatch<SetStateAction<boolean>>;
   setSearchIsExpanded: Dispatch<SetStateAction<boolean>>;
   handleToggleAnalyticsOptOut: (enabled: boolean) => void;
@@ -76,6 +85,8 @@ export function ToolbarStateProvider({ children, domId, devServerUrl }: ToolbarS
   const [searchIsExpanded, setSearchIsExpanded] = useState(false);
   const [reloadOnFlagChangeIsEnabled, enableReloadOnFlagChange] = useState(() => loadReloadOnFlagChange());
   const [isAutoCollapseEnabled, setAutoCollapse] = useState(() => loadToolbarAutoCollapse());
+  const [includeDeprecatedFlags, setIncludeDeprecatedFlags] = useState(() => loadIncludeDeprecatedFlags());
+  const [includeArchivedFlags, setIncludeArchivedFlags] = useState(() => loadIncludeArchivedFlags());
   const [mode] = useState<ToolbarMode>(() => getToolbarMode(devServerUrl));
 
   // Refs
@@ -154,6 +165,29 @@ export function ToolbarStateProvider({ children, domId, devServerUrl }: ToolbarS
     });
   }, []);
 
+  const handleToggleIncludeDeprecatedFlags = useCallback(() => {
+    setIncludeDeprecatedFlags((prev) => {
+      const newValue = !prev;
+      saveIncludeDeprecatedFlags(newValue);
+      return newValue;
+    });
+  }, []);
+
+  const handleToggleIncludeArchivedFlags = useCallback(() => {
+    setIncludeArchivedFlags((prev) => {
+      const newValue = !prev;
+      saveIncludeArchivedFlags(newValue);
+      return newValue;
+    });
+  }, []);
+
+  const resetFlagLifecycleFilters = useCallback(() => {
+    saveIncludeDeprecatedFlags(false);
+    saveIncludeArchivedFlags(false);
+    setIncludeDeprecatedFlags(false);
+    setIncludeArchivedFlags(false);
+  }, []);
+
   const handleCircleClick = useCallback(() => {
     if (!isExpanded) {
       setIsExpanded(true);
@@ -207,6 +241,8 @@ export function ToolbarStateProvider({ children, domId, devServerUrl }: ToolbarS
       isOptedInToAnalytics: analyticsPreferences.isOptedInToAnalytics,
       isOptedInToEnhancedAnalytics: analyticsPreferences.isOptedInToEnhancedAnalytics,
       isOptedInToSessionReplay: analyticsPreferences.isOptedInToSessionReplay,
+      includeDeprecatedFlags,
+      includeArchivedFlags,
 
       // Refs
       toolbarRef,
@@ -218,6 +254,9 @@ export function ToolbarStateProvider({ children, domId, devServerUrl }: ToolbarS
       handleToggleReloadOnFlagChange,
       handleToggleAutoCollapse,
       handleCircleClick,
+      handleToggleIncludeDeprecatedFlags,
+      handleToggleIncludeArchivedFlags,
+      resetFlagLifecycleFilters,
       setIsAnimating,
       setSearchIsExpanded,
       handleToggleAnalyticsOptOut: analyticsPreferences.handleToggleAnalyticsOptOut,
@@ -232,6 +271,8 @@ export function ToolbarStateProvider({ children, domId, devServerUrl }: ToolbarS
       slideDirection,
       reloadOnFlagChangeIsEnabled,
       isAutoCollapseEnabled,
+      includeDeprecatedFlags,
+      includeArchivedFlags,
       mode,
       analyticsPreferences,
       handleTabChange,
@@ -240,6 +281,9 @@ export function ToolbarStateProvider({ children, domId, devServerUrl }: ToolbarS
       handleToggleReloadOnFlagChange,
       handleToggleAutoCollapse,
       handleCircleClick,
+      handleToggleIncludeDeprecatedFlags,
+      handleToggleIncludeArchivedFlags,
+      resetFlagLifecycleFilters,
     ],
   );
 

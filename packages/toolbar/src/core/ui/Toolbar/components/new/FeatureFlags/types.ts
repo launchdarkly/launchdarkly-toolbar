@@ -7,4 +7,6 @@ export interface NormalizedFlag {
   type: 'boolean' | 'multivariate' | 'string' | 'number' | 'object';
   currentValue: any;
   availableVariations: ApiVariation[];
+  archived: boolean;
+  deprecated: boolean;
 }
