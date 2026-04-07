@@ -317,7 +317,7 @@ describe('ApiProvider', () => {
   });
 
   describe('Flags Fetching - Feature Development', () => {
-    test('fetches flags for a specific project', async () => {
+    test('fetches flags for a specific project using queryParams pagination structure', async () => {
       // GIVEN: Developer is working on a specific project
       render(
         <ApiProvider>
@@ -340,7 +340,7 @@ describe('ApiProvider', () => {
       await act(async () => {
         fetchButton.click();
 
-        // Simulate iframe responding with flags
+        // Simulate iframe responding with flags (fewer than page size → no more pages)
         await new Promise((resolve) => {
           setTimeout(() => {
             window.dispatchEvent(
@@ -362,15 +362,249 @@ describe('ApiProvider', () => {
         });
       });
 
-      // THEN: The correct project key was sent
+      // THEN: The correct project key and queryParams structure were sent
       expect(mockIframeRef.current.contentWindow.postMessage).toHaveBeenCalled();
       const call = (mockIframeRef.current.contentWindow.postMessage as any).mock.calls[0];
       expect(call[0]).toMatchObject({
         type: IFRAME_COMMANDS.GET_FLAGS,
         projectKey: 'test-project',
+        queryParams: { limit: '50', offset: '0' },
       });
       expect(call[0].requestId).toBeDefined();
       expect(call[1]).toBe('https://integrations.launchdarkly.com');
+    });
+
+    test('accumulates flags across multiple pages', async () => {
+      // GIVEN: A project with more flags than fit in a single page
+      const page1Items = Array.from({ length: 50 }, (_, i) => ({ key: `flag-${i}`, name: `Flag ${i}` }));
+      const page2Items = Array.from({ length: 25 }, (_, i) => ({ key: `flag-${i + 50}`, name: `Flag ${i + 50}` }));
+
+      const TestPagination = () => {
+        const { getFlags } = useApi();
+        const [count, setCount] = React.useState<number | null>(null);
+
+        return (
+          <div>
+            <button
+              data-testid="fetch-flags"
+              onClick={async () => {
+                const response = await getFlags('test-project');
+                setCount(response.items.length);
+              }}
+            >
+              Fetch
+            </button>
+            <div data-testid="count">{count ?? 'loading'}</div>
+          </div>
+        );
+      };
+
+      render(
+        <ApiProvider>
+          <TestPagination />
+        </ApiProvider>,
+      );
+
+      act(() => {
+        window.dispatchEvent(
+          new MessageEvent('message', {
+            data: { type: IFRAME_EVENTS.API_READY },
+            origin: 'https://integrations.launchdarkly.com',
+          }),
+        );
+      });
+
+      // WHEN: Fetching flags that span two pages
+      const fetchButton = screen.getByTestId('fetch-flags');
+
+      await act(async () => {
+        fetchButton.click();
+
+        // Respond to page 1 (full page → triggers page 2 request)
+        await new Promise((resolve) => setTimeout(resolve, 10));
+        const calls = (mockIframeRef.current.contentWindow.postMessage as any).mock.calls;
+        const page1RequestId = calls[calls.length - 1][0].requestId;
+
+        window.dispatchEvent(
+          new MessageEvent('message', {
+            data: {
+              type: getResponseTopic(IFRAME_COMMANDS.GET_FLAGS),
+              requestId: page1RequestId,
+              data: { items: page1Items },
+            },
+            origin: 'https://integrations.launchdarkly.com',
+          }),
+        );
+
+        // Respond to page 2 (partial page → stops pagination)
+        await new Promise((resolve) => setTimeout(resolve, 10));
+        const calls2 = (mockIframeRef.current.contentWindow.postMessage as any).mock.calls;
+        const page2RequestId = calls2[calls2.length - 1][0].requestId;
+
+        window.dispatchEvent(
+          new MessageEvent('message', {
+            data: {
+              type: getResponseTopic(IFRAME_COMMANDS.GET_FLAGS),
+              requestId: page2RequestId,
+              data: { items: page2Items },
+            },
+            origin: 'https://integrations.launchdarkly.com',
+          }),
+        );
+
+        await new Promise((resolve) => setTimeout(resolve, 10));
+      });
+
+      // THEN: Both pages are combined into a single result
+      await waitFor(() => {
+        expect(screen.getByTestId('count')).toHaveTextContent('75');
+      });
+
+      // AND: Page 1 requested offset 0, page 2 requested offset 50
+      const allCalls = (mockIframeRef.current.contentWindow.postMessage as any).mock.calls;
+      expect(allCalls[0][0]).toMatchObject({ queryParams: { limit: '50', offset: '0' } });
+      expect(allCalls[1][0]).toMatchObject({ queryParams: { limit: '50', offset: '50' } });
+    });
+
+    test('stops paginating when a page returns fewer items than the page size', async () => {
+      // GIVEN: A project whose first page is exactly the page size
+      // but second page is empty (edge case: server returns exactly 0 on last page)
+      const fullPage = Array.from({ length: 50 }, (_, i) => ({ key: `flag-${i}`, name: `Flag ${i}` }));
+
+      const TestStopPagination = () => {
+        const { getFlags } = useApi();
+        const [count, setCount] = React.useState<number | null>(null);
+
+        return (
+          <div>
+            <button
+              data-testid="fetch-flags"
+              onClick={async () => {
+                const response = await getFlags('test-project');
+                setCount(response.items.length);
+              }}
+            >
+              Fetch
+            </button>
+            <div data-testid="count">{count ?? 'loading'}</div>
+          </div>
+        );
+      };
+
+      render(
+        <ApiProvider>
+          <TestStopPagination />
+        </ApiProvider>,
+      );
+
+      act(() => {
+        window.dispatchEvent(
+          new MessageEvent('message', {
+            data: { type: IFRAME_EVENTS.API_READY },
+            origin: 'https://integrations.launchdarkly.com',
+          }),
+        );
+      });
+
+      const fetchButton = screen.getByTestId('fetch-flags');
+
+      await act(async () => {
+        fetchButton.click();
+
+        // Respond to page 1 (full page → triggers page 2)
+        await new Promise((resolve) => setTimeout(resolve, 10));
+        const calls = (mockIframeRef.current.contentWindow.postMessage as any).mock.calls;
+        window.dispatchEvent(
+          new MessageEvent('message', {
+            data: {
+              type: getResponseTopic(IFRAME_COMMANDS.GET_FLAGS),
+              requestId: calls[calls.length - 1][0].requestId,
+              data: { items: fullPage },
+            },
+            origin: 'https://integrations.launchdarkly.com',
+          }),
+        );
+
+        // Respond to page 2 with empty items → pagination stops
+        await new Promise((resolve) => setTimeout(resolve, 10));
+        const calls2 = (mockIframeRef.current.contentWindow.postMessage as any).mock.calls;
+        window.dispatchEvent(
+          new MessageEvent('message', {
+            data: {
+              type: getResponseTopic(IFRAME_COMMANDS.GET_FLAGS),
+              requestId: calls2[calls2.length - 1][0].requestId,
+              data: { items: [] },
+            },
+            origin: 'https://integrations.launchdarkly.com',
+          }),
+        );
+
+        await new Promise((resolve) => setTimeout(resolve, 10));
+      });
+
+      // THEN: Only the 50 items from page 1 are returned
+      await waitFor(() => {
+        expect(screen.getByTestId('count')).toHaveTextContent('50');
+      });
+
+      // AND: Exactly 2 postMessage calls were made (one per page)
+      const allCalls = (mockIframeRef.current.contentWindow.postMessage as any).mock.calls;
+      expect(allCalls).toHaveLength(2);
+    });
+
+    test('forwards query param inside queryParams when searching', async () => {
+      // GIVEN: Developer searches for a specific flag
+      const TestQuery = () => {
+        const { getFlags } = useApi();
+
+        return (
+          <div>
+            <button data-testid="search" onClick={() => getFlags('test-project', { query: 'my-flag' })}>
+              Search
+            </button>
+          </div>
+        );
+      };
+
+      render(
+        <ApiProvider>
+          <TestQuery />
+        </ApiProvider>,
+      );
+
+      act(() => {
+        window.dispatchEvent(
+          new MessageEvent('message', {
+            data: { type: IFRAME_EVENTS.API_READY },
+            origin: 'https://integrations.launchdarkly.com',
+          }),
+        );
+      });
+
+      // WHEN: They search with a query string
+      await act(async () => {
+        screen.getByTestId('search').click();
+        await new Promise((resolve) => setTimeout(resolve, 10));
+
+        const calls = (mockIframeRef.current.contentWindow.postMessage as any).mock.calls;
+        window.dispatchEvent(
+          new MessageEvent('message', {
+            data: {
+              type: getResponseTopic(IFRAME_COMMANDS.GET_FLAGS),
+              requestId: calls[calls.length - 1][0].requestId,
+              data: { items: [] },
+            },
+            origin: 'https://integrations.launchdarkly.com',
+          }),
+        );
+        await new Promise((resolve) => setTimeout(resolve, 10));
+      });
+
+      // THEN: The query is included in queryParams
+      const calls = (mockIframeRef.current.contentWindow.postMessage as any).mock.calls;
+      expect(calls[0][0]).toMatchObject({
+        queryParams: { limit: '50', offset: '0', query: 'my-flag' },
+      });
     });
 
     test('handles flags fetch errors', async () => {
@@ -563,7 +797,7 @@ describe('ApiProvider', () => {
         const [results, setResults] = React.useState<string[]>([]);
 
         const handleConcurrentRequests = async () => {
-          // Simulate three rapid concurrent requests
+          // Simulate three rapid concurrent requests, each searching for a distinct flag
           const promises = [
             getFlags('project-1', { query: 'search-1' }),
             getFlags('project-2', { query: 'search-2' }),
@@ -571,7 +805,8 @@ describe('ApiProvider', () => {
           ];
 
           const responses = await Promise.all(promises);
-          setResults(responses.map((r: any) => r.projectKey));
+          // Each response contains a single flag whose key identifies which project it came from
+          setResults(responses.map((r) => r.items[0]?.key ?? 'missing'));
         };
 
         return (
@@ -614,13 +849,13 @@ describe('ApiProvider', () => {
             const request2 = calls[calls.length - 2][0];
             const request1 = calls[calls.length - 3][0];
 
-            // Send response for request 3 first
+            // Send response for request 3 first (with a flag key identifying its project)
             window.dispatchEvent(
               new MessageEvent('message', {
                 data: {
                   type: getResponseTopic(IFRAME_COMMANDS.GET_FLAGS),
                   requestId: request3.requestId,
-                  data: { projectKey: 'project-3', items: [] },
+                  data: { items: [{ key: 'project-3-flag' }] },
                 },
                 origin: 'https://integrations.launchdarkly.com',
               }),
@@ -632,7 +867,7 @@ describe('ApiProvider', () => {
                 data: {
                   type: getResponseTopic(IFRAME_COMMANDS.GET_FLAGS),
                   requestId: request2.requestId,
-                  data: { projectKey: 'project-2', items: [] },
+                  data: { items: [{ key: 'project-2-flag' }] },
                 },
                 origin: 'https://integrations.launchdarkly.com',
               }),
@@ -644,7 +879,7 @@ describe('ApiProvider', () => {
                 data: {
                   type: getResponseTopic(IFRAME_COMMANDS.GET_FLAGS),
                   requestId: request1.requestId,
-                  data: { projectKey: 'project-1', items: [] },
+                  data: { items: [{ key: 'project-1-flag' }] },
                 },
                 origin: 'https://integrations.launchdarkly.com',
               }),
@@ -657,7 +892,7 @@ describe('ApiProvider', () => {
 
       // THEN: Each request receives the correct response (not mixed up)
       await waitFor(() => {
-        expect(screen.getByTestId('results')).toHaveTextContent('project-1,project-2,project-3');
+        expect(screen.getByTestId('results')).toHaveTextContent('project-1-flag,project-2-flag,project-3-flag');
       });
     });
 
@@ -715,16 +950,16 @@ describe('ApiProvider', () => {
     });
 
     test('ignores responses with mismatched request IDs', async () => {
-      // GIVEN: A request is made but response has wrong ID
+      // GIVEN: A request is made but a response with the wrong ID arrives first
       const TestMismatchedId = () => {
         const { getFlags } = useApi();
-        const [result, setResult] = React.useState<string>('pending');
+        const [firstFlagKey, setFirstFlagKey] = React.useState<string>('pending');
         const [error, setError] = React.useState<string | null>(null);
 
         const handleFetch = async () => {
           try {
             const response = await getFlags('project-1');
-            setResult((response as any).projectKey || 'success');
+            setFirstFlagKey(response.items[0]?.key ?? 'empty');
           } catch (e: any) {
             setError(e.message);
           }
@@ -735,7 +970,7 @@ describe('ApiProvider', () => {
             <button data-testid="fetch" onClick={handleFetch}>
               Fetch
             </button>
-            <div data-testid="result">{result}</div>
+            <div data-testid="result">{firstFlagKey}</div>
             <div data-testid="error">{error || 'none'}</div>
           </div>
         );
@@ -768,13 +1003,13 @@ describe('ApiProvider', () => {
             const calls = (mockIframeRef.current.contentWindow.postMessage as any).mock.calls;
             const actualRequestId = calls[calls.length - 1][0].requestId;
 
-            // Send response with WRONG request ID first
+            // Send response with WRONG request ID first (should be ignored)
             window.dispatchEvent(
               new MessageEvent('message', {
                 data: {
                   type: getResponseTopic(IFRAME_COMMANDS.GET_FLAGS),
                   requestId: 'wrong-id-12345',
-                  data: { projectKey: 'wrong-project', items: [] },
+                  data: { items: [{ key: 'wrong-flag' }] },
                 },
                 origin: 'https://integrations.launchdarkly.com',
               }),
@@ -787,7 +1022,7 @@ describe('ApiProvider', () => {
                   data: {
                     type: getResponseTopic(IFRAME_COMMANDS.GET_FLAGS),
                     requestId: actualRequestId,
-                    data: { projectKey: 'project-1', items: [] },
+                    data: { items: [{ key: 'correct-flag' }] },
                   },
                   origin: 'https://integrations.launchdarkly.com',
                 }),
@@ -798,9 +1033,9 @@ describe('ApiProvider', () => {
         });
       });
 
-      // THEN: Only the correct response is processed
+      // THEN: Only the correct response is processed (wrong-flag was ignored)
       await waitFor(() => {
-        expect(screen.getByTestId('result')).toHaveTextContent('project-1');
+        expect(screen.getByTestId('result')).toHaveTextContent('correct-flag');
       });
     });
   });
