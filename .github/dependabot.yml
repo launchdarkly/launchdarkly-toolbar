@@ -4,7 +4,29 @@ updates:
     directory: '/'
     schedule:
       interval: 'daily'
+    cooldown:
+      default-days: 7
   - package-ecosystem: 'npm'
     directory: '/'
     schedule:
       interval: 'daily'
+    cooldown:
+      default-days: 7
+  - package-ecosystem: "npm"
+    directory: "/packages/demo"
+    schedule:
+      interval: "weekly"
+    cooldown:
+      default-days: 7
+  - package-ecosystem: "npm"
+    directory: "/packages/mock-server"
+    schedule:
+      interval: "weekly"
+    cooldown:
+      default-days: 7
+  - package-ecosystem: "npm"
+    directory: "/packages/toolbar"
+    schedule:
+      interval: "weekly"
+    cooldown:
+      default-days: 7
