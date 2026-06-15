@@ -12,21 +12,21 @@ updates:
       interval: 'daily'
     cooldown:
       default-days: 7
-  - package-ecosystem: "npm"
-    directory: "/packages/demo"
+  - package-ecosystem: 'npm'
+    directory: '/packages/demo'
     schedule:
-      interval: "weekly"
+      interval: 'weekly'
     cooldown:
       default-days: 7
-  - package-ecosystem: "npm"
-    directory: "/packages/mock-server"
+  - package-ecosystem: 'npm'
+    directory: '/packages/mock-server'
     schedule:
-      interval: "weekly"
+      interval: 'weekly'
     cooldown:
       default-days: 7
-  - package-ecosystem: "npm"
-    directory: "/packages/toolbar"
+  - package-ecosystem: 'npm'
+    directory: '/packages/toolbar'
     schedule:
-      interval: "weekly"
+      interval: 'weekly'
     cooldown:
       default-days: 7
