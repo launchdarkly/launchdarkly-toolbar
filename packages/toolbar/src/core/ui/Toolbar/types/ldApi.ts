@@ -35,6 +35,7 @@ export interface ApiVariation {
 
 export interface FlagsResponse {
   items: ApiFlag[];
+  totalCount?: number;
 }
 
 export interface ProjectsResponse {

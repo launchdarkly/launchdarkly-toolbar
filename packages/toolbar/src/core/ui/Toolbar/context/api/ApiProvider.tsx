@@ -1,7 +1,7 @@
 import { createContext, useCallback, useContext, useEffect, useState } from 'react';
 import { useAuthContext } from './AuthProvider';
 import { getResponseTopic, getErrorTopic, IFRAME_COMMANDS, useIFrameContext, IFRAME_EVENTS } from './IFrameProvider';
-import { FlagsPaginationParams, FlagsResponse, ProjectsResponse } from '../../types/ldApi';
+import { ApiFlag, FlagsPaginationParams, FlagsResponse, ProjectsResponse } from '../../types/ldApi';
 import { useAnalytics } from '../telemetry';
 
 interface ApiProviderContextValue {
@@ -111,15 +111,39 @@ export function ApiProvider({ children }: { children: React.ReactNode }) {
   const getFlags = useCallback(
     async (projectKey: string, params?: FlagsPaginationParams) => {
       if (!authenticated) {
-        return { items: [], totalCount: 0 };
+        return { items: [] };
       }
 
-      return sendMessage(IFRAME_COMMANDS.GET_FLAGS, {
-        projectKey,
-        limit: params?.limit,
-        offset: params?.offset,
-        query: params?.query,
-      }) as Promise<FlagsResponse>;
+      const PAGE_SIZE = 50;
+      const MAX_PAGES = 100;
+      const allItems: ApiFlag[] = [];
+      let offset = 0;
+      let page = 0;
+      let hasMore = true;
+
+      while (hasMore && page < MAX_PAGES) {
+        const queryParams: Record<string, string> = {
+          limit: String(PAGE_SIZE),
+          offset: String(offset),
+        };
+
+        if (params?.query) {
+          queryParams.query = params.query;
+        }
+
+        const response = await (sendMessage(IFRAME_COMMANDS.GET_FLAGS, {
+          projectKey,
+          queryParams,
+        }) as Promise<FlagsResponse>);
+
+        allItems.push(...response.items);
+
+        hasMore = response.items.length === PAGE_SIZE;
+        offset += PAGE_SIZE;
+        page++;
+      }
+
+      return { items: allItems };
     },
     [authenticated, sendMessage],
   );

@@ -1,5 +1,20 @@
 # Changelog
 
+## [2.3.1](https://github.com/launchdarkly/launchdarkly-toolbar/compare/2.3.0...2.3.1) (2026-04-07)
+
+
+### Bug Fixes
+
+* [REL-13041] paginate flags endpoint to avoid long calls/timeouts ([#631](https://github.com/launchdarkly/launchdarkly-toolbar/issues/631)) ([ae2f98a](https://github.com/launchdarkly/launchdarkly-toolbar/commit/ae2f98a435af7e8b46eb05994bb24918e296bc8e))
+* paginate flags endpoint to avoid long calls/timeouts ([ae2f98a](https://github.com/launchdarkly/launchdarkly-toolbar/commit/ae2f98a435af7e8b46eb05994bb24918e296bc8e))
+
+## [2.3.0](https://github.com/launchdarkly/launchdarkly-toolbar/compare/2.2.1...2.3.0) (2026-03-27)
+
+
+### Features
+
+* [REL-12062] iframe domain whitelist error UX ([#627](https://github.com/launchdarkly/launchdarkly-toolbar/issues/627)) ([42a4186](https://github.com/launchdarkly/launchdarkly-toolbar/commit/42a41865732109b234952a1e1261c77e1b0b7e5b))
+
 ## [2.2.1](https://github.com/launchdarkly/launchdarkly-toolbar/compare/2.2.0...2.2.1) (2026-03-17)
 
 
