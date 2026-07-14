@@ -13,6 +13,8 @@ export interface ApiEnvironment {
 
 export interface ApiFlag {
   archived: boolean;
+  /** Present on flags in LaunchDarkly API v2+ when marked deprecated */
+  deprecated?: boolean;
   clientSideAvailability: {
     usingEnvironmentId: boolean;
     usingMobileKey: boolean;

@@ -22,7 +22,18 @@ vi.mock('motion/react', () => ({
 vi.mock('../../ui/Toolbar/context/telemetry/AnalyticsProvider', () => ({
   useAnalytics: vi.fn().mockReturnValue({
     trackFilterChange: vi.fn(),
+    trackFlagLifecycleFilterChange: vi.fn(),
   }),
+}));
+
+vi.mock('../../ui/Toolbar/context/state/ToolbarStateProvider', () => ({
+  useToolbarState: vi.fn(() => ({
+    includeDeprecatedFlags: false,
+    includeArchivedFlags: false,
+    handleToggleIncludeDeprecatedFlags: vi.fn(),
+    handleToggleIncludeArchivedFlags: vi.fn(),
+    resetFlagLifecycleFilters: vi.fn(),
+  })),
 }));
 
 describe('FilterButton', () => {
@@ -63,6 +74,9 @@ describe('FilterButton', () => {
     expect(screen.getByText('All')).toBeInTheDocument();
     expect(screen.getByText('Overrides')).toBeInTheDocument();
     expect(screen.getByText('Starred')).toBeInTheDocument();
+    expect(screen.getByText('Flag lifecycle')).toBeInTheDocument();
+    expect(screen.getByText('Include deprecated')).toBeInTheDocument();
+    expect(screen.getByText('Include archived')).toBeInTheDocument();
   });
 
   it('should toggle filter when option is clicked', () => {
