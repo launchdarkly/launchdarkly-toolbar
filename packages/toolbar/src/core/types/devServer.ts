@@ -11,6 +11,8 @@ export interface EnhancedFlag {
   type: 'boolean' | 'multivariate' | 'string' | 'number' | 'object';
   sourceEnvironment: string; // e.g., "production", "test"
   enabled: boolean; // Whether flag is active
+  archived: boolean;
+  deprecated: boolean;
 }
 
 // Configuration Interface

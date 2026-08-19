@@ -17,12 +17,13 @@ import { NormalizedFlag } from './types';
 import { EnhancedFlag } from '../../../../../types/devServer';
 import { GenericHelpText } from '../../GenericHelpText';
 import { VIRTUALIZATION } from '../../../constants';
+import { countLifecycleEligibleFlags, filterIndicesByLifecycle } from './flagLifecycleFilter';
 import * as styles from './FlagList.module.css.ts';
 
 // Dev Server Mode Component
 function DevServerFlagList() {
   const { state, setOverride, clearOverride } = useDevServerContext();
-  const { reloadOnFlagChangeIsEnabled } = useToolbarState();
+  const { reloadOnFlagChangeIsEnabled, includeDeprecatedFlags, includeArchivedFlags } = useToolbarState();
   const { searchTerms } = useTabSearchContext();
   const searchTerm = useMemo(() => searchTerms['flags'] || '', [searchTerms]);
   const { activeFilters } = useSubtabFilters('flags');
@@ -44,8 +45,15 @@ function DevServerFlagList() {
       isOverridden: flag.isOverridden,
       type: flag.type,
       availableVariations: flag.availableVariations,
+      archived: flag.archived,
+      deprecated: flag.deprecated,
     }));
   }, [allFlags]);
+
+  const lifecycleEligibleCount = useMemo(
+    () => countLifecycleEligibleFlags(normalizedFlags, includeDeprecatedFlags, includeArchivedFlags),
+    [normalizedFlags, includeDeprecatedFlags, includeArchivedFlags],
+  );
 
   // Filter flags based on search term and active filters
   const filteredFlagIndices = useMemo(() => {
@@ -84,8 +92,13 @@ function DevServerFlagList() {
     return result;
   }, [normalizedFlags, searchTerm, activeFilters, isStarred]);
 
+  const lifecycleFilteredIndices = useMemo(
+    () => filterIndicesByLifecycle(filteredFlagIndices, normalizedFlags, includeDeprecatedFlags, includeArchivedFlags),
+    [filteredFlagIndices, normalizedFlags, includeDeprecatedFlags, includeArchivedFlags],
+  );
+
   const virtualizer = useVirtualizer({
-    count: filteredFlagIndices.length,
+    count: lifecycleFilteredIndices.length,
     getScrollElement,
     estimateSize: () => VIRTUALIZATION.ITEM_HEIGHT + VIRTUALIZATION.GAP,
     overscan: VIRTUALIZATION.OVERSCAN,
@@ -128,12 +141,11 @@ function DevServerFlagList() {
     [clearOverride, analytics, reloadOnFlagChangeIsEnabled],
   );
 
-  // Calculate stats
-  const totalFlags = normalizedFlags.length;
-  const filteredCount = filteredFlagIndices.length;
-  const isFiltered = searchTerm || !activeFilters.has('all');
+  // Calculate stats (denominator = flags in scope for current lifecycle toggles, not raw API count)
+  const filteredCount = lifecycleFilteredIndices.length;
+  const statsLabel = `${filteredCount} of ${lifecycleEligibleCount} flags`;
 
-  if (filteredFlagIndices.length === 0 && !searchTerm && activeFilters.has('all')) {
+  if (normalizedFlags.length === 0) {
     return (
       <GenericHelpText
         title="No feature flags found"
@@ -146,9 +158,23 @@ function DevServerFlagList() {
     return (
       <div className={styles.container}>
         <div className={styles.statsHeader}>
-          <span className={styles.statsText}>0 of {totalFlags} flags</span>
+          <span className={styles.statsText}>0 of {lifecycleEligibleCount} flags</span>
         </div>
         <GenericHelpText title="No matching flags" subtitle="Try adjusting your search or filters" />
+      </div>
+    );
+  }
+
+  if (lifecycleFilteredIndices.length === 0 && filteredFlagIndices.length > 0) {
+    return (
+      <div className={styles.container}>
+        <div className={styles.statsHeader}>
+          <span className={styles.statsText}>0 of {lifecycleEligibleCount} flags</span>
+        </div>
+        <GenericHelpText
+          title="No live flags match"
+          subtitle="Turn on “Include deprecated” or “Include archived” in Filters to see those flags"
+        />
       </div>
     );
   }
@@ -156,9 +182,7 @@ function DevServerFlagList() {
   return (
     <div className={styles.container}>
       <div className={styles.statsHeader}>
-        <span className={styles.statsText}>
-          {isFiltered ? `${filteredCount} of ${totalFlags} flags` : `${totalFlags} flags`}
-        </span>
+        <span className={styles.statsText}>{statsLabel}</span>
       </div>
       <div
         ref={scrollContainerRef}
@@ -175,7 +199,7 @@ function DevServerFlagList() {
           }}
         >
           {virtualizer.getVirtualItems().map((virtualItem) => {
-            const flagIndex = filteredFlagIndices[virtualItem.index];
+            const flagIndex = lifecycleFilteredIndices[virtualItem.index];
             if (flagIndex === undefined) return null;
 
             const normalizedFlag = normalizedFlags[flagIndex];
@@ -213,7 +237,7 @@ function DevServerFlagList() {
 // SDK Mode Component
 function SdkFlagList() {
   const { flags, setOverride, removeOverride } = useFlagSdkOverrideContext();
-  const { reloadOnFlagChangeIsEnabled } = useToolbarState();
+  const { reloadOnFlagChangeIsEnabled, includeDeprecatedFlags, includeArchivedFlags } = useToolbarState();
   const { searchTerms } = useTabSearchContext();
   const searchTerm = useMemo(() => searchTerms['flags'] || '', [searchTerms]);
   const { activeFilters } = useSubtabFilters('flags');
@@ -235,8 +259,15 @@ function SdkFlagList() {
       isOverridden: flag.isOverridden,
       type: flag.type,
       availableVariations: flag.availableVariations,
+      archived: flag.archived,
+      deprecated: flag.deprecated,
     }));
   }, [allFlags]);
+
+  const lifecycleEligibleCount = useMemo(
+    () => countLifecycleEligibleFlags(normalizedFlags, includeDeprecatedFlags, includeArchivedFlags),
+    [normalizedFlags, includeDeprecatedFlags, includeArchivedFlags],
+  );
 
   // Filter flags based on search term and active filters
   const filteredFlagIndices = useMemo(() => {
@@ -275,8 +306,13 @@ function SdkFlagList() {
     return result;
   }, [normalizedFlags, searchTerm, activeFilters, isStarred]);
 
+  const lifecycleFilteredIndices = useMemo(
+    () => filterIndicesByLifecycle(filteredFlagIndices, normalizedFlags, includeDeprecatedFlags, includeArchivedFlags),
+    [filteredFlagIndices, normalizedFlags, includeDeprecatedFlags, includeArchivedFlags],
+  );
+
   const virtualizer = useVirtualizer({
-    count: filteredFlagIndices.length,
+    count: lifecycleFilteredIndices.length,
     getScrollElement,
     estimateSize: () => VIRTUALIZATION.ITEM_HEIGHT + VIRTUALIZATION.GAP,
     overscan: VIRTUALIZATION.OVERSCAN,
@@ -319,12 +355,11 @@ function SdkFlagList() {
     [virtualizer],
   );
 
-  // Calculate stats
-  const totalFlags = normalizedFlags.length;
-  const filteredCount = filteredFlagIndices.length;
-  const isFiltered = searchTerm || !activeFilters.has('all');
+  // Calculate stats (denominator = flags in scope for current lifecycle toggles)
+  const filteredCount = lifecycleFilteredIndices.length;
+  const statsLabel = `${filteredCount} of ${lifecycleEligibleCount} flags`;
 
-  if (filteredFlagIndices.length === 0 && !searchTerm && activeFilters.has('all')) {
+  if (normalizedFlags.length === 0) {
     return (
       <GenericHelpText
         title="No feature flags found"
@@ -337,9 +372,23 @@ function SdkFlagList() {
     return (
       <div className={styles.container}>
         <div className={styles.statsHeader}>
-          <span className={styles.statsText}>0 of {totalFlags} flags</span>
+          <span className={styles.statsText}>0 of {lifecycleEligibleCount} flags</span>
         </div>
         <GenericHelpText title="No matching flags" subtitle="Try adjusting your search or filters" />
+      </div>
+    );
+  }
+
+  if (lifecycleFilteredIndices.length === 0 && filteredFlagIndices.length > 0) {
+    return (
+      <div className={styles.container}>
+        <div className={styles.statsHeader}>
+          <span className={styles.statsText}>0 of {lifecycleEligibleCount} flags</span>
+        </div>
+        <GenericHelpText
+          title="No live flags match"
+          subtitle="Turn on “Include deprecated” or “Include archived” in Filters to see those flags"
+        />
       </div>
     );
   }
@@ -347,9 +396,7 @@ function SdkFlagList() {
   return (
     <div className={styles.container}>
       <div className={styles.statsHeader}>
-        <span className={styles.statsText}>
-          {isFiltered ? `${filteredCount} of ${totalFlags} flags` : `${totalFlags} flags`}
-        </span>
+        <span className={styles.statsText}>{statsLabel}</span>
       </div>
       <div
         ref={scrollContainerRef}
@@ -366,7 +413,7 @@ function SdkFlagList() {
           }}
         >
           {virtualizer.getVirtualItems().map((virtualItem) => {
-            const flagIndex = filteredFlagIndices[virtualItem.index];
+            const flagIndex = lifecycleFilteredIndices[virtualItem.index];
             if (flagIndex === undefined) return null;
 
             const normalizedFlag = normalizedFlags[flagIndex];

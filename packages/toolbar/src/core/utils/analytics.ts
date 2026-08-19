@@ -191,6 +191,13 @@ export class ToolbarAnalytics {
     });
   }
 
+  trackFlagLifecycleFilterChange(kind: 'deprecated' | 'archived', enabled: boolean): void {
+    this.track(EVENTS.FILTER_CHANGED, {
+      filter: kind === 'deprecated' ? 'lifecycle_deprecated' : 'lifecycle_archived',
+      action: enabled ? 'selected' : 'deselected',
+    });
+  }
+
   /**
    * Track opening a flag deeplink
    */
