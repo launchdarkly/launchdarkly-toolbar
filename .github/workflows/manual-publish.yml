@@ -32,7 +32,7 @@ jobs:
           TOOLBAR_INTERNAL_BACKEND_URL: ${{ vars.TOOLBAR_INTERNAL_BACKEND_URL }}
           TOOLBAR_INTERNAL_OBSERVABILITY_OTLP_ENDPOINT: ${{ vars.TOOLBAR_INTERNAL_OBSERVABILITY_OTLP_ENDPOINT }}
 
-      - uses: launchdarkly/gh-actions/actions/release-secrets@release-secrets-v1.2.0
+      - uses: launchdarkly/gh-actions/actions/release-secrets@release-secrets-v1.2.1
         name: 'Get npm token'
         with:
           aws_assume_role: ${{ vars.AWS_ROLE_ARN }}
