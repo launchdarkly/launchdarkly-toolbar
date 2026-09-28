@@ -36,7 +36,7 @@
     "lint-staged": "^16.2.7",
     "lodash": "4.18.0",
     "prettier": "^3.8.1",
-    "qs": "6.15.2",
+    "qs": "6.16.0",
     "storybook": "^10.2.19",
     "storybook-addon-rslib": "^3.2.2",
     "storybook-react-rsbuild": "^3.2.2",
@@ -48,7 +48,7 @@
     "overrides": {
       "brace-expansion@1": "^1.1.16",
       "brace-expansion@>=4": "^5.0.9",
-      "fast-uri": "^3.1.5",
+      "fast-uri": "^3.1.6",
       "flatted": "^3.4.2",
       "immutable@4": "^4.3.9",
       "minimatch@3": "^3.1.3",
