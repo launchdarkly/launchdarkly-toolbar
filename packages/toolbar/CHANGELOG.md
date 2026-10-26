@@ -1,5 +1,13 @@
 # Changelog
 
+## [2.3.2](https://github.com/launchdarkly/launchdarkly-toolbar/compare/2.3.1...2.3.2) (2026-10-26)
+
+
+### Bug Fixes
+
+* **deps:** remediate HIGH severity Dependabot alerts ([#663](https://github.com/launchdarkly/launchdarkly-toolbar/issues/663)) ([811d12d](https://github.com/launchdarkly/launchdarkly-toolbar/commit/811d12d011b316f519a493374b8d0c04bb95bc2d))
+* **deps:** remediate open Dependabot alerts ([#668](https://github.com/launchdarkly/launchdarkly-toolbar/issues/668)) ([a32c6ab](https://github.com/launchdarkly/launchdarkly-toolbar/commit/a32c6abbbc5376c6d42ca8ff01fe4a9ccf375249))
+
 ## [2.3.1](https://github.com/launchdarkly/launchdarkly-toolbar/compare/2.3.0...2.3.1) (2026-04-07)
 
 
