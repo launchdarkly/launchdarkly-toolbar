@@ -180,7 +180,7 @@
     "storybook-react-rsbuild": "^3.6.1",
     "typescript": "^5.9.3",
     "vitest": "^4.1.12",
-    "vue": "^3.5.30"
+    "vue": "^3.5.42"
   },
   "peerDependencies": {
     "@angular/common": ">=14.0.0 <22.0.0",
